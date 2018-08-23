@@ -102,6 +102,9 @@
     <ClCompile Include="draw_runable.cpp">
       <Filter>draw\core</Filter>
     </ClCompile>
+    <ClCompile Include="draw_splitter.cpp">
+      <Filter>draw\simple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">

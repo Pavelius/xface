@@ -125,6 +125,7 @@
     <ClCompile Include="draw_dialog.cpp" />
     <ClCompile Include="draw_runable.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
+    <ClCompile Include="draw_splitter.cpp" />
     <ClCompile Include="draw_theme.cpp" />
     <ClCompile Include="draw_tooltips.cpp" />
     <ClCompile Include="grammar.cpp" />
