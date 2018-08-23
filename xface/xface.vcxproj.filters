@@ -1,17 +1,117 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Исходные файлы">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="runtime">
+      <UniqueIdentifier>{5c5eec06-e7bc-432a-80a7-f808a65c30b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="collections">
+      <UniqueIdentifier>{32b6fc22-5eb7-44ef-be4e-11fec932a46b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы ресурсов">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="strings">
+      <UniqueIdentifier>{f80dabc8-2ab1-4fdd-bd5b-2336345c2fb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{ff02da93-ca0d-4d46-8ae4-df5ca52df2c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw">
+      <UniqueIdentifier>{c5783f4a-da17-40b9-88c6-e84ee9eac615}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw\core">
+      <UniqueIdentifier>{8b96c22e-0ff0-4623-aabb-a08fb4f3908e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\windows">
+      <UniqueIdentifier>{53785f07-c624-4618-b94e-ac9818f36e37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="support">
+      <UniqueIdentifier>{77d5ce19-1ba6-4cdd-adf7-39071b6158cf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="crt.cpp">
+      <Filter>runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="io.cpp">
+      <Filter>runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="collection.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
+    <ClCompile Include="archive.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
+    <ClCompile Include="stringcreator.cpp">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="szdup.cpp">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="draw.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="win_draw.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="win_io_file.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="color.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="point.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_input.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_text.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_textf.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="string_value.cpp">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_theme.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="crt.h">
+      <Filter>runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="io.h">
+      <Filter>runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="collection.h">
+      <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="archive.h">
+      <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="initializer_list.h">
+      <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="stringcreator.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>draw\core</Filter>
+    </ClInclude>
+    <ClInclude Include="win.h">
+      <Filter>platform\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="rect.h">
+      <Filter>support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

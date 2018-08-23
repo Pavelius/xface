@@ -20,16 +20,16 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{D9030A7D-F1DD-4B02-8064-BFDCB7CF5C5C}</ProjectGuid>
-    <RootNamespace>xface</RootNamespace>
+    <ProjectGuid>{C188A38F-D3CC-438C-8FE7-B37D01B7F13D}</ProjectGuid>
+    <RootNamespace>test</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -69,7 +69,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir);</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -77,6 +79,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -115,36 +120,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="archive.cpp" />
-    <ClCompile Include="collection.cpp" />
-    <ClCompile Include="color.cpp" />
-    <ClCompile Include="crt.cpp" />
-    <ClCompile Include="draw_theme.cpp" />
-    <ClCompile Include="string_value.cpp" />
-    <ClCompile Include="draw.cpp" />
-    <ClCompile Include="draw_input.cpp" />
-    <ClCompile Include="draw_text.cpp" />
-    <ClCompile Include="draw_textf.cpp" />
-    <ClCompile Include="io.cpp" />
-    <ClCompile Include="point.cpp" />
-    <ClCompile Include="stringcreator.cpp" />
-    <ClCompile Include="szdup.cpp" />
-    <ClCompile Include="win_draw.cpp" />
-    <ClCompile Include="win_io_file.cpp" />
+    <ProjectReference Include="..\xface\xface.vcxproj">
+      <Project>{d9030a7d-f1dd-4b02-8064-bfdcb7cf5c5c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="archive.h" />
-    <ClInclude Include="collection.h" />
-    <ClInclude Include="color.h" />
-    <ClInclude Include="crt.h" />
-    <ClInclude Include="draw.h" />
-    <ClInclude Include="initializer_list.h" />
-    <ClInclude Include="io.h" />
-    <ClInclude Include="point.h" />
-    <ClInclude Include="rect.h" />
-    <ClInclude Include="string.h" />
-    <ClInclude Include="stringcreator.h" />
-    <ClInclude Include="win.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
