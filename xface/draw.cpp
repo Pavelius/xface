@@ -67,6 +67,7 @@ sprite*				metrics::h1 = (sprite*)loadb("art/fonts/h1.pma");
 sprite*				metrics::h2 = (sprite*)loadb("art/fonts/h2.pma");
 sprite*				metrics::h3 = (sprite*)loadb("art/fonts/h3.pma");
 int					metrics::scroll = 16;
+int					metrics::padding = 4;
 
 float sqrt(const float x) {
 	const float xhalf = 0.5f*x;

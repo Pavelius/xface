@@ -1,5 +1,7 @@
 #include "draw.h"
 
+char* key2str(char* result, int key);
+
 bool draw::buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key, bool press) {
 	bool result = false;
 	if(disabled) {

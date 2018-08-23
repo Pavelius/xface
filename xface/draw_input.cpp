@@ -1,6 +1,8 @@
 #include "crt.h"
 #include "draw.h"
 
+using namespace draw;
+
 struct focusable_element {
 	int				id;
 	rect			rc;
@@ -27,12 +29,14 @@ static struct input_plugin : draw::renderplugin {
 	}
 
 	bool translate(int id) override {
-		int focus;
 		switch(id) {
 		case KeyTab:
-			focus = draw::getfocus();
-			focus = draw::getnext(focus, KeyTab);
-			draw::setfocus(focus, true);
+		case KeyTab | Shift:
+		case KeyTab | Ctrl:
+		case KeyTab | Ctrl | Shift:
+			id = getnext(draw::getfocus(), id);
+			if(id)
+				setfocus(id, true);
 			return true;
 		}
 		return false;

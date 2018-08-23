@@ -10,11 +10,11 @@ static struct video_8t {
 } video_descriptor;
 #pragma pack(pop)
 
-static HWND			hwnd;
-static point		minimum;
-extern bool			sys_optimize_mouse_move;
-extern rect			sys_static_area;
-static bool			use_mouse = true;
+static HWND		hwnd;
+static point	minimum;
+extern bool		sys_optimize_mouse_move;
+extern rect		sys_static_area;
+static bool		use_mouse = true;
 
 static int tokey(int vk) {
 	switch(vk) {
@@ -83,12 +83,13 @@ static int handle(MSG& msg) {
 			break;
 		memset(&tm, 0, sizeof(tm));
 		tm.cbSize = sizeof(tm);
-		tm.dwFlags = TME_LEAVE;
+		tm.dwFlags = TME_LEAVE | TME_HOVER;
 		tm.hwndTrack = hwnd;
+		tm.dwHoverTime = HOVER_DEFAULT;
 		TrackMouseEvent(&tm);
 		hot::mouse.x = LOWORD(msg.lParam);
 		hot::mouse.y = HIWORD(msg.lParam);
-		if(draw::mouseinput && sys_optimize_mouse_move && !draw::drag::active()) {
+		if(draw::mouseinput && sys_optimize_mouse_move) {
 			if(hot::mouse.in(sys_static_area))
 				return InputNoUpdate;
 		}
@@ -148,6 +149,10 @@ static int handle(MSG& msg) {
 		else
 			return MouseWheelUp;
 		break;
+	case WM_MOUSEHOVER:
+		if(!use_mouse)
+			break;
+		return InputIdle;
 	case WM_TIMER:
 		if(msg.hwnd != hwnd)
 			break;

@@ -10,7 +10,7 @@ extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 
 enum draw_event_s {
 	// input events
-	InputSymbol = 0xED00, InputTimer, InputUpdate, InputNoUpdate, InputExecute,
+	InputSymbol = 0xED00, InputTimer, InputIdle, InputUpdate, InputNoUpdate, InputExecute,
 	// Keyboard and mouse input (can be overrided by flags)
 	MouseLeft = 0xEE00, MouseLeftDBL, MouseRight,
 	MouseMove, MouseWheelUp, MouseWheelDown,
@@ -166,6 +166,7 @@ extern sprite*			font;
 extern sprite*			h1;
 extern sprite*			h2;
 extern sprite*			h3;
+extern int				padding;
 extern int				scroll;
 }
 namespace draw {
@@ -264,6 +265,7 @@ void					decortext(unsigned flags);
 bool					defproc(int id);
 void					execute(void(*callback)(), int value = 0);
 void					execute(int id, int value = 0);
+void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
 int						getbpp();
 color					getcolor(color normal, unsigned flags);
@@ -312,6 +314,7 @@ void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
 void					setfocus(int id, bool instant = false);
 void					settimer(unsigned milleseconds);
+void					setposition(int& x, int& y, int width);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);
 void					stroke(int x, int y, const sprite* e, int id, int flags, unsigned char thin = 1, unsigned char* koeff = 0);
@@ -415,14 +418,17 @@ struct table : list {
 	void				viewtotal(rect rc) const;
 };
 }
-int						button(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips = 0, void(*callback)() = 0);
+int						button(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips, void(*callback)());
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, int key, bool press, const char* tips = 0);
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false, const char* tips = 0);
 bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false);
+int						checkbox(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips = 0, void(*callback)() = 0);
+int						clipart(int x, int y, int width, unsigned flags, const char* string);
+bool					dodialog(int id);
+int						radio(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips = 0, void(*callback)() = 0);
 void					scrollh(int id, const struct rect& scroll, int& origin, int count, int maximum, bool focused);
 void					scrollv(int id, const rect& scroll, int& origin, int count, int maximum, bool focused);
+void					tooltips(const char* format, ...);
 void					tooltips(int x, int y, int width, const char* format, ...);
+void					tooltipsv(int x, int y, int width, const char* format, const char* format_param);
 }
-int						distance(point p1, point p2);
-int						isqrt(int value);
-char*					key2str(char* result, int key);

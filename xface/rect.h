@@ -9,6 +9,8 @@ struct rect
 	inline bool			operator!=(const rect& rc) const { return rc.x1 != x1 || rc.x2 != x2 || rc.y1 != y1 || rc.y2 != y2; }
 	inline bool			operator==(const rect& rc) const { return rc.x1 == x1 && rc.x2 == x2 && rc.y1 == y1 && rc.y2 == y2; }
 	inline rect			operator+(const rect& rc) const { return{x1 + rc.x1, y1 + rc.y1, x2 + rc.x2, y2 + rc.y2}; }
+	inline rect			operator+(const int v) const { return{x1 + v, y1 + v, x2 - v, y2 - v}; }
+	inline rect			operator-(const int v) const { return{x1 - v, y1 - v, x2 + v, y2 + v}; }
 	void				clear() { x1 = x2 = y1 = y2 = 0; }
 	inline int			height() const { return y2 - y1; }
 	bool				intersect(const rect& rc) const { return x1<rc.x2 && x2>rc.x1 && y1<rc.y2 && y2>rc.y1; }

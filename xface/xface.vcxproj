@@ -119,7 +119,14 @@
     <ClCompile Include="collection.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="crt.cpp" />
+    <ClCompile Include="draw_button.cpp" />
+    <ClCompile Include="draw_clipart.cpp" />
+    <ClCompile Include="draw_control.cpp" />
+    <ClCompile Include="draw_dialog.cpp" />
+    <ClCompile Include="draw_scroll.cpp" />
     <ClCompile Include="draw_theme.cpp" />
+    <ClCompile Include="draw_tooltips.cpp" />
+    <ClCompile Include="grammar.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="draw_input.cpp" />
@@ -138,6 +145,7 @@
     <ClInclude Include="color.h" />
     <ClInclude Include="crt.h" />
     <ClInclude Include="draw.h" />
+    <ClInclude Include="grammar.h" />
     <ClInclude Include="initializer_list.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="point.h" />
