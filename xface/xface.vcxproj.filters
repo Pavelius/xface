@@ -99,6 +99,9 @@
     <ClCompile Include="draw_dialog.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
+    <ClCompile Include="draw_runable.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">

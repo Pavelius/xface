@@ -5,7 +5,6 @@ using namespace draw;
 
 static void basic_drawing() {
 	int tick = 10;
-	setcaption("Test basic drawing operations");
 	settimer(100);
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -20,27 +19,28 @@ static void basic_drawing() {
 			break;
 		case KeyEscape:
 			return;
+		default: dodialog(id); break;
 		}
 	}
 	settimer(0);
 }
 
 static void button_accept() {
+	basic_drawing();
 }
 
 static void simple_controls() {
-	setcaption("Test simple controls");
 	setfocus(3, true);
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto x = 10;
 		auto y = 10;
-		y += button(x, y, 200, 1, 0, "Просто обычная кнопка", "Кнопка, которая отображает подсказку", button_accept);
-		y += button(x, y, 200, 2, Disabled, "Недоступная кнопка", "Кнопка, которая недоступная для нажатия", button_accept);
-		y += checkbox(x, y, 200, 3, 0, "Галочка которая выводится и меняет значение чекбокса.");
-		y += radio(x, y, 200, 4, 0, "Первый элемент списка.");
-		y += radio(x, y, 200, 5, 0, "Второй элемент возможного выбора.");
-		y += radio(x, y, 200, 6, Checked, "Третий элемент этого выбора.");
+		y += button(x, y, 200, 0, cmdpr(button_accept), "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
+		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
+		y += checkbox(x, y, 200, 0, cmdid(3), "Галочка которая выводится и меняет значение чекбокса.");
+		y += radio(x, y, 200, 0, cmdid(4), "Первый элемент списка.");
+		y += radio(x, y, 200, 0, cmdid(5), "Второй элемент возможного выбора.");
+		y += radio(x, y, 200, Checked, cmdid(6), "Третий элемент этого выбора.");
 		auto id = input();
 		switch(id) {
 		case KeyEscape:
@@ -48,18 +48,18 @@ static void simple_controls() {
 		default: dodialog(id); break;
 		}
 	}
-	settimer(0);
 }
 
 void set_dark_theme();
 void set_light_theme();
 
 int main() {
-	set_light_theme();
+	set_dark_theme();
 	// Инициализация библиотеки
 	initialize();
 	// Создание окна
 	create(-1, -1, 640, 480, WFResize | WFMinmax, 32);
+	setcaption("Тестирование пользовательского интерфейса");
 	simple_controls();
 	return 0;
 }

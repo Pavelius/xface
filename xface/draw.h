@@ -238,6 +238,10 @@ struct renderplugin {
 	virtual void		initialize() {}
 	virtual bool		translate(int id) { return false; }
 };
+struct runable {
+	virtual int			getid() const = 0;
+	virtual void		execute() const = 0;
+};
 typedef int(*widgetproc)(int x, int y, int width, unsigned flags, const char* label, int value, void* data, const char* tips);
 extern rect				clipping; // Clipping area
 extern color			fore; // Foreground color (curently selected color)
@@ -338,6 +342,20 @@ void					updatewindow();
 void					write(const char* url, unsigned char* bits, int width, int height, int bpp, int scanline, color* pallette);
 }
 namespace draw {
+struct cmdid : runable {
+	constexpr cmdid(int id, int param = 0) : id(id), param(param) {}
+	virtual void		execute() const override { draw::execute(id, param); }
+	virtual int			getid() const override { return id; }
+private:
+	int id, param;
+};
+struct cmdpr : runable {
+	constexpr cmdpr(void(*proc)(), int param = 0) : proc(proc), param(param) {}
+	virtual void		execute() const override { draw::execute(proc, param); }
+	virtual int			getid() const override { return (int)proc; }
+private:
+	void(*proc)(); int param;
+};
 namespace controls {
 struct column {
 	unsigned			flags;
@@ -418,14 +436,14 @@ struct table : list {
 	void				viewtotal(rect rc) const;
 };
 }
-int						button(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips, void(*callback)());
+int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips);
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, int key, bool press, const char* tips = 0);
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false, const char* tips = 0);
 bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false);
-int						checkbox(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips = 0, void(*callback)() = 0);
+int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						clipart(int x, int y, int width, unsigned flags, const char* string);
 bool					dodialog(int id);
-int						radio(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips = 0, void(*callback)() = 0);
+int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 void					scrollh(int id, const struct rect& scroll, int& origin, int count, int maximum, bool focused);
 void					scrollv(int id, const rect& scroll, int& origin, int count, int maximum, bool focused);
 void					tooltips(const char* format, ...);
