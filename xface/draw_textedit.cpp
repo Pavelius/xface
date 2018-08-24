@@ -1,5 +1,5 @@
 #include "crt.h"
-#include "drawex.h"
+#include "draw_control.h"
 #include "screenshoot.h"
 
 using namespace draw;

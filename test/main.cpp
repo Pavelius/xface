@@ -1,5 +1,5 @@
 #include "xface/crt.h"
-#include "xface/drawex.h"
+#include "xface/draw_control.h"
 
 using namespace draw;
 

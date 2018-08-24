@@ -129,6 +129,9 @@
     <ClCompile Include="win_clipboard.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
+    <ClCompile Include="draw_field.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -170,14 +173,14 @@
     <ClInclude Include="grammar.h">
       <Filter>strings</Filter>
     </ClInclude>
-    <ClInclude Include="drawex.h">
-      <Filter>draw\core</Filter>
-    </ClInclude>
     <ClInclude Include="pointl.h">
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="screenshoot.h">
       <Filter>draw\core</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_control.h">
+      <Filter>draw\simple</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

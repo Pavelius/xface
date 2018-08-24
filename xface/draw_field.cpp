@@ -1,0 +1,95 @@
+#include "crt.h"
+#include "draw.h"
+#include "draw_control.h"
+//#include "bsreq.h"
+
+using namespace draw;
+
+static int edit_command;
+static void(*callback_field_next)();
+
+static void callback_field() {
+	if(edit_command)
+		hot::key = edit_command;
+	callback_field_next();
+}
+
+static bool editstart(const rect& rc, unsigned flags, runable& callback_edit) {
+	auto result = false;
+	edit_command = 0;
+	switch(hot::key&CommandMask) {
+	case MouseMove:
+	case InputIdle:
+	case InputTimer:
+	case KeyTab:
+		// Команды не влияющие на вход в режим редактирования
+		break;
+	case MouseLeft:
+	case MouseLeftDBL:
+	case MouseRight:
+		edit_command = hot::key;
+		result = draw::areb(rc);
+		break;
+	case InputSymbol:
+		result = true;
+		break;
+	default:
+		result = (hot::key&CommandMask) >= KeyLeft;
+		break;
+	}
+	if(result)
+		callback_edit.execute();
+	return result;
+}
+
+int	draw::field(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips, const char* header_label, int header_width, cmdfd& cmd) {
+	draw::state push;
+	setposition(x, y, width);
+	decortext(flags);
+	if(header_label && header_label[0])
+		titletext(x, y, width, flags, header_label, header_width);
+	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	if(!isdisabled(flags))
+		draw::rectf(rc, colors::window);
+	focusing(id, flags, rc);
+	bool focused = isfocused(flags);
+	draw::rectb(rc, colors::border);
+	if(cmd.dropdown(false)) {
+		if(addbutton(rc, focused, ":dropdown", F4, "Показать список"))
+			cmd.dropdown(true);
+	}
+	if(cmd.choose(false)) {
+		if(addbutton(rc, focused, "...", F4, "Выбрать значение"))
+			cmd.choose(true);
+	}
+	if(cmd.increment(0, false)) {
+		auto result = addbutton(rc, focused, "+", KeyUp, "Увеличить", "-", KeyDown, "Уменьшить");
+		switch(result) {
+		case 1:
+			cmd.increment(-1, true);
+			break;
+		case 2:
+			cmd.increment(1, true);
+			break;
+		}
+	}
+	if(cmd.open(false)) {
+		if(addbutton(rc, focused, "...", F4, "Выбрать"))
+			cmd.open(true);
+	}
+	auto a = area(rc);
+	bool enter_edit = false;
+	if(focused)
+		enter_edit = editstart(rc, flags, cmd);
+	if(!enter_edit) {
+		if(label) {
+			if(isfocused(flags))
+				draw::texte(rc + metrics::edit, label, flags, 0, zlen(label));
+			else
+				draw::texte(rc + metrics::edit, label, flags, -1, -1);
+		}
+		if(tips && a == AreaHilited)
+			tooltips(tips);
+	}
+	return rc.height() + metrics::padding * 2;
+}

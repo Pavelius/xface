@@ -2,6 +2,33 @@
 
 char* key2str(char* result, int key);
 
+bool draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1) {
+	const int width = 18;
+	rc.x2 -= width;
+	auto result = draw::buttonh({rc.x2, rc.y1, rc.x2 + width, rc.y2},
+		false, focused, false, false,
+		t1, k1, true, tt1);
+	draw::line(rc.x2, rc.y1, rc.x2, rc.y2, colors::border);
+	return result;
+}
+
+int draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1, const char* t2, int k2, const char* tt2) {
+	const int width = 20;
+	rc.x2 -= width;
+	auto height = rc.height() / 2;
+	auto result = 0;
+	if(draw::buttonh({rc.x2, rc.y1, rc.x2 + width, rc.y1 + height},
+		false, focused, false, false,
+		t1, k1, true, tt1))
+		result = 1;
+	if(draw::buttonh({rc.x2, rc.y1 + height, rc.x2 + width, rc.y1 + height * 2},
+		false, focused, false, false,
+		t2, k2, true, tt2))
+		result = 2;
+	draw::line(rc.x2, rc.y1, rc.x2, rc.y2, colors::border);
+	return result;
+}
+
 bool draw::buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key, bool press) {
 	bool result = false;
 	if(disabled) {

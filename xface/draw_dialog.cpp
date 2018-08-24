@@ -1,5 +1,5 @@
 #include "crt.h"
-#include "drawex.h"
+#include "draw_control.h"
 
 using namespace draw;
 
@@ -21,6 +21,17 @@ void draw::focusing(int id, unsigned& flags, rect rc) {
 		setfocus(id, false);
 		hot::key = MouseLeft;
 	}
+}
+
+void draw::titletext(int& x, int y, int& width, unsigned flags, const char* label, int title) {
+	char temp[1024];
+	if(!title)
+		title = 128;
+	zcpy(temp, label, sizeof(temp) - 2);
+	zcat(temp, ":");
+	text(x, y + 4, temp);
+	x += title;
+	width -= title;
 }
 
 int	draw::button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips) {
