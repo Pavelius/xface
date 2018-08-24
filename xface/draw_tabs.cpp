@@ -1,5 +1,5 @@
 #include "crt.h"
-#include "drawex.h"
+#include "draw.h"
 
 using namespace draw;
 
@@ -44,12 +44,15 @@ static bool sheet(rect& rc, rect& rct, const char* string, areas* area_result, b
 }
 
 int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite,
-	proctext gtext, proctext gstate, rect position) {
+	proctext gtext, rect position) {
 	draw::state push;
 	rect rco = rc + position;
 	setclip(rc);
 	char temp[260];
 	auto result = 0;
+	// По-умолчанию нет подсвеченного элемента
+	if(hilite)
+		*hilite = -1;
 	// Получим выравнивание
 	int ox1 = rc.x1;
 	for(int i = start; i < count; i++) {
@@ -67,8 +70,6 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 		if(a == AreaHilited || a == AreaHilitedPressed) {
 			if(hilite)
 				*hilite = i;
-			//if(gstate)
-			//	statusbar(gstate(temp, data[i]));
 		}
 		if((a == AreaHilited || a == AreaHilitedPressed || (i == current)) && show_close) {
 			const int dy = 12;
@@ -90,7 +91,7 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 }
 
 int draw::tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite,
-	proctext gtext, proctext gstate, rect position) {
+	proctext gtext, rect position) {
 	return tabs({x, y, x + width, y + draw::texth() + metrics::padding * 4},
-		show_close, right_side, data, start, count, current, hilite, gtext, gstate, position);
+		show_close, right_side, data, start, count, current, hilite, gtext, position);
 }

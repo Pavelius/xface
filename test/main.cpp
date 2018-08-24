@@ -55,22 +55,34 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 	return (const char*)object;
 }
 
-static const char* get_text_status(char* result, const char* result_maximum, void* object) {
-	szprints(result, result_maximum, "Выбрать закладку '%1'", object);
+static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips) {
+	auto result = button(x, y, width, 0, cmdpr(proc), title, tips);
+	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
+	if(areb(rc)) {
+		if(tips)
+			statusbar("Кнопка: %1", tips);
+		else
+			statusbar("Кнопка с координатами x=%1i, y=%2i", x, y);
+	}
 	return result;
 }
 
 static void simple_controls() {
 	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
 	setfocus(3, true);
+	int current_hilite;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		statusbardw();
 		auto x = 10;
 		auto y = 10;
-		auto result = tabs(x, y, getwidth() - x*2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, 0,
-			get_text, get_text_status, {}); y += 40;
-		y += button(x, y, 200, 0, cmdpr(button_accept), "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
-		y += button(x, y, 200, 0, cmdpr(test_control), "Тестирование элементов", 0);
+		auto result = tabs(x, y, getwidth() - x*2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, &current_hilite,
+			get_text, {}); y += 40;
+		if(current_hilite != -1) {
+			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
+		}
+		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
+		y += button(x, y, 200, test_control, "Тестирование элементов", 0);
 		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, 0, cmdid(3), "Галочка которая выводится и меняет значение чекбокса.");
 		y += radio(x, y, 200, 0, cmdid(4), "Первый элемент списка.");

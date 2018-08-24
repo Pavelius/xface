@@ -126,6 +126,7 @@
     <ClCompile Include="draw_list.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
     <ClCompile Include="draw_splitter.cpp" />
+    <ClCompile Include="draw_statusbar.cpp" />
     <ClCompile Include="draw_table.cpp" />
     <ClCompile Include="draw_tabs.cpp" />
     <ClCompile Include="draw_theme.cpp" />

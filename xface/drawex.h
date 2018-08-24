@@ -106,7 +106,4 @@ int						button(int x, int y, int width, unsigned flags, const runable& cmd, con
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 bool					dodialog(int id);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
-int						sheetline(rect rc, bool background);
-int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext = 0, proctext gstate = 0, rect position = {0, 0, 0, 0});
-int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext, proctext gstate, rect position);
 }

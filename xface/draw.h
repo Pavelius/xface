@@ -341,6 +341,12 @@ void					scrollh(int id, const struct rect& scroll, int& origin, int count, int 
 void					scrollv(int id, const rect& scroll, int& origin, int count, int maximum, bool focused);
 void					splitv(int x, int y, int& value, int height, int id, int size, int minimum, int maximum, bool right_align);
 void					splith(int x, int y, int width, int& value, int id, int size, int minimum, int maximum, bool down_align);
+void					statusbar(const char* format, ...);
+void					statusbarv(const char* format, const char* format_param);
+int						statusbardw();
+int						sheetline(rect rc, bool background);
+int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext = 0, rect position = {0, 0, 0, 0});
+int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext, rect position);
 void					tooltips(const char* format, ...);
 void					tooltips(int x, int y, int width, const char* format, ...);
 void					tooltipsv(int x, int y, int width, const char* format, const char* format_param);
