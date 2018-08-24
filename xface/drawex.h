@@ -96,14 +96,17 @@ struct table : list {
 	virtual int			getnumber(int line, int column) const { return 0; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
-	virtual void		row(rect rc, int index) const; // Draw single row - part of list
+	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
 	virtual int			rowheader(rect rc) const; // Draw header row
 	void				view(rect rc) override;
 	void				viewtotal(rect rc) const;
 };
 }
-int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips);
+int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 bool					dodialog(int id);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
+int						sheetline(rect rc, bool background);
+int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext = 0, proctext gstate = 0, rect position = {0, 0, 0, 0});
+int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext, proctext gstate, rect position);
 }

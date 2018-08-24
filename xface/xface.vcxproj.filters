@@ -111,6 +111,9 @@
     <ClCompile Include="draw_table.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="draw_tabs.cpp">
+      <Filter>draw\simple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">

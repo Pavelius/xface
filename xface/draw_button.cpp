@@ -39,7 +39,7 @@ bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool bord
 	draw::state push;
 	bool result = false;
 	struct rect rcb = {rc.x1 + 1, rc.y1 + 1, rc.x2, rc.y2};
-	areas a = area(rc);
+	areas a = area(rcb);
 	//fore = (value.gray().r > 32) ? colors::white : colors::black;
 	if(disabled) {
 		gradv(rcb, value.lighten(), value.darken());

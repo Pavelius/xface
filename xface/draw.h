@@ -38,12 +38,7 @@ enum draw_event_s {
 	ControlMask = 0x00F00000,
 	// columns flags
 	SmallHilite = 0x00010000,
-	// control visual flags
-	NoBorder = 0x01000000,
-	NoBackground = 0x02000000,
-	NoToolbar = 0x04000000,
-	HideZero = 0x04000000,
-	NoFocus = 0x08000000,
+	HideZero = 0x00020000,
 	// state flags
 	Focused = 0x10000000, // Control has keyboard input and can change visual form.
 	Checked = 0x20000000, // Use in background virtual method.
@@ -132,7 +127,7 @@ struct sprite : pma {
 	int					glyph(unsigned sym) const;
 	const unsigned char* offs(unsigned o) const { return (unsigned char*)this + o; }
 };
-typedef const char* (*proctext)(char* result, void* object);
+typedef const char* (*proctext)(char* result, const char* result_maximum, void* object);
 namespace hot {
 typedef void(*proc)(); // Hot callback reaction
 extern int				animate; // Frame tick count

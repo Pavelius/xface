@@ -36,10 +36,11 @@ static void test_control() {
 	{}};
 	controls::table test(columns);
 	while(ismodal()) {
-		rectf({0, 0, getwidth(), getheight()}, colors::form);
-		auto x = 100;
-		auto y = 100;
-		test.view({x, y, x + 260, y + 200});
+		rect rc = {0, 0, getwidth(), getheight()};
+		rectf(rc, colors::form);
+		rc.offset(4 * 2);
+		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 2, 100 - metrics::padding, 0, cmdpr(buttoncancel), "Назад");
+		test.view(rc);
 		auto id = input();
 		switch(id) {
 		case KeyEscape:
@@ -50,12 +51,24 @@ static void test_control() {
 	}
 }
 
+static const char* get_text(char* result, const char* result_maximum, void* object) {
+	return (const char*)object;
+}
+
+static const char* get_text_status(char* result, const char* result_maximum, void* object) {
+	szprints(result, result_maximum, "Выбрать закладку '%1'", object);
+	return result;
+}
+
 static void simple_controls() {
+	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
 	setfocus(3, true);
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto x = 10;
 		auto y = 10;
+		auto result = tabs(x, y, getwidth() - x*2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, 0,
+			get_text, get_text_status, {}); y += 40;
 		y += button(x, y, 200, 0, cmdpr(button_accept), "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, 0, cmdpr(test_control), "Тестирование элементов", 0);
 		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
@@ -81,7 +94,7 @@ int main() {
 	initialize();
 	// Создание окна
 	create(-1, -1, 640, 480, WFResize | WFMinmax, 32);
-	setcaption("Тестирование пользовательского интерфейса");
+	setcaption("X-Face C++ library");
 	simple_controls();
 	return 0;
 }
