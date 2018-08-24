@@ -17,7 +17,7 @@ void draw::tooltips(int x, int y, int width, const char* format, ...) {
 }
 
 void draw::tooltips(const char* format, ...) {
-	tooltips(hot::mouse.x, hot::mouse.y + 24, 400, format, xva_start(format));
+	tooltipsv(hot::mouse.x, hot::mouse.y + 24, 400, format, xva_start(format));
 }
 
 static struct tooltips_renderplugin : draw::renderplugin {

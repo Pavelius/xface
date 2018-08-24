@@ -250,8 +250,8 @@ bool textedit::editing(rect rc) {
 		}
 		int id = input();
 		switch(id) {
-		case 0:
-			return false;
+		case InputIdle:
+			break;
 		case KeyEscape:
 			if(records && isshowrecords()) {
 				show_records = false;

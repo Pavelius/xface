@@ -309,7 +309,6 @@ void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
 void					setfocus(int id, bool instant = false);
 void					settimer(unsigned milleseconds);
-void					setposition(int& x, int& y, int width);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);
 void					stroke(int x, int y, const sprite* e, int id, int flags, unsigned char thin = 1, unsigned char* koeff = 0);

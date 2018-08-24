@@ -104,9 +104,9 @@ bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool bord
 	if(tips && a == AreaHilited) {
 		char temp[32];
 		if(key)
-			tooltips(rc.x1, rc.y1, rc.width(), "%1 (%2)", tips, key2str(temp, key));
+			tooltips("%1 (%2)", tips, key2str(temp, key));
 		else
-			tooltips(rc.x1, rc.y1, rc.width(), tips);
+			tooltips(tips);
 	}
 	return result;
 }

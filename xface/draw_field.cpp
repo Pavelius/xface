@@ -1,7 +1,6 @@
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
-//#include "bsreq.h"
 
 using namespace draw;
 
@@ -14,7 +13,7 @@ static void callback_field() {
 	callback_field_next();
 }
 
-static bool editstart(const rect& rc, unsigned flags, runable& callback_edit) {
+static bool editstart(const rect& rc, unsigned flags, const runable& callback_edit) {
 	auto result = false;
 	edit_command = 0;
 	switch(hot::key&CommandMask) {
@@ -42,7 +41,7 @@ static bool editstart(const rect& rc, unsigned flags, runable& callback_edit) {
 	return result;
 }
 
-int	draw::field(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips, const char* header_label, int header_width, cmdfd& cmd) {
+int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, const char* header_label, int header_width) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
@@ -51,7 +50,7 @@ int	draw::field(int x, int y, int width, int id, unsigned flags, const char* lab
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(!isdisabled(flags))
 		draw::rectf(rc, colors::window);
-	focusing(id, flags, rc);
+	focusing(cmd.getid(), flags, rc);
 	bool focused = isfocused(flags);
 	draw::rectb(rc, colors::border);
 	if(cmd.dropdown(false)) {
@@ -63,14 +62,12 @@ int	draw::field(int x, int y, int width, int id, unsigned flags, const char* lab
 			cmd.choose(true);
 	}
 	if(cmd.increment(0, false)) {
-		auto result = addbutton(rc, focused, "+", KeyUp, "Увеличить", "-", KeyDown, "Уменьшить");
+		auto result = addbutton(rc, focused,
+			"+", KeyUp, "Увеличить",
+			"-", KeyDown, "Уменьшить");
 		switch(result) {
-		case 1:
-			cmd.increment(-1, true);
-			break;
-		case 2:
-			cmd.increment(1, true);
-			break;
+		case 1: cmd.increment(-1, true); break;
+		case 2: cmd.increment(+1, true); break;
 		}
 	}
 	if(cmd.open(false)) {

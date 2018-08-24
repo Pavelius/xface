@@ -3,10 +3,12 @@
 
 using namespace draw;
 
-void draw::setposition(int& x, int& y, int width) {
-	x += metrics::padding;
-	y -= metrics::padding;
-	width -= metrics::padding * 2;
+void draw::setposition(int& x, int& y, int width, int padding) {
+	if(padding==-1)
+		padding = metrics::padding;
+	x += padding;
+	y += padding;
+	width -= padding * 2;
 }
 
 void draw::focusing(int id, unsigned& flags, rect rc) {
@@ -50,7 +52,7 @@ int	draw::button(int x, int y, int width, unsigned flags, const runable& cmd, co
 
 int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips) {
 	draw::state push;
-	setposition(x, y, width);
+	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
 	rect rc1 = {rc.x1 + 22, rc.y1, rc.x2, rc.y2};
 	draw::textw(rc1, label);
@@ -78,12 +80,12 @@ int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, con
 	draw::text(rc, label);
 	if(tips && a == AreaHilited)
 		tooltips(tips);
-	return rc1.height() + metrics::padding * 2;
+	return rc1.height() + 2;
 }
 
 int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips) {
 	draw::state push;
-	setposition(x, y, width);
+	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
 	rect rc1 = {rc.x1 + 22, rc.y1, rc.x2, rc.y2};
 	draw::textw(rc1, label);
@@ -109,7 +111,7 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 	draw::text(rc1, label);
 	if(tips && a == AreaHilited)
 		tooltips(tips);
-	return rc1.height() + metrics::padding * 2;
+	return rc1.height() + 2;
 }
 
 bool draw::dodialog(int id) {

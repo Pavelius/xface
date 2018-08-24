@@ -78,24 +78,33 @@ static int button(int x, int y, int width, void(*proc)(), const char* title, con
 }
 
 static void simple_controls() {
+	struct cmdwf : cmdfd {
+		int getid() const override { return id;}
+		void execute() const override {}
+		bool choose(bool run) const override { return true; }
+		bool increment(int step, bool run) const override { return true; }
+		cmdwf(int id) : id(id) {}
+	private:
+		int	id;
+	};
 	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
 	setfocus(3, true);
 	int current_hilite;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
-		auto x = 10;
-		auto y = 10;
+		auto x = 10; auto y = 10;
 		auto result = tabs(x, y, getwidth() - x*2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, &current_hilite,
 			get_text, {}); y += 40;
-		if(current_hilite != -1) {
+		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
-		}
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Тестирование элементов");
 		y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, 0, cmdid(3), "Галочка которая выводится и меняет значение чекбокса.");
+		y += field(x, y, 200, TextSingleLine, cmdwf(8), "Текст", "Это подсказка текста для редактирования", "Имя", 80);
+		y += field(x, y, 200, TextSingleLine, cmdwf(9), "34", "Это числовое поле", "Количество", 80);
 		y += radio(x, y, 200, 0, cmdid(4), "Первый элемент списка.");
 		y += radio(x, y, 200, 0, cmdid(5), "Второй элемент возможного выбора.");
 		y += radio(x, y, 200, Checked, cmdid(6), "Третий элемент этого выбора.");

@@ -30,8 +30,6 @@ struct cmdfd : runable {
 	virtual bool		choose(bool run) const { return false; }
 	virtual bool		clear(bool run) const { return false; }
 	virtual bool		dropdown(bool run) const { return false; }
-	virtual void		execute() const override { }
-	virtual int			getid() const override { return 0; }
 	virtual bool		increment(int step, bool run) const { return false; }
 	virtual bool		open(bool run) const { return false; }
 };
@@ -184,7 +182,8 @@ protected:
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 bool					dodialog(int id);
-int						field(int x, int y, int width, int id, unsigned flags, const char* label, const char* tips, const char* header_label, int header_width, cmdfd& cmd);
+int						field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, const char* header_label, int header_width);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
+void					setposition(int& x, int& y, int width, int padding = -1);
 void					titletext(int& x, int y, int& width, unsigned flags, const char* label, int title);
 }
