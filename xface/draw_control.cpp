@@ -1,4 +1,4 @@
-#include "draw.h"
+#include "drawex.h"
 
 using namespace draw::controls;
 
@@ -46,7 +46,7 @@ static struct control_plugin : draw::renderplugin {
 
 } control_plugin_instance;
 
-control::control() : show_border(true) {
+control::control() : show_border(true), show_background(true) {
 }
 
 bool control::ishilited() const {
@@ -81,6 +81,8 @@ void control::view(rect rc) {
 		current_hilite = this;
 	if((control*)getfocus() == this)
 		current_focus = this;
+	if(show_background)
+		rectf(rc, colors::window);
 	if(show_border)
 		rectb(rc, colors::border);
 }

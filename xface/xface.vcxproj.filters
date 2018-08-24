@@ -28,6 +28,9 @@
     <Filter Include="draw\simple">
       <UniqueIdentifier>{e189561a-4a4c-49c9-a4b0-3d9e5520f189}</UniqueIdentifier>
     </Filter>
+    <Filter Include="draw\controls">
+      <UniqueIdentifier>{4e583cd2-c2b4-4c5b-9e23-e9e08fb827d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="crt.cpp">
@@ -99,11 +102,14 @@
     <ClCompile Include="draw_dialog.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
-    <ClCompile Include="draw_runable.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
     <ClCompile Include="draw_splitter.cpp">
       <Filter>draw\simple</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_list.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_table.cpp">
+      <Filter>draw\controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="grammar.h">
       <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="drawex.h">
+      <Filter>draw\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

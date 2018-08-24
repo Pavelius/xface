@@ -1,5 +1,5 @@
 #include "xface/crt.h"
-#include "xface/draw.h"
+#include "xface/drawex.h"
 
 using namespace draw;
 
@@ -18,7 +18,8 @@ static void basic_drawing() {
 			tick++;
 			break;
 		case KeyEscape:
-			return;
+			buttoncancel();
+			break;
 		default: dodialog(id); break;
 		}
 	}
@@ -29,6 +30,26 @@ static void button_accept() {
 	basic_drawing();
 }
 
+static void test_control() {
+	static controls::column columns[] = {{Text, "name", "Наименование", 200},
+	{Number, "count", "К-во", 32},
+	{}};
+	controls::table test(columns);
+	while(ismodal()) {
+		rectf({0, 0, getwidth(), getheight()}, colors::form);
+		auto x = 100;
+		auto y = 100;
+		test.view({x, y, x + 260, y + 200});
+		auto id = input();
+		switch(id) {
+		case KeyEscape:
+			buttoncancel();
+			break;
+		default: dodialog(id); break;
+		}
+	}
+}
+
 static void simple_controls() {
 	setfocus(3, true);
 	while(ismodal()) {
@@ -36,6 +57,7 @@ static void simple_controls() {
 		auto x = 10;
 		auto y = 10;
 		y += button(x, y, 200, 0, cmdpr(button_accept), "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
+		y += button(x, y, 200, 0, cmdpr(test_control), "Тестирование элементов", 0);
 		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, 0, cmdid(3), "Галочка которая выводится и меняет значение чекбокса.");
 		y += radio(x, y, 200, 0, cmdid(4), "Первый элемент списка.");
@@ -54,7 +76,7 @@ void set_dark_theme();
 void set_light_theme();
 
 int main() {
-	set_dark_theme();
+	set_light_theme();
 	// Инициализация библиотеки
 	initialize();
 	// Создание окна

@@ -4,7 +4,7 @@
 using namespace draw;
 
 textplugin*	draw::textplugin::first;
-static void (*draw_icon)(int& x, int& y, int x0, int x2, int* max_width, int& w, const char* name);
+static void(*draw_icon)(int& x, int& y, int x0, int x2, int* max_width, int& w, const char* name);
 
 void draw::set(void(*proc)(int& x, int& y, int x0, int x2, int* max_width, int& w, const char* id)) {
 	draw_icon = proc;
@@ -313,8 +313,8 @@ int draw::textf(int x, int y, int width, const char* string, int* max_width,
 					break;
 				}
 			}
-		} else if(match(&p, "* ")) // Список
-		{
+		} else if(match(&p, "* ")) {
+			// Список
 			int dx = texth() / 2;
 			int rd = texth() / 6;
 			circlef(x + dx + 2, y + dx, rd, color_text);
@@ -329,7 +329,7 @@ int draw::textf(int x, int y, int width, const char* string, int* max_width,
 				if(p[0] == ':' && p[1] == ':' && p[2] == ':')
 					p += 3;
 				else
-					y += draw::texth()/4;
+					y += draw::texth() / 4;
 			}
 		}
 		// Возвратим стандартные настройки блока
