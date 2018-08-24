@@ -136,19 +136,19 @@ void list::view(rect rcorigin) {
 		draw::scrollh((int)this, scrollh, origin_width, rc.width(), maximum_width, isfocused());
 }
 
-void list::keyup() {
+void list::keyup(int id) {
 	current--;
 	correction();
 	ensurevisible();
 }
 
-void list::keydown() {
+void list::keydown(int id) {
 	current++;
 	correction();
 	ensurevisible();
 }
 
-void list::keyhome() {
+void list::keyhome(int id) {
 	if(current == 0)
 		return;
 	current = 0;
@@ -156,7 +156,7 @@ void list::keyhome() {
 	ensurevisible();
 }
 
-void list::keyend() {
+void list::keyend(int id) {
 	auto maximum = getmaximum();
 	if(current == maximum - 1)
 		return;
@@ -165,7 +165,7 @@ void list::keyend() {
 	ensurevisible();
 }
 
-void list::keypageup() {
+void list::keypageup(int id) {
 	if(current != origin)
 		current = origin;
 	else
@@ -174,7 +174,7 @@ void list::keypageup() {
 	ensurevisible();
 }
 
-void list::keypagedown() {
+void list::keypagedown(int id) {
 	if(current != (origin + lines_per_page - 1))
 		current = (origin + lines_per_page - 1);
 	else
@@ -184,10 +184,10 @@ void list::keypagedown() {
 }
 
 void list::mouseleftdbl(point position) {
-	keyenter();
+	keyenter(KeyEnter);
 }
 
-void list::keyenter() {
+void list::keyenter(int id) {
 }
 
 void list::mousewheel(point position, int step) {

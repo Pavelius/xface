@@ -1,7 +1,12 @@
+#include "pointl.h"
 #include "draw.h"
 
 #pragma once
 
+namespace clipboard {
+void					copy(const void* string, int lenght);
+char*					paste();
+}
 namespace draw {
 struct runable {
 	virtual int			getid() const = 0;
@@ -40,16 +45,18 @@ struct control {
 	virtual bool		isfocusable() const { return true; }
 	bool				isfocused() const;
 	bool				ishilited() const;
-	virtual void		keydown() {}
-	virtual void		keyend() {}
-	virtual void		keyenter() {}
-	virtual void		keyleft() {}
-	virtual void		keyhome() {}
-	virtual void		keypageup() {}
-	virtual void		keypagedown() {}
-	virtual void		keyright() {}
+	virtual void		keybackspace(int id) {}
+	virtual void		keydelete(int id) {}
+	virtual void		keydown(int id) {}
+	virtual void		keyend(int id) {}
+	virtual void		keyenter(int id) {}
+	virtual void		keyleft(int id) {}
+	virtual void		keyhome(int id) {}
+	virtual void		keypageup(int id) {}
+	virtual void		keypagedown(int id) {}
+	virtual void		keyright(int id) {}
 	virtual void		keysymbol(int symbol) {}
-	virtual void		keyup() {}
+	virtual void		keyup(int id) {}
 	virtual void		mouseleft(point position); // Default behaivor set focus
 	virtual void		mouseleftdbl(point position) {}
 	virtual void		mousewheel(point position, int step) {}
@@ -71,14 +78,14 @@ struct list : control {
 	virtual int			getmaximum() const { return 0; }
 	static int			getrowheight(); // Get default row height for any List Control
 	void				hilight(rect rc) const;
-	void				keydown() override;
-	void				keyend() override;
-	void				keyenter() override;
-	void				keyhome() override;
-	void				keypageup() override;
-	void				keypagedown() override;
+	void				keydown(int id) override;
+	void				keyend(int id) override;
+	void				keyenter(int id) override;
+	void				keyhome(int id) override;
+	void				keypageup(int id) override;
+	void				keypagedown(int id) override;
 	void				keysymbol(int symbol) override;
-	void				keyup() override;
+	void				keyup(int id) override;
 	void				mouseleftdbl(point position) override;
 	void				mousewheel(point position, int step) override;
 	void				select(int index);
@@ -100,6 +107,69 @@ struct table : list {
 	virtual int			rowheader(rect rc) const; // Draw header row
 	void				view(rect rc) override;
 	void				viewtotal(rect rc) const;
+};
+// Abstract scrollable element. Scroll apear automatically if needed.
+struct scrollable : control {
+	pointl				origin;
+	pointl				maximum;
+	point				wheels;
+	scrollable();
+	rect				centerview(rect rc);
+	virtual void		invalidate();
+	virtual void		redraw(rect rc) {}
+	void				view(rect rc) override;
+};
+struct textedit : scrollable {
+	char*				string;
+	unsigned			maxlenght;
+	int					p1, p2;
+	rect				rctext, rcclient;
+	list*				records;
+	unsigned			align;
+	bool				readonly;
+	bool				update_records;
+	bool				show_records;
+	//
+	textedit(char* string, unsigned maximum_lenght, bool select_text);
+	//
+	void				clear();
+	virtual void		cashing(rect rc);
+	unsigned			copy(bool run);
+	void				correct();
+	bool				editing(rect rc);
+	void				ensurevisible(int linenumber);
+	int					getrecordsheight() const;
+	int					hittest(rect rc, point pt, unsigned state) const;
+	void				keysymbol(int symbol) override;
+	void				invalidate() override;
+	bool				isshowrecords() const;
+	void				keybackspace(int id) override;
+	void				keydelete(int id) override;
+	void				keydown(int id) override;
+	void				keyend(int id) override;
+	void				keyhome(int id) override;
+	void				keyleft(int id) override;
+	void				keyright(int id) override;
+	void				keyup(int id) override;
+	int					lineb(int index) const;
+	int					linee(int index) const;
+	int					linen(int index) const;
+	void				left(bool shift, bool ctrl);
+	int					getbegin() const;
+	int					getend() const;
+	point				getpos(rect rc, int index, unsigned state) const;
+	unsigned			paste(bool run);
+	void				paste(const char* string);
+	void				redraw(rect rc) override;
+	void				right(bool shift, bool ctrl);
+	void				select(int index, bool shift);
+	unsigned			select_all(bool run);
+	void				setrecordlist(const char* string);
+	void				updaterecords(bool setfilter);
+protected:
+	int					cashed_width;
+	int					cashed_string;
+	int					cashed_origin;
 };
 }
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);

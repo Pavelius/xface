@@ -37,7 +37,7 @@ enum crterrors {
 	ErrorInvalidInputParameters, ErrorIllegalByteSequence,
 };
 namespace metrics {
-const codepages					code = CP1251;
+const codepages						code = CP1251;
 }
 //
 int									getdigitscount(unsigned number); // Get digits count of number. For example if number=100, result be 3.

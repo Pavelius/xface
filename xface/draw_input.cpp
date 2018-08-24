@@ -162,8 +162,10 @@ void draw::execute(void(*proc)(), int param) {
 int draw::input(bool redraw) {
 	if(current_command) {
 		if(current_execute) {
-			current_execute();
-			hot::key = InputUpdate;
+			auto proc = current_execute;
+			current_execute = 0;
+			current_command = 0;
+			proc(); hot::key = InputUpdate;
 			return hot::key;
 		}
 		hot::key = current_command;

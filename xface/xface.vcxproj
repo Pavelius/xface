@@ -125,13 +125,16 @@
     <ClCompile Include="draw_dialog.cpp" />
     <ClCompile Include="draw_list.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
+    <ClCompile Include="draw_scrollable.cpp" />
     <ClCompile Include="draw_splitter.cpp" />
     <ClCompile Include="draw_statusbar.cpp" />
     <ClCompile Include="draw_table.cpp" />
     <ClCompile Include="draw_tabs.cpp" />
+    <ClCompile Include="draw_textedit.cpp" />
     <ClCompile Include="draw_theme.cpp" />
     <ClCompile Include="draw_tooltips.cpp" />
     <ClCompile Include="grammar.cpp" />
+    <ClCompile Include="screenshoot.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="draw_input.cpp" />
@@ -141,6 +144,7 @@
     <ClCompile Include="point.cpp" />
     <ClCompile Include="stringcreator.cpp" />
     <ClCompile Include="szdup.cpp" />
+    <ClCompile Include="win_clipboard.cpp" />
     <ClCompile Include="win_draw.cpp" />
     <ClCompile Include="win_io_file.cpp" />
   </ItemGroup>
@@ -155,7 +159,9 @@
     <ClInclude Include="initializer_list.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="point.h" />
+    <ClInclude Include="pointl.h" />
     <ClInclude Include="rect.h" />
+    <ClInclude Include="screenshoot.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
     <ClInclude Include="win.h" />

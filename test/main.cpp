@@ -30,6 +30,16 @@ static void button_accept() {
 	basic_drawing();
 }
 
+static void test_edit() {
+	char temp[260];
+	zcpy(temp, "Test edit");
+	controls::textedit test(temp, sizeof(temp), true);
+	setfocus((int)&test, true);
+	auto x = 220;
+	auto y = 46;
+	test.editing({x, y, x + 200, y + texth() * 5 + metrics::padding * 2});
+}
+
 static void test_control() {
 	static controls::column columns[] = {{Text, "name", "Наименование", 200},
 	{Number, "count", "К-во", 32},
@@ -55,7 +65,7 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 	return (const char*)object;
 }
 
-static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips) {
+static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips = 0) {
 	auto result = button(x, y, width, 0, cmdpr(proc), title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
 	if(areb(rc)) {
@@ -82,7 +92,8 @@ static void simple_controls() {
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
 		}
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
-		y += button(x, y, 200, test_control, "Тестирование элементов", 0);
+		y += button(x, y, 200, test_control, "Тестирование элементов");
+		y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, 0, cmdid(3), "Галочка которая выводится и меняет значение чекбокса.");
 		y += radio(x, y, 200, 0, cmdid(4), "Первый элемент списка.");

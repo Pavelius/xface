@@ -117,6 +117,18 @@
     <ClCompile Include="draw_statusbar.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
+    <ClCompile Include="draw_textedit.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_scrollable.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="screenshoot.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="win_clipboard.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -159,6 +171,12 @@
       <Filter>strings</Filter>
     </ClInclude>
     <ClInclude Include="drawex.h">
+      <Filter>draw\core</Filter>
+    </ClInclude>
+    <ClInclude Include="pointl.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="screenshoot.h">
       <Filter>draw\core</Filter>
     </ClInclude>
   </ItemGroup>

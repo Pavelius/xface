@@ -20,16 +20,18 @@ static struct control_plugin : draw::renderplugin {
 
 	bool translate(int id) override {
 		if(current_focus) {
-			switch(id) {
-			case KeyEnter: current_focus->keyenter(); return true;
-			case KeyUp: current_focus->keyup(); return true;
-			case KeyDown: current_focus->keydown(); return true;
-			case KeyLeft: current_focus->keyleft(); return true;
-			case KeyRight: current_focus->keyright(); return true;
-			case KeyHome: current_focus->keyhome(); return true;
-			case KeyEnd: current_focus->keyend(); return true;
-			case KeyPageUp: current_focus->keypageup(); return true;
-			case KeyPageDown: current_focus->keypagedown(); return true;
+			switch(id&0xFFFF) {
+			case KeyBackspace: current_focus->keybackspace(id); return true;
+			case KeyDelete: current_focus->keydelete(id); return true;
+			case KeyEnter: current_focus->keyenter(id); return true;
+			case KeyUp: current_focus->keyup(id); return true;
+			case KeyDown: current_focus->keydown(id); return true;
+			case KeyLeft: current_focus->keyleft(id); return true;
+			case KeyRight: current_focus->keyright(id); return true;
+			case KeyHome: current_focus->keyhome(id); return true;
+			case KeyEnd: current_focus->keyend(id); return true;
+			case KeyPageUp: current_focus->keypageup(id); return true;
+			case KeyPageDown: current_focus->keypagedown(id); return true;
 			case InputSymbol: current_focus->keysymbol(hot::param); break;
 			}
 		}
