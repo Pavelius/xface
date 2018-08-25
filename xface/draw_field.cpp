@@ -13,7 +13,7 @@ static void callback_field() {
 	callback_field_next();
 }
 
-static bool editstart(const rect& rc, unsigned flags, const runable& callback_edit) {
+static bool editstart(const rect& rc, unsigned flags, const cmdfd& callback_edit) {
 	auto result = false;
 	edit_command = 0;
 	switch(hot::key&CommandMask) {
@@ -37,7 +37,7 @@ static bool editstart(const rect& rc, unsigned flags, const runable& callback_ed
 		break;
 	}
 	if(result)
-		callback_edit.execute();
+		callback_edit.execute(rc);
 	return result;
 }
 
@@ -53,9 +53,10 @@ int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const
 	focusing(cmd.getid(), flags, rc);
 	bool focused = isfocused(flags);
 	draw::rectb(rc, colors::border);
-	if(cmd.dropdown(false)) {
+	rect rco = rc;
+	if(cmd.dropdown(rco, false)) {
 		if(addbutton(rc, focused, ":dropdown", F4, "Показать список"))
-			cmd.dropdown(true);
+			cmd.dropdown(rco, true);
 	}
 	if(cmd.choose(false)) {
 		if(addbutton(rc, focused, "...", F4, "Выбрать значение"))

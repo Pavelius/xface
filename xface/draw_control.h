@@ -26,10 +26,12 @@ struct cmdpr : runable {
 private:
 	void(*proc)(); int param;
 };
-struct cmdfd : runable {
+struct cmdfd {
+	virtual int			getid() const = 0;
 	virtual bool		choose(bool run) const { return false; }
 	virtual bool		clear(bool run) const { return false; }
-	virtual bool		dropdown(bool run) const { return false; }
+	virtual bool		dropdown(const rect& rc, bool run) const { return false; }
+	virtual void		execute(const rect& rc) const = 0;
 	virtual bool		increment(int step, bool run) const { return false; }
 	virtual bool		open(bool run) const { return false; }
 };

@@ -80,7 +80,8 @@ static int button(int x, int y, int width, void(*proc)(), const char* title, con
 static void simple_controls() {
 	struct cmdwf : cmdfd {
 		int getid() const override { return id;}
-		void execute() const override {}
+		void execute(const rect& rc) const override {
+		}
 		bool choose(bool run) const override { return true; }
 		bool increment(int step, bool run) const override { return true; }
 		cmdwf(int id) : id(id) {}
