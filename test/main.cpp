@@ -49,7 +49,7 @@ static void test_control() {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 2, 100 - metrics::padding, 0, cmdpr(buttoncancel), "Назад");
+		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 2, 100 - metrics::padding, 0, cmdx(buttoncancel), "Назад");
 		test.view(rc);
 		auto id = input();
 		switch(id) {
@@ -66,7 +66,7 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 }
 
 static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips = 0) {
-	auto result = button(x, y, width, 0, cmdpr(proc), title, tips);
+	auto result = button(x, y, width, 0, cmdx(proc), title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
 	if(areb(rc)) {
 		if(tips)
@@ -102,17 +102,16 @@ static void simple_controls() {
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Тестирование элементов");
 		y += button(x, y, 200, test_edit, "Редактирование текста");
-		y += button(x, y, 200, Disabled, cmdid(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
-		y += checkbox(x, y, 200, 0, cmdid(3), "Галочка которая выводится и меняет значение чекбокса.");
+		y += button(x, y, 200, Disabled, cmdx(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
+		y += checkbox(x, y, 200, 0, cmdx(3), "Галочка которая выводится и меняет значение чекбокса.");
 		y += field(x, y, 200, TextSingleLine, cmdwf(8), "Текст", "Это подсказка текста для редактирования", "Имя", 80);
 		y += field(x, y, 200, TextSingleLine, cmdwf(9), "34", "Это числовое поле", "Количество", 80);
-		y += radio(x, y, 200, 0, cmdid(4), "Первый элемент списка.");
-		y += radio(x, y, 200, 0, cmdid(5), "Второй элемент возможного выбора.");
-		y += radio(x, y, 200, Checked, cmdid(6), "Третий элемент этого выбора.");
+		y += radio(x, y, 200, 0, cmdx(4), "Первый элемент списка.");
+		y += radio(x, y, 200, 0, cmdx(5), "Второй элемент возможного выбора.");
+		y += radio(x, y, 200, Checked, cmdx(6), "Третий элемент этого выбора.");
 		auto id = input();
 		switch(id) {
-		case KeyEscape:
-			return;
+		case KeyEscape: return;
 		default: dodialog(id); break;
 		}
 	}

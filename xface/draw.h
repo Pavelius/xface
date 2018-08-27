@@ -129,7 +129,6 @@ struct sprite : pma {
 };
 typedef const char* (*proctext)(char* result, const char* result_maximum, void* object);
 namespace hot {
-typedef void(*proc)(); // Hot callback reaction
 extern int				animate; // Frame tick count
 extern cursors			cursor; // set this mouse cursor
 extern int				key; // [in] if pressed key or mouse this field has key
@@ -165,6 +164,7 @@ extern int				padding;
 extern int				scroll;
 }
 namespace draw {
+typedef void(*callback_proc)();
 namespace drag {
 bool					active(int id, drag_part_s part = DragControl);
 bool					active();
