@@ -58,8 +58,8 @@ int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const
 			"+", KeyUp, "Увеличить",
 			"-", KeyDown, "Уменьшить");
 		switch(result) {
-		case 1: cmd.increment(-1, true); break;
-		case 2: cmd.increment(+1, true); break;
+		case 1: cmd.increment(+1, true); break;
+		case 2: cmd.increment(-1, true); break;
 		}
 	}
 	if(cmd.open(false)) {

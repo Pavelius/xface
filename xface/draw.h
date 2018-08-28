@@ -169,8 +169,6 @@ struct hotinfo {
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed
 	int					param; // Draw command context. Application can extend this structure
-	rect				element; // Element coordinates
-	rect				hilite; // Currently hilited rectangle
 	explicit operator bool() const { return key != 0; }
 };
 extern hotinfo			hot;

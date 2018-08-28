@@ -4,35 +4,131 @@
 
 using namespace draw;
 
-struct cmdwf : cmdfd {
+class fieldreq : public cmdfd {
+
+	enum type_s {Text, Number, DateTime, Date };
+
+	type_s			type;
+	void*			source;
+	unsigned		maximum;
+	bool			isreference;
 
 	static rect		current_rect;
-	static cmdwf	current;
+	static fieldreq	current;
 
-	static void test_edit() {
+	static void callback_edit() {
 		auto focus = getfocus();
-		controls::textedit test(current.source, current.maximum, true);
+		char temp[260]; current.get(temp, temp + sizeof(temp) - 1, true);
+		controls::textedit test(temp, sizeof(temp) - 1, true);
 		setfocus((int)&test, true);
 		test.editing(current_rect);
+		current.set(temp);
 		setfocus(focus, true);
 	}
 
-	int getid() const override { return (int)source; }
+	static void callback_increment() {
+		current.setnumber(current.getnumber() + hot.param);
+	}
+
+	int getid() const override {
+		return (int)source;
+	}
+
+	bool choose(bool run) const override {
+		return true;
+	}
+
+	bool increment(int step, bool run) const override {
+		if(type != Number)
+			return false;
+		if(run) {
+			current = *this;
+			draw::execute(callback_increment, step);
+		}
+		return true;
+	}
+
 	void execute(const rect& rc) const override {
 		current = *this;
 		current_rect = rc;
-		draw::execute(test_edit);
+		draw::execute(callback_edit);
 	}
-	bool choose(bool run) const override { return true; }
-	bool increment(int step, bool run) const override { return true; }
-	cmdwf() = default;
-	cmdwf(aref<char> source) : source(source.data), maximum(source.count)  {}
-private:
-	char*		source;
-	unsigned	maximum;
+
+	int getnumber() const {
+		switch(maximum) {
+		case sizeof(char) : return *((char*)source);
+		case sizeof(short) : return *((short*)source);
+		case sizeof(int) : return *((int*)source);
+		default: return 0;
+		}
+	}
+
+	void setnumber(int value) const {
+		switch(maximum) {
+		case sizeof(char): *((char*)source) = value; break;
+		case sizeof(short): *((short*)source) = value; break;
+		case sizeof(int): *((int*)source) = value; break;
+		default: break;
+		}
+	}
+
+public:
+
+	const char* get(char* result, const char* result_maximum, bool force_result) const {
+		switch(type) {
+		case Number:
+			szprints(result, result_maximum, "%1i", getnumber());
+			break;
+		case Text:
+			if(isreference) {
+				auto p = *((const char**)source);
+				if(!p)
+					return "";
+				if(!force_result)
+					return p;
+				szprints(result, result_maximum, p);
+			} else {
+				if(!force_result)
+					return (const char*)source;
+				unsigned maximum_count = result_maximum - result;
+				if(maximum < maximum_count)
+					maximum_count = maximum;
+				zcpy(result, (const char*)source, maximum_count);
+			}
+			break;
+		}
+		return result;
+	}
+
+	void set(const char* result) const {
+		switch(type) {
+		case Text:
+			if(!isreference)
+				zcpy((char*)source, result, maximum);
+			else {
+				const char* p = 0;
+				if(result[0])
+					p = szdup(result);
+				*((const char**)source) = p;
+			}
+			break;
+		case Number:
+			setnumber(sz2num(result));
+			break;
+		}
+	}
+
+	fieldreq() = default;
+	constexpr fieldreq(aref<char> value) : type(Text), source(value.data), maximum(value.count - 1), isreference(false) {}
+	constexpr fieldreq(const char* &value) : type(Text), source(&value), maximum(sizeof(value)), isreference(true) {}
+	constexpr fieldreq(int &value) : type(Number), source(&value), maximum(sizeof(value)), isreference(false) {}
+	constexpr fieldreq(short &value) : type(Number), source(&value), maximum(sizeof(value)), isreference(false) {}
+	constexpr fieldreq(char &value) : type(Number), source(&value), maximum(sizeof(value)), isreference(false) {}
+
 };
-rect cmdwf::current_rect;
-cmdwf cmdwf::current;
+
+rect fieldreq::current_rect;
+fieldreq fieldreq::current;
 
 static void basic_drawing() {
 	int tick = 10;
@@ -98,12 +194,18 @@ static int button(int x, int y, int width, void(*proc)(), const char* title, con
 	return result;
 }
 
+template<typename T> static int field(int x, int y, int width, T& value, const char* title, int title_width, const char* tips = 0) {
+	char temp[260];
+	fieldreq field_requisit(value);
+	return field(x, y, width, TextSingleLine, field_requisit, field_requisit.get(temp, temp + sizeof(temp) - 1, false), tips, title, title_width);
+}
+
 static void simple_controls() {
 	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
 	setfocus(3, true);
 	int current_hilite;
-	char t1[100] = "Тест 1";
-	char t2[200] = "Тест 2";
+	const char* t1 = "Тест 1";
+	char t2 = 20;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
@@ -117,8 +219,8 @@ static void simple_controls() {
 		//y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmdx(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, 0, cmdx(3), "Галочка которая выводится и меняет значение чекбокса.");
-		y += field(x, y, 400, TextSingleLine, cmdwf(t1), t1, "Это подсказка текста для редактирования", "Имя", 80);
-		y += field(x, y, 400, TextSingleLine, cmdwf(t2), t2, "Это числовое поле", "Количество", 80);
+		y += field(x, y, 400, t1, "Имя", 80, "Это подсказка текста для редактирования");
+		y += field(x, y, 400, t2, "Количество", 80);
 		y += radio(x, y, 200, 0, cmdx(4), "Первый элемент списка.");
 		y += radio(x, y, 200, 0, cmdx(5), "Второй элемент возможного выбора.");
 		y += radio(x, y, 200, Checked, cmdx(6), "Третий элемент этого выбора.");

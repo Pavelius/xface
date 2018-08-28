@@ -1362,10 +1362,8 @@ areas draw::area(rect rc) {
 		return AreaNormal;
 	if(!mouseinput)
 		return AreaNormal;
-	if(hot.mouse.in(rc)) {
-		hot.hilite = rc;
+	if(hot.mouse.in(rc))
 		return hot.pressed ? AreaHilitedPressed : AreaHilited;
-	}
 	return AreaNormal;
 }
 
