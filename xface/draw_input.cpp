@@ -17,6 +17,12 @@ static hotinfo		keep_hot_value;
 static focusable_element	elements[96];
 static focusable_element*	render_control;
 
+static void set_focus_callback() {
+	auto id = getnext(draw::getfocus(), hot.param);
+	if(id)
+		setfocus(id, true);
+}
+
 static struct input_plugin : draw::renderplugin {
 
 	void before() override {
@@ -167,6 +173,13 @@ void draw::execute(const hotinfo& value) {
 }
 
 int draw::input(bool redraw) {
+	if(hot.key == InputUpdate) {
+		if(keep_hot) {
+			keep_hot = false;
+			hot = keep_hot_value;
+			return hot.key;
+		}
+	}
 	if(current_command) {
 		if(current_execute) {
 			auto proc = current_execute;
@@ -175,12 +188,7 @@ int draw::input(bool redraw) {
 			proc();
 			for(auto p = renderplugin::first; p; p = p->next)
 				p->before();
-			if(keep_hot) {
-				keep_hot = false;
-				hot = keep_hot_value;
-			}
-			else
-				hot.key = InputUpdate;
+			hot.key = InputUpdate;
 			return hot.key;
 		}
 		hot.key = current_command;

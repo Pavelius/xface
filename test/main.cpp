@@ -10,9 +10,11 @@ struct cmdwf : cmdfd {
 	static cmdwf	current;
 
 	static void test_edit() {
+		auto focus = getfocus();
 		controls::textedit test(current.source, current.maximum, true);
 		setfocus((int)&test, true);
 		test.editing(current_rect);
+		setfocus(focus, true);
 	}
 
 	int getid() const override { return (int)source; }
