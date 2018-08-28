@@ -7,7 +7,7 @@ char tooltips_text[4096];
 void draw::tooltipsv(int x, int y, int width, const char* format, const char* format_param) {
 	tooltips_rect = {x, y, x + width, y};
 	tooltips_text[0] = 0;
-	if(hot::key != InputIdle)
+	if(hot.key != InputIdle)
 		return;
 	szprintvs(tooltips_text, zendof(tooltips_text), format, format_param);
 }
@@ -17,7 +17,7 @@ void draw::tooltips(int x, int y, int width, const char* format, ...) {
 }
 
 void draw::tooltips(const char* format, ...) {
-	tooltipsv(hot::mouse.x, hot::mouse.y + 24, 400, format, xva_start(format));
+	tooltipsv(hot.mouse.x, hot.mouse.y + 24, 400, format, xva_start(format));
 }
 
 static struct tooltips_renderplugin : draw::renderplugin {

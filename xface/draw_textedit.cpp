@@ -178,16 +178,16 @@ void textedit::redraw(rect rc) {
 	rc = rc + rctext;
 	cashing(rc);
 	if(isfocused()) {
-		auto ev = hot::key&CommandMask;
-		if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight) && draw::mouseinput && hot::pressed) {
+		auto ev = hot.key&CommandMask;
+		if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight) && draw::mouseinput && hot.pressed) {
 			int lenght = zlen(string);
-			int index = hittest(rc, hot::mouse, align);
+			int index = hittest(rc, hot.mouse, align);
 			if(index == -3)
 				index = lenght;
 			else if(index == -2)
 				index = 0;
 			if(index >= 0) {
-				switch(hot::key&CommandMask) {
+				switch(hot.key&CommandMask) {
 				case MouseMove:
 					select(index, true);
 					break;
@@ -197,7 +197,7 @@ void textedit::redraw(rect rc) {
 					right(true, true);
 					break;
 				default:
-					select(index, (hot::key&Shift) != 0);
+					select(index, (hot.key&Shift) != 0);
 					break;
 				}
 			}
@@ -257,11 +257,11 @@ bool textedit::editing(rect rc) {
 				show_records = false;
 				break;
 			}
+			draw::execute(hot);
 			return false;
 		case KeyTab:
 		case KeyTab | Shift:
-			draw::execute(id);
-			hot::key = id;
+			draw::execute(hot);
 			return true;
 		case KeyEnter:
 			if(records && isshowrecords()) {
@@ -289,16 +289,15 @@ bool textedit::editing(rect rc) {
 				draw::execute(KeyEnter);
 				break;
 			}
-			if(!areb(rc) && hot::pressed) {
-				draw::execute(id);
-				hot::key = id;
+			if(!areb(rc) && hot.pressed) {
+				draw::execute(hot);
 				return true;
 			}
 			break;
 		default:
 			dodialog(id);
 			if(id == InputSymbol) {
-				auto key = hot::param & 0xFFFF;
+				auto key = hot.param & 0xFFFF;
 				if(key == 8 || key >= 0x20) {
 					show_records = true;
 					updaterecords(true);

@@ -98,14 +98,14 @@ void list::view(rect rcorigin) {
 		scroll.set(rcorigin.x2 - metrics::scroll, rcorigin.y1, rcorigin.x2, rcorigin.y2);
 	if(maximum_width > rc.width())
 		scrollh.set(rcorigin.x1, rcorigin.y2 - metrics::scroll, rcorigin.x2, rcorigin.y2);
-	int rk = hot::key&CommandMask;
+	int rk = hot.key&CommandMask;
 	if(draw::areb(rc)) {
-		if(hot::mouse.y > rc.y1 && hot::mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
-			if(!scroll.width() || hot::mouse.x < scroll.x1)
-				current_hilite = origin + (hot::mouse.y - rc.y1) / pixels_per_line;
+		if(hot.mouse.y > rc.y1 && hot.mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
+			if(!scroll.width() || hot.mouse.x < scroll.x1)
+				current_hilite = origin + (hot.mouse.y - rc.y1) / pixels_per_line;
 		}
 		// Mouse select
-		if(hot::pressed && (rk == MouseLeft || rk == MouseRight)) {
+		if(hot.pressed && (rk == MouseLeft || rk == MouseRight)) {
 			if(current_hilite != -1)
 				select(current_hilite);
 		}
@@ -225,7 +225,7 @@ void list::keysymbol(int symbol) {
 		search_text[0] = 0;
 	search_time = time_clock;
 	char* p = zend(search_text);
-	szput(&p, hot::param); p[0] = 0;
+	szput(&p, hot.param); p[0] = 0;
 	int i1 = find(-1, -1, search_text);
 	if(i1 != -1) {
 		current = i1;

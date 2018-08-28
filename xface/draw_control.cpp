@@ -1,5 +1,6 @@
 #include "draw_control.h"
 
+using namespace draw;
 using namespace draw::controls;
 
 static control*	current_hilite;
@@ -32,15 +33,15 @@ static struct control_plugin : draw::renderplugin {
 			case KeyEnd: current_focus->keyend(id); return true;
 			case KeyPageUp: current_focus->keypageup(id); return true;
 			case KeyPageDown: current_focus->keypagedown(id); return true;
-			case InputSymbol: current_focus->keysymbol(hot::param); break;
+			case InputSymbol: current_focus->keysymbol(hot.param); break;
 			}
 		}
 		if(current_hilite) {
 			switch(id) {
-			case MouseLeft: current_hilite->mouseleft(hot::mouse); return true;
-			case MouseLeftDBL: current_hilite->mouseleftdbl(hot::mouse); return true;
-			case MouseWheelUp: current_hilite->mousewheel(hot::mouse, -1); return true;
-			case MouseWheelDown: current_hilite->mousewheel(hot::mouse, 1); return true;
+			case MouseLeft: current_hilite->mouseleft(hot.mouse); return true;
+			case MouseLeftDBL: current_hilite->mouseleftdbl(hot.mouse); return true;
+			case MouseWheelUp: current_hilite->mousewheel(hot.mouse, -1); return true;
+			case MouseWheelDown: current_hilite->mousewheel(hot.mouse, 1); return true;
 			}
 		}
 		return false;

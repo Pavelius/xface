@@ -128,16 +128,6 @@ struct sprite : pma {
 	const unsigned char* offs(unsigned o) const { return (unsigned char*)this + o; }
 };
 typedef const char* (*proctext)(char* result, const char* result_maximum, void* object);
-namespace hot {
-extern int				animate; // Frame tick count
-extern cursors			cursor; // set this mouse cursor
-extern int				key; // [in] if pressed key or mouse this field has key
-extern point			mouse; // current mouse coordinates
-extern bool				pressed; // flag if any of mouse keys is pressed
-extern int				param; // Draw command context. Application can extend this structure
-extern rect				element; // Element coordinates
-extern rect				hilite; // Currently hilited rectangle
-}
 namespace colors {
 extern color			active;
 extern color			button;
@@ -172,6 +162,18 @@ void					begin(int id, drag_part_s part = DragControl);
 extern point			mouse;
 extern int				value;
 }
+struct hotinfo {
+	unsigned			animate; // Frame tick count
+	cursors				cursor; // set this mouse cursor
+	unsigned			key; // [in] if pressed key or mouse this field has key
+	point				mouse; // current mouse coordinates
+	bool				pressed; // flag if any of mouse keys is pressed
+	int					param; // Draw command context. Application can extend this structure
+	rect				element; // Element coordinates
+	rect				hilite; // Currently hilited rectangle
+	explicit operator bool() const { return key != 0; }
+};
+extern hotinfo			hot;
 struct surface {
 	struct plugin {
 		const char*		name;
@@ -260,6 +262,7 @@ void					decortext(unsigned flags);
 bool					defproc(int id);
 void					execute(void(*callback)(), int value = 0);
 void					execute(int id, int value = 0);
+void					execute(const hotinfo& id);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
 int						getbpp();

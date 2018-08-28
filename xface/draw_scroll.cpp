@@ -13,20 +13,20 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	auto a = area(scroll);
 	if(drag::active(id, DragScrollV)) {
 		a = AreaHilitedPressed;
-		p1 = hot::mouse.y - drag::value;
+		p1 = hot.mouse.y - drag::value;
 		origin = ((p1 - scroll.y1)*dr) / ds;
 		if(origin < 0)
 			origin = 0;
 		if(origin + count > maximum)
 			origin = maximum - count;
-	} else if(a == AreaHilitedPressed && hot::key == MouseLeft) {
-		if(hot::mouse.y < p)
+	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
+		if(hot.mouse.y < p)
 			origin -= count;
-		else if(hot::mouse.y > p + ss)
+		else if(hot.mouse.y > p + ss)
 			origin += count;
 		else {
 			drag::begin(id, DragScrollV);
-			drag::value = hot::mouse.y - p;
+			drag::value = hot.mouse.y - p;
 		}
 		if(origin < 0)
 			origin = 0;
@@ -50,7 +50,7 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	}
 }
 
-void draw::scrollh(int id, const struct rect& scroll, int& origin, int count, int maximum, bool focused) {
+void draw::scrollh(int id, const rect& scroll, int& origin, int count, int maximum, bool focused) {
 	if(!maximum)
 		return;
 	int p1;
@@ -63,20 +63,20 @@ void draw::scrollh(int id, const struct rect& scroll, int& origin, int count, in
 	areas a = area(scroll);
 	if(drag::active(id, DragScrollH)) {
 		a = AreaHilitedPressed;
-		p1 = hot::mouse.x - drag::value;
+		p1 = hot.mouse.x - drag::value;
 		origin = ((p1 - scroll.x1)*dr) / ds;
 		if(origin < 0)
 			origin = 0;
 		if(origin + count > maximum)
 			origin = maximum - count;
-	} else if(a == AreaHilitedPressed && hot::key == MouseLeft) {
-		if(hot::mouse.x < p)
+	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
+		if(hot.mouse.x < p)
 			origin -= count;
-		else if(hot::mouse.x > p + ss)
+		else if(hot.mouse.x > p + ss)
 			origin += count;
 		else {
 			drag::begin(id, DragScrollH);
-			drag::value = hot::mouse.x - p;
+			drag::value = hot.mouse.x - p;
 		}
 		if(origin < 0)
 			origin = 0;

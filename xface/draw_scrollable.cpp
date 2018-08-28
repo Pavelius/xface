@@ -37,7 +37,7 @@ void scrollable::view(rect rc) {
 	auto a = area(rc);
 	if(a == AreaHilited) {
 		int ws;
-		switch(hot::key) {
+		switch(hot.key) {
 		case MouseWheelUp:
 			ws = imin(32 / imin((int)wheels.y, 1), 1);
 			if(areb(scrollh))
@@ -71,7 +71,7 @@ void scrollable::view(rect rc) {
 		int x1 = rc.x1;
 		int y1 = rc.y1;
 		setclip({x1, y1, rc.x1 + rcwidth, rc.y1 + rcheight});
-		if(hot::mouse.in(scrollh) || hot::mouse.in(scrollv))
+		if(hot.mouse.in(scrollh) || hot.mouse.in(scrollv))
 			draw::mouseinput = false;
 		redraw({x1, y1, rc.x1 + rcwidth, rc.y1 + rcheight});
 	}

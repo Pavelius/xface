@@ -4,19 +4,9 @@
 
 using namespace draw;
 
-static int edit_command;
-static void(*callback_field_next)();
-
-static void callback_field() {
-	if(edit_command)
-		hot::key = edit_command;
-	callback_field_next();
-}
-
 static bool editstart(const rect& rc, unsigned flags, const cmdfd& callback_edit) {
 	auto result = false;
-	edit_command = 0;
-	switch(hot::key&CommandMask) {
+	switch(hot.key&CommandMask) {
 	case MouseMove:
 	case InputIdle:
 	case InputTimer:
@@ -26,14 +16,15 @@ static bool editstart(const rect& rc, unsigned flags, const cmdfd& callback_edit
 	case MouseLeft:
 	case MouseLeftDBL:
 	case MouseRight:
-		edit_command = hot::key;
 		result = draw::areb(rc);
+		if(result)
+			execute(hot);
 		break;
 	case InputSymbol:
 		result = true;
 		break;
 	default:
-		result = (hot::key&CommandMask) >= KeyLeft;
+		result = (hot.key&CommandMask) >= KeyLeft;
 		break;
 	}
 	if(result)

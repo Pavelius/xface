@@ -19,9 +19,9 @@ void draw::focusing(int id, unsigned& flags, rect rc) {
 		setfocus(id, true);
 	if(getfocus() == id)
 		flags |= Focused;
-	else if(area(rc) == AreaHilitedPressed && hot::key == MouseLeft && hot::pressed) {
+	else if(area(rc) == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
 		setfocus(id, false);
-		hot::key = MouseLeft;
+		hot.key = MouseLeft;
 	}
 }
 
@@ -42,7 +42,7 @@ int	draw::button(int x, int y, int width, unsigned flags, const runable& cmd, co
 	focusing(cmd.getid(), flags, rc);
 	if(buttonh({x, y, x + width, rc.y2},
 		ischecked(flags), isfocused(flags), isdisabled(flags), true, label, 0, false, tips)
-		|| (isfocused(flags) && hot::key == KeyEnter)) {
+		|| (isfocused(flags) && hot.key == KeyEnter)) {
 		cmd.execute();
 	}
 	if(label && label[0] && areb(rc))
@@ -65,13 +65,13 @@ int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, con
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
 	auto a = draw::area(rc);
-	if((a == AreaHilited || a == AreaHilitedPressed) && !isdisabled(flags) && hot::key == MouseLeft) {
-		if(!hot::pressed)
+	if((a == AreaHilited || a == AreaHilitedPressed) && !isdisabled(flags) && hot.key == MouseLeft) {
+		if(!hot.pressed)
 			need_select = true;
 	}
 	if(isfocused(flags)) {
 		draw::rectx({rc1.x1, rc1.y1, rc1.x2, rc1.y2}, draw::fore);
-		if(!isdisabled(flags) && hot::key == KeySpace)
+		if(!isdisabled(flags) && hot.key == KeySpace)
 			need_select = true;
 	}
 	if(need_select)
@@ -97,13 +97,13 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 	decortext(flags);
 	auto a = draw::area(rc);
 	auto need_value = false;
-	if((a == AreaHilited || a == AreaHilitedPressed) && !isdisabled(flags) && hot::key == MouseLeft) {
-		if(!hot::pressed)
+	if((a == AreaHilited || a == AreaHilitedPressed) && !isdisabled(flags) && hot.key == MouseLeft) {
+		if(!hot.pressed)
 			need_value = true;
 	}
 	if(isfocused(flags)) {
 		draw::rectx({rc1.x1 - 2, rc1.y1 - 1, rc1.x2 + 2, rc1.y2 + 1}, draw::fore);
-		if(hot::key == KeySpace)
+		if(hot.key == KeySpace)
 			need_value = true;
 	}
 	if(need_value)

@@ -29,7 +29,7 @@ static bool sheet(rect& rc, rect& rct, const char* string, areas* area_result, b
 	text({rct.x1, rct.y1, rct.x2 - w2, rct.y2}, string, AlignCenterCenter);
 	if(a != AreaNormal) {
 		if(a == AreaHilitedPressed) {
-			if(hot::key == MouseLeft)
+			if(hot.key == MouseLeft)
 				result = true;
 		} else if(a == AreaHilited) {
 			draw::rectf({rct.x1 + 1, rct.y1 + 1, rct.x2, rct.y2 - 2},

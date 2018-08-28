@@ -12,6 +12,8 @@ static int			current_command;
 static int			current_focus;
 static void			(*current_execute)();
 extern rect			sys_static_area;
+static bool			keep_hot;
+static hotinfo		keep_hot_value;
 static focusable_element	elements[96];
 static focusable_element*	render_control;
 
@@ -21,8 +23,8 @@ static struct input_plugin : draw::renderplugin {
 		render_control = elements;
 		current_command = 0;
 		current_execute = 0;
-		hot::cursor = CursorArrow;
-		if(hot::mouse.x < 0 || hot::mouse.y < 0)
+		hot.cursor = CursorArrow;
+		if(hot.mouse.x < 0 || hot.mouse.y < 0)
 			sys_static_area.clear();
 		else
 			sys_static_area = {0, 0, draw::getwidth(), draw::getheight()};
@@ -45,7 +47,7 @@ static struct input_plugin : draw::renderplugin {
 } input_plugin_instance;
 
 static void setfocus_callback() {
-	current_focus = hot::param;
+	current_focus = hot.param;
 }
 
 static focusable_element* getby(int id) {
@@ -150,8 +152,8 @@ int draw::getfocus() {
 
 void draw::execute(int id, int param) {
 	current_command = id;
-	hot::key = 0;
-	hot::param = param;
+	hot.key = 0;
+	hot.param = param;
 }
 
 void draw::execute(void(*proc)(), int param) {
@@ -159,27 +161,40 @@ void draw::execute(void(*proc)(), int param) {
 	current_execute = proc;
 }
 
+void draw::execute(const hotinfo& value) {
+	keep_hot = true;
+	keep_hot_value = value;
+}
+
 int draw::input(bool redraw) {
 	if(current_command) {
 		if(current_execute) {
 			auto proc = current_execute;
-			current_execute = 0;
-			current_command = 0;
-			proc(); hot::key = InputUpdate;
-			return hot::key;
+			for(auto p = renderplugin::first; p; p = p->next)
+				p->before();
+			proc();
+			for(auto p = renderplugin::first; p; p = p->next)
+				p->before();
+			if(keep_hot) {
+				keep_hot = false;
+				hot = keep_hot_value;
+			}
+			else
+				hot.key = InputUpdate;
+			return hot.key;
 		}
-		hot::key = current_command;
-		return hot::key;
+		hot.key = current_command;
+		return hot.key;
 	}
 	// After render plugin events
 	for(auto p = renderplugin::first; p; p = p->next)
 		p->after();
-	hot::key = InputUpdate;
+	hot.key = InputUpdate;
 	if(redraw)
 		draw::sysredraw();
 	else
-		hot::key = draw::rawinput();
-	if(!hot::key)
+		hot.key = draw::rawinput();
+	if(!hot.key)
 		exit(0);
-	return hot::key;
+	return hot.key;
 }

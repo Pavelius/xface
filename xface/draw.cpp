@@ -37,15 +37,8 @@ bool				draw::mouseinput = true;
 color*				draw::palt;
 rect				draw::clipping;
 char				draw::link[4096];
+hotinfo				draw::hot;
 // Hot keys and menus
-int					hot::animate; // Каждый такт таймера это значение увеличивается на единицу.
-cursors				hot::cursor; // Текущая форма курсора
-int					hot::key; // Событие, которое происходит в данный момент
-point				hot::mouse; // current mouse coordinates
-bool				hot::pressed; // flag if any of mouse keys is pressed
-int					hot::param; // Event numeric parameter (optional)
-rect				hot::element; // Event rectange (optional)
-rect				hot::hilite; // Event rectange (optional)
 bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;
 // Locale draw variables
@@ -889,7 +882,7 @@ rect draw::getarea() {
 void draw::drag::begin(int id, drag_part_s part) {
 	drag_id = id;
 	drag_part = part;
-	drag::mouse = hot::mouse;
+	drag::mouse = hot.mouse;
 }
 
 bool draw::drag::active() {
@@ -898,10 +891,10 @@ bool draw::drag::active() {
 
 bool draw::drag::active(int id, drag_part_s part) {
 	if(drag_id == id && drag_part == part) {
-		if(!hot::pressed || hot::key == KeyEscape) {
+		if(!hot.pressed || hot.key == KeyEscape) {
 			drag_id = 0;
-			hot::key = 0;
-			hot::cursor = CursorArrow;
+			hot.key = 0;
+			hot.cursor = CursorArrow;
 			return false;
 		}
 		return true;
@@ -1339,7 +1332,7 @@ void draw::setclip(rect rcn) {
 static void intersect_rect(rect& r1, const rect& r2) {
 	if(!r1.intersect(r2))
 		return;
-	if(hot::mouse.in(r2)) {
+	if(hot.mouse.in(r2)) {
 		if(r2.y1 > r1.y1)
 			r1.y1 = r2.y1;
 		if(r2.x1 > r1.x1)
@@ -1349,13 +1342,13 @@ static void intersect_rect(rect& r1, const rect& r2) {
 		if(r2.x2 < r1.x2)
 			r1.x2 = r2.x2;
 	} else {
-		if(hot::mouse.y > r2.y2 && r2.y2 > r1.y1)
+		if(hot.mouse.y > r2.y2 && r2.y2 > r1.y1)
 			r1.y1 = r2.y2;
-		else if(hot::mouse.y < r2.y1 && r2.y1 < r1.y2)
+		else if(hot.mouse.y < r2.y1 && r2.y1 < r1.y2)
 			r1.y2 = r2.y1;
-		else if(hot::mouse.x > r2.x2 && r2.x2 > r1.x1)
+		else if(hot.mouse.x > r2.x2 && r2.x2 > r1.x1)
 			r1.x1 = r2.x2;
-		else if(hot::mouse.x < r2.x1 && r2.x1 < r1.x2)
+		else if(hot.mouse.x < r2.x1 && r2.x1 < r1.x2)
 			r1.x2 = r2.x1;
 	}
 }
@@ -1365,13 +1358,13 @@ areas draw::area(rect rc) {
 		intersect_rect(sys_static_area, rc);
 	if(drag::active())
 		return AreaNormal;
-	if(!hot::mouse.in(clipping))
+	if(!hot.mouse.in(clipping))
 		return AreaNormal;
 	if(!mouseinput)
 		return AreaNormal;
-	if(hot::mouse.in(rc)) {
-		hot::hilite = rc;
-		return hot::pressed ? AreaHilitedPressed : AreaHilited;
+	if(hot.mouse.in(rc)) {
+		hot.hilite = rc;
+		return hot.pressed ? AreaHilitedPressed : AreaHilited;
 	}
 	return AreaNormal;
 }

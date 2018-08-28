@@ -4,7 +4,7 @@ void draw::splitv(int x, int y, int& value, int height, int id, int size, int mi
 	rect rc;
 	auto mode = AreaNormal;
 	if(drag::active(id, DragSplitV)) {
-		value = drag::value - (right_align ? (hot::mouse.x - drag::mouse.x) : (drag::mouse.x - hot::mouse.x));
+		value = drag::value - (right_align ? (hot.mouse.x - drag::mouse.x) : (drag::mouse.x - hot.mouse.x));
 		mode = AreaHilitedPressed;
 		if(value < minimum)
 			value = minimum;
@@ -20,18 +20,18 @@ void draw::splitv(int x, int y, int& value, int height, int id, int size, int mi
 	rc.y2 = rc.y1 + height;
 	if(mode != AreaHilitedPressed)
 		mode = area(rc);
-	if(mode == AreaHilitedPressed && hot::key == MouseLeft && hot::pressed) {
+	if(mode == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
 		drag::begin(id, DragSplitV);
-		drag::mouse = hot::mouse;
+		drag::mouse = hot.mouse;
 		drag::value = value;
 	}
 	switch(mode) {
 	case AreaHilited:
-		hot::cursor = CursorLeftRight;
+		hot.cursor = CursorLeftRight;
 		rectf(rc, colors::button, 128);
 		break;
 	case AreaHilitedPressed:
-		hot::cursor = CursorLeftRight;
+		hot.cursor = CursorLeftRight;
 		rectf(rc, colors::button.darken(), 128);
 		break;
 	default:
@@ -43,7 +43,7 @@ void draw::splith(int x, int y, int width, int& value, int id, int size, int min
 	struct rect rc;
 	areas mode = AreaNormal;
 	if(drag::active(id, DragSplitH)) {
-		value = drag::value - (down_align ? (hot::mouse.y - drag::mouse.y) : (drag::mouse.y - hot::mouse.y));
+		value = drag::value - (down_align ? (hot.mouse.y - drag::mouse.y) : (drag::mouse.y - hot.mouse.y));
 		mode = AreaHilitedPressed;
 		if(value < minimum)
 			value = minimum;
@@ -59,18 +59,18 @@ void draw::splith(int x, int y, int width, int& value, int id, int size, int min
 	rc.y2 = rc.y1 + size;
 	if(mode != AreaHilitedPressed)
 		mode = area(rc);
-	if(mode == AreaHilitedPressed && hot::key == MouseLeft && hot::pressed) {
+	if(mode == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
 		drag::begin(id, DragSplitH);
-		drag::mouse = hot::mouse;
+		drag::mouse = hot.mouse;
 		drag::value = value;
 	}
 	switch(mode) {
 	case AreaHilited:
-		hot::cursor = CursorUpDown;
+		hot.cursor = CursorUpDown;
 		rectf(rc, colors::button, 128);
 		break;
 	case AreaHilitedPressed:
-		hot::cursor = CursorUpDown;
+		hot.cursor = CursorUpDown;
 		rectf(rc, colors::button.darken(), 128);
 		break;
 	default:

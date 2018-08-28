@@ -130,7 +130,7 @@
       <Filter>platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="draw_field.cpp">
-      <Filter>draw\core</Filter>
+      <Filter>draw\simple</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
