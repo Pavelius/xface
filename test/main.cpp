@@ -1,7 +1,36 @@
+#include "xface/collection.h"
 #include "xface/crt.h"
 #include "xface/draw_control.h"
 
 using namespace draw;
+
+struct cmdwf : cmdfd {
+
+	static rect		current_rect;
+	static cmdwf	current;
+
+	static void test_edit() {
+		controls::textedit test(current.source, current.maximum, true);
+		setfocus((int)&test, true);
+		test.editing(current_rect);
+	}
+
+	int getid() const override { return (int)source; }
+	void execute(const rect& rc) const override {
+		current = *this;
+		current_rect = rc;
+		draw::execute(test_edit);
+	}
+	bool choose(bool run) const override { return true; }
+	bool increment(int step, bool run) const override { return true; }
+	cmdwf() = default;
+	cmdwf(aref<char> source) : source(source.data), maximum(source.count)  {}
+private:
+	char*		source;
+	unsigned	maximum;
+};
+rect cmdwf::current_rect;
+cmdwf cmdwf::current;
 
 static void basic_drawing() {
 	int tick = 10;
@@ -28,16 +57,6 @@ static void basic_drawing() {
 
 static void button_accept() {
 	basic_drawing();
-}
-
-static void test_edit() {
-	char temp[260];
-	zcpy(temp, "Test edit");
-	controls::textedit test(temp, sizeof(temp), true);
-	setfocus((int)&test, true);
-	auto x = 220;
-	auto y = 46;
-	test.editing({x, y, x + 200, y + texth() * 5 + metrics::padding * 2});
 }
 
 static void test_control() {
@@ -78,19 +97,11 @@ static int button(int x, int y, int width, void(*proc)(), const char* title, con
 }
 
 static void simple_controls() {
-	struct cmdwf : cmdfd {
-		int getid() const override { return id;}
-		void execute(const rect& rc) const override {
-		}
-		bool choose(bool run) const override { return true; }
-		bool increment(int step, bool run) const override { return true; }
-		cmdwf(int id) : id(id) {}
-	private:
-		int	id;
-	};
 	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
 	setfocus(3, true);
 	int current_hilite;
+	char t1[100] = "Тест 1";
+	char t2[200] = "Тест 2";
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
@@ -101,11 +112,11 @@ static void simple_controls() {
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Тестирование элементов");
-		y += button(x, y, 200, test_edit, "Редактирование текста");
+		//y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmdx(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, 0, cmdx(3), "Галочка которая выводится и меняет значение чекбокса.");
-		y += field(x, y, 200, TextSingleLine, cmdwf(8), "Текст", "Это подсказка текста для редактирования", "Имя", 80);
-		y += field(x, y, 200, TextSingleLine, cmdwf(9), "34", "Это числовое поле", "Количество", 80);
+		y += field(x, y, 400, TextSingleLine, cmdwf(t1), t1, "Это подсказка текста для редактирования", "Имя", 80);
+		y += field(x, y, 400, TextSingleLine, cmdwf(t2), t2, "Это числовое поле", "Количество", 80);
 		y += radio(x, y, 200, 0, cmdx(4), "Первый элемент списка.");
 		y += radio(x, y, 200, 0, cmdx(5), "Второй элемент возможного выбора.");
 		y += radio(x, y, 200, Checked, cmdx(6), "Третий элемент этого выбора.");
