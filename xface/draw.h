@@ -223,11 +223,11 @@ struct textplugin {
 	textplugin(const char* name, proc e);
 	static textplugin*	find(const char* name);
 };
-struct renderplugin {
+struct plugin {
 	int					priority;
-	renderplugin*		next;
-	static renderplugin* first;
-	renderplugin(int priority = 10);
+	plugin*				next;
+	static plugin*		first;
+	plugin(int priority = 10);
 	virtual void		after() {}
 	virtual void		before() {}
 	virtual void		initialize() {}

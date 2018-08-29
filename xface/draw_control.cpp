@@ -9,7 +9,7 @@ static control*	current_command;
 static void (control::*current_execute)();
 static control* current_execute_control;
 
-static struct control_plugin : draw::renderplugin {
+static struct control_plugin : draw::plugin {
 
 	void before() override {
 		current_hilite = 0;
@@ -47,7 +47,7 @@ static struct control_plugin : draw::renderplugin {
 		return false;
 	}
 
-} control_plugin_instance;
+} plugin_instance;
 
 control::control() : show_border(true), show_background(true) {
 }

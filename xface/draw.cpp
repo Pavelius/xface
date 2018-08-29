@@ -43,7 +43,7 @@ bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;
 // Locale draw variables
 static draw::surface default_surface;
-draw::renderplugin*	draw::renderplugin::first;
+draw::plugin*	draw::plugin::first;
 draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
 static bool			break_modal;
@@ -2110,7 +2110,7 @@ void surface::convert(int new_bpp, color* pallette) {
 	bpp = iabs(new_bpp);
 }
 
-renderplugin::renderplugin(int priority) : next(0), priority(priority) {
+plugin::plugin(int priority) : next(0), priority(priority) {
 	if(!first)
 		first = this;
 	else {
@@ -2123,7 +2123,7 @@ renderplugin::renderplugin(int priority) : next(0), priority(priority) {
 }
 
 bool draw::defproc(int id) {
-	for(auto p = renderplugin::first; p; p = p->next) {
+	for(auto p = plugin::first; p; p = p->next) {
 		if(p->translate(id))
 			return true;
 	}
@@ -2132,7 +2132,7 @@ bool draw::defproc(int id) {
 
 void draw::initialize() {
 	// Initilaize all plugins
-	for(auto p = renderplugin::first; p; p = p->next)
+	for(auto p = plugin::first; p; p = p->next)
 		p->initialize();
 	// Set default window colors
 	draw::font = metrics::font;
@@ -2142,7 +2142,7 @@ void draw::initialize() {
 
 bool draw::ismodal() {
 	// Before plugin events
-	for(auto p = renderplugin::first; p; p = p->next)
+	for(auto p = plugin::first; p; p = p->next)
 		p->before();
 	// Break modal loop
 	if(!break_modal)

@@ -20,7 +20,12 @@ void draw::tooltips(const char* format, ...) {
 	tooltipsv(hot.mouse.x, hot.mouse.y + 24, 400, format, xva_start(format));
 }
 
-static struct tooltips_renderplugin : draw::renderplugin {
+static struct tooltips_plugin : draw::plugin {
+
+	void before() override {
+		tooltips_rect.clear();
+		tooltips_text[0] = 0;
+	}
 
 	void after() override {
 		if(!tooltips_text[0] || !tooltips_rect)
@@ -47,8 +52,6 @@ static struct tooltips_renderplugin : draw::renderplugin {
 			draw::fore = colors::tips::text;
 			draw::textf(rc.x1, rc.y1, rc.width(), tooltips_text);
 		}
-		tooltips_rect.clear();
-		tooltips_text[0] = 0;
 	}
 
-} input_plugin_instance;
+} plugin_instance;

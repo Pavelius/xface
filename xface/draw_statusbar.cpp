@@ -26,7 +26,7 @@ int draw::statusbardw() {
 	return dx;
 }
 
-static struct statusbar_renderplugin : draw::renderplugin {
+static struct statusbar_plugin : draw::plugin {
 
 	void before() override {
 		statusbar_rect.clear();
@@ -45,4 +45,4 @@ static struct statusbar_renderplugin : draw::renderplugin {
 			draw::text(statusbar_rect, statusbar_text);
 	}
 
-} renderplugin_instance;
+} plugin_instance;

@@ -4,17 +4,26 @@
 
 using namespace draw;
 
-class fieldreq : public cmdfd {
+struct fieldreq : cmdfd {
 
-	enum type_s {Text, Number, DateTime, Date };
+	enum type_s {Text, Number };
 
 	type_s			type;
 	void*			source;
 	unsigned		maximum;
 	bool			isreference;
+	controls::list* dropdown;
 
 	static rect		current_rect;
 	static fieldreq	current;
+
+	fieldreq() = default;
+	constexpr fieldreq(type_s type, void* source, unsigned size, bool isreference) : type(type), source(source), maximum(size), isreference(isreference), dropdown(0) {}
+	constexpr fieldreq(aref<char> value) : fieldreq(Text, value.data, value.count - 1, false) {}
+	constexpr fieldreq(const char* &value) : fieldreq(Text, &value, sizeof(value), true) {}
+	constexpr fieldreq(int &value) : fieldreq(Number, &value, sizeof(value), false) {}
+	constexpr fieldreq(short &value) : fieldreq(Number, &value, sizeof(value), false) {}
+	constexpr fieldreq(char &value) : fieldreq(Number, &value, sizeof(value), false) {}
 
 	static void callback_edit() {
 		auto focus = getfocus();
@@ -72,8 +81,6 @@ class fieldreq : public cmdfd {
 		}
 	}
 
-public:
-
 	const char* get(char* result, const char* result_maximum, bool force_result) const {
 		switch(type) {
 		case Number:
@@ -117,13 +124,6 @@ public:
 			break;
 		}
 	}
-
-	fieldreq() = default;
-	constexpr fieldreq(aref<char> value) : type(Text), source(value.data), maximum(value.count - 1), isreference(false) {}
-	constexpr fieldreq(const char* &value) : type(Text), source(&value), maximum(sizeof(value)), isreference(true) {}
-	constexpr fieldreq(int &value) : type(Number), source(&value), maximum(sizeof(value)), isreference(false) {}
-	constexpr fieldreq(short &value) : type(Number), source(&value), maximum(sizeof(value)), isreference(false) {}
-	constexpr fieldreq(char &value) : type(Number), source(&value), maximum(sizeof(value)), isreference(false) {}
 
 };
 

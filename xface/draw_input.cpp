@@ -23,7 +23,7 @@ static void set_focus_callback() {
 		setfocus(id, true);
 }
 
-static struct input_plugin : draw::renderplugin {
+static struct input_plugin : draw::plugin {
 
 	void before() override {
 		render_control = elements;
@@ -50,7 +50,7 @@ static struct input_plugin : draw::renderplugin {
 		return false;
 	}
 
-} input_plugin_instance;
+} plugin_instance;
 
 static void setfocus_callback() {
 	current_focus = hot.param;
@@ -183,10 +183,10 @@ int draw::input(bool redraw) {
 	if(current_command) {
 		if(current_execute) {
 			auto proc = current_execute;
-			for(auto p = renderplugin::first; p; p = p->next)
+			for(auto p = plugin::first; p; p = p->next)
 				p->before();
 			proc();
-			for(auto p = renderplugin::first; p; p = p->next)
+			for(auto p = plugin::first; p; p = p->next)
 				p->before();
 			hot.key = InputUpdate;
 			return hot.key;
@@ -195,7 +195,7 @@ int draw::input(bool redraw) {
 		return hot.key;
 	}
 	// After render plugin events
-	for(auto p = renderplugin::first; p; p = p->next)
+	for(auto p = plugin::first; p; p = p->next)
 		p->after();
 	hot.key = InputUpdate;
 	if(redraw)
