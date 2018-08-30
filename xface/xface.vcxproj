@@ -145,6 +145,7 @@
     <ClCompile Include="point.cpp" />
     <ClCompile Include="stringcreator.cpp" />
     <ClCompile Include="szdup.cpp" />
+    <ClCompile Include="variable.cpp" />
     <ClCompile Include="win_clipboard.cpp" />
     <ClCompile Include="win_draw.cpp" />
     <ClCompile Include="win_io_file.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="screenshoot.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
+    <ClInclude Include="variable.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

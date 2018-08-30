@@ -132,6 +132,9 @@
     <ClCompile Include="draw_field.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
+    <ClCompile Include="variable.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="draw_control.h">
       <Filter>draw\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="variable.h">
+      <Filter>collections</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

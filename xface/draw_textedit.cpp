@@ -263,6 +263,11 @@ bool textedit::editing(rect rc) {
 		case KeyTab | Shift:
 			draw::execute(hot);
 			return true;
+		case KeyDown:
+		case KeyUp:
+		case F4:
+			draw::execute(hot);
+			return true;
 		case KeyEnter:
 			if(records && isshowrecords()) {
 				char temp[260];
@@ -295,7 +300,8 @@ bool textedit::editing(rect rc) {
 			}
 			break;
 		default:
-			dodialog(id);
+			if(dodialog(id))
+				break;
 			if(id == InputSymbol) {
 				auto key = hot.param & 0xFFFF;
 				if(key == 8 || key >= 0x20) {

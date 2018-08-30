@@ -1,8 +1,42 @@
 #include "xface/collection.h"
 #include "xface/crt.h"
 #include "xface/draw_control.h"
+#include "xface/variable.h"
 
 using namespace draw;
+
+struct radioreq : variable, runable {
+	constexpr radioreq() : variable(), value() {}
+	template<typename T> constexpr radioreq(T& v, unsigned value) : variable(v), value(value) {}
+	void			execute() const override { current = *this; draw::execute(callback_proc); }
+	int				getid() const { return (int)((char*)data + value); }
+	unsigned		getfocus() const { return is() ? Checked : 0; }
+	bool			is() const { return get() == value; }
+private:
+	static radioreq	current;
+	static void callback_proc() {
+		current.set(current.value);
+	}
+	unsigned		value;
+};
+radioreq radioreq::current;
+
+struct checkreq : variable, runable {
+	constexpr checkreq() : variable(), value() {}
+	template<typename T> constexpr checkreq(T& v, unsigned value) : variable(v), value(value) {}
+	void			execute() const override { current = *this; draw::execute(callback_proc); }
+	int				getid() const { return (int)((char*)data + value); }
+	unsigned		getfocus() const { return is() ? Checked : 0; }
+	bool			is() const { return get() == value; }
+private:
+	static checkreq	current;
+	static void callback_proc() {
+		auto v = current.get() ^ current.value;
+		current.set(v);
+	}
+	unsigned		value;
+};
+checkreq checkreq::current;
 
 struct fieldreq : cmdfd {
 
@@ -39,11 +73,20 @@ struct fieldreq : cmdfd {
 		current.setnumber(current.getnumber() + hot.param);
 	}
 
+	static void callback_dropdown() {
+	}
+
 	int getid() const override {
 		return (int)source;
 	}
 
 	bool choose(bool run) const override {
+		if(!dropdown)
+			return false;
+		if(run) {
+			current = *this;
+			draw::execute(callback_dropdown);
+		}
 		return true;
 	}
 
@@ -166,7 +209,7 @@ static void test_control() {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 2, 100 - metrics::padding, 0, cmdx(buttoncancel), "Назад");
+		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 3, 100 - metrics::padding, 0, cmdx(buttoncancel), "Назад");
 		test.view(rc);
 		auto id = input();
 		switch(id) {
@@ -194,6 +237,32 @@ static int button(int x, int y, int width, void(*proc)(), const char* title, con
 	return result;
 }
 
+static int radio(int x, int y, int width, unsigned& source, unsigned value, const char* title, const char* tips = 0) {
+	radioreq cmd(source, value);
+	auto result = draw::radio(x, y, width, cmd.getfocus(), cmd, title, tips);
+	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
+	if(areb(rc)) {
+		if(tips)
+			statusbar("Радио кнопка %1", tips);
+		else
+			statusbar("Радио кнопка с координатами x=%1i, y=%2i", x, y);
+	}
+	return result;
+}
+
+static int checkbox(int x, int y, int width, unsigned& source, unsigned value, const char* title, const char* tips = 0) {
+	checkreq cmd(source, value);
+	auto result = draw::checkbox(x, y, width, cmd.getfocus(), cmd, title, tips);
+	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
+	if(areb(rc)) {
+		if(tips)
+			statusbar("Чекбокс кнопка %1", tips);
+		else
+			statusbar("Чекбокс кнопка с координатами x=%1i, y=%2i", x, y);
+	}
+	return result;
+}
+
 template<typename T> static int field(int x, int y, int width, T& value, const char* title, int title_width, const char* tips = 0) {
 	char temp[260];
 	fieldreq field_requisit(value);
@@ -206,6 +275,8 @@ static void simple_controls() {
 	int current_hilite;
 	const char* t1 = "Тест 1";
 	char t2 = 20;
+	unsigned radio_button = 2;
+	unsigned check_button = 0;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
@@ -218,12 +289,12 @@ static void simple_controls() {
 		y += button(x, y, 200, test_control, "Тестирование элементов");
 		//y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmdx(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
-		y += checkbox(x, y, 200, 0, cmdx(3), "Галочка которая выводится и меняет значение чекбокса.");
+		y += checkbox(x, y, 200, check_button, 2, "Галочка которая выводится и меняет значение чекбокса.");
 		y += field(x, y, 400, t1, "Имя", 80, "Это подсказка текста для редактирования");
 		y += field(x, y, 400, t2, "Количество", 80);
-		y += radio(x, y, 200, 0, cmdx(4), "Первый элемент списка.");
-		y += radio(x, y, 200, 0, cmdx(5), "Второй элемент возможного выбора.");
-		y += radio(x, y, 200, Checked, cmdx(6), "Третий элемент этого выбора.");
+		y += radio(x, y, 200, radio_button, 1, "Первый элемент списка.");
+		y += radio(x, y, 200, radio_button, 2, "Второй элемент возможного выбора.");
+		y += radio(x, y, 200, radio_button, 3, "Третий элемент этого выбора.");
 		auto id = input();
 		switch(id) {
 		case KeyEscape: return;
