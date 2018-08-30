@@ -94,3 +94,11 @@ public:
 	constexpr bool			is(T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
 };
+struct avec : collection {
+	avec(void* data, unsigned size) {}
+private:
+	void*					data;
+	unsigned				size;
+	unsigned				count;
+	unsigned				count_maximum;
+};
