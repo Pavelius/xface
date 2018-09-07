@@ -12,9 +12,11 @@ struct collection {
 	virtual unsigned		getmaxcount() const = 0; // Get maximum possible elements
 	virtual unsigned		getcount() const = 0; // Get count of elements in collection
 	virtual unsigned		getsize() const = 0; // Get size of one element in collection
-	virtual int				indexof(const void* element) const = 0; // Get index of element (-1 if not in collection)
+	virtual int				indexof(const void* element) const;
+	void*					insert(int index, const void* object); // Insert new element to collection by specific index
 	bool					read(const char* url, const struct bsreq* fields);
-	virtual void			remove(int index, int count = 1) = 0; // Remove element from collection
+	virtual void			remove(int index, int count = 1); // Remove element from collection
+	virtual void			setcount(unsigned value) = 0;
 	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);	// Sort collection
 	void					swap(int i1, int i2); // Swap elements
 	bool					write(const char* url, const struct bsreq* fields);
@@ -94,11 +96,38 @@ public:
 	constexpr bool			is(T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
 };
-struct avec : collection {
-	avec(void* data, unsigned size) {}
+struct amem : collection {
+	constexpr amem(unsigned size = 0) : data(0), size(size), count(0), count_maximum(0) {}
+	~amem();
+	virtual void*			add() override;
+	virtual void			clear() override;
+	virtual void*			get(int index) const override { return (char*)data + size * index; }
+	virtual unsigned		getmaxcount() const override { return count_maximum; }
+	virtual unsigned		getcount() const override { return count; }
+	virtual unsigned		getsize() const override { return size; }
+	void					reserve(unsigned new_count);
+	virtual void			setcount(unsigned value) { count = value;  }
+	void					setup(unsigned size);
 private:
 	void*					data;
 	unsigned				size;
 	unsigned				count;
 	unsigned				count_maximum;
+};
+struct avec : collection {
+	template<typename T, unsigned N> constexpr avec(adat<T, N>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(N), count_value(0) {}
+	template<typename T> constexpr avec(aref<T>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(e.count), count_value(0) {}
+	template<typename T, unsigned N> constexpr avec(T e[N]) : data(e), size(sizeof(T)), count(count_value), count_maximum(N), count_value(0) {}
+	virtual void*			add() override { return (char*)data + getsize()*((count < count_maximum) ? count++ : 0); }
+	virtual void			clear() override { count = 0; }
+	virtual void*			get(int index) const override { return (char*)data + size * index; }
+	virtual unsigned		getmaxcount() const override { return count_maximum; }
+	virtual unsigned		getcount() const override { return count; }
+	virtual unsigned		getsize() const override { return size; }
+private:
+	void*					data;
+	unsigned				size;
+	unsigned&				count;
+	unsigned				count_maximum;
+	unsigned				count_value;
 };

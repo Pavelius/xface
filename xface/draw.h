@@ -9,6 +9,11 @@ static int control_name(int x, int y, int width, const char* id, int value, cons
 extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 
 enum draw_event_s {
+	// common controls
+	NoField,
+	Text, Number, Check, Radio, Button, Image,
+	Tabs, Group,
+	ControlMask = 0xF,
 	// input events
 	InputSymbol = 0xED00, InputTimer, InputIdle, InputUpdate, InputNoUpdate, InputExecute,
 	// Keyboard and mouse input (can be overrided by flags)
@@ -27,15 +32,6 @@ enum draw_event_s {
 	Ctrl = 0x00010000,
 	Alt = 0x00020000,
 	Shift = 0x00040000,
-	// common controls
-	Text = 0x00000000,
-	Number = 0x00100000,
-	Check = 0x00200000,
-	Radio = 0x00300000,
-	Button = 0x00400000,
-	Image = 0x00500000,
-	Tabs = 0x00600000,
-	ControlMask = 0x00F00000,
 	// columns flags
 	SmallHilite = 0x00010000,
 	HideZero = 0x00020000,

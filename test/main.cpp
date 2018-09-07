@@ -5,6 +5,11 @@
 
 using namespace draw;
 
+struct testinfo {
+	const char*		name;
+	int				value;
+};
+
 struct radioreq : variable, runable {
 	constexpr radioreq() : variable(), value() {}
 	template<typename T> constexpr radioreq(T& v, unsigned value) : variable(v), value(value) {}
@@ -303,10 +308,26 @@ static void simple_controls() {
 	}
 }
 
+static void test_array() {
+	amem a1(sizeof(testinfo));
+	auto p1 = (testinfo*)a1.add();
+	p1->name = "Test";
+	p1->value = 1;
+	auto test_count = a1.getcount();
+	p1 = (testinfo*)a1.add();
+	p1->name = "New test";
+	p1->value = 2;
+	testinfo b1 = {"Third test", 3};
+	p1 = (testinfo*)a1.insert(0, &b1);
+	p1->name = "Third test";
+	p1->value = 2;
+}
+
 void set_dark_theme();
 void set_light_theme();
 
 int main() {
+	test_array();
 	set_light_theme();
 	// Инициализация библиотеки
 	initialize();

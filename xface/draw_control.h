@@ -43,6 +43,17 @@ struct cmdfd {
 	virtual bool		increment(int step, bool run) const { return false; }
 	virtual bool		open(bool run) const { return false; }
 };
+struct widget {
+	unsigned			flags;
+	const char*			id;
+	const char*			label;
+	int					width;
+	int					height;
+	int					title;
+	const widget*		childs;
+	const char*			tips;
+	operator bool() const { return flags != 0; }
+};
 namespace controls {
 struct column {
 	unsigned			flags;
@@ -187,6 +198,9 @@ protected:
 	int					cashed_width;
 	int					cashed_string;
 	int					cashed_origin;
+};
+struct form : control {
+	int					render(int x, int y, int width, const widget& e) const;
 };
 }
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);

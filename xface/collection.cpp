@@ -39,3 +39,29 @@ void collection::sort(int i1, int i2, int(*compare)(const void* p1, const void* 
 		}
 	}
 }
+
+void* collection::insert(int index, const void* object) {
+	auto size = getsize();
+	auto count_before = getcount(); add();
+	auto start = (char*)get(0);
+	memmove(start + (index + 1)*size, start + index * size, (count_before - index)*size);
+	void* p = get(index);
+	if(object)
+		memcpy(p, object, size);
+	else
+		memset(p, 0, size);
+	return p;
+}
+
+int	collection::indexof(const void* element) const {
+	return element >= get(0) && element < get(getcount());
+}
+
+void collection::remove(int index, int elements_count) {
+	auto current_count = getcount();
+	if(((unsigned)index) >= current_count)
+		return;
+	if((unsigned)index < current_count - elements_count)
+		memcpy(get(index), get(index + elements_count), (current_count - (index + elements_count))*getsize());
+	setcount(current_count - elements_count);
+}

@@ -135,6 +135,15 @@
     <ClCompile Include="variable.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="draw_form.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="bsreq.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
+    <ClCompile Include="array.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -186,6 +195,9 @@
       <Filter>draw\simple</Filter>
     </ClInclude>
     <ClInclude Include="variable.h">
+      <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="bsreq.h">
       <Filter>collections</Filter>
     </ClInclude>
   </ItemGroup>
