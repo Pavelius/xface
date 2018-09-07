@@ -58,7 +58,7 @@ struct bsreq {
 struct bsval {
 	const bsreq*		type;
 	void*				data;
-	operator bool() const { return data != 0; }
+	explicit operator bool() const { return data != 0; }
 	int					get() const { return type->get(type->ptr(data)); }
 	void				set(int value) { type->set(type->ptr(data), value); }
 };

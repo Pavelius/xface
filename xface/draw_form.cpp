@@ -14,6 +14,8 @@ struct dlgform : bsval {
 
 	bsval getinfo(const char* id) const {
 		auto f = type->find(id);
+		if(!f)
+			return {0, 0};
 		return {f->type, (void*)f->ptr(data)};
 	}
 
@@ -51,7 +53,7 @@ struct dlgform : bsval {
 		int y0 = y;
 		if(e.label) {
 			setposition(x, y, width); // Первая рамка (может надо двойную ?)
-			int x1 = x, y1 = y, w1 = width;
+			auto x1 = x, y1 = y, w1 = width;
 			setposition(x, y, width); // Отступ от рамки
 			draw::state push;
 			draw::font = metrics::font;
@@ -172,8 +174,7 @@ struct dlgform : bsval {
 		return (this->*methods[e.flags & WidgetMask])(x, y, width, e);
 	}
 
-	dlgform(bsval* variables) {
-		data = 0;
+	dlgform(const bsval& value) : bsval(value) {
 	}
 
 };
