@@ -58,6 +58,8 @@ struct bsreq {
 struct bsval {
 	const bsreq*		type;
 	void*				data;
+	constexpr bsval() : type(0), data(0) {}
+	constexpr bsval(const bsreq* type, void* data) : type(type), data(data) {}
 	explicit operator bool() const { return data != 0; }
 	int					get() const { return type->get(type->ptr(data)); }
 	void				set(int value) { type->set(type->ptr(data), value); }

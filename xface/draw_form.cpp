@@ -8,6 +8,38 @@ const unsigned WidgetMask = 0xF;
 
 struct dlgform : bsval {
 
+	struct reqcheck : bsval, runable {
+		constexpr reqcheck() : bsval(), value() {}
+		constexpr reqcheck(bsval v, unsigned value) : bsval(v), value(value) {}
+		void			execute() const override { current = *this; draw::execute(callback_proc); }
+		int				getid() const { return (int)((char*)data + value); }
+		unsigned		getfocus() const { return is() ? Checked : 0; }
+		bool			is() const { return get() == value; }
+	private:
+		static reqcheck	current;
+		static void callback_proc() {
+			auto v = current.get() ^ current.value;
+			current.set(v);
+		}
+		unsigned		value;
+	};
+
+	struct reqradio : bsval, runable {
+		constexpr reqradio() : bsval(), value(), id() {}
+		constexpr reqradio(bsval v, const widget& e) : bsval(v), value(e.value), id(&e) {}
+		void			execute() const override { current = *this; draw::execute(callback_proc); }
+		int				getid() const { return (int)id; }
+		unsigned		getfocus() const { return is() ? Checked : 0; }
+		bool			is() const { return get() == value; }
+	private:
+		static reqradio	current;
+		static void callback_proc() {
+			current.set(current.value);
+		}
+		unsigned		value;
+		const void*		id;
+	};
+
 	unsigned getflags(const widget& e) const {
 		return e.flags;
 	}
@@ -89,10 +121,6 @@ struct dlgform : bsval {
 		auto po = getinfo(e.id);
 		if(!po)
 			return 0;
-		char temp[260];
-		auto p = po.type->getdata(temp, e.id, po.data, false);
-		if(!p)
-			return 0;
 		auto flags = getflags(e);
 		return 0;
 	}
@@ -144,7 +172,12 @@ struct dlgform : bsval {
 		auto po = getinfo(e.id);
 		if(!po)
 			return 0;
+		reqradio ev(po, e);
+		auto checked = (po.get()==e.value);
 		auto flags = getflags(e);
+		if(checked)
+			flags |= Checked;
+		return draw::radio(x, y, width, flags, ev, e.label, e.tips);
 	}
 
 	int check(int x, int y, int width, const widget& e) {
@@ -153,8 +186,15 @@ struct dlgform : bsval {
 		auto po = getinfo(e.id);
 		if(!po)
 			return 0;
+		auto value = e.value;
+		if(!value)
+			value = 1;
+		reqcheck ev(po, value);
+		auto checked = (po.get()&value)!=0;
 		auto flags = getflags(e);
-		return 0;
+		if(checked)
+			flags |= Checked;
+		return draw::checkbox(x, y, width, flags, ev, e.label, e.tips);
 	}
 
 	int button(int x, int y, int width, const widget& e) {
@@ -180,6 +220,9 @@ struct dlgform : bsval {
 	}
 
 };
+
+dlgform::reqcheck dlgform::reqcheck::current;
+dlgform::reqradio dlgform::reqradio::current;
 
 int draw::render(int x, int y, int width, const bsval& value, const widget* elements) {
 	dlgform e(value);

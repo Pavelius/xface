@@ -49,6 +49,7 @@ struct widget {
 	unsigned			flags;
 	const char*			id;
 	const char*			label;
+	int					value;
 	int					width;
 	int					height;
 	int					title;

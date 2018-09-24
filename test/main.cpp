@@ -1,3 +1,4 @@
+#include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
 #include "xface/draw_control.h"
@@ -45,7 +46,7 @@ checkreq checkreq::current;
 
 struct fieldreq : cmdfd {
 
-	enum type_s {Text, Number };
+	enum type_s { Text, Number };
 
 	type_s			type;
 	void*			source;
@@ -113,19 +114,19 @@ struct fieldreq : cmdfd {
 
 	int getnumber() const {
 		switch(maximum) {
-		case sizeof(char) : return *((char*)source);
-		case sizeof(short) : return *((short*)source);
-		case sizeof(int) : return *((int*)source);
-		default: return 0;
+			case sizeof(char) : return *((char*)source);
+				case sizeof(short) : return *((short*)source);
+					case sizeof(int) : return *((int*)source);
+					default: return 0;
 		}
 	}
 
 	void setnumber(int value) const {
 		switch(maximum) {
-		case sizeof(char): *((char*)source) = value; break;
-		case sizeof(short): *((short*)source) = value; break;
-		case sizeof(int): *((int*)source) = value; break;
-		default: break;
+			case sizeof(char) : *((char*)source) = value; break;
+				case sizeof(short) : *((short*)source) = value; break;
+					case sizeof(int) : *((int*)source) = value; break;
+					default: break;
 		}
 	}
 
@@ -188,6 +189,7 @@ static void basic_drawing() {
 		circlef(x, y, 50 + tick % 40, colors::form);
 		circle(x, y, 50 + tick % 40, colors::border);
 		image(x, y, gres("monsters", "art/creatures"), 3, 0);
+		image(x, y, gres("blood", "art/creatures"), tick % 3, 0);
 		auto id = input();
 		switch(id) {
 		case InputTimer:
@@ -217,6 +219,34 @@ static void test_control() {
 		rc.offset(4 * 2);
 		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 3, 100 - metrics::padding, 0, cmdx(buttoncancel), "Назад");
 		test.view(rc);
+		auto id = input();
+		switch(id) {
+		case KeyEscape:
+			buttoncancel();
+			break;
+		default: dodialog(id); break;
+		}
+	}
+}
+
+static void test_widget() {
+	struct element {
+		const char*		name;
+		int				mark;
+	};
+	static bsreq element_type[] = {
+		BSREQ(element, mark, number_type),
+	{}};
+	static widget elements[] = {{Check, "mark", "Простая пометка"},
+	{Radio, "mark", "Нулевой вариант"},
+	{Radio, "mark", "Первый вариант", 1},
+	{Radio, "mark", "Второй вариант", 2},
+	{}};
+	element test = {0};
+	while(ismodal()) {
+		rect rc = {0, 0, getwidth(), getheight()};
+		rectf(rc, colors::form);
+		draw::render(10, 10, 300, bsval(element_type, &test), elements);
 		auto id = input();
 		switch(id) {
 		case KeyEscape:
@@ -287,12 +317,13 @@ static void simple_controls() {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
 		auto x = 10; auto y = 10;
-		auto result = tabs(x, y, getwidth() - x*2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, &current_hilite,
+		auto result = tabs(x, y, getwidth() - x * 2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, &current_hilite,
 			get_text, {}); y += 40;
 		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Тестирование элементов");
+		y += button(x, y, 200, test_widget, "Тестирование виджетов");
 		//y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmdx(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, check_button, 2, "Галочка которая выводится и меняет значение чекбокса.");
