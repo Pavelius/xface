@@ -237,22 +237,25 @@ static void test_widget() {
 	struct element {
 		const char*		name;
 		int				mark;
+		char			radio;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
+		BSREQ(element, radio, number_type),
 	{}};
-	static widget elements_left[] = {{Radio, "mark", "Samsung"},
-	{Radio, "mark", "Nokia"},
-	{Radio, "mark", "Google"},
+	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
+	{Radio, "radio", "Nokia", 1},
+	{Radio, "radio", "Google", 2},
 	{}};
-	static widget elements_right[] = {{Radio, "mark", "Noobie"},
-	{Radio, "mark", "Glass"},
-	{Radio, "mark", "Keeps"},
+	static widget elements_right[] = {{Radio, "radio", "Noobie", 3},
+	{Radio, "radio", "Glass", 4},
+	{Radio, "radio", "Keeps", 5},
+	{}};
+	static widget brands[] = {{Group, 0, 0, 0, 4, 0, 0, elements_left},
+	{Group, 0, 0, 0, 4, 0, 0, elements_right},
 	{}};
 	static widget elements[] = {{Check, "mark", "Простая пометка"},
-	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, elements_left},
-	{Radio, "mark", "Первый вариант", 1},
-	{Radio, "mark", "Второй вариант", 2},
+	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
 	{Button, "button1", "Нажми, чтобы появлись элементы", 0, 0, 0, 0, 0, 0, test_windget_button},
 	{}};
 	element test = {0};
