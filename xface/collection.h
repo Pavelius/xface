@@ -2,6 +2,9 @@
 
 #pragma once
 
+unsigned					rmoptimal(unsigned need_count);
+void*						rmreserve(void* data, unsigned new_size);
+
 // Abstract collection
 struct collection {
 	virtual void*			add() = 0; // Add new empthy element to collection
@@ -68,6 +71,18 @@ template<class T> struct aref {
 	int						indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
 	bool					is(const T value) const { return indexof(value) != -1; }
 	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
+};
+template<class T> struct arem : aref<T> {
+	unsigned				count_maximum;
+	constexpr arem() : aref<T>(), count_maximum() {}
+	T* add() {
+		if(aref<T>::count >= count_maximum) {
+			count_maximum = rmoptimal(aref<T>::count + 1);
+			aref<T>::data = (T*)rmreserve(aref<T>::data, count_maximum * sizeof(T));
+		}
+		return &aref<T>::data[aref<T>::count++];
+	}
+	void					add(const T& e) { *(add()) = e; }
 };
 // Abstract flag data bazed on enumerator
 template<typename T, typename DT = unsigned> class cflags {

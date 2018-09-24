@@ -271,6 +271,7 @@ int						getwidth();
 void					glyph(int x, int y, int sym, unsigned flags);
 void					gradv(rect rc, const color c1, const color c2, int skip = 0);
 void					gradh(rect rc, const color c1, const color c2, int skip = 0);
+const sprite*			gres(const char* name, const char* folder = 0);
 int						hittest(int x, int test_x, const char* string, int lenght);
 int						hittest(rect rc, const char* string, unsigned state, point mouse);
 inline bool				ischecked(unsigned flags) { return (flags&Checked) != 0; }

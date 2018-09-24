@@ -154,10 +154,12 @@ struct dlgform : bsval {
 		if(!po)
 			return 0;
 		auto flags = getflags(e);
+		return 0;
 	}
 
 	int button(int x, int y, int width, const widget& e) {
 		auto po = getinfo(e.id);
+		return 0;
 	}
 
 	int renderno(int x, int y, int width, const widget& e) {
@@ -178,3 +180,15 @@ struct dlgform : bsval {
 	}
 
 };
+
+int draw::render(int x, int y, int width, const bsval& value, const widget* elements) {
+	dlgform e(value);
+	if(!elements)
+		return 0;
+	auto y1 = y;
+	if(elements[0].width)
+		y += e.horizontal(x, y, width, elements);
+	else
+		y += e.vertical(x, y, width, elements);
+	return y - y1;
+}

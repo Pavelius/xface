@@ -144,6 +144,12 @@
     <ClCompile Include="array.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="resources.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_dynamic.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -199,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="bsreq.h">
       <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="resources.h">
+      <Filter>draw\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

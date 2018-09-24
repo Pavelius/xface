@@ -138,6 +138,8 @@
     <ClCompile Include="draw_theme.cpp" />
     <ClCompile Include="draw_tooltips.cpp" />
     <ClCompile Include="grammar.cpp" />
+    <ClCompile Include="resources.cpp" />
+    <ClCompile Include="resource_dynamic.cpp" />
     <ClCompile Include="screenshoot.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
@@ -167,6 +169,7 @@
     <ClInclude Include="point.h" />
     <ClInclude Include="pointl.h" />
     <ClInclude Include="rect.h" />
+    <ClInclude Include="resources.h" />
     <ClInclude Include="screenshoot.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />

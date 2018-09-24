@@ -187,6 +187,7 @@ static void basic_drawing() {
 		auto y = 100 + tick % 200;
 		circlef(x, y, 50 + tick % 40, colors::form);
 		circle(x, y, 50 + tick % 40, colors::border);
+		image(x, y, gres("monsters", "art/creatures"), 3, 0);
 		auto id = input();
 		switch(id) {
 		case InputTimer:

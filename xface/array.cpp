@@ -5,7 +5,7 @@ extern "C" void* malloc(unsigned size);
 extern "C" void* realloc(void *ptr, unsigned size);
 extern "C" void	free(void* pointer);
 
-static unsigned rmoptimal(unsigned need_count) {
+unsigned rmoptimal(unsigned need_count) {
 	const unsigned mc = 256 * 256 * 256;
 	unsigned m = 64;
 	while(m < mc) {
@@ -14,6 +14,12 @@ static unsigned rmoptimal(unsigned need_count) {
 		m = m << 1;
 	}
 	return m;
+}
+
+void* rmreserve(void* data, unsigned new_size) {
+	if(data)
+		return realloc(data, new_size);
+	return malloc(new_size);
 }
 
 amem::~amem() {
