@@ -9,35 +9,37 @@ const unsigned WidgetMask = 0xF;
 struct dlgform : bsval {
 
 	struct reqcheck : bsval, runable {
-		constexpr reqcheck() : bsval(), value() {}
-		constexpr reqcheck(bsval v, unsigned value) : bsval(v), value(value) {}
+		constexpr reqcheck() : bsval(), pw() {}
+		constexpr reqcheck(bsval v, const widget& e) : bsval(v), pw(&e) {}
 		void			execute() const override { current = *this; draw::execute(callback_proc); }
-		int				getid() const { return (int)((char*)data + value); }
+		int				getid() const { return (int)pw; }
 		unsigned		getfocus() const { return is() ? Checked : 0; }
-		bool			is() const { return get() == value; }
+		bool			is() const { return get() == pw->value; }
 	private:
 		static reqcheck	current;
 		static void callback_proc() {
-			auto v = current.get() ^ current.value;
+			auto value = current.pw->value;
+			if(!value)
+				value = 1;
+			auto v = current.get() ^ value;
 			current.set(v);
 		}
-		unsigned		value;
+		const widget*	pw;
 	};
 
 	struct reqradio : bsval, runable {
-		constexpr reqradio() : bsval(), value(), id() {}
-		constexpr reqradio(bsval v, const widget& e) : bsval(v), value(e.value), id(&e) {}
+		constexpr reqradio() : bsval(), pw() {}
+		constexpr reqradio(bsval v, const widget& e) : bsval(v), pw(&e) {}
 		void			execute() const override { current = *this; draw::execute(callback_proc); }
-		int				getid() const { return (int)id; }
+		int				getid() const { return (int)pw; }
 		unsigned		getfocus() const { return is() ? Checked : 0; }
-		bool			is() const { return get() == value; }
+		bool			is() const { return get() == pw->value; }
 	private:
 		static reqradio	current;
 		static void callback_proc() {
-			current.set(current.value);
+			current.set(current.pw->value);
 		}
-		unsigned		value;
-		const void*		id;
+		const widget*	pw;
 	};
 
 	unsigned getflags(const widget& e) const {
@@ -189,7 +191,7 @@ struct dlgform : bsval {
 		auto value = e.value;
 		if(!value)
 			value = 1;
-		reqcheck ev(po, value);
+		reqcheck ev(po, e);
 		auto checked = (po.get()&value)!=0;
 		auto flags = getflags(e);
 		if(checked)
@@ -198,8 +200,12 @@ struct dlgform : bsval {
 	}
 
 	int button(int x, int y, int width, const widget& e) {
-		auto po = getinfo(e.id);
-		return 0;
+		if(e.proc)
+			return draw::button(x, y, width, getflags(e), cmdx(e.proc, e.value), e.label, e.tips);
+		else if(e.value)
+			return draw::button(x, y, width, getflags(e), cmdx(e.value), e.label, e.tips);
+		else
+			return 0;
 	}
 
 	int renderno(int x, int y, int width, const widget& e) {

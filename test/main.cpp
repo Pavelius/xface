@@ -229,6 +229,10 @@ static void test_control() {
 	}
 }
 
+static void test_windget_button() {
+	test_control();
+}
+
 static void test_widget() {
 	struct element {
 		const char*		name;
@@ -237,10 +241,19 @@ static void test_widget() {
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
 	{}};
+	static widget elements_left[] = {{Radio, "mark", "Samsung"},
+	{Radio, "mark", "Nokia"},
+	{Radio, "mark", "Google"},
+	{}};
+	static widget elements_right[] = {{Radio, "mark", "Noobie"},
+	{Radio, "mark", "Glass"},
+	{Radio, "mark", "Keeps"},
+	{}};
 	static widget elements[] = {{Check, "mark", "Простая пометка"},
-	{Radio, "mark", "Нулевой вариант"},
+	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, elements_left},
 	{Radio, "mark", "Первый вариант", 1},
 	{Radio, "mark", "Второй вариант", 2},
+	{Button, "button1", "Нажми, чтобы появлись элементы", 0, 0, 0, 0, 0, 0, test_windget_button},
 	{}};
 	element test = {0};
 	while(ismodal()) {

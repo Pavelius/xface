@@ -55,6 +55,7 @@ struct widget {
 	int					title;
 	const widget*		childs;
 	const char*			tips;
+	void				(*proc)();
 	operator bool() const { return flags != 0; }
 };
 namespace controls {
