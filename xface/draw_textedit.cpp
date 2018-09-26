@@ -248,69 +248,69 @@ bool textedit::editing(rect rc) {
 			} else
 				rcv.clear();
 		}
-		int id = input();
-		switch(id) {
-		case InputIdle:
-			break;
-		case KeyEscape:
-			if(records && isshowrecords()) {
-				show_records = false;
-				break;
-			}
-			draw::execute(hot);
-			return false;
-		case KeyTab:
-		case KeyTab | Shift:
-			draw::execute(hot);
-			return true;
-		case KeyDown:
-		case KeyUp:
-		case F4:
-			draw::execute(hot);
-			return true;
-		case KeyEnter:
-			if(records && isshowrecords()) {
-				char temp[260];
-				auto value = records->getname(temp, temp + sizeof(temp) - 1, records->current, 0);
-				if(value)
-					zcpy(string, value, maxlenght);
-				select(0, false);
-				select(zlen(string), true);
-				show_records = false;
-				break;
-			}
-			return true;
-		case InputUpdate:
-			// ¬ыходим, потому что ушел фокус (мен€ли размер)
-			return false;
-		case MouseLeft:
-		case MouseLeft | Ctrl:
-		case MouseLeft | Shift:
-		case MouseLeftDBL:
-		case MouseLeftDBL | Ctrl:
-		case MouseLeftDBL | Shift:
-			if(records && isshowrecords() && areb(rcv)) {
-				dodialog(id);
-				keyenter(id);
-				break;
-			}
-			if(!areb(rc) && hot.pressed) {
-				draw::execute(hot);
-				return true;
-			}
-			break;
-		default:
-			if(dodialog(id))
-				break;
-			if(id == InputSymbol) {
-				auto key = hot.param & 0xFFFF;
-				if(key == 8 || key >= 0x20) {
-					show_records = true;
-					updaterecords(true);
-				}
-			}
-			break;
-		}
+		//int id = input();
+		//switch(id) {
+		//case InputIdle:
+		//	break;
+		//case KeyEscape:
+		//	if(records && isshowrecords()) {
+		//		show_records = false;
+		//		break;
+		//	}
+		//	draw::execute(hot);
+		//	return false;
+		//case KeyTab:
+		//case KeyTab | Shift:
+		//	draw::execute(hot);
+		//	return true;
+		//case KeyDown:
+		//case KeyUp:
+		//case F4:
+		//	draw::execute(hot);
+		//	return true;
+		//case KeyEnter:
+		//	if(records && isshowrecords()) {
+		//		char temp[260];
+		//		auto value = records->getname(temp, temp + sizeof(temp) - 1, records->current, 0);
+		//		if(value)
+		//			zcpy(string, value, maxlenght);
+		//		select(0, false);
+		//		select(zlen(string), true);
+		//		show_records = false;
+		//		break;
+		//	}
+		//	return true;
+		//case InputUpdate:
+		//	// ¬ыходим, потому что ушел фокус (мен€ли размер)
+		//	return false;
+		//case MouseLeft:
+		//case MouseLeft | Ctrl:
+		//case MouseLeft | Shift:
+		//case MouseLeftDBL:
+		//case MouseLeftDBL | Ctrl:
+		//case MouseLeftDBL | Shift:
+		//	if(records && isshowrecords() && areb(rcv)) {
+		//		dodialog(id);
+		//		keyenter(id);
+		//		break;
+		//	}
+		//	if(!areb(rc) && hot.pressed) {
+		//		draw::execute(hot);
+		//		return true;
+		//	}
+		//	break;
+		//default:
+		//	if(dodialog(id))
+		//		break;
+		//	if(id == InputSymbol) {
+		//		auto key = hot.param & 0xFFFF;
+		//		if(key == 8 || key >= 0x20) {
+		//			show_records = true;
+		//			updaterecords(true);
+		//		}
+		//	}
+		//	break;
+		//}
 	}
 	return false;
 }

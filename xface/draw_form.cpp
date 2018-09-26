@@ -200,10 +200,9 @@ struct dlgform : bsval {
 	}
 
 	int button(int x, int y, int width, const widget& e) {
-		if(e.proc)
-			return draw::button(x, y, width, getflags(e), cmd(e.proc, e.value), e.label, e.tips);
-		else
+		if(!e.proc)
 			return 0;
+		return draw::button(x, y, width, getflags(e), cmd(e.proc, e.value), e.label, e.tips);
 	}
 
 	int renderno(int x, int y, int width, const widget& e) {

@@ -46,8 +46,6 @@ static draw::surface default_surface;
 draw::plugin*	draw::plugin::first;
 draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
-static bool			break_modal;
-static int			break_result;
 // Drag
 static int			drag_id;
 static drag_part_s	drag_part;
@@ -2138,32 +2136,4 @@ void draw::initialize() {
 	draw::font = metrics::font;
 	draw::fore = colors::text;
 	draw::fore_stroke = colors::blue;
-}
-
-bool draw::ismodal() {
-	// Before plugin events
-	for(auto p = plugin::first; p; p = p->next)
-		p->before();
-	// Break modal loop
-	if(!break_modal)
-		return true;
-	break_modal = false;
-	return false;
-}
-
-void draw::breakmodal(int result) {
-	break_modal = true;
-	break_result = result;
-}
-
-void draw::buttoncancel() {
-	breakmodal(0);
-}
-
-void draw::buttonok() {
-	breakmodal(1);
-}
-
-int draw::getresult() {
-	return break_result;
 }

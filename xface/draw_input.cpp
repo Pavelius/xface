@@ -13,6 +13,8 @@ static void			(*current_execute)();
 extern rect			sys_static_area;
 static bool			keep_hot;
 static hotinfo		keep_hot_value;
+static bool			break_modal;
+static int			break_result;
 static focusable_element	elements[96];
 static focusable_element*	render_control;
 
@@ -25,9 +27,9 @@ static void set_focus_callback() {
 static struct input_plugin : draw::plugin {
 
 	void before() override {
+		hot.cursor = CursorArrow;
 		render_control = elements;
 		current_execute = 0;
-		hot.cursor = CursorArrow;
 		if(hot.mouse.x < 0 || hot.mouse.y < 0)
 			sys_static_area.clear();
 		else
@@ -43,6 +45,9 @@ static struct input_plugin : draw::plugin {
 			id = getnext(draw::getfocus(), id);
 			if(id)
 				setfocus(id, true);
+			return true;
+		case 0:
+			exit(0);
 			return true;
 		}
 		return false;
@@ -165,33 +170,98 @@ void draw::execute(const hotinfo& value) {
 	keep_hot_value = value;
 }
 
-int draw::input(bool redraw) {
-	if(hot.key == InputUpdate) {
-		if(keep_hot) {
-			keep_hot = false;
-			hot = keep_hot_value;
-			return hot.key;
+//int draw::input(bool redraw) {
+//	if(hot.key == InputUpdate) {
+//		if(keep_hot) {
+//			keep_hot = false;
+//			hot = keep_hot_value;
+//			return hot.key;
+//		}
+//	}
+//	if(current_execute) {
+//		auto proc = current_execute;
+//		for(auto p = plugin::first; p; p = p->next)
+//			p->before();
+//		proc();
+//		for(auto p = plugin::first; p; p = p->next)
+//			p->before();
+//		hot.key = InputUpdate;
+//		return hot.key;
+//	}
+//	// After render plugin events
+//	for(auto p = plugin::first; p; p = p->next)
+//		p->after();
+//	hot.key = InputUpdate;
+//	if(redraw)
+//		draw::sysredraw();
+//	else
+//		hot.key = draw::rawinput();
+//	if(!hot.key)
+//		exit(0);
+//	return hot.key;
+//}
+
+bool draw::ismodal() {
+	// Before plugin events
+	for(auto p = plugin::first; p; p = p->next)
+		p->before();
+	// Break modal loop
+	if(!break_modal)
+		return true;
+	break_modal = false;
+	return false;
+}
+
+void draw::breakmodal(int result) {
+	break_modal = true;
+	break_result = result;
+}
+
+void draw::buttoncancel() {
+	breakmodal(0);
+}
+
+void draw::buttonok() {
+	breakmodal(1);
+}
+
+int draw::getresult() {
+	return break_result;
+}
+
+int draw::modal(void(*callback)()) {
+	while(!break_modal) {
+		for(auto p = plugin::first; p; p = p->next)
+			p->before();
+		callback();
+		if(hot.key == InputUpdate) {
+			if(keep_hot) {
+				keep_hot = false;
+				hot = keep_hot_value;
+				continue;
+			}
+		}
+		if(current_execute) {
+			auto proc = current_execute;
+			for(auto p = plugin::first; p; p = p->next)
+				p->before();
+			proc();
+			for(auto p = plugin::first; p; p = p->next)
+				p->before();
+			hot.key = InputUpdate;
+			continue;
+		}
+		// После основного рндеринга, если не было команд
+		// выполним вывод курсора и обработку событий
+		for(auto p = plugin::first; p; p = p->next)
+			p->after();
+		hot.key = draw::rawinput();
+		// Попытаемся выполнить стандартные действия
+		for(auto p = plugin::first; p; p = p->next) {
+			if(p->translate(hot.key))
+				break;
 		}
 	}
-	if(current_execute) {
-		auto proc = current_execute;
-		for(auto p = plugin::first; p; p = p->next)
-			p->before();
-		proc();
-		for(auto p = plugin::first; p; p = p->next)
-			p->before();
-		hot.key = InputUpdate;
-		return hot.key;
-	}
-	// After render plugin events
-	for(auto p = plugin::first; p; p = p->next)
-		p->after();
-	hot.key = InputUpdate;
-	if(redraw)
-		draw::sysredraw();
-	else
-		hot.key = draw::rawinput();
-	if(!hot.key)
-		exit(0);
-	return hot.key;
+	break_modal = false;
+	return break_result;
 }
