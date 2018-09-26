@@ -195,7 +195,6 @@ struct form : control {
 }
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
-bool					dodialog(int id);
 int						field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, const char* header_label, int header_width);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						render(int x, int y, int width, const bsval& value, const widget* element);

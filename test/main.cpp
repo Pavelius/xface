@@ -6,6 +6,9 @@
 
 using namespace draw;
 
+static unsigned radio_button = 2;
+static unsigned check_button = 0;
+
 struct testinfo {
 	const char*		name;
 	int				value;
@@ -314,8 +317,6 @@ static void disabled_button() {
 //	int current_hilite;
 //	const char* t1 = "Тест 1";
 //	char t2 = 20;
-//	unsigned radio_button = 2;
-//	unsigned check_button = 0;
 //	while(ismodal()) {
 //		rectf({0, 0, getwidth(), getheight()}, colors::window);
 //		statusbardw();

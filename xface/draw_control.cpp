@@ -5,7 +5,6 @@ using namespace draw::controls;
 
 static control*	current_hilite;
 static control*	current_focus;
-static control*	current_command;
 static void (control::*current_execute)();
 static control* current_execute_control;
 
@@ -14,7 +13,6 @@ static struct control_plugin : draw::plugin {
 	void before() override {
 		current_hilite = 0;
 		current_focus = 0;
-		current_command = 0;
 		current_execute = 0;
 		current_execute_control = 0;
 	}
@@ -69,8 +67,8 @@ static void control_execute() {
 }
 
 void control::execute(void (control::*proc)()) const {
-	current_execute_control = (control*)this;
 	current_execute = proc;
+	current_execute_control = (control*)this;
 	draw::execute(control_execute);
 }
 

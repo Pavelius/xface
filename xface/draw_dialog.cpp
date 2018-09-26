@@ -113,11 +113,3 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 		tooltips(tips);
 	return rc1.height() + 2;
 }
-
-bool draw::dodialog(int id) {
-	for(auto p = plugin::first; p; p = p->next) {
-		if(p->translate(id))
-			return true;
-	}
-	return false;
-}

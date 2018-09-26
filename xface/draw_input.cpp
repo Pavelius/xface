@@ -170,48 +170,6 @@ void draw::execute(const hotinfo& value) {
 	keep_hot_value = value;
 }
 
-//int draw::input(bool redraw) {
-//	if(hot.key == InputUpdate) {
-//		if(keep_hot) {
-//			keep_hot = false;
-//			hot = keep_hot_value;
-//			return hot.key;
-//		}
-//	}
-//	if(current_execute) {
-//		auto proc = current_execute;
-//		for(auto p = plugin::first; p; p = p->next)
-//			p->before();
-//		proc();
-//		for(auto p = plugin::first; p; p = p->next)
-//			p->before();
-//		hot.key = InputUpdate;
-//		return hot.key;
-//	}
-//	// After render plugin events
-//	for(auto p = plugin::first; p; p = p->next)
-//		p->after();
-//	hot.key = InputUpdate;
-//	if(redraw)
-//		draw::sysredraw();
-//	else
-//		hot.key = draw::rawinput();
-//	if(!hot.key)
-//		exit(0);
-//	return hot.key;
-//}
-
-bool draw::ismodal() {
-	// Before plugin events
-	for(auto p = plugin::first; p; p = p->next)
-		p->before();
-	// Break modal loop
-	if(!break_modal)
-		return true;
-	break_modal = false;
-	return false;
-}
-
 void draw::breakmodal(int result) {
 	break_modal = true;
 	break_result = result;
@@ -251,12 +209,9 @@ int draw::modal(void(*callback)()) {
 			hot.key = InputUpdate;
 			continue;
 		}
-		// После основного рндеринга, если не было команд
-		// выполним вывод курсора и обработку событий
 		for(auto p = plugin::first; p; p = p->next)
 			p->after();
 		hot.key = draw::rawinput();
-		// Попытаемся выполнить стандартные действия
 		for(auto p = plugin::first; p; p = p->next) {
 			if(p->translate(hot.key))
 				break;
