@@ -14,28 +14,14 @@ struct runable {
 	virtual int			getid() const = 0;
 	virtual void		execute() const = 0;
 };
-template<class T> struct runable_impl : runable {
-	runable_impl(T t, int param) {}
-};
-template<> struct runable_impl<int> : runable {
-	constexpr runable_impl(int id, int param = 0) : id(id), param(param) {}
-	virtual void		execute() const override { draw::execute(id, param); }
-	virtual int			getid() const override { return id; }
-private:
-	int					id;
-	int					param;
-};
-template<> struct runable_impl<callback_proc> : runable {
-	constexpr runable_impl(callback_proc id, int param = 0) : id(id), param(param) {}
+struct cmd : runable {
+	constexpr cmd(callback_proc id, int param = 0) : id(id), param(param) {}
 	virtual void		execute() const override { draw::execute(id, param); }
 	virtual int			getid() const override { return (int)id; }
 private:
 	callback_proc		id;
 	int					param;
 };
-template<class T> inline runable_impl<T> cmdx(T id, int param = 0) {
-	return runable_impl<T>(id, param);
-}
 struct cmdfd {
 	virtual int			getid() const = 0;
 	virtual bool		choose(bool run) const { return false; }

@@ -8,7 +8,6 @@ struct focusable_element {
 	rect			rc;
 	operator bool() const { return id != 0; }
 };
-static int			current_command;
 static int			current_focus;
 static void			(*current_execute)();
 extern rect			sys_static_area;
@@ -27,7 +26,6 @@ static struct input_plugin : draw::plugin {
 
 	void before() override {
 		render_control = elements;
-		current_command = 0;
 		current_execute = 0;
 		hot.cursor = CursorArrow;
 		if(hot.mouse.x < 0 || hot.mouse.y < 0)
@@ -156,15 +154,10 @@ int draw::getfocus() {
 	return current_focus;
 }
 
-void draw::execute(int id, int param) {
-	current_command = id;
+void draw::execute(void(*proc)(), int param) {
+	current_execute = proc;
 	hot.key = 0;
 	hot.param = param;
-}
-
-void draw::execute(void(*proc)(), int param) {
-	execute(InputExecute, param);
-	current_execute = proc;
 }
 
 void draw::execute(const hotinfo& value) {
@@ -180,18 +173,14 @@ int draw::input(bool redraw) {
 			return hot.key;
 		}
 	}
-	if(current_command) {
-		if(current_execute) {
-			auto proc = current_execute;
-			for(auto p = plugin::first; p; p = p->next)
-				p->before();
-			proc();
-			for(auto p = plugin::first; p; p = p->next)
-				p->before();
-			hot.key = InputUpdate;
-			return hot.key;
-		}
-		hot.key = current_command;
+	if(current_execute) {
+		auto proc = current_execute;
+		for(auto p = plugin::first; p; p = p->next)
+			p->before();
+		proc();
+		for(auto p = plugin::first; p; p = p->next)
+			p->before();
+		hot.key = InputUpdate;
 		return hot.key;
 	}
 	// After render plugin events

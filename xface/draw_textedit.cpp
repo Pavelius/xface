@@ -291,7 +291,7 @@ bool textedit::editing(rect rc) {
 		case MouseLeftDBL | Shift:
 			if(records && isshowrecords() && areb(rcv)) {
 				dodialog(id);
-				draw::execute(KeyEnter);
+				keyenter(id);
 				break;
 			}
 			if(!areb(rc) && hot.pressed) {

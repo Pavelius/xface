@@ -255,7 +255,7 @@ void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 bool					defproc(int id);
 void					execute(void(*callback)(), int value = 0);
-void					execute(int id, int value = 0);
+//void					execute(int id, int value = 0);
 void					execute(const hotinfo& id);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();

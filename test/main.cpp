@@ -217,7 +217,7 @@ static void test_control() {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 3, 100 - metrics::padding, 0, cmdx(buttoncancel), "Назад");
+		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 3, 100 - metrics::padding, 0, cmd(buttoncancel), "Назад");
 		test.view(rc);
 		auto id = input();
 		switch(id) {
@@ -278,7 +278,7 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 }
 
 static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips = 0) {
-	auto result = button(x, y, width, 0, cmdx(proc), title, tips);
+	auto result = button(x, y, width, 0, cmd(proc), title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
 	if(areb(rc)) {
 		if(tips)
@@ -321,6 +321,9 @@ template<typename T> static int field(int x, int y, int width, T& value, const c
 	return field(x, y, width, TextSingleLine, field_requisit, field_requisit.get(temp, temp + sizeof(temp) - 1, false), tips, title, title_width);
 }
 
+static void disabled_button() {
+}
+
 static void simple_controls() {
 	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
 	setfocus(3, true);
@@ -341,7 +344,7 @@ static void simple_controls() {
 		y += button(x, y, 200, test_control, "Тестирование элементов");
 		y += button(x, y, 200, test_widget, "Тестирование виджетов");
 		//y += button(x, y, 200, test_edit, "Редактирование текста");
-		y += button(x, y, 200, Disabled, cmdx(2), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
+		y += button(x, y, 200, Disabled, cmd(disabled_button), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
 		y += checkbox(x, y, 200, check_button, 2, "Галочка которая выводится и меняет значение чекбокса.");
 		y += field(x, y, 400, t1, "Имя", 80, "Это подсказка текста для редактирования");
 		y += field(x, y, 400, t2, "Количество", 80);
