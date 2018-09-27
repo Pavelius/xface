@@ -31,11 +31,6 @@ extern "C" int						system(const char* command); // Execute system command
 extern "C" long long				time(long long* seconds);
 
 enum codepages { CPNONE, CP1251, CPUTF8, CPU16BE, CPU16LE };
-enum crterrors {
-	NoCrtError,
-	ErrorFileNotFound, ErrorImagePluginNotFound, ErrorCompressPluginNotFound,
-	ErrorInvalidInputParameters, ErrorIllegalByteSequence,
-};
 namespace metrics {
 const codepages						code = CP1251;
 }

@@ -150,6 +150,18 @@
     <ClCompile Include="resource_dynamic.cpp">
       <Filter>draw\core</Filter>
     </ClCompile>
+    <ClCompile Include="surface_serial.cpp">
+      <Filter>draw\core</Filter>
+    </ClCompile>
+    <ClCompile Include="converter.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="dlgerr.cpp">
+      <Filter>runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="bstream.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -208,6 +220,12 @@
     </ClInclude>
     <ClInclude Include="resources.h">
       <Filter>draw\core</Filter>
+    </ClInclude>
+    <ClInclude Include="converter.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="bstream.h">
+      <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

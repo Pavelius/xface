@@ -118,9 +118,12 @@
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="array.cpp" />
     <ClCompile Include="bsreq.cpp" />
+    <ClCompile Include="bstream.cpp" />
     <ClCompile Include="collection.cpp" />
     <ClCompile Include="color.cpp" />
+    <ClCompile Include="converter.cpp" />
     <ClCompile Include="crt.cpp" />
+    <ClCompile Include="dlgerr.cpp" />
     <ClCompile Include="draw_button.cpp" />
     <ClCompile Include="draw_clipart.cpp" />
     <ClCompile Include="draw_control.cpp" />
@@ -149,6 +152,7 @@
     <ClCompile Include="io.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="stringcreator.cpp" />
+    <ClCompile Include="surface_serial.cpp" />
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="variable.cpp" />
     <ClCompile Include="win_clipboard.cpp" />
@@ -158,8 +162,10 @@
   <ItemGroup>
     <ClInclude Include="archive.h" />
     <ClInclude Include="bsreq.h" />
+    <ClInclude Include="bstream.h" />
     <ClInclude Include="collection.h" />
     <ClInclude Include="color.h" />
+    <ClInclude Include="converter.h" />
     <ClInclude Include="crt.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="draw_control.h" />

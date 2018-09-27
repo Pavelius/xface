@@ -48,7 +48,7 @@ struct dlgform : bsval {
 
 		constexpr reqfield(bsval v, const widget& e) : bsval(v), pw(&e), dropdown() {}
 
-		static void callback_edit() {
+		static void callback() {
 			auto focus = getfocus();
 			char temp[260]; current.get(temp, temp + sizeof(temp) - 1, true);
 			controls::textedit test(temp, sizeof(temp) - 1, true);
@@ -95,7 +95,7 @@ struct dlgform : bsval {
 
 		void execute() const override {
 			current = *this;
-			draw::execute(callback_edit);
+			draw::execute(callback);
 		}
 
 		int getnumber() const {

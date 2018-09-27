@@ -14,144 +14,6 @@ struct testinfo {
 	int				value;
 };
 
-struct fieldreq : cmdfd {
-
-	enum type_s { Text, Number };
-
-	type_s			type;
-	void*			source;
-	unsigned		maximum;
-	bool			isreference;
-	controls::list* dropdown;
-
-	static rect		current_rect;
-	static fieldreq	current;
-
-	fieldreq() = default;
-	constexpr fieldreq(type_s type, void* source, unsigned size, bool isreference) : type(type), source(source), maximum(size), isreference(isreference), dropdown(0) {}
-	constexpr fieldreq(aref<char> value) : fieldreq(Text, value.data, value.count - 1, false) {}
-	constexpr fieldreq(const char* &value) : fieldreq(Text, &value, sizeof(value), true) {}
-	constexpr fieldreq(int &value) : fieldreq(Number, &value, sizeof(value), false) {}
-	constexpr fieldreq(short &value) : fieldreq(Number, &value, sizeof(value), false) {}
-	constexpr fieldreq(char &value) : fieldreq(Number, &value, sizeof(value), false) {}
-
-	static void callback_edit() {
-		auto focus = getfocus();
-		char temp[260]; current.get(temp, temp + sizeof(temp) - 1, true);
-		controls::textedit test(temp, sizeof(temp) - 1, true);
-		setfocus((int)&test, true);
-		test.editing(current_rect);
-		current.set(temp);
-		setfocus(focus, true);
-	}
-
-	static void callback_increment() {
-		current.setnumber(current.getnumber() + hot.param);
-	}
-
-	static void callback_dropdown() {
-	}
-
-	int getid() const override {
-		return (int)source;
-	}
-
-	bool choose(bool run) const override {
-		if(!dropdown)
-			return false;
-		if(run) {
-			current = *this;
-			draw::execute(callback_dropdown);
-		}
-		return true;
-	}
-
-	bool increment(int step, bool run) const override {
-		if(type != Number)
-			return false;
-		if(run) {
-			current = *this;
-			draw::execute(callback_increment, step);
-		}
-		return true;
-	}
-
-	void set(const rect& value) const {
-		current_rect = value;
-	}
-
-	void execute() const override {
-		current = *this;
-		draw::execute(callback_edit);
-	}
-
-	int getnumber() const {
-		switch(maximum) {
-			case sizeof(char) : return *((char*)source);
-				case sizeof(short) : return *((short*)source);
-					case sizeof(int) : return *((int*)source);
-					default: return 0;
-		}
-	}
-
-	void setnumber(int value) const {
-		switch(maximum) {
-			case sizeof(char) : *((char*)source) = value; break;
-				case sizeof(short) : *((short*)source) = value; break;
-					case sizeof(int) : *((int*)source) = value; break;
-					default: break;
-		}
-	}
-
-	const char* get(char* result, const char* result_maximum, bool force_result) const {
-		switch(type) {
-		case Number:
-			szprints(result, result_maximum, "%1i", getnumber());
-			break;
-		case Text:
-			if(isreference) {
-				auto p = *((const char**)source);
-				if(!p)
-					return "";
-				if(!force_result)
-					return p;
-				szprints(result, result_maximum, p);
-			} else {
-				if(!force_result)
-					return (const char*)source;
-				unsigned maximum_count = result_maximum - result;
-				if(maximum < maximum_count)
-					maximum_count = maximum;
-				zcpy(result, (const char*)source, maximum_count);
-			}
-			break;
-		}
-		return result;
-	}
-
-	void set(const char* result) const {
-		switch(type) {
-		case Text:
-			if(!isreference)
-				zcpy((char*)source, result, maximum);
-			else {
-				const char* p = 0;
-				if(result[0])
-					p = szdup(result);
-				*((const char**)source) = p;
-			}
-			break;
-		case Number:
-			setnumber(sz2num(result));
-			break;
-		}
-	}
-
-};
-
-rect fieldreq::current_rect;
-fieldreq fieldreq::current;
-
 static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips = 0) {
 	auto result = button(x, y, width, 0, cmd(proc), title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
@@ -237,12 +99,6 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 	return (const char*)object;
 }
 
-template<typename T> static int field(int x, int y, int width, T& value, const char* title, int title_width, const char* tips = 0) {
-	char temp[260];
-	fieldreq field_requisit(value);
-	return field(x, y, width, TextSingleLine, field_requisit, field_requisit.get(temp, temp + sizeof(temp) - 1, false), tips, title, title_width);
-}
-
 static void disabled_button() {
 }
 
@@ -260,12 +116,11 @@ static void simple_controls() {
 			get_text, {}); y += 40;
 		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
-		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
-		y += button(x, y, 200, test_control, "Тестирование элементов");
-		y += button(x, y, 200, test_widget, "Тестирование виджетов");
+		image(x + 210, y, gres("cover", "art/pictures"), 0, 0);
+		y += button(x, y, 200, button_accept, "Графические примитивы", "Кнопка, которая отображает подсказку");
+		y += button(x, y, 200, test_control, "Элемент управления");
+		y += button(x, y, 200, test_widget, "Виджеты");
 		y += button(x, y, 200, Disabled, cmd(disabled_button), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
-		y += field(x, y, 400, t1, "Имя", 80, "Это подсказка текста для редактирования");
-		y += field(x, y, 400, t2, "Количество", 80);
 		domodal();
 	}
 }
@@ -296,9 +151,7 @@ int main() {
 	// Создание окна
 	create(-1, -1, 640, 480, WFResize | WFMinmax, 32);
 	setcaption("X-Face C++ library");
-	//basic_drawing();
 	simple_controls();
-	//test_widget();
 	return 0;
 }
 

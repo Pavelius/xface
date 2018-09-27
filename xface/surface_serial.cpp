@@ -86,27 +86,27 @@ draw::surface::surface(const char* url, color* pallette) :surface() {
 	read(url, pallette);
 }
 
-int draw::surface::read(const char* url, color* pallette, int need_bpp) {
+bool draw::surface::read(const char* url, color* pallette, int need_bpp) {
 	unsigned size;
 	resize(0, 0, 0, true);
 	unsigned char* pin = (unsigned char*)loadb(url, (int*)&size);
 	if(!pin)
-		return ErrorFileNotFound;
-	int e = NoCrtError;
+		return false;
+	auto result = false;
 	for(auto pv = surface::plugin::first; pv; pv = pv->next) {
 		int width, height, bpp;
 		if(pv->inspect(width, height, bpp, pin, size)) {
 			resize(width, height, bpp, true);
-			e = pv->decode(bits, pin, size, scanline);
-			if(e)
+			if(!pv->decode(bits, pin, size, scanline))
 				break;
 			if(need_bpp)
 				convert(need_bpp, pallette);
+			result = true;
 			break;
 		}
 	}
 	delete pin;
-	return e;
+	return result;
 }
 
 static struct bmp_bitmap_plugin : public draw::surface::plugin {
@@ -114,12 +114,12 @@ static struct bmp_bitmap_plugin : public draw::surface::plugin {
 	bmp_bitmap_plugin() : plugin("bmp", "BMP images\0*.bmp\0") {
 	}
 
-	int decode(unsigned char* output, const unsigned char* input, unsigned input_size, int& output_scanline) override {
+	bool decode(unsigned char* output, const unsigned char* input, unsigned input_size, int& output_scanline) override {
 		int width, height, bpp;
 		if(!output)
-			return ErrorInvalidInputParameters;
+			return false;
 		if(!inspect(width, height, bpp, input, input_size))
-			return ErrorIllegalByteSequence;
+			return false;
 		bpp = iabs(bpp);
 		auto ph = (bmp::header*)input;
 		auto pi = (bmp::info*)(input + sizeof(bmp::header));
@@ -137,7 +137,7 @@ static struct bmp_bitmap_plugin : public draw::surface::plugin {
 				e.write(d, x, output_bpp, 0);
 			}
 		}
-		return NoCrtError;
+		return true;
 	}
 
 	bool inspect(int& width, int& height, int& bpp, const unsigned char* input, unsigned size) override {
