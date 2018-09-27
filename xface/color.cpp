@@ -105,8 +105,10 @@ int	color::scanline(int width, int bpp) {
 	case 8:
 		return ((width + 3) / 4) * 4;
 	case 24:
+	case -24:
 		return ((width * 3 + 3) / 4) * 4;
 	case 32:
+	case -32:
 		return width * 4;
 	default:
 		return 0;
@@ -138,28 +140,28 @@ void color::read(const void* p1, int x, int bpp, const void* pallette) {
 		b = p[2];
 		a = 255;
 		break;
-	case 32:
+	case -32:
 		p = (unsigned char*)p1 + x * 4;
 		r = p[2];
 		g = p[1];
 		b = p[0];
 		a = p[3];
 		break;
-	case -32:
+	case 32:
 		p = (unsigned char*)p1 + x * 4;
 		r = p[0];
 		g = p[1];
 		b = p[2];
 		a = p[3];
 		break;
-	case 24:
+	case -24:
 		p = (unsigned char*)p1 + x * 3;
 		r = p[2];
 		g = p[1];
 		b = p[0];
 		a = 255;
 		break;
-	case -24:
+	case 24:
 		p = (unsigned char*)p1 + x * 3;
 		r = p[0];
 		g = p[1];
@@ -185,20 +187,17 @@ void color::write(void* p1, int x, int bpp, const void* pallette, int color_coun
 			color_count = 256;
 		*((unsigned char*)p1 + x) = find(pallette, color_count);
 		break;
-	case 32:
-		((color*)p1)[x] = *this;
-		break;
 	case -32:
+		((color*)p1)[x].r = r;
+		((color*)p1)[x].g = g;
+		((color*)p1)[x].b = b;
+		((color*)p1)[x].a = a;
+		break;
+	case 32:
 		((color*)p1)[x].r = b;
 		((color*)p1)[x].g = g;
 		((color*)p1)[x].b = r;
 		((color*)p1)[x].a = a;
-		break;
-	case 24:
-		p = (unsigned char*)p1 + x * 3;
-		p[0] = b;
-		p[1] = g;
-		p[2] = r;
 		break;
 	case -24:
 		p = (unsigned char*)p1 + x * 3;
@@ -206,12 +205,27 @@ void color::write(void* p1, int x, int bpp, const void* pallette, int color_coun
 		p[1] = g;
 		p[2] = b;
 		break;
+	case 24:
+		p = (unsigned char*)p1 + x * 3;
+		p[0] = b;
+		p[1] = g;
+		p[2] = r;
+		break;
 	}
 }
 
 void color::convert(void* output, int width, int height, int output_bpp, const void* output_pallette, const void* input, int input_bpp, const void* input_pallette, int input_scanline) {
+	if(output_bpp == input_bpp)
+		return;
 	int isc = (input_scanline == 0) ? scanline(width, input_bpp) : input_scanline;
 	int osc = scanline(width, output_bpp);
+	const void* input_static = 0;
+	auto abs_output_bpp = iabs(output_bpp);
+	auto abs_input_bpp = iabs(input_bpp);
+	if(abs_output_bpp > abs_input_bpp && input==output) {
+		input_static = input;
+		input = new char[isc*height];
+	}
 	unsigned char* ip = (unsigned char*)input;
 	unsigned char* op = (unsigned char*)output;
 	color e;
@@ -223,6 +237,8 @@ void color::convert(void* output, int width, int height, int output_bpp, const v
 		op += osc;
 		ip += isc;
 	}
+	if(input_static)
+		delete input;
 }
 
 void color::flipv(unsigned char* bits, unsigned scanline, int height) {

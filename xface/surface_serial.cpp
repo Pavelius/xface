@@ -96,11 +96,11 @@ bool draw::surface::read(const char* url, color* pallette, int need_bpp) {
 	for(auto pv = surface::plugin::first; pv; pv = pv->next) {
 		int width, height, bpp;
 		if(pv->inspect(width, height, bpp, pin, size)) {
-			resize(width, height, bpp, true);
-			if(!pv->decode(bits, pin, size, scanline))
+			if(!need_bpp)
+				need_bpp = 32;
+			resize(width, height, need_bpp, true);
+			if(!pv->decode(bits, need_bpp, pin, size))
 				break;
-			if(need_bpp)
-				convert(need_bpp, pallette);
 			result = true;
 			break;
 		}
@@ -114,24 +114,22 @@ static struct bmp_bitmap_plugin : public draw::surface::plugin {
 	bmp_bitmap_plugin() : plugin("bmp", "BMP images\0*.bmp\0") {
 	}
 
-	bool decode(unsigned char* output, const unsigned char* input, unsigned input_size, int& output_scanline) override {
-		int width, height, bpp;
+	bool decode(unsigned char* output, int output_bpp, const unsigned char* input, unsigned input_size) override {
+		int width, height, input_bpp;
 		if(!output)
 			return false;
-		if(!inspect(width, height, bpp, input, input_size))
+		if(!inspect(width, height, input_bpp, input, input_size))
 			return false;
-		bpp = iabs(bpp);
 		auto ph = (bmp::header*)input;
 		auto pi = (bmp::info*)(input + sizeof(bmp::header));
 		unsigned char* ppal = (unsigned char*)pi + sizeof(bmp::info);
 		unsigned char* pb = (unsigned char*)input + ph->bits;
-		int output_bpp = bpp;
-		int input_bpp = bpp;
-		int input_scanline = color::scanline(width, input_bpp);
+		auto input_scanline = color::scanline(width, input_bpp);
+		auto output_scanline = color::scanline(width, output_bpp);
 		color e;
 		for(int y = 0; y < height; y++) {
 			unsigned char* d = output + y * output_scanline;
-			unsigned char* s = pb + ((pi->height < 0) ? y * input_scanline : (pi->height - y - 1)*input_scanline);
+			unsigned char* s = pb + ((pi->height < 0) ? y : (pi->height - y - 1))*input_scanline;
 			for(int x = 0; x < width; x++) {
 				e.read(s, x, input_bpp, ppal);
 				e.write(d, x, output_bpp, 0);
@@ -147,7 +145,7 @@ static struct bmp_bitmap_plugin : public draw::surface::plugin {
 		auto pi = (bmp::info*)(input + sizeof(bmp::header));
 		width = pi->width;
 		height = pi->height;
-		bpp = -pi->bpp;
+		bpp = pi->bpp;
 		return true;
 	}
 

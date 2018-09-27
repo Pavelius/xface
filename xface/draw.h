@@ -177,7 +177,7 @@ struct surface {
 		//
 		plugin(const char* name, const char* filter);
 		//
-		virtual bool	decode(unsigned char* output, const unsigned char* input, unsigned size, int& output_scanline) = 0;
+		virtual bool	decode(unsigned char* output, int output_bpp, const unsigned char* input, unsigned input_size) = 0;
 		virtual bool	inspect(int& w, int& h, int& bpp, const unsigned char* input, unsigned size) = 0;
 	};
 	int					width;

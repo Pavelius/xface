@@ -108,6 +108,8 @@ static void simple_controls() {
 	int current_hilite;
 	const char* t1 = "Тест 1";
 	char t2 = 20;
+	draw::surface dcbmp("art/pictures/flower.bmp");
+	//draw::surface dcbmp("art/pictures/goofy.png");
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
@@ -116,7 +118,8 @@ static void simple_controls() {
 			get_text, {}); y += 40;
 		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
-		image(x + 210, y, gres("cover", "art/pictures"), 0, 0);
+		//image(x + 210, y, gres("flower", "art/pictures"), 0, 0);
+		blit(*canvas, x + 210, y, dcbmp.width, dcbmp.height, 0, dcbmp, 0, 0);
 		y += button(x, y, 200, button_accept, "Графические примитивы", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Элемент управления");
 		y += button(x, y, 200, test_widget, "Виджеты");

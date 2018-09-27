@@ -126,7 +126,8 @@ int io::file::seek(int pos, int rel) {
 }
 
 bool io::file::exist(const char* url) {
-	return GetFileAttributesA(url) != 0xFFFFFFFF;
+	auto f = GetFileAttributesA(url);
+	return f != 0xFFFFFFFF;
 }
 
 bool io::file::makedir(const char* url) {
