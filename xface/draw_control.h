@@ -22,14 +22,13 @@ private:
 	callback_proc		id;
 	int					param;
 };
-struct cmdfd {
-	virtual int			getid() const = 0;
+struct cmdfd : runable {
 	virtual bool		choose(bool run) const { return false; }
 	virtual bool		clear(bool run) const { return false; }
 	virtual bool		dropdown(const rect& rc, bool run) const { return false; }
-	virtual void		execute(const rect& rc) const = 0;
 	virtual bool		increment(int step, bool run) const { return false; }
 	virtual bool		open(bool run) const { return false; }
+	virtual void		set(const rect& value) const {}
 };
 struct widget {
 	unsigned			flags;

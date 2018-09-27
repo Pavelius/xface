@@ -27,8 +27,10 @@ static bool editstart(const rect& rc, unsigned flags, const cmdfd& callback_edit
 		result = (hot.key&CommandMask) >= KeyLeft;
 		break;
 	}
-	if(result)
-		callback_edit.execute(rc);
+	if(result) {
+		callback_edit.set(rc);
+		callback_edit.execute();
+	}
 	return result;
 }
 

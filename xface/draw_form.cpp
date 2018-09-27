@@ -89,9 +89,12 @@ struct dlgform : bsval {
 			return true;
 		}
 
-		void execute(const rect& rc) const override {
+		void set(const rect& value) const {
+			current_rect = value;
+		}
+
+		void execute() const override {
 			current = *this;
-			current_rect = rc;
 			draw::execute(callback_edit);
 		}
 

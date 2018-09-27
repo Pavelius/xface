@@ -14,39 +14,6 @@ struct testinfo {
 	int				value;
 };
 
-struct radioreq : variable, runable {
-	constexpr radioreq() : variable(), value() {}
-	template<typename T> constexpr radioreq(T& v, unsigned value) : variable(v), value(value) {}
-	void			execute() const override { current = *this; draw::execute(callback_proc); }
-	int				getid() const { return (int)((char*)data + value); }
-	unsigned		getfocus() const { return is() ? Checked : 0; }
-	bool			is() const { return get() == value; }
-private:
-	static radioreq	current;
-	static void callback_proc() {
-		current.set(current.value);
-	}
-	unsigned		value;
-};
-radioreq radioreq::current;
-
-struct checkreq : variable, runable {
-	constexpr checkreq() : variable(), value() {}
-	template<typename T> constexpr checkreq(T& v, unsigned value) : variable(v), value(value) {}
-	void			execute() const override { current = *this; draw::execute(callback_proc); }
-	int				getid() const { return (int)((char*)data + value); }
-	unsigned		getfocus() const { return is() ? Checked : 0; }
-	bool			is() const { return get() == value; }
-private:
-	static checkreq	current;
-	static void callback_proc() {
-		auto v = current.get() ^ current.value;
-		current.set(v);
-	}
-	unsigned		value;
-};
-checkreq checkreq::current;
-
 struct fieldreq : cmdfd {
 
 	enum type_s { Text, Number };
@@ -109,9 +76,12 @@ struct fieldreq : cmdfd {
 		return true;
 	}
 
-	void execute(const rect& rc) const override {
+	void set(const rect& value) const {
+		current_rect = value;
+	}
+
+	void execute() const override {
 		current = *this;
-		current_rect = rc;
 		draw::execute(callback_edit);
 	}
 
@@ -267,32 +237,6 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 	return (const char*)object;
 }
 
-static int radio(int x, int y, int width, unsigned& source, unsigned value, const char* title, const char* tips = 0) {
-	radioreq cmd(source, value);
-	auto result = draw::radio(x, y, width, cmd.getfocus(), cmd, title, tips);
-	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
-	if(areb(rc)) {
-		if(tips)
-			statusbar("Радио кнопка %1", tips);
-		else
-			statusbar("Радио кнопка с координатами x=%1i, y=%2i", x, y);
-	}
-	return result;
-}
-
-static int checkbox(int x, int y, int width, unsigned& source, unsigned value, const char* title, const char* tips = 0) {
-	checkreq cmd(source, value);
-	auto result = draw::checkbox(x, y, width, cmd.getfocus(), cmd, title, tips);
-	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
-	if(areb(rc)) {
-		if(tips)
-			statusbar("Чекбокс кнопка %1", tips);
-		else
-			statusbar("Чекбокс кнопка с координатами x=%1i, y=%2i", x, y);
-	}
-	return result;
-}
-
 template<typename T> static int field(int x, int y, int width, T& value, const char* title, int title_width, const char* tips = 0) {
 	char temp[260];
 	fieldreq field_requisit(value);
@@ -319,14 +263,9 @@ static void simple_controls() {
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Тестирование элементов");
 		y += button(x, y, 200, test_widget, "Тестирование виджетов");
-		//y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmd(disabled_button), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
-		y += checkbox(x, y, 200, check_button, 2, "Галочка которая выводится и меняет значение чекбокса.");
 		y += field(x, y, 400, t1, "Имя", 80, "Это подсказка текста для редактирования");
 		y += field(x, y, 400, t2, "Количество", 80);
-		y += radio(x, y, 200, radio_button, 1, "Первый элемент списка.");
-		y += radio(x, y, 200, radio_button, 2, "Второй элемент возможного выбора.");
-		y += radio(x, y, 200, radio_button, 3, "Третий элемент этого выбора.");
 		domodal();
 	}
 }
