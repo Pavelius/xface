@@ -1,3 +1,5 @@
+#include "collection.h"
+#include "crt.h"
 #include "bsreq.h"
 #include "draw_control.h"
 
@@ -40,6 +42,120 @@ struct dlgform : bsval {
 			current.set(current.pw->value);
 		}
 		const widget*	pw;
+	};
+
+	struct reqfield : bsval, cmdfd {
+
+		constexpr reqfield(bsval v, const widget& e) : bsval(v), pw(&e), dropdown() {}
+
+		static void callback_edit() {
+			auto focus = getfocus();
+			char temp[260]; current.get(temp, temp + sizeof(temp) - 1, true);
+			controls::textedit test(temp, sizeof(temp) - 1, true);
+			setfocus((int)&test, true);
+			test.editing(current_rect);
+			current.set(temp);
+			setfocus(focus, true);
+		}
+
+		static void callback_increment() {
+			current.setnumber(current.getnumber() + hot.param);
+		}
+
+		static void callback_dropdown() {
+		}
+
+		int getid() const override {
+			return (int)pw;
+		}
+
+		bool choose(bool run) const override {
+			if(!dropdown)
+				return false;
+			if(run) {
+				current = *this;
+				draw::execute(callback_dropdown);
+			}
+			return true;
+		}
+
+		bool increment(int step, bool run) const override {
+			if(getcontrol(pw->flags)==Text)
+				return false;
+			if(run) {
+				current = *this;
+				draw::execute(callback_increment, step);
+			}
+			return true;
+		}
+
+		void execute(const rect& rc) const override {
+			current = *this;
+			current_rect = rc;
+			draw::execute(callback_edit);
+		}
+
+		int getnumber() const {
+			return bsval::get();
+		}
+
+		void setnumber(int value) {
+			bsval::set(value);
+		}
+
+		const char* get(char* result, const char* result_maximum, bool force_result) const {
+			switch(pw->flags&ControlMask) {
+			case Number:
+				szprints(result, result_maximum, "%1i", getnumber());
+				break;
+			case Text:
+				if(type->reference) {
+					auto p = (const char*)bsval::get();
+					if(!p)
+						return "";
+					if(!force_result)
+						return p;
+					szprints(result, result_maximum, p);
+				} else {
+					auto p = (const char*)type->ptr(data);
+					if(!force_result)
+						return p;
+					auto maximum = type->size;
+					unsigned maximum_count = result_maximum - result;
+					if(maximum < maximum_count)
+						maximum_count = maximum;
+					zcpy(result, p, maximum_count);
+				}
+				break;
+			}
+			return result;
+		}
+
+		void set(const char* result) const {
+			//switch(type) {
+			//case Text:
+			//	if(!isreference)
+			//		zcpy((char*)source, result, maximum);
+			//	else {
+			//		const char* p = 0;
+			//		if(result[0])
+			//			p = szdup(result);
+			//		*((const char**)source) = p;
+			//	}
+			//	break;
+			//case Number:
+			//	setnumber(sz2num(result));
+			//	break;
+			//}
+		}
+
+	private:
+	
+		controls::list* dropdown;
+		const widget*	pw;
+		static rect		current_rect;
+		static reqfield	current;
+
 	};
 
 	unsigned getflags(const widget& e) const {

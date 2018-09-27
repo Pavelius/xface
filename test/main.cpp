@@ -252,7 +252,7 @@ static void test_widget() {
 	{}};
 	static widget elements[] = {{Check, "mark", "Простая пометка"},
 	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
-	{Button, "button1", "Нажми, чтобы появлись элементы", 0, 0, 0, 0, 0, 0, 0},
+	{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, buttoncancel},
 	{}};
 	element test = {0};
 	while(ismodal()) {
@@ -317,7 +317,7 @@ static void simple_controls() {
 		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
 		y += button(x, y, 200, button_accept, "Просто обычная кнопка", "Кнопка, которая отображает подсказку");
-		//y += button(x, y, 200, test_control, "Тестирование элементов");
+		y += button(x, y, 200, test_control, "Тестирование элементов");
 		y += button(x, y, 200, test_widget, "Тестирование виджетов");
 		//y += button(x, y, 200, test_edit, "Редактирование текста");
 		y += button(x, y, 200, Disabled, cmd(disabled_button), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
