@@ -43,7 +43,7 @@ bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;
 // Locale draw variables
 static draw::surface default_surface;
-draw::plugin*	draw::plugin::first;
+draw::plugin*		draw::plugin::first;
 draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
 // Drag
@@ -59,6 +59,8 @@ sprite*				metrics::h2 = (sprite*)loadb("art/fonts/h2.pma");
 sprite*				metrics::h3 = (sprite*)loadb("art/fonts/h3.pma");
 int					metrics::scroll = 16;
 int					metrics::padding = 4;
+static bool			break_modal;
+static int			break_result;
 
 float sqrt(const float x) {
 	const float xhalf = 0.5f*x;
@@ -2120,11 +2122,29 @@ plugin::plugin(int priority) : next(0), priority(priority) {
 	}
 }
 
-bool draw::defproc(int id) {
-	for(auto p = plugin::first; p; p = p->next) {
-		if(p->translate(id))
-			return true;
-	}
+void draw::breakmodal(int result) {
+	break_modal = true;
+	break_result = result;
+}
+
+void draw::buttoncancel() {
+	breakmodal(0);
+}
+
+void draw::buttonok() {
+	breakmodal(1);
+}
+
+int draw::getresult() {
+	return break_result;
+}
+
+bool draw::ismodal() {
+	for(auto p = plugin::first; p; p = p->next)
+		p->before();
+	if(!break_modal)
+		return true;
+	break_modal = false;
 	return false;
 }
 

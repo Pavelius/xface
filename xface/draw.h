@@ -235,9 +235,9 @@ extern color			fore; // Foreground color (curently selected color)
 extern color			fore_stroke; // foreground stroke color
 extern const sprite*	font; // Currently selected font
 //
+void					addelement(int id, const rect& rc);
 int						aligned(int x, int width, unsigned state, int string_width);
 int						alignedh(const rect& rc, const char* string, unsigned state);
-void					addelement(int id, const rect& rc);
 areas					area(rect rc);
 bool					areb(rect rc);
 void					bezier(int x0, int y0, int x1, int y1, int x2, int y2);
@@ -253,9 +253,8 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
-bool					defproc(int id);
+void					domodal();
 void					execute(void(*callback)(), int value = 0);
-//void					execute(int id, int value = 0);
 void					execute(const hotinfo& id);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
@@ -288,7 +287,6 @@ void					linet(int x1, int y1, int x2, int y2);
 inline void				linet(point p1, point p2) { linet(p1.x, p1.y, p2.x, p2.y); }
 extern float			linw;
 extern char				link[4096];
-int						modal(void(*callback)());
 extern bool				mouseinput;
 extern color*			palt;
 void					pixel(int x, int y);
