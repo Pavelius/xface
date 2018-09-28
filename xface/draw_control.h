@@ -26,6 +26,7 @@ struct cmdfd : runable {
 	virtual bool		choose(bool run) const { return false; }
 	virtual bool		clear(bool run) const { return false; }
 	virtual bool		dropdown(const rect& rc, bool run) const { return false; }
+	virtual const char*	get(char* result, const char* result_maximum, bool force_result) const { result[0] = 0; return result; }
 	virtual bool		increment(int step, bool run) const { return false; }
 	virtual bool		open(bool run) const { return false; }
 	virtual void		set(const rect& value) const {}
@@ -194,7 +195,7 @@ struct form : control {
 }
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
-int						field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, const char* header_label, int header_width);
+int						field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						render(int x, int y, int width, const bsval& value, const widget* element);
 void					setposition(int& x, int& y, int width, int padding = -1);

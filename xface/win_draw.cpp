@@ -18,50 +18,64 @@ extern bool		sys_optimize_mouse_move;
 extern rect		sys_static_area;
 static bool		use_mouse = true;
 
-static int tokey(int vk) {
-	switch(vk) {
-	case VK_CONTROL: return Ctrl;
-	case VK_MENU: return Alt;
-	case VK_SHIFT: return Shift;
-	case VK_LEFT: return KeyLeft;
-	case VK_RIGHT: return KeyRight;
-	case VK_UP: return KeyUp;
-	case VK_DOWN: return KeyDown;
-	case VK_PRIOR: return KeyPageUp;
-	case VK_NEXT: return KeyPageDown;
-	case VK_HOME: return KeyHome;
-	case VK_END: return KeyEnd;
-	case VK_BACK: return KeyBackspace;
-	case VK_DELETE: return KeyDelete;
-	case VK_RETURN: return KeyEnter;
-	case VK_ESCAPE: return KeyEscape;
-	case VK_SPACE: return KeySpace;
-	case VK_TAB: return KeyTab;
-	case VK_F1: return F1;
-	case VK_F2: return F2;
-	case VK_F3: return F3;
-	case VK_F4: return F4;
-	case VK_F5: return F5;
-	case VK_F6: return F6;
-	case VK_F7: return F7;
-	case VK_F8: return F8;
-	case VK_F9: return F9;
-	case VK_F10: return F10;
-	case VK_F11: return F11;
-	case VK_F12: return F12;
-	case VK_MULTIPLY: return Alpha + (unsigned)'*';
-	case VK_DIVIDE: return Alpha + (unsigned)'/';
-	case VK_ADD: return Alpha + (unsigned)'+';
-	case VK_SUBTRACT: return Alpha + (unsigned)'-';
-	case VK_OEM_COMMA: return Alpha + (unsigned)',';
-	case VK_OEM_PERIOD: return Alpha + (unsigned)'.';
-	default: return Alpha + vk;
+static struct sys_key_mapping {
+	int			key;
+	int			id;
+} sys_key_mapping_data[] = {{VK_CONTROL, Ctrl},
+{VK_MENU, Alt},
+{VK_SHIFT, Shift},
+{VK_LEFT, KeyLeft},
+{VK_RIGHT, KeyRight},
+{VK_UP, KeyUp},
+{VK_DOWN, KeyDown},
+{VK_PRIOR, KeyPageUp},
+{VK_NEXT, KeyPageDown},
+{VK_HOME, KeyHome},
+{VK_END, KeyEnd},
+{VK_BACK, KeyBackspace},
+{VK_DELETE, KeyDelete},
+{VK_RETURN, KeyEnter},
+{VK_ESCAPE, KeyEscape},
+{VK_SPACE, KeySpace},
+{VK_TAB, KeyTab},
+{VK_F1, F1},
+{VK_F2, F2},
+{VK_F3, F3},
+{VK_F4, F4},
+{VK_F5, F5},
+{VK_F6, F6},
+{VK_F7, F7},
+{VK_F8, F8},
+{VK_F9, F9},
+{VK_F10, F10},
+{VK_F11, F11},
+{VK_F12, F12},
+{VK_MULTIPLY, Alpha + (unsigned)'*'},
+{VK_DIVIDE, Alpha + (unsigned)'/'},
+{VK_ADD, Alpha + (unsigned)'+'},
+{VK_SUBTRACT, Alpha + (unsigned)'-'},
+{VK_OEM_COMMA, Alpha + (unsigned)','},
+{VK_OEM_PERIOD, Alpha + (unsigned)'.'},
+};
+
+static int tokey(unsigned key) {
+	for(auto& e : sys_key_mapping_data) {
+		if(e.key == key)
+			return e.id;
 	}
+	return Alpha + key;
+}
+
+static int tovkey(unsigned id) {
+	for(auto& e : sys_key_mapping_data) {
+		if(e.id == id)
+			return e.key;
+	}
+	return id - Alpha;
 }
 
 static void set_cursor(cursors e) {
-	static void* data[] =
-	{
+	static void* data[] = {
 		LoadCursorA(0, (char*)32512),//IDC_ARROW
 		LoadCursorA(0, (char*)32649),//IDC_HAND
 		LoadCursorA(0, (char*)32644),//IDC_SIZEWE
@@ -350,4 +364,8 @@ void draw::settimer(unsigned milleseconds) {
 		SetTimer(hwnd, InputTimer, milleseconds, 0);
 	else
 		KillTimer(hwnd, InputTimer);
+}
+
+void draw::presskey(int id) {
+	PostMessageA(hwnd, WM_KEYDOWN, tovkey(id), 0);
 }

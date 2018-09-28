@@ -257,16 +257,16 @@ bool textedit::editing(rect rc) {
 				show_records = false;
 				break;
 			}
-			draw::execute(hot);
+			presskey(KeyEscape);
 			return false;
 		case KeyTab:
 		case KeyTab | Shift:
-			draw::execute(hot);
+			presskey(hot.key);
 			return true;
 		case KeyDown:
 		case KeyUp:
 		case F4:
-			draw::execute(hot);
+			presskey(hot.key);
 			return true;
 		case KeyEnter:
 			if(records && isshowrecords()) {
@@ -294,7 +294,7 @@ bool textedit::editing(rect rc) {
 				break;
 			}
 			if(!areb(rc) && hot.pressed) {
-				draw::execute(hot);
+				presskey(hot.key);
 				return true;
 			}
 			break;
@@ -431,9 +431,3 @@ unsigned textedit::paste(bool run) {
 //			select(p1 + x, false);
 //		}
 //		break;
-
-//control::command textedit::commands[] = {
-//	CONTROL_ICN(copy, "Копировать", Ctrl + Alpha + 'C', 4),
-//	CONTROL_ICN(paste, "Вставить", Ctrl + Alpha + 'V', 5),
-//	{0}
-//};

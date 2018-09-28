@@ -11,7 +11,7 @@ extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 enum draw_event_s {
 	// common controls
 	NoField,
-	Text, Number, Check, Radio, Button, Image,
+	Text, Field, Check, Radio, Button, Image,
 	Tabs, Group,
 	ControlMask = 0xF,
 	// input events
@@ -255,7 +255,6 @@ void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 void					domodal();
 void					execute(void(*callback)(), int value = 0);
-void					execute(const hotinfo& id);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
 int						getbpp();
@@ -291,6 +290,7 @@ extern bool				mouseinput;
 extern color*			palt;
 void					pixel(int x, int y);
 void					pixel(int x, int y, unsigned char alpha);
+void					presskey(int id);
 unsigned char*			ptr(int x, int y);
 int						rawinput();
 void					rectb(rect rc); // Draw rectangle border

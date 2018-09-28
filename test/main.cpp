@@ -48,7 +48,7 @@ static void button_accept() {
 
 static void test_control() {
 	static controls::column columns[] = {{Text, "name", "Наименование", 200},
-	{Number, "count", "К-во", 32},
+	{Field, "count", "К-во", 32},
 	{}};
 	controls::table test(columns);
 	while(ismodal()) {
@@ -63,6 +63,7 @@ static void test_control() {
 
 static void test_widget() {
 	struct element {
+		const char*		surname;
 		const char*		name;
 		int				mark;
 		char			radio;
@@ -71,6 +72,7 @@ static void test_widget() {
 		BSREQ(element, mark, number_type),
 		BSREQ(element, radio, number_type),
 		BSREQ(element, name, text_type),
+		BSREQ(element, surname, text_type),
 	{}};
 	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
 	{Radio, "radio", "Nokia", 1},
@@ -87,10 +89,13 @@ static void test_widget() {
 	static widget elements[] = {{Text, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
 	{Check, "mark", "Простая пометка"},
 	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
-	{Number, "name", "Текст"},
+	{Field, "name", "Имя"},
+	{Field, "surname", "Фамилия"},
 	{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, buttoncancel},
 	{}};
 	element test = {0};
+	test.mark = 1;
+	test.radio = 2;
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);

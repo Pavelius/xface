@@ -36,7 +36,7 @@ void table::row(rect rc, int index) const {
 			if(p)
 				draw::text(rt, p, columns[i].flags);
 			break;
-		case Number:
+		case Field:
 			number_value = getnumber(index, i);
 			if((columns[i].flags & HideZero) == 0 || number_value != 0) {
 				szprints(temp, temp + sizeof(temp) + 1, "%1i", number_value);

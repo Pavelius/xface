@@ -17,8 +17,8 @@ static bool editstart(const rect& rc, unsigned flags, const cmdfd& callback_edit
 	case MouseLeftDBL:
 	case MouseRight:
 		result = draw::areb(rc);
-		if(result)
-			execute(hot);
+		//if(result)
+		//	execute(hot);
 		break;
 	case InputSymbol:
 		result = true;
@@ -34,7 +34,7 @@ static bool editstart(const rect& rc, unsigned flags, const cmdfd& callback_edit
 	return result;
 }
 
-int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, const char* header_label, int header_width) {
+int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* header_label, const char* tips, int header_width) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
@@ -73,6 +73,8 @@ int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const
 	if(focused)
 		enter_edit = editstart(rc, flags, cmd);
 	if(!enter_edit) {
+		char temp[260];
+		auto label = cmd.get(temp, zendof(temp), false);
 		if(label) {
 			if(isfocused(flags))
 				draw::texte(rc + metrics::edit, label, flags, 0, zlen(label));

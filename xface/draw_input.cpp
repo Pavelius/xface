@@ -163,10 +163,11 @@ void draw::execute(void(*proc)(), int param) {
 	hot.param = param;
 }
 
-void draw::execute(const hotinfo& value) {
-	keep_hot = true;
-	keep_hot_value = value;
-}
+//void draw::execute(const hotinfo& value) {
+//	keep_hot = true;
+//	keep_hot_value = value;
+//	hot.key = InputUpdate;
+//}
 
 void draw::domodal() {
 	if(hot.key == InputUpdate) {
@@ -181,6 +182,8 @@ void draw::domodal() {
 		for(auto p = plugin::first; p; p = p->next)
 			p->before();
 		proc();
+		if(keep_hot)
+			return;
 		for(auto p = plugin::first; p; p = p->next)
 			p->before();
 		hot.key = InputUpdate;

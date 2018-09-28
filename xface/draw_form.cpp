@@ -51,7 +51,7 @@ struct dlgform : bsval {
 
 		static void callback() {
 			auto focus = getfocus();
-			char temp[260]; current.get(temp, temp + sizeof(temp) - 1, true);
+			char temp[4096]; current.get(temp, temp + sizeof(temp) - 1, true);
 			controls::textedit test(temp, sizeof(temp) - 1, true);
 			setfocus((int)&test, true);
 			test.editing(current_rect);
@@ -81,7 +81,7 @@ struct dlgform : bsval {
 		}
 
 		bool increment(int step, bool run) const override {
-			if(getcontrol(pw->flags)==Text)
+			if(type->type!=number_type)
 				return false;
 			if(run) {
 				current = *this;
@@ -103,15 +103,13 @@ struct dlgform : bsval {
 			bsval::set(value);
 		}
 
-		const char* get(char* result, const char* result_maximum, bool force_result) const {
-			switch(pw->flags&ControlMask) {
-			case Number:
+		const char* get(char* result, const char* result_maximum, bool force_result) const override {
+			if(type->type==number_type)
 				szprints(result, result_maximum, "%1i", getnumber());
-				break;
-			case Text:
+			else if(type->type==text_type) {
 				if(type->reference) {
 					auto p = (const char*)bsval::get();
-					if(!p)
+					if(!p && !force_result)
 						return "";
 					if(!force_result)
 						return p;
@@ -126,7 +124,6 @@ struct dlgform : bsval {
 						maximum_count = maximum;
 					zcpy(result, p, maximum_count);
 				}
-				break;
 			}
 			return result;
 		}
@@ -135,26 +132,24 @@ struct dlgform : bsval {
 			current_rect = value;
 		}
 
-		void set(const char* result) const {
-			//switch(type) {
-			//case Text:
-			//	if(!isreference)
-			//		zcpy((char*)source, result, maximum);
-			//	else {
-			//		const char* p = 0;
-			//		if(result[0])
-			//			p = szdup(result);
-			//		*((const char**)source) = p;
-			//	}
-			//	break;
-			//case Number:
-			//	setnumber(sz2num(result));
-			//	break;
-			//}
+		void set(const char* value) const {
+			if(type->type == text_type) {
+				auto p = (const char*)type->ptr(data);
+				if(!type->reference)
+					zcpy((char*)p, value, type->size);
+				else {
+					if(value[0])
+						value = szdup(value);
+					else
+						value = 0;
+					*((const char**)p) = value;
+				}
+			} else if(type->type == number_type)
+				((reqfield*)this)->setnumber(sz2num(value));
 		}
 
 	private:
-	
+
 		const widget*	pw;
 		controls::list* dropdown;
 		static rect		current_rect;
@@ -170,7 +165,7 @@ struct dlgform : bsval {
 		auto f = type->find(id);
 		if(!f)
 			return {0, 0};
-		return {f->type, (void*)f->ptr(data)};
+		return {f, (void*)data};
 	}
 
 	int vertical(int x, int y, int width, const widget* p) {
@@ -245,7 +240,7 @@ struct dlgform : bsval {
 			return 0;
 		auto flags = getflags(e);
 		reqfield ev(po, e);
-		return draw::field(x, y, width, flags, ev, "Test", e.tips, e.label, e.title);
+		return draw::field(x, y, width, flags, ev, e.label, e.tips, e.title);
 	}
 
 	int tabs(int x, int y, int width, const widget& e) {
@@ -311,7 +306,7 @@ struct dlgform : bsval {
 		if(!po)
 			return 0;
 		reqradio ev(po, e);
-		auto checked = (po.get()==e.value);
+		auto checked = (po.get() == e.value);
 		auto flags = getflags(e);
 		if(checked)
 			flags |= Checked;
@@ -328,7 +323,7 @@ struct dlgform : bsval {
 		if(!value)
 			value = 1;
 		reqcheck ev(po, e);
-		auto checked = (po.get()&value)!=0;
+		auto checked = (po.get()&value) != 0;
 		auto flags = getflags(e);
 		if(checked)
 			flags |= Checked;
@@ -362,8 +357,8 @@ struct dlgform : bsval {
 
 dlgform::reqcheck	dlgform::reqcheck::current;
 dlgform::reqradio	dlgform::reqradio::current;
-rect				dlgform::reqfield::current_rect;
 dlgform::reqfield	dlgform::reqfield::current;
+rect				dlgform::reqfield::current_rect;
 
 int draw::render(int x, int y, int width, const bsval& value, const widget* elements) {
 	dlgform e(value);
