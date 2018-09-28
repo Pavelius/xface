@@ -118,10 +118,10 @@ struct sprite : pma {
 	const unsigned char* edata() const { return (const unsigned char*)this + sizeof(sprite) + sizeof(frame)*(count - 1); }
 	int					ganim(int index, int tick);
 	const frame&		get(int id) const { return frames[(id >= count) ? 0 : id]; }
-	inline cicle*		gcicle(int index) { return (cicle*)offs(cicles_offset) + index; }
-	inline int			gindex(int index) const { return *((short unsigned*)((cicle*)offs(cicles_offset) + cicles) + index); }
+	inline cicle*		gcicle(int index) { return (cicle*)ptr(cicles_offset) + index; }
+	inline int			gindex(int index) const { return *((short unsigned*)((cicle*)ptr(cicles_offset) + cicles) + index); }
 	int					glyph(unsigned sym) const;
-	const unsigned char* offs(unsigned o) const { return (unsigned char*)this + o; }
+	const unsigned char* ptr(unsigned o) const { return (unsigned char*)this + o; }
 };
 typedef const char* (*proctext)(char* result, const char* result_maximum, void* object);
 namespace colors {

@@ -35,14 +35,15 @@ const sprite* draw::gres(const char* name, const char* folder) {
 			for(auto pg = surface::plugin::first; pg; pg = pg->next) {
 				szurl(temp, p->folder, p->name, pg->name);
 				if(dc.read(temp, 0, 32)) {
-					unsigned size = sizeof(sprite) + dc.width*dc.height * sizeof(color);
+					unsigned size = sizeof(sprite) + dc.width * dc.height * 3;
 					p->data = (sprite*)new char[size]; memset(p->data, 0, size);
 					p->data->frames[0].encode = sprite::RAW;
 					p->data->frames[0].sx = dc.width;
 					p->data->frames[0].sy = dc.height;
 					p->data->frames[0].offset = sizeof(sprite);
 					p->data->count = 1;
-					auto pd = (unsigned char*)p->data->offs(p->data->frames[0].offset);
+					// Дешевый и простой алгоритм сжатия без прозрачности
+					auto pd = (unsigned char*)p->data->ptr(p->data->frames[0].offset);
 					for(auto y = 0; y < dc.height; y++) {
 						for(auto x = 0; x < dc.width; x++) {
 							auto input = dc.ptr(x, y);

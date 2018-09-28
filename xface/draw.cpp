@@ -1776,7 +1776,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 		if(!f.pallette || (flags&ImagePallette))
 			pal = draw::palt;
 		else
-			pal = (color*)e->offs(f.pallette);
+			pal = (color*)e->ptr(f.pallette);
 		if(!pal)
 			return;
 		if(flags&ImageMirrorH)
@@ -1791,7 +1791,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 		if(!f.pallette || (flags&ImagePallette))
 			pal = draw::palt;
 		else
-			pal = (color*)e->offs(f.pallette);
+			pal = (color*)e->ptr(f.pallette);
 		if(!pal)
 			return;
 		if(flags&ImageMirrorH)
