@@ -1,8 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\..\formats\convert\zip.cpp" />
-    <ClCompile Include="..\..\formats\bitmap\png.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\png.cpp">
+      <Filter>Плагины\Графика</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\convert\zip.cpp">
+      <Filter>Плагины\Кодировка</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Логика</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\bitmap\pcx.cpp">
+      <Filter>Плагины\Графика</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\bitmap\tga.cpp">
+      <Filter>Плагины\Графика</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\convert\rle.cpp">
+      <Filter>Плагины\Кодировка</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Плагины">
+      <UniqueIdentifier>{18231f2b-01f0-4519-b289-35816e53386d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Плагины\Графика">
+      <UniqueIdentifier>{f640751c-c851-4227-b891-08ef79a18d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Плагины\Кодировка">
+      <UniqueIdentifier>{10fbd381-8519-4b10-a4f7-19be8b5afe21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Логика">
+      <UniqueIdentifier>{2c36beed-c10b-4210-b306-73f5a5f37ccc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

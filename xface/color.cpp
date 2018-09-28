@@ -124,10 +124,10 @@ void color::read(const void* p1, int x, int bpp, const void* pallette) {
 	unsigned char* p;
 	switch(bpp) {
 	case 1:
-		a = 0;
+		r = g = b = a = 0;
 		break;
 	case 2:
-		a = 0;
+		r = g = b = a = 0;
 		break;
 	case 4:
 		a = 0;

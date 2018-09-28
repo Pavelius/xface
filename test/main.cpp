@@ -116,7 +116,7 @@ static void simple_controls() {
 			get_text, {}); y += 40;
 		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
-		image(x + 210, y, gres("cover", "art/pictures"), 0, 0);
+		image(x + 210, y, gres("theif", "art/pictures"), 0, 0);
 		y += button(x, y, 200, button_accept, "Графические примитивы", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Элемент управления");
 		y += button(x, y, 200, test_widget, "Виджеты");

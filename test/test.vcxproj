@@ -125,7 +125,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\formats\bitmap\pcx.cpp" />
     <ClCompile Include="..\..\formats\bitmap\png.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\tga.cpp" />
+    <ClCompile Include="..\..\formats\convert\rle.cpp" />
     <ClCompile Include="..\..\formats\convert\zip.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
