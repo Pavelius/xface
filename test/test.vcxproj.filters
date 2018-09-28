@@ -19,6 +19,9 @@
     <ClCompile Include="..\..\formats\convert\rle.cpp">
       <Filter>Плагины\Кодировка</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\formats\bitmap\cps.cpp">
+      <Filter>Плагины\Графика</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Плагины">
