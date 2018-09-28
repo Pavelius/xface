@@ -42,7 +42,16 @@ const sprite* draw::gres(const char* name, const char* folder) {
 					p->data->frames[0].sy = dc.height;
 					p->data->frames[0].offset = sizeof(sprite);
 					p->data->count = 1;
-					memcpy((void*)p->data->offs(p->data->frames[0].offset), dc.ptr(0, 0), dc.width*dc.height * sizeof(color));
+					auto pd = (unsigned char*)p->data->offs(p->data->frames[0].offset);
+					for(auto y = 0; y < dc.height; y++) {
+						for(auto x = 0; x < dc.width; x++) {
+							auto input = dc.ptr(x, y);
+							pd[0] = input[0];
+							pd[1] = input[1];
+							pd[2] = input[2];
+							pd += 3;
+						}
+					}
 					break;
 				}
 			}
