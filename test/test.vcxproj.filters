@@ -22,6 +22,9 @@
     <ClCompile Include="..\..\formats\bitmap\cps.cpp">
       <Filter>Плагины\Графика</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\formats\convert\base64.cpp">
+      <Filter>Плагины\Кодировка</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Плагины">
