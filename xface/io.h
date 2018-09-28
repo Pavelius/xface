@@ -41,7 +41,7 @@ struct stream {
 	void				writescan(void* p, int width, int heght, int scan_line, int element_size);
 	int					writesig(const char* signature) { return write(signature, 4); }
 };
-struct sequence : public stream {
+struct sequence : stream {
 	int					read(void* result, int count) override;
 	int					write(const void* result, int count) override;
 	int					seek(int count, int rel = SeekCur) override;
@@ -54,7 +54,7 @@ private:
 	//
 	void				makecashe(int count);
 };
-struct file : public stream {
+struct file : stream {
 	struct find {
 		find(const char* url);
 		~find();

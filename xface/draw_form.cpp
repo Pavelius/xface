@@ -46,6 +46,7 @@ struct dlgform : bsval {
 
 	struct reqfield : bsval, cmdfd {
 
+		reqfield() = default;
 		constexpr reqfield(bsval v, const widget& e) : bsval(v), pw(&e), dropdown() {}
 
 		static void callback() {
@@ -89,10 +90,6 @@ struct dlgform : bsval {
 			return true;
 		}
 
-		void set(const rect& value) const {
-			current_rect = value;
-		}
-
 		void execute() const override {
 			current = *this;
 			draw::execute(callback);
@@ -134,6 +131,10 @@ struct dlgform : bsval {
 			return result;
 		}
 
+		void set(const rect& value) const override {
+			current_rect = value;
+		}
+
 		void set(const char* result) const {
 			//switch(type) {
 			//case Text:
@@ -154,8 +155,8 @@ struct dlgform : bsval {
 
 	private:
 	
-		controls::list* dropdown;
 		const widget*	pw;
+		controls::list* dropdown;
 		static rect		current_rect;
 		static reqfield	current;
 
@@ -243,7 +244,8 @@ struct dlgform : bsval {
 		if(!po)
 			return 0;
 		auto flags = getflags(e);
-		return 0;
+		reqfield ev(po, e);
+		return draw::field(x, y, width, flags, ev, "Test", e.tips, e.label, e.title);
 	}
 
 	int tabs(int x, int y, int width, const widget& e) {
@@ -285,6 +287,21 @@ struct dlgform : bsval {
 		if(draw::link[0])
 			tooltips(link);
 		return height;
+	}
+
+	int decorimage(int x, int y, int width, const widget& e) {
+		auto flags = getflags(e);
+		auto y1 = y;
+		setposition(x, y, width);
+		auto sp = gres(e.id, e.label);
+		auto fr = sp->get(e.value);
+		width = fr.ox + fr.sx;
+		auto height = fr.oy + fr.sy;
+		image(x, y, sp, e.value, 0);
+		rect rc = {x, y, x + width, y + height};
+		rectb(rc, colors::border); rc.offset(-1);
+		rectb(rc, colors::border.mix(colors::window, 128));
+		return  y + rc.height() + metrics::padding - y1;
 	}
 
 	int radio(int x, int y, int width, const widget& e) {
@@ -332,7 +349,7 @@ struct dlgform : bsval {
 		typedef int (dlgform::*callback)(int, int, int, const widget&);
 		static callback methods[] = {
 			&dlgform::renderno,
-			&dlgform::field, &dlgform::field, &dlgform::check, &dlgform::radio, &dlgform::button, &dlgform::decoration,
+			&dlgform::decoration, &dlgform::field, &dlgform::check, &dlgform::radio, &dlgform::button, &dlgform::decorimage,
 			&dlgform::tabs, &dlgform::group
 		};
 		return (this->*methods[e.flags & WidgetMask])(x, y, width, e);
@@ -343,8 +360,10 @@ struct dlgform : bsval {
 
 };
 
-dlgform::reqcheck dlgform::reqcheck::current;
-dlgform::reqradio dlgform::reqradio::current;
+dlgform::reqcheck	dlgform::reqcheck::current;
+dlgform::reqradio	dlgform::reqradio::current;
+rect				dlgform::reqfield::current_rect;
+dlgform::reqfield	dlgform::reqfield::current;
 
 int draw::render(int x, int y, int width, const bsval& value, const widget* elements) {
 	dlgform e(value);

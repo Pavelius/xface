@@ -70,6 +70,7 @@ static void test_widget() {
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
 		BSREQ(element, radio, number_type),
+		BSREQ(element, name, text_type),
 	{}};
 	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
 	{Radio, "radio", "Nokia", 1},
@@ -79,18 +80,21 @@ static void test_widget() {
 	{Radio, "radio", "Glass", 4},
 	{Radio, "radio", "Keeps", 5},
 	{}};
-	static widget brands[] = {{Group, 0, 0, 0, 4, 0, 0, elements_left},
-	{Group, 0, 0, 0, 4, 0, 0, elements_right},
+	static widget brands[] = {{Image, "cat", "art/pictures", 0, 4},
+	{Group, 0, 0, 0, 3, 0, 0, elements_left},
+	{Group, 0, 0, 0, 3, 0, 0, elements_right},
 	{}};
-	static widget elements[] = {{Check, "mark", "Простая пометка"},
+	static widget elements[] = {{Text, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
+	{Check, "mark", "Простая пометка"},
 	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
+	{Number, "name", "Текст"},
 	{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, buttoncancel},
 	{}};
 	element test = {0};
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
-		draw::render(10, 10, 300, bsval(element_type, &test), elements);
+		draw::render(10, 10, 500, bsval(element_type, &test), elements);
 		domodal();
 	}
 }
@@ -116,7 +120,6 @@ static void simple_controls() {
 			get_text, {}); y += 40;
 		if(current_hilite != -1)
 			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
-		image(x + 210, y, gres("cat", "art/pictures"), 0, 0);
 		y += button(x, y, 200, button_accept, "Графические примитивы", "Кнопка, которая отображает подсказку");
 		y += button(x, y, 200, test_control, "Элемент управления");
 		y += button(x, y, 200, test_widget, "Виджеты");
