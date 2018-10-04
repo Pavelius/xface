@@ -1,30 +1,9 @@
 #include "crt.h"
 #include "stringcreator.h"
 
-const unsigned maximum_string_lenght = 4096;
-
-stringcreator::plugin* stringcreator::plugin::first;
-
-stringcreator::plugin::plugin(const char* name, char* (*proc)(char* result, const char* result_maximum)) : name(name), proc(proc), next(0) {
-	seqlink(this);
-}
-
-stringcreator::plugin* stringcreator::plugin::find(const char* name) {
-	for(auto p = first; p; p = p->next) {
-		if(strcmp(p->name, name) == 0)
-			return p;
-	}
-	return 0;
-}
-
 void stringcreator::parseidentifier(char* result, const char* result_max, const char* identifier) {
-	if(!plugin::first)
-		return;
-	auto p = plugin::find(identifier);
-	if(p)
-		p->proc(result, result_max);
-	else {
-		// Fix error command
+	auto len = zlen(identifier) + 3;
+	if((result_max - result) >= len) {
 		zcat(result, "[-");
 		zcat(result, identifier);
 		zcat(result, "]");
@@ -147,7 +126,6 @@ void stringcreator::printv(char* result, const char* result_maximum, const char*
 	if(!result)
 		return;
 	if(!src) {
-		// Error: No source string
 		result[0] = 0;
 		return;
 	}
