@@ -67,12 +67,14 @@ static void test_widget() {
 		const char*		name;
 		int				mark;
 		char			radio;
+		char			age;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
 		BSREQ(element, radio, number_type),
 		BSREQ(element, name, text_type),
 		BSREQ(element, surname, text_type),
+		BSREQ(element, age, number_type),
 	{}};
 	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
 	{Radio, "radio", "Nokia", 1},
@@ -82,16 +84,23 @@ static void test_widget() {
 	{Radio, "radio", "Glass", 4},
 	{Radio, "radio", "Keeps", 5},
 	{}};
-	static widget brands[] = {{Image, "cat", "art/pictures", 0, 4},
+	static widget brands[] = {{Image, "cat", "art/pictures", 0, 5},
 	{Group, 0, 0, 0, 3, 0, 0, elements_left},
 	{Group, 0, 0, 0, 3, 0, 0, elements_right},
+	{}};
+	static widget field_group_left[] = {{Field, "name", "Имя"},
+	{Field, "surname", "Фамилия"},
+	{Field, "age", "Возраст"},
+	{}};
+	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, buttoncancel},
+	{}};
+	static widget field_group[] = {{Group, 0, 0, 0, 8, 0, 0, field_group_left},
+	{Group, 0, 0, 0, 4, 0, 0, field_group_right},
 	{}};
 	static widget elements[] = {{Text, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
 	{Check, "mark", "Простая пометка"},
 	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
-	{Field, "name", "Имя"},
-	{Field, "surname", "Фамилия"},
-	{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, buttoncancel},
+	{Group, 0, 0, 0, 0, 0, 0, field_group},
 	{}};
 	element test = {0};
 	test.mark = 1;

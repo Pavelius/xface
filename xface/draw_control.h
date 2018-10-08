@@ -193,11 +193,11 @@ struct form : control {
 	int					render(int x, int y, int width, const widget& e) const;
 };
 }
-int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
+int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						render(int x, int y, int width, const bsval& value, const widget* element);
-void					setposition(int& x, int& y, int width, int padding = -1);
+void					setposition(int& x, int& y, int& width, int padding = -1);
 void					titletext(int& x, int y, int& width, unsigned flags, const char* label, int title);
 }

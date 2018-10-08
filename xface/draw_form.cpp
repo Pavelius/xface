@@ -188,9 +188,11 @@ struct dlgform : bsval {
 			auto w = width * p->width / 12;
 			auto x1 = x + width * n / 12;
 			auto h = element(x1, y, w, *p);
-			if(h > mh)
-				mh = h;
-			n += p->width;
+			if(h) {
+				if(h > mh)
+					mh = h;
+				n += p->width;
+			}
 			p++;
 		}
 		return mh;

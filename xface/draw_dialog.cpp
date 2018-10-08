@@ -3,7 +3,7 @@
 
 using namespace draw;
 
-void draw::setposition(int& x, int& y, int width, int padding) {
+void draw::setposition(int& x, int& y, int& width, int padding) {
 	if(padding==-1)
 		padding = metrics::padding;
 	x += padding;
@@ -36,12 +36,12 @@ void draw::titletext(int& x, int y, int& width, unsigned flags, const char* labe
 	width -= title;
 }
 
-int	draw::button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips) {
+int	draw::button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips, int key) {
 	setposition(x, y, width);
 	struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
 	focusing(cmd.getid(), flags, rc);
 	if(buttonh({x, y, x + width, rc.y2},
-		ischecked(flags), isfocused(flags), isdisabled(flags), true, label, 0, false, tips)
+		ischecked(flags), isfocused(flags), isdisabled(flags), true, label, key, false, tips)
 		|| (isfocused(flags) && hot.key == KeyEnter)) {
 		cmd.execute();
 	}
