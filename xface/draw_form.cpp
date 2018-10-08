@@ -103,28 +103,34 @@ struct dlgform : bsval {
 			bsval::set(value);
 		}
 
+		const char* getstring(char* result, const char* result_maximum, bool force_result, const bsreq* type) const {
+			if(type->reference) {
+				auto p = (const char*)bsval::get();
+				if(!p && !force_result)
+					return "";
+				if(!force_result)
+					return p;
+				szprints(result, result_maximum, p);
+			} else {
+				auto p = (const char*)type->ptr(data);
+				if(!force_result)
+					return p;
+				auto maximum = type->size;
+				unsigned maximum_count = result_maximum - result;
+				if(maximum < maximum_count)
+					maximum_count = maximum;
+				zcpy(result, p, maximum_count);
+			}
+			return result;
+		}
+
 		const char* get(char* result, const char* result_maximum, bool force_result) const override {
 			if(type->type==number_type)
 				szprints(result, result_maximum, "%1i", getnumber());
-			else if(type->type==text_type) {
-				if(type->reference) {
-					auto p = (const char*)bsval::get();
-					if(!p && !force_result)
-						return "";
-					if(!force_result)
-						return p;
-					szprints(result, result_maximum, p);
-				} else {
-					auto p = (const char*)type->ptr(data);
-					if(!force_result)
-						return p;
-					auto maximum = type->size;
-					unsigned maximum_count = result_maximum - result;
-					if(maximum < maximum_count)
-						maximum_count = maximum;
-					zcpy(result, p, maximum_count);
-				}
-			}
+			else if(type->type==text_type)
+				return getstring(result, result_maximum, force_result, type);
+			else
+				return getstring(result, result_maximum, force_result, type->type->getkey());
 			return result;
 		}
 
