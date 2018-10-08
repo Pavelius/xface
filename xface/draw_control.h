@@ -41,6 +41,7 @@ struct widget {
 	int					title;
 	const widget*		childs;
 	const char*			tips;
+	int					key;
 	void				(*proc)();
 	operator bool() const { return flags != 0; }
 };

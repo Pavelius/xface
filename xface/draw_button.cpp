@@ -74,7 +74,7 @@ bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool bord
 			rectb(rc, colors::border.mix(colors::window));
 		fore = fore.mix(value, 64);
 	} else {
-		if(focused && key && hot.key == key)
+		if(key && hot.key == key)
 			result = true;
 		if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && hot.pressed == press)
 			result = true;

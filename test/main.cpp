@@ -92,7 +92,7 @@ static void test_widget() {
 	{Field, "surname", "Фамилия"},
 	{Field, "age", "Возраст"},
 	{}};
-	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, buttoncancel},
+	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, KeyEscape, buttoncancel},
 	{}};
 	static widget field_group[] = {{Group, 0, 0, 0, 8, 0, 0, field_group_left},
 	{Group, 0, 0, 0, 4, 0, 0, field_group_right},
