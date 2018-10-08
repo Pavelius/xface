@@ -257,16 +257,16 @@ bool textedit::editing(rect rc) {
 				show_records = false;
 				break;
 			}
-			presskey(KeyEscape);
+			draw::execute(hot);
 			return false;
 		case KeyTab:
 		case KeyTab | Shift:
-			presskey(hot.key);
+			draw::execute(hot);
 			return true;
 		case KeyDown:
 		case KeyUp:
 		case F4:
-			presskey(hot.key);
+			draw::execute(hot);
 			return true;
 		case KeyEnter:
 			if(records && isshowrecords()) {
@@ -294,7 +294,7 @@ bool textedit::editing(rect rc) {
 				break;
 			}
 			if(!areb(rc) && hot.pressed) {
-				presskey(hot.key);
+				draw::execute(hot);
 				return true;
 			}
 			break;

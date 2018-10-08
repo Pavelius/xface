@@ -255,6 +255,7 @@ void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 void					domodal();
 void					execute(void(*callback)(), int value = 0);
+void					execute(const hotinfo& value);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
 int						getbpp();
@@ -290,7 +291,6 @@ extern bool				mouseinput;
 extern color*			palt;
 void					pixel(int x, int y);
 void					pixel(int x, int y, unsigned char alpha);
-void					presskey(int id);
 unsigned char*			ptr(int x, int y);
 int						rawinput();
 void					rectb(rect rc); // Draw rectangle border

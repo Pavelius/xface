@@ -365,7 +365,3 @@ void draw::settimer(unsigned milleseconds) {
 	else
 		KillTimer(hwnd, InputTimer);
 }
-
-void draw::presskey(int id) {
-	PostMessageA(hwnd, WM_KEYDOWN, tovkey(id), 0);
-}
