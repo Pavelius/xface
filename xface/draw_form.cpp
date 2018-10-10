@@ -81,7 +81,7 @@ struct dlgform : bsval {
 		}
 
 		bool increment(int step, bool run) const override {
-			if(type->type!=number_type)
+			if(type->type != number_type)
 				return false;
 			if(run) {
 				current = *this;
@@ -103,16 +103,16 @@ struct dlgform : bsval {
 			bsval::set(value);
 		}
 
-		const char* getstring(char* result, const char* result_maximum, bool force_result, const bsreq* type) const {
+		const char* getstring(const bsval& source, char* result, const char* result_maximum, bool force_result) const {
 			if(type->reference) {
-				auto p = (const char*)bsval::get();
+				auto p = (const char*)source.get();
 				if(!p && !force_result)
 					return "";
 				if(!force_result)
 					return p;
 				szprints(result, result_maximum, p);
 			} else {
-				auto p = (const char*)type->ptr(data);
+				auto p = (const char*)source.type->ptr(source.data);
 				if(!force_result)
 					return p;
 				auto maximum = type->size;
@@ -125,12 +125,16 @@ struct dlgform : bsval {
 		}
 
 		const char* get(char* result, const char* result_maximum, bool force_result) const override {
-			if(type->type==number_type)
+			if(type->type == number_type)
 				szprints(result, result_maximum, "%1i", getnumber());
-			else if(type->type==text_type)
-				return getstring(result, result_maximum, force_result, type);
-			else
-				return getstring(result, result_maximum, force_result, type->type->getkey());
+			else if(type->type == text_type)
+				return getstring(*this, result, result_maximum, force_result);
+			else {
+				auto pv = (void*)bsval::get();
+				if(!pv)
+					return "";
+				return getstring({type->type->getkey(), pv}, result, result_maximum, force_result);
+			}
 			return result;
 		}
 
