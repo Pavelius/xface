@@ -156,6 +156,9 @@ struct dlgform : bsval {
 				}
 			} else if(type->type == number_type)
 				((reqfield*)this)->setnumber(sz2num(value));
+			else {
+
+			}
 		}
 
 	private:

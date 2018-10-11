@@ -1,3 +1,4 @@
+#include "xface/bsdata.h"
 #include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
@@ -8,6 +9,17 @@ using namespace draw;
 
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
+
+static struct gender_info {
+	const char*		name;
+} gender_data[] = {{"Неизвестен"},
+{"Мужчина"},
+{"Женщина"},
+};
+static bsreq gender_type[] = {
+	BSREQ(gender_info, name, text_type),
+{}};
+BSMETA(gender);
 
 struct testinfo {
 	const char*		name;
@@ -68,6 +80,7 @@ static void test_widget() {
 		int				mark;
 		char			radio;
 		char			age;
+		gender_info*	gender;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
@@ -75,6 +88,7 @@ static void test_widget() {
 		BSREQ(element, name, text_type),
 		BSREQ(element, surname, text_type),
 		BSREQ(element, age, number_type),
+		BSREQ(element, gender, gender_type),
 	{}};
 	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
 	{Radio, "radio", "Nokia", 1},
@@ -84,13 +98,14 @@ static void test_widget() {
 	{Radio, "radio", "Glass", 4},
 	{Radio, "radio", "Keeps", 5},
 	{}};
-	static widget brands[] = {{Image, "cat", "art/pictures", 0, 5},
+	static widget brands[] = {//{Image, "cat", "art/pictures", 0, 5},
 	{Group, 0, 0, 0, 3, 0, 0, elements_left},
 	{Group, 0, 0, 0, 3, 0, 0, elements_right},
 	{}};
 	static widget field_group_left[] = {{Field, "name", "Имя"},
 	{Field, "surname", "Фамилия"},
 	{Field, "age", "Возраст"},
+	{Field, "gender", "Пол"},
 	{}};
 	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, KeyEscape, buttoncancel},
 	{}};
@@ -103,6 +118,7 @@ static void test_widget() {
 	{Group, 0, 0, 0, 0, 0, 0, field_group},
 	{}};
 	element test = {0};
+	test.gender = gender_data + 1;
 	test.mark = 1;
 	test.radio = 2;
 	while(ismodal()) {

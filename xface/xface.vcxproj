@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="array.cpp" />
+    <ClCompile Include="bsdata.cpp" />
     <ClCompile Include="bsreq.cpp" />
     <ClCompile Include="bstream.cpp" />
     <ClCompile Include="collection.cpp" />
@@ -161,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h" />
+    <ClInclude Include="bsdata.h" />
     <ClInclude Include="bsreq.h" />
     <ClInclude Include="bstream.h" />
     <ClInclude Include="collection.h" />

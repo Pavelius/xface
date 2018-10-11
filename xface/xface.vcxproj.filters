@@ -162,6 +162,9 @@
     <ClCompile Include="bstream.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="bsdata.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -226,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="bstream.h">
       <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="bsdata.h">
+      <Filter>collections</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
