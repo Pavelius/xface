@@ -1,9 +1,8 @@
-#include "pointl.h"
+#include "bsreq.h"
 #include "draw.h"
+#include "pointl.h"
 
 #pragma once
-
-struct bsval;
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -190,12 +189,15 @@ protected:
 	int					cashed_string;
 	int					cashed_origin;
 };
-struct form : control {
-	int					render(int x, int y, int width, const widget& e) const;
-};
+//struct form : control {
+//	int					render(int x, int y, int width, const widget& e) const;
+//};
 }
+struct combobox_info : bsval {
+};
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
+int						combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
 int						field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
 int						radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						render(int x, int y, int width, const bsval& value, const widget* element);

@@ -73,3 +73,22 @@ void* bsdata::find(const bsreq* id, const char* value) {
 	}
 	return 0;
 }
+
+const char* bsval::getname() const {
+	auto d = data;
+	if(type->isenum) {
+		auto b = bsdata::find(type->type);
+		if(!b)
+			return "No base";
+		auto i = type->get(type->ptr(d));
+		d = b->get(i);
+	}
+	auto t = type->type;
+	auto f = t->find("name", text_type);
+	if(!f)
+		return "";
+	auto p = (const char*)f->get(f->ptr(d));
+	if(!p)
+		return "";
+	return p;
+}

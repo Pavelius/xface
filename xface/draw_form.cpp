@@ -254,8 +254,11 @@ struct dlgform : bsval {
 		if(!po)
 			return 0;
 		auto flags = getflags(e);
-		reqfield ev(po, e);
-		return draw::field(x, y, width, flags, ev, e.label, e.tips, e.title);
+		if(po.type->type->issimple()) {
+			reqfield ev(po, e);
+			return draw::field(x, y, width, flags, ev, e.label, e.tips, e.title);
+		}
+		return draw::combobox(x, y, width, flags, po, e.label, e.tips, e.title);
 	}
 
 	int tabs(int x, int y, int width, const widget& e) {

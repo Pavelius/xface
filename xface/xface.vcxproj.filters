@@ -165,6 +165,9 @@
     <ClCompile Include="bsdata.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="draw_combo.cpp">
+      <Filter>draw\simple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">

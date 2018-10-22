@@ -10,6 +10,10 @@ using namespace draw;
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
+enum gender_s : unsigned char {
+	NoGender, Male, Female,
+};
+
 static struct gender_info {
 	const char*		name;
 } gender_data[] = {{"Неизвестен"},
@@ -80,7 +84,7 @@ static void test_widget() {
 		int				mark;
 		char			radio;
 		char			age;
-		gender_info*	gender;
+		gender_s		gender;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
@@ -99,13 +103,13 @@ static void test_widget() {
 	{Radio, "radio", "Keeps", 5},
 	{}};
 	static widget brands[] = {//{Image, "cat", "art/pictures", 0, 5},
-	{Group, 0, 0, 0, 3, 0, 0, elements_left},
+		{Group, 0, 0, 0, 3, 0, 0, elements_left},
 	{Group, 0, 0, 0, 3, 0, 0, elements_right},
 	{}};
 	static widget field_group_left[] = {{Field, "name", "Имя"},
 	{Field, "surname", "Фамилия"},
 	{Field, "age", "Возраст"},
-	{Field, "gender", "Пол"},
+	{Field, "gender", "Пол", 0, 0, 0, 0, 0, "Этот элемент позволяет произвести выбор из списка"},
 	{}};
 	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, KeyEscape, buttoncancel},
 	{}};
@@ -118,7 +122,7 @@ static void test_widget() {
 	{Group, 0, 0, 0, 0, 0, 0, field_group},
 	{}};
 	element test = {0};
-	test.gender = gender_data + 1;
+	test.gender = Male;
 	test.mark = 1;
 	test.radio = 2;
 	while(ismodal()) {
@@ -175,6 +179,34 @@ static void test_array() {
 
 void set_dark_theme();
 void set_light_theme();
+
+static bool szpmatch(const char* text, const char* s, const char* s2) {
+	while(true) {
+		register const char* d = text;
+		while(s < s2) {
+			if(*d == 0)
+				return false;
+			unsigned char c = *s;
+			if(c == '?') {
+				s++;
+				d++;
+			} else if(c == '*') {
+				s++;
+				if(s == s2)
+					return true;
+				while(*d) {
+					if(*d == *s)
+						break;
+					d++;
+				}
+			} else {
+				if(*d++ != *s++)
+					return false;
+			}
+		}
+		return true;
+	}
+}
 
 int main() {
 	test_array();
