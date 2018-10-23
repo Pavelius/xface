@@ -105,9 +105,9 @@ void list::view(rect rcorigin) {
 				current_hilite = origin + (hot.mouse.y - rc.y1) / pixels_per_line;
 		}
 		// Mouse select
-		if(hot.pressed && (rk == MouseLeft || rk == MouseRight)) {
+		if(rk == MouseLeft || rk == MouseRight) {
 			if(current_hilite != -1)
-				mouseselect(current_hilite);
+				mouseselect(rk, hot.pressed, current_hilite);
 		}
 	}
 	if(true) {

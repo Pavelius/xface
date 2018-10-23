@@ -87,8 +87,8 @@ struct combo_list : controls::list, adat<void*, 64> {
 		return getcount();
 	}
 
-	void mouseselect(int index) override {
-		list::mouseselect(index);
+	void mouseselect(int id, bool pressed, int index) override {
+		select(index);
 		keyenter(0);
 	}
 
@@ -110,7 +110,7 @@ static void show_drop_down() {
 		list.add(p);
 	rect rc = combo_rect;
 	rc.y1 = rc.y2;
-	rc.y2 = rc.y1 + imin(list.getcount(), 12) *list.getrowheight();
+	rc.y2 = rc.y1 + imin(list.getcount(), 12) *list.getrowheight() + 1;
 	if(dropdown(rc, list)) {
 		auto value = list.data[list.current];
 		set_value(combo_value, value);
@@ -170,7 +170,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 		}
 		break;
 	case MouseLeft:
-		if(a == AreaHilited && !hot.pressed) {
+		if(a == AreaHilitedPressed && hot.pressed) {
 			combo_value = cmd;
 			combo_rect = rc;
 			execute(show_drop_down);

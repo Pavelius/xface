@@ -108,7 +108,7 @@ struct list : control {
 	void				mouseleftdbl(point position) override;
 	void				mousewheel(point position, int step) override;
 	void				select(int index);
-	virtual void		mouseselect(int index) { select(index); }
+	virtual void		mouseselect(int id, bool pressed, int index) { if(pressed) select(index); }
 	virtual void		row(rect rc, int index) const; // Draw single row - part of list
 	virtual void		rowhilite(rect rc, int index) const;
 	void				view(rect rc) override;
