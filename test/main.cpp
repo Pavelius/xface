@@ -10,6 +10,11 @@ using namespace draw;
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
+enum alignment_s : unsigned char {
+	LawfulGood, NeutralGood, ChaoticGood,
+	LawfulNeutral, TrueNeutral, ChaoticNeutral,
+	LawfulEvil, NeutralEvil, ChaoticEvil,
+};
 enum gender_s : unsigned char {
 	NoGender, Male, Female,
 };
@@ -24,6 +29,26 @@ static bsreq gender_type[] = {
 	BSREQ(gender_info, name, text_type),
 {}};
 BSMETA(gender);
+
+static struct alignment_info {
+	const char*		id;
+	const char*		name;
+} alignment_data[] = {{"Neutral", "Нейтральный"},
+{"Lawful Good", "Законопослушный добрый"},
+{"Neutral Good", "Нейтрально добрый"},
+{"Chaotic Good", "Хаотично добрый"},
+{"Lawful Neutral", "Законопослушный нейтральный"},
+{"Chaotic Neutral", "Хаотично нейтральный"},
+{"Lawful Evil", "Законопослушный злой"},
+{"Neutral Evil", "Нейтрально злой"},
+{"Chaotic Evil", "Хаотично злой"},
+};
+assert_enum(alignment, ChaoticEvil);
+getstr_enum(alignment);
+static bsreq alignment_type[] = {
+	BSREQ(alignment_info, name, text_type),
+{}};
+BSMETA(alignment);
 
 struct testinfo {
 	const char*		name;
@@ -85,6 +110,7 @@ static void test_widget() {
 		char			radio;
 		char			age;
 		gender_s		gender;
+		alignment_s		alignment;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, mark, number_type),
@@ -93,6 +119,7 @@ static void test_widget() {
 		BSREQ(element, surname, text_type),
 		BSREQ(element, age, number_type),
 		BSREQ(element, gender, gender_type),
+		BSREQ(element, alignment, alignment_type),
 	{}};
 	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
 	{Radio, "radio", "Nokia", 1},
@@ -110,6 +137,7 @@ static void test_widget() {
 	{Field, "surname", "Фамилия"},
 	{Field, "age", "Возраст"},
 	{Field, "gender", "Пол", 0, 0, 0, 0, 0, "Этот элемент позволяет произвести выбор из списка"},
+	{Field, "alignment", "Мировозрение"},
 	{}};
 	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, KeyEscape, buttoncancel},
 	{}};

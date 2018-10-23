@@ -126,6 +126,14 @@ struct combo_list : controls::list, adat<void*, 64> {
 		breakmodal(1);
 	}
 
+	int find(const void* object) const {
+		for(auto p : *this) {
+			if(p == object)
+				return indexof(p);
+		}
+		return -1;
+	}
+
 };
 
 static void show_drop_down() {
@@ -133,19 +141,20 @@ static void show_drop_down() {
 	if(!ps)
 		return;
 	combo_list list(*ps);
+	list.hilite_odd_lines = false;
 	if(!list.field)
 		return;
 	auto pe = ps->end();
 	auto value = get_value(combo_value);
-	for(auto p = ps->begin(); p < pe; p += ps->size) {
-		if(value == p)
-			list.current = list.count;
+	for(auto p = ps->begin(); p < pe; p += ps->size)
 		list.add(p);
-	}
 	qsort(list.data, list.getcount(), sizeof(list.data[0]), compare_objects);
+	list.lines_per_page = imin(list.getcount(), 7);
 	rect rc = combo_rect;
 	rc.y1 = rc.y2;
-	rc.y2 = rc.y1 + imin(list.getcount(), 12) *list.getrowheight() + 1;
+	rc.y2 = rc.y1 + list.lines_per_page*list.getrowheight() + 1;
+	list.current = list.find(value);
+	list.ensurevisible();
 	if(dropdown(rc, list)) {
 		auto value = list.data[list.current];
 		set_value(combo_value, value);
@@ -189,7 +198,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 			execute(combo_previous);
 			break;
 		case MouseLeft:
-			if(hot.pressed) {
+			if(!hot.pressed) {
 				combo_value = cmd;
 				combo_rect = rc;
 				execute(show_drop_down);
@@ -219,7 +228,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 			combo_value = cmd;
 			execute(combo_next);
 			break;
-		case F4:
+		case KeyEnter:
 			combo_value = cmd;
 			combo_rect = rc;
 			execute(show_drop_down);
