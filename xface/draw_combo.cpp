@@ -8,6 +8,11 @@ using namespace draw;
 
 typedef int(*comparer)(const char* v1, const char* v2);
 
+static unsigned		combo_time;
+static char			combo_name[32];
+static bsval		combo_value;
+static rect			combo_rect;
+
 static int compare_name_as(const char* n1, const char* n2) {
 	return strcmp(n1, n2);
 }
@@ -16,27 +21,16 @@ static int compare_name_ds(const char* n1, const char* n2) {
 	return strcmp(n2, n1);
 }
 
-static void* find_next(const bsval& e1, comparer c1) {
-	auto ps = bsdata::find(e1.type->type);
-	if(!ps)
-		return 0;
-	auto pf = ps->fields->find("name");
-	if(!pf)
-		return 0;
-	auto n1 = e1.getname();
-	auto n2 = "";
-	void* e2 = 0;
-	auto pe = ps->end();
-	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
-		auto nx = (const char*)pf->get(pf->ptr(ex));
-		if(!nx)
-			nx = "";
-		if(c1(nx, n1) < 0 && (!e2 || c1(nx, n2) > 0)) {
-			n2 = nx;
-			e2 = ex;
-		}
-	}
-	return e2;
+static void* get_value(const bsval& e) {
+	auto type = e.type;
+	if(type->isenum) {
+		auto b = bsdata::find(type->type);
+		if(!b)
+			return 0;
+		auto index = type->get(type->ptr(e.data));
+		return b->get(index);
+	} else
+		return (void*)type->get(type->ptr(e.data));
 }
 
 static void set_value(const bsval& e1, void* value) {
@@ -52,10 +46,46 @@ static void set_value(const bsval& e1, void* value) {
 		e1.set((int)value);
 }
 
-static unsigned		combo_time;
-static char			combo_name[32];
-static bsval		combo_value;
-static rect			combo_rect;
+static const char* get_name(const bsreq* type, const void* object) {
+	if(!object || !type)
+		return "";
+	auto pf = type->type->find("name");
+	if(pf) {
+		auto name = (const char*)pf->get(pf->ptr(object));
+		if(name)
+			return name;
+	}
+	return "";
+}
+
+static int compare_objects(const void* p1, const void* p2) {
+	auto n1 = get_name(combo_value.type, *((void**)p1));
+	auto n2 = get_name(combo_value.type, *((void**)p2));
+	return strcmp(n1, n2);
+}
+
+static void* find_next(const bsval& e1, comparer c1) {
+	auto ps = bsdata::find(e1.type->type);
+	if(!ps)
+		return 0;
+	auto pf = ps->fields->find("name");
+	if(!pf)
+		return 0;
+	auto n1 = get_name(e1.type, get_value(e1));
+	auto n2 = "";
+	void* e2 = 0;
+	auto pe = ps->end();
+	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
+		auto nx = (const char*)pf->get(pf->ptr(ex));
+		if(!nx)
+			nx = "";
+		if(c1(nx, n1) < 0 && (!e2 || c1(nx, n2) > 0)) {
+			n2 = nx;
+			e2 = ex;
+		}
+	}
+	return e2;
+}
 
 static void combo_previous() {
 	auto pn = find_next(combo_value, compare_name_as);
@@ -106,8 +136,13 @@ static void show_drop_down() {
 	if(!list.field)
 		return;
 	auto pe = ps->end();
-	for(auto p = ps->begin(); p < pe; p += ps->size)
+	auto value = get_value(combo_value);
+	for(auto p = ps->begin(); p < pe; p += ps->size) {
+		if(value == p)
+			list.current = list.count;
 		list.add(p);
+	}
+	qsort(list.data, list.getcount(), sizeof(list.data[0]), compare_objects);
 	rect rc = combo_rect;
 	rc.y1 = rc.y2;
 	rc.y2 = rc.y1 + imin(list.getcount(), 12) *list.getrowheight() + 1;
@@ -143,10 +178,30 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 		rectb(rc, colors::border);
 	}
 	rect rco = rc;
-	switch(hot.key) {
-	case InputSymbol:
-		if(focused) {
-			auto time = clock();
+	if(a == AreaHilited || a == AreaHilitedPressed) {
+		switch(hot.key) {
+		case MouseWheelDown:
+			combo_value = cmd;
+			execute(combo_next);
+			break;
+		case MouseWheelUp:
+			combo_value = cmd;
+			execute(combo_previous);
+			break;
+		case MouseLeft:
+			if(hot.pressed) {
+				combo_value = cmd;
+				combo_rect = rc;
+				execute(show_drop_down);
+			}
+			break;
+		}
+	}
+	if(focused) {
+		unsigned time;
+		switch(hot.key) {
+		case InputSymbol:
+			time = clock();
 			if(!combo_time || (time - combo_time) > 1000)
 				combo_name[0] = 0;
 			combo_time = time;
@@ -155,46 +210,28 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 				combo_value = cmd;
 				execute(combo_find_name);
 			}
-		}
-		break;
-	case MouseWheelDown:
-		if(a == AreaHilited) {
-			combo_value = cmd;
-			execute(combo_next);
-		}
-		break;
-	case MouseWheelUp:
-		if(a == AreaHilited) {
+			break;
+		case KeyUp:
 			combo_value = cmd;
 			execute(combo_previous);
-		}
-		break;
-	case MouseLeft:
-		if(a == AreaHilitedPressed && hot.pressed) {
+			break;
+		case KeyDown:
+			combo_value = cmd;
+			execute(combo_next);
+			break;
+		case F4:
 			combo_value = cmd;
 			combo_rect = rc;
 			execute(show_drop_down);
+			break;
 		}
-		break;
-	case KeyUp:
-		if(focused) {
-			combo_value = cmd;
-			execute(combo_previous);
-		}
-		break;
-	case KeyDown:
-		if(focused) {
-			combo_value = cmd;
-			execute(combo_next);
-		}
-		break;
 	}
 	rco.offset(2, 2);
 	if(focused)
 		rectx(rco, colors::black);
 	rco.offset(2, 2);
-	auto name = cmd.getname();
-	if(name && name[0])
+	auto name = get_name(cmd.type, get_value(cmd));
+	if(name[0])
 		textc(rco.x1, rco.y1, rco.width(), name);
 	if(tips && a == AreaHilited)
 		tooltips(tips);
