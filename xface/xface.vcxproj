@@ -142,6 +142,7 @@
     <ClCompile Include="draw_textedit.cpp" />
     <ClCompile Include="draw_theme.cpp" />
     <ClCompile Include="draw_tooltips.cpp" />
+    <ClCompile Include="dropdown.cpp" />
     <ClCompile Include="grammar.cpp" />
     <ClCompile Include="resources.cpp" />
     <ClCompile Include="resource_dynamic.cpp" />

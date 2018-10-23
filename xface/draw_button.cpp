@@ -25,6 +25,8 @@ int draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* 
 		false, focused, false, false,
 		t2, k2, true, tt2))
 		result = 2;
+	if((hot.key == k2 || hot.key == k1) && !focused)
+		result = 0;
 	draw::line(rc.x2, rc.y1, rc.x2, rc.y2, colors::border);
 	return result;
 }

@@ -63,7 +63,7 @@ struct bsval {
 	explicit operator bool() const { return data != 0; }
 	int					get() const { return type->get(type->ptr(data)); }
 	const char*			getname() const;
-	void				set(int value) { type->set(type->ptr(data), value); }
+	void				set(int value) const { type->set(type->ptr(data), value); }
 };
 struct bsfunc {
 	const char*			id;

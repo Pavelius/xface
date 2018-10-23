@@ -168,6 +168,9 @@
     <ClCompile Include="draw_combo.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
+    <ClCompile Include="dropdown.cpp">
+      <Filter>draw\simple</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">

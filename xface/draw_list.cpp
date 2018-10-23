@@ -107,7 +107,7 @@ void list::view(rect rcorigin) {
 		// Mouse select
 		if(hot.pressed && (rk == MouseLeft || rk == MouseRight)) {
 			if(current_hilite != -1)
-				select(current_hilite);
+				mouseselect(current_hilite);
 		}
 	}
 	if(true) {

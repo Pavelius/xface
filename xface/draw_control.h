@@ -80,6 +80,7 @@ struct control {
 	virtual void		mousewheel(point position, int step) {}
 	virtual void		view(rect rc);
 };
+// Analog of listbox element
 struct list : control {
 	int					origin, current, current_hilite;
 	int					maximum_width, origin_width;
@@ -107,6 +108,7 @@ struct list : control {
 	void				mouseleftdbl(point position) override;
 	void				mousewheel(point position, int step) override;
 	void				select(int index);
+	virtual void		mouseselect(int index) { select(index); }
 	virtual void		row(rect rc, int index) const; // Draw single row - part of list
 	virtual void		rowhilite(rect rc, int index) const;
 	void				view(rect rc) override;
@@ -189,12 +191,7 @@ protected:
 	int					cashed_string;
 	int					cashed_origin;
 };
-//struct form : control {
-//	int					render(int x, int y, int width, const widget& e) const;
-//};
 }
-struct combobox_info : bsval {
-};
 int						button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
 int						checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int						combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
@@ -203,4 +200,5 @@ int						radio(int x, int y, int width, unsigned flags, const runable& cmd, cons
 int						render(int x, int y, int width, const bsval& value, const widget* element);
 void					setposition(int& x, int& y, int& width, int padding = -1);
 void					titletext(int& x, int y, int& width, unsigned flags, const char* label, int title);
+bool					dropdown(const rect& rc, controls::control& e);
 }
