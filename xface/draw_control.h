@@ -93,6 +93,7 @@ struct list : control {
 	int					find(int line, int column, const char* name, int lenght = -1) const;
 	virtual int			getcolumn() const { return 0; } // get current column
 	inline int			getline() const { return current; } // get current line
+	int					getlinesperpage(int height) const { return height / pixels_per_line; }
 	virtual const char* getname(char* result, const char* result_max, int line, int column) const { return 0; }
 	virtual int			getmaximum() const { return 0; }
 	static int			getrowheight(); // Get default row height for any List Control

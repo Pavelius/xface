@@ -92,7 +92,7 @@ void list::view(rect rcorigin) {
 		return;
 	rect scroll = {0};
 	rect scrollh = {0};
-	lines_per_page = rcorigin.height() / pixels_per_line;
+	lines_per_page = getlinesperpage(rcorigin.height());
 	correction();
 	if(maximum > lines_per_page)
 		scroll.set(rcorigin.x2 - metrics::scroll, rcorigin.y1, rcorigin.x2, rcorigin.y2);

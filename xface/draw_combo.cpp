@@ -87,6 +87,24 @@ static void* find_next(const bsval& e1, comparer c1) {
 	return e2;
 }
 
+static void* find_name(const bsreq* type, const char* name) {
+	auto ps = bsdata::find(type);
+	if(!ps)
+		return 0;
+	auto pf = ps->fields->find("name");
+	if(!pf)
+		return 0;
+	auto pe = ps->end();
+	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
+		auto nx = (const char*)pf->get(pf->ptr(ex));
+		if(!nx || nx[0] == 0)
+			continue;
+		if(matchuc(nx, name))
+			return ex;
+	}
+	return 0;
+}
+
 static void combo_previous() {
 	auto pn = find_next(combo_value, compare_name_as);
 	if(pn)
@@ -100,6 +118,9 @@ static void combo_next() {
 }
 
 static void combo_find_name() {
+	auto pn = find_name(combo_value.type->type, combo_name);
+	if(pn)
+		set_value(combo_value, pn);
 }
 
 struct combo_list : controls::list, adat<void*, 64> {
@@ -149,10 +170,19 @@ static void show_drop_down() {
 	for(auto p = ps->begin(); p < pe; p += ps->size)
 		list.add(p);
 	qsort(list.data, list.getcount(), sizeof(list.data[0]), compare_objects);
+	list.pixels_per_line = list.getrowheight();
 	list.lines_per_page = imin(list.getcount(), 7);
 	rect rc = combo_rect;
 	rc.y1 = rc.y2;
-	rc.y2 = rc.y1 + list.lines_per_page*list.getrowheight() + 1;
+	rc.y2 = rc.y1 + list.lines_per_page*list.pixels_per_line + 1;
+	if(rc.y2 > getheight() - 2) {
+		rc.y2 = getheight() - 2;
+		list.lines_per_page = list.getlinesperpage(rc.height());
+	}
+	if(rc.y1 > rc.y2 - (list.pixels_per_line + 1)) {
+		rc.y1 = rc.y2 - (list.pixels_per_line + 1);
+		list.lines_per_page = list.getlinesperpage(rc.height());
+	}
 	list.current = list.find(value);
 	list.ensurevisible();
 	if(dropdown(rc, list)) {
@@ -207,17 +237,18 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 		}
 	}
 	if(focused) {
-		unsigned time;
 		switch(hot.key) {
 		case InputSymbol:
-			time = clock();
-			if(!combo_time || (time - combo_time) > 1000)
-				combo_name[0] = 0;
-			combo_time = time;
-			if(zlen(combo_name) < sizeof(combo_name) - 1) {
-				zcat(combo_name, (char)hot.param);
-				combo_value = cmd;
-				execute(combo_find_name);
+			if(hot.param>=0x20) {
+				unsigned time = clock();
+				if(!combo_time || (time - combo_time) > 1000)
+					combo_name[0] = 0;
+				combo_time = time;
+				if(zlen(combo_name) < sizeof(combo_name) - 1) {
+					zcat(combo_name, (char)hot.param);
+					combo_value = cmd;
+					execute(combo_find_name);
+				}
 			}
 			break;
 		case KeyUp:
