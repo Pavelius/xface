@@ -368,8 +368,7 @@ struct dlgform : bsval {
 		return (this->*methods[e.flags & WidgetMask])(x, y, width, e);
 	}
 
-	dlgform(const bsval& value) : bsval(value) {
-	}
+	dlgform(const bsval& value) : bsval(value) {}
 
 };
 
