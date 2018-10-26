@@ -171,6 +171,9 @@
     <ClCompile Include="draw_dropdown.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
+    <ClCompile Include="draw_grid.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="bsdata.h">
       <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_grid.h">
+      <Filter>draw\controls</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -50,6 +50,7 @@ struct column {
 	const char*			id;
 	const char*			title;
 	int					width;
+	const char*			tips;
 	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
 	explicit operator bool() const { return id != 0; }
 	draw_event_s		getcontol() const { return (draw_event_s)(flags&ControlMask); }
@@ -119,7 +120,7 @@ struct table : list {
 	bool				show_totals;
 	bool				show_header;
 	table(const column* columns) : columns(columns), show_totals(false), show_header(true) {}
-	virtual void		custom(char* buffer, const char* buffer_maximum, rect rc, int line, int column) const {}
+	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }
 	virtual int			gettotal(int column) const { return 0; }

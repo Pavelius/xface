@@ -3,6 +3,7 @@
 #include "xface/collection.h"
 #include "xface/crt.h"
 #include "xface/draw_control.h"
+#include "xface/draw_grid.h"
 #include "xface/variable.h"
 
 using namespace draw;
@@ -88,16 +89,31 @@ static void button_accept() {
 }
 
 static void test_control() {
-	static controls::column columns[] = {{Text, "name", "Наименование", 200},
+	struct element {
+		const char*		name;
+		gender_s		gender;
+		alignment_s		alignment;
+	};
+	static controls::column columns[] = {{Field, "name", "Наименование", 200},
+	{Check, "check", 0, 24, "Это тултипс колонки"},
 	{Field, "gender", "Пол", 64},
 	{Field, "count", "К-во", 32},
 	{}};
-	controls::table test(columns);
+	static bsreq element_type[] = {
+		BSREQ(element, name, text_type),
+		BSREQ(element, gender, gender_type),
+		BSREQ(element, alignment, alignment_type),
+	{}};
+	adat<element, 32> elements;
+	elements.add({"Pavel", Male, ChaoticEvil});
+	elements.add({"Olga", Female, ChaoticGood});
+	elements.add({"Valentin", Male, NeutralGood});
+	controls::grid test(columns, element_type, elements);
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100, rc.y2 - draw::texth() - metrics::padding * 3, 100 - metrics::padding, 0, cmd(buttoncancel), "Назад");
+		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
 		test.view(rc);
 		domodal();
 	}
@@ -145,7 +161,7 @@ static void test_widget() {
 	static widget field_group[] = {{Group, 0, 0, 0, 8, 0, 0, field_group_left},
 	{Group, 0, 0, 0, 4, 0, 0, field_group_right},
 	{}};
-	static widget elements[] = {{Text, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
+	static widget elements[] = {{Label, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
 	{Check, "mark", "Простая пометка"},
 	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
 	{Group, 0, 0, 0, 0, 0, 0, field_group},

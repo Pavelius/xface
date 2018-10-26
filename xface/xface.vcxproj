@@ -132,6 +132,7 @@
     <ClCompile Include="draw_dialog.cpp" />
     <ClCompile Include="draw_field.cpp" />
     <ClCompile Include="draw_form.cpp" />
+    <ClCompile Include="draw_grid.cpp" />
     <ClCompile Include="draw_list.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
     <ClCompile Include="draw_scrollable.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="crt.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="draw_control.h" />
+    <ClInclude Include="draw_grid.h" />
     <ClInclude Include="grammar.h" />
     <ClInclude Include="initializer_list.h" />
     <ClInclude Include="io.h" />

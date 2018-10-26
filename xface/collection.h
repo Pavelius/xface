@@ -130,6 +130,8 @@ private:
 	unsigned				count_maximum;
 };
 struct avec : collection {
+	constexpr avec() : data(0), size(0), count_maximum(0), count(count_value), count_value(0) {}
+	avec(const avec& source) = default;
 	template<typename T, unsigned N> constexpr avec(adat<T, N>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(N), count_value(0) {}
 	template<typename T> constexpr avec(aref<T>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(e.count), count_value(0) {}
 	template<typename T, unsigned N> constexpr avec(T e[N]) : data(e), size(sizeof(T)), count(count_value), count_maximum(N), count_value(0) {}
@@ -139,6 +141,7 @@ struct avec : collection {
 	virtual unsigned		getmaxcount() const override { return count_maximum; }
 	virtual unsigned		getcount() const override { return count; }
 	virtual unsigned		getsize() const override { return size; }
+	virtual void			setcount(unsigned value) { count = value; }
 private:
 	void*					data;
 	unsigned				size;

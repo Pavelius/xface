@@ -11,7 +11,7 @@ extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 enum draw_event_s {
 	// common controls
 	NoField,
-	Text, Field, Check, Radio, Button, Image,
+	Label, Field, Check, Radio, Button, Image,
 	Tabs, Group,
 	ControlMask = 0xF,
 	// input events
@@ -81,7 +81,7 @@ enum image_flag_s {
 	AlignMask = 0xF000,
 };
 enum drag_part_s : unsigned char {
-	DragControl, DragScrollV, DragScrollH, DragSplitV, DragSplitH
+	DragControl, DragScrollV, DragScrollH, DragSplitV, DragSplitH, DragColumn,
 };
 struct pma {
 	char				name[4]; // Identifier of current block
