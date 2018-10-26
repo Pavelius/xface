@@ -89,6 +89,7 @@ static void button_accept() {
 
 static void test_control() {
 	static controls::column columns[] = {{Text, "name", "Наименование", 200},
+	{Field, "gender", "Пол", 64},
 	{Field, "count", "К-во", 32},
 	{}};
 	controls::table test(columns);
@@ -207,34 +208,6 @@ static void test_array() {
 
 void set_dark_theme();
 void set_light_theme();
-
-static bool szpmatch(const char* text, const char* s, const char* s2) {
-	while(true) {
-		register const char* d = text;
-		while(s < s2) {
-			if(*d == 0)
-				return false;
-			unsigned char c = *s;
-			if(c == '?') {
-				s++;
-				d++;
-			} else if(c == '*') {
-				s++;
-				if(s == s2)
-					return true;
-				while(*d) {
-					if(*d == *s)
-						break;
-					d++;
-				}
-			} else {
-				if(*d++ != *s++)
-					return false;
-			}
-		}
-		return true;
-	}
-}
 
 int main() {
 	test_array();

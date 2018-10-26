@@ -1,41 +1,6 @@
 #include "crt.h"
 #include "io.h"
 
-int	locale; // Current localization
-
-void setsignature(char d[4], const char* s) {
-	d[0] = s[0];
-	d[1] = s[1];
-	d[2] = s[2];
-	d[3] = 0;
-}
-
-bool issignature(const char d[4], const char* s) {
-	return (d[0] == s[0])
-		&& (d[1] == s[1])
-		&& (d[2] == s[2])
-		&& d[3] == 0;
-}
-
-char* szsep(char* result, const char* separator, const char* start) {
-	if(result[0])
-		zcat(result, separator);
-	else if(start) {
-		zcpy(result, start);
-		return result;
-	}
-	return zend(result);
-}
-
-void szadd(char* result, const char* value, const char* title, const char* separator) {
-	if(result[0] == 0) {
-		if(title)
-			zcpy(result, title);
-	} else
-		zcat(result, separator);
-	zcat(result, value);
-}
-
 const char* szskipcr(const char* p) {
 	if(*p == '\n') {
 		p++;
@@ -68,17 +33,6 @@ const char* szskipcrr(const char* p0, const char* p) {
 			p--;
 	}
 	return p;
-}
-
-int szcmp(const char* p1, const char* p2, int max_count) {
-	for(; *p2 && *p1 && max_count > 0; p1++, p2++, max_count--) {
-		if(*p1 == *p2)
-			continue;
-		return *p1 - *p2;
-	}
-	if(!max_count)
-		return 0;
-	return *p1 - *p2;
 }
 
 int szcmpi(const char* p1, const char* p2) {

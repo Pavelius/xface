@@ -109,7 +109,6 @@ template<class T> inline T*			zend(T* p) { while(*p) p++; return p; }
 template<class T> inline void		zcat(T* p1, const T e) { p1 = zend(p1); p1[0] = e; p1[1] = 0; }
 template<class T> inline void		zcat(T* p1, const T* p2) { zcpy(zend(p1), p2); }
 template<class T> inline int		zlen(T* p) { return zend(p) - p; }
-template<class T> inline int		znormalize(T* pb, T* pe) { T* p0 = pb; T* ps = pb; while(pb < pe) { if(*pb) *ps++ = *pb; pb++; } if(ps < pe) *ps = 0; return ps - p0; }
 template<class T> inline int		zindex(const T* p, T e) { if(!p) return -1; const T* p1 = p; while(*p) { if(*p++ == e) return p - p1 - 1; } return -1; }
 template<class T> inline const T*	zfindi(const T* p, int id) { while(p->id) { if(p->id == id) return p; p++; } return 0; }
 template<class T> inline int		zfind(const T* p, T e) { if(!p) return -1; const T* p1 = p; while(*p) { if(*p++ == e) return p - p1 - 1; } return -1; }

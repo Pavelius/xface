@@ -52,3 +52,10 @@ void archive::setpointer(void** value) {
 		}
 	}
 }
+
+void archive::set(void* value, unsigned size) {
+	if(writemode)
+		source.write(value, size);
+	else
+		source.read(value, size);
+}

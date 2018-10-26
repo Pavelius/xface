@@ -26,6 +26,7 @@ struct archive {
 	archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
 	archive(io::stream& source, bool writemode, const aref<dataset>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 
+	void			set(void* value, unsigned size);
 	void			setpointer(void** value);
 	bool			signature(const char* id);
 	bool			version(short major, short minor);
