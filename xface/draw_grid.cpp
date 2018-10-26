@@ -5,18 +5,20 @@ using namespace draw;
 using namespace draw::controls;
 
 bsval grid::getvalue(int row, int column) const {
-	return {type, get(row)};
+	return {type->find(columns[column].id), get(row)};
 }
 
 int grid::getnumber(int line, int column) const {
 	auto bv = getvalue(line, column);
-	if(bv.type->type == number_type)
+	if(bv.type && bv.type->type == number_type)
 		return bv.get();
 	return 0;
 }
 
 const char* grid::getname(char* result, const char* result_max, int line, int column) const {
 	auto bv = getvalue(line, column);
+	if(!bv.type)
+		return "";
 	if(bv.type->type == number_type) {
 		auto number = getnumber(line, column);
 		stringcreator sc;

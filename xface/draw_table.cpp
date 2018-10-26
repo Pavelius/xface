@@ -67,7 +67,7 @@ void table::row(rect rc, int index) const {
 		case Field:
 			p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, i);
 			if(p)
-				draw::text(rt, p, columns[i].flags);
+				draw::text(rt, p, (columns[i].flags & AlignMask));
 			//number_value = getnumber(index, i);
 			//if((columns[i].flags & HideZero) == 0 || number_value != 0) {
 			//	szprints(temp, temp + sizeof(temp) + 1, "%1i", number_value);
