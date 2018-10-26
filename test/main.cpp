@@ -109,6 +109,7 @@ static void test_control() {
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
 	controls::grid test(columns, element_type, elements);
+	test.no_change_order = false;
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);

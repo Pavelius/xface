@@ -6,7 +6,11 @@ using namespace draw::controls;
 int table::rowheader(rect rc) const {
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
-	gradv(rch, colors::button.lighten(), colors::button.darken());
+	color b1 = colors::button.lighten();
+	color b2 = colors::button.darken();
+	if(no_change_order)
+		b1 = b1.mix(b2, 192);
+	gradv(rch, b1, b2);
 	rectb(rch, colors::border);
 	for(auto i = 0; columns[i]; i++) {
 		const int header_padding = 4;
@@ -14,24 +18,23 @@ int table::rowheader(rect rc) const {
 		color active = colors::button.mix(colors::edit, 128);
 		color a1 = active.lighten();
 		color a2 = active.darken();
-		color b1 = colors::button.lighten();
-		color b2 = colors::button.darken();
 		auto a = area(r1);
-		switch(a) {
-		case AreaHilited:
-			gradv(r1, a1, a2);
+		if(a == AreaHilited) {
 			if(columns[i].tips && columns[i].tips[0])
 				tooltips(columns[i].tips);
-			break;
-		case AreaHilitedPressed:
-			gradv(r1, a2, a1);
-			break;
-		default:
-			gradv(r1, b1, b2);
-			break;
 		}
-		if((a==AreaHilited || a==AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
-			clickcolumn(i);
+		if(no_change_order) {
+			gradv(r1, b1, b2);
+		} else {
+			switch(a) {
+			case AreaHilited: gradv(r1, a1, a2); break;
+			case AreaHilitedPressed: gradv(r1, a2, a1); break;
+			default: gradv(r1, b1, b2);
+				break;
+			}
+			if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
+				clickcolumn(i);
+		}
 		rectb(r1, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
