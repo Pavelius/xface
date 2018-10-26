@@ -54,7 +54,10 @@ void* collection::insert(int index, const void* object) {
 }
 
 int	collection::indexof(const void* element) const {
-	return element >= get(0) && element < get(getcount());
+	auto p0 = get(0);
+	if(element >= p0 && element < get(getmaxcount()))
+		return ((char*)element - (char*)p0)/getsize();
+	return -1;
 }
 
 void collection::remove(int index, int elements_count) {

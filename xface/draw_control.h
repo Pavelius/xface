@@ -120,6 +120,7 @@ struct table : list {
 	bool				show_totals;
 	bool				show_header;
 	table(const column* columns) : columns(columns), show_totals(false), show_header(true) {}
+	virtual void		clickcolumn(int column) const {}
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }

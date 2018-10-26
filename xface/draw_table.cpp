@@ -30,6 +30,8 @@ int table::rowheader(rect rc) const {
 			gradv(r1, b1, b2);
 			break;
 		}
+		if((a==AreaHilited || a==AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
+			clickcolumn(i);
 		rectb(r1, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);

@@ -95,9 +95,9 @@ static void test_control() {
 		alignment_s		alignment;
 	};
 	static controls::column columns[] = {{Field, "name", "Наименование", 200},
-	{Check, "check", 0, 24, "Это тултипс колонки"},
-	{Field, "gender", "Пол", 64},
-	{Field, "count", "К-во", 32},
+	{Check, "check", 0, 28, "Это тултипс колонки"},
+	{Field, "gender", "Пол", 128},
+	{Field, "count", "К-во", 48},
 	{}};
 	static bsreq element_type[] = {
 		BSREQ(element, name, text_type),
