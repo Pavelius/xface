@@ -47,6 +47,7 @@ static struct alignment_info {
 assert_enum(alignment, ChaoticEvil);
 getstr_enum(alignment);
 static bsreq alignment_type[] = {
+	BSREQ(alignment_info, id, text_type),
 	BSREQ(alignment_info, name, text_type),
 {}};
 BSMETA(alignment);
