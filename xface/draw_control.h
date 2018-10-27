@@ -57,10 +57,27 @@ struct column {
 };
 struct control {
 	typedef void		(control::*callback)();
+	typedef bool		(control::*calltest)() const;
+	struct command {
+		const char*			id;
+		const char*			name;
+		union {
+			callback		proc;
+			const command*	child;
+		};
+		calltest			test;
+		constexpr command() : id(0), name(0), proc(0), test(0) {}
+		constexpr command(const command* child) : id("*"), name(0), child(child), test(0) {}
+		template<class T> command(const char* id, const char* name, void (T::*proc)()) : id(id), name(name), proc((callback)proc), test(0) {}
+		template<class T> command(const char* id, const char* name, void (T::*proc)(), bool (T::*test)()) : id(id), name(name), proc((callback)proc), test((calltest)test) {}
+		explicit operator bool() const { return id != 0; }
+	};
 	bool				show_border;
 	bool				show_background;
 	control();
-	void				execute(void (control::*proc)()) const;
+	void				execute(callback proc) const;
+	const command*		getcommand(const char* id) const;
+	virtual const command* getcommands() const { return 0; }
 	virtual bool		isfocusable() const { return true; }
 	bool				isfocused() const;
 	bool				ishilited() const;
@@ -123,12 +140,14 @@ struct table : list {
 	table(const column* columns) : columns(columns), show_totals(false), show_header(true), no_change_order(false) {}
 	virtual void		clickcolumn(int column) const {}
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
+	virtual const command* getcommands() const override;
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
 	virtual int			rowheader(rect rc) const; // Draw header row
+	void				setting() {}
 	void				view(rect rc) override;
 	void				viewtotal(rect rc) const;
 };

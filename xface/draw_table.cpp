@@ -120,3 +120,10 @@ void table::view(rect rc) {
 	} else
 		list::view(rc);
 }
+
+const control::command* table::getcommands() const {
+	static command elements[] = {{"setting", "Настройки", &table::setting},
+	{list::getcommands()},
+	{}};
+	return elements;
+}

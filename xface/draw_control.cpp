@@ -66,7 +66,26 @@ static void control_execute() {
 	(current_execute_control->*current_execute)();
 }
 
-void control::execute(void (control::*proc)()) const {
+static const control::command* find(const control::command* p, const char* id) {
+	if(!p)
+		return 0;
+	for(; *p; p++) {
+		if(p->id[0] == '*') {
+			auto p1 = find(p->child, id);
+			if(p1)
+				return p1;
+		}
+		if(strcmp(p->id, id) == 0)
+			return p;
+	}
+	return 0;
+}
+
+const control::command* control::getcommand(const char* id) const {
+	return find(getcommands(), id);
+}
+
+void control::execute(control::callback proc) const {
 	current_execute = proc;
 	current_execute_control = (control*)this;
 	draw::execute(control_execute);
