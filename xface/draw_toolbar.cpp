@@ -6,24 +6,20 @@ using namespace draw::controls;
 
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 
-struct toolbar_driver : control::command::driver {
+struct toolbar_builder : control::command::builder {
 
 	int				x, y, x2;
 	point			size;
 	const control*	source;
 
-	constexpr toolbar_driver(int x, int y, int width, const point size, const control* source) : x(x), y(y), x2(x + width), size(size), source(source) {}
+	constexpr toolbar_builder(int x, int y, int width, const point size, const control* source) : x(x), y(y), x2(x + width), size(size), source(source) {}
 
-	void addseparator() {
+	void addseparator() override {
 		gradv({x + 2, y, x + 4, y + size.y}, colors::border, colors::border.lighten());
+		x += 5;
 	}
 
 	void add(const control::command& cmd) override {
-		if(separator) {
-			addseparator();
-			separator = false;
-			x += 5;
-		}
 		auto width = 0;
 		if(cmd.view == control::ViewIcon || cmd.view == control::ViewIconAndText)
 			width += size.x;
@@ -55,7 +51,7 @@ struct toolbar_driver : control::command::driver {
 
 };
 
-void control::command::driver::render(const control::command* commands) {
+void control::command::builder::render(const control::command* commands, bool& separator) {
 	if(!commands)
 		return;
 	for(auto p = commands; *p; p++) {
@@ -67,10 +63,19 @@ void control::command::driver::render(const control::command* commands) {
 			render(p->child);
 			separator = true;
 		} else {
+			if(separator) {
+				addseparator();
+				separator = false;
+			}
 			add(*p);
 			separator = false;
 		}
 	}
+}
+
+void control::command::builder::render(const control::command* commands) {
+	bool separator = false;
+	render(commands, separator);
 }
 
 int	draw::controls::control::toolbar(int x, int y, int width) const {
@@ -83,7 +88,7 @@ int	draw::controls::control::toolbar(int x, int y, int width) const {
 	bool separator = false;
 	int x2 = x + width - 6;
 	short height = images->get(0).getrect(0, 0, 0).height() + 4;
-	toolbar_driver e(x, y, width, {height, height}, this);
+	toolbar_builder e(x, y, width, {height, height}, this);
 	e.render(getcommands());
 	if(e.x != x)
 		return height + metrics::padding;

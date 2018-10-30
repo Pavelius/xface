@@ -59,11 +59,12 @@ struct control {
 	enum show_s : unsigned char { NoView, ViewIcon, ViewText, ViewIconAndText };
 	typedef bool			(control::*callback)(bool run);
 	struct command {
-		struct driver {
-			bool			separator;
-			constexpr driver() : separator(false) {}
+		struct builder {
 			virtual void	add(const control::command& cmd) = 0;
+			virtual void	addseparator() = 0;
 			void			render(const control::command* commands);
+		private:
+			void			render(const control::command* commands, bool& separator);
 		};
 		const char*			id;
 		const char*			name;
