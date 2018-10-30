@@ -61,3 +61,36 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 	} else
 		return bv.getname();
 }
+
+bool grid::add(bool run) {
+	return true;
+}
+
+bool grid::addcopy(bool run) {
+	return true;
+}
+
+bool grid::change(bool run) {
+	return true;
+}
+
+bool grid::setting(bool run) {
+	return true;
+}
+
+const control::command* grid::getcommands() const {
+	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
+	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
+	{"change", "Изменить", 10, 0, &grid::change},
+	{}};
+	static command move_elements[] = {{"moveup", "Переместить вверх", 0, 0, &grid::add},
+	{"movedown", "Переместить вверх", 0, 0, &grid::add},
+	{"sortas", "Сортировать по возрастанию", 0, 0, &grid::add},
+	{"sortas", "Сортировать по убыванию", 0, 0, &grid::add},
+	{}};
+	static command elements[] = {{add_elements},
+	{move_elements},
+	{"setting", "Настройки", 16, 0, &grid::setting},
+	{}};
+	return elements;
+}

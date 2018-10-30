@@ -51,7 +51,7 @@ struct toolbar_builder : control::command::builder {
 
 };
 
-void control::command::builder::render(const control::command* commands, bool& separator) {
+void control::command::builder::render(const control::command* commands, bool& separator, int& count) {
 	if(!commands)
 		return;
 	for(auto p = commands; *p; p++) {
@@ -60,7 +60,9 @@ void control::command::builder::render(const control::command* commands, bool& s
 		if(p->view == control::NoView)
 			continue;
 		if(p->id[0] == '*') {
-			render(p->child);
+			if(count)
+				separator = true;
+			render(p->child, separator, count);
 			separator = true;
 		} else {
 			if(separator) {
@@ -74,7 +76,8 @@ void control::command::builder::render(const control::command* commands, bool& s
 
 void control::command::builder::render(const control::command* commands) {
 	bool separator = false;
-	render(commands, separator);
+	auto count = 0;
+	render(commands, separator, count);
 }
 
 int	draw::controls::control::toolbar(int x, int y, int width) const {

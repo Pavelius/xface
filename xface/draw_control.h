@@ -64,7 +64,7 @@ struct control {
 			virtual void	addseparator() = 0;
 			void			render(const control::command* commands);
 		private:
-			void			render(const control::command* commands, bool& separator);
+			void			render(const control::command* commands, bool& separator, int& count);
 		};
 		const char*			id;
 		const char*			name;
@@ -150,19 +150,14 @@ struct table : list {
 	bool				show_header;
 	bool				no_change_order;
 	table(const column* columns) : columns(columns), show_totals(false), show_header(true), no_change_order(false) {}
-	bool				add(bool run) { return true; }
-	bool				addcopy(bool run) { return true; }
 	virtual void		clickcolumn(int column) const {}
-	bool				change(bool run) { return true; }
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
-	virtual const command* getcommands() const override;
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
 	virtual int			rowheader(rect rc) const; // Draw header row
-	bool				setting(bool run);
 	void				view(rect rc) override;
 	void				viewtotal(rect rc) const;
 };
