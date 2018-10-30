@@ -68,7 +68,6 @@ void control::command::builder::render(const control::command* commands, bool& s
 				separator = false;
 			}
 			add(*p);
-			separator = false;
 		}
 	}
 }
