@@ -142,6 +142,8 @@
     <ClCompile Include="draw_tabs.cpp" />
     <ClCompile Include="draw_textedit.cpp" />
     <ClCompile Include="draw_theme.cpp" />
+    <ClCompile Include="draw_tool.cpp" />
+    <ClCompile Include="draw_toolbar.cpp" />
     <ClCompile Include="draw_tooltips.cpp" />
     <ClCompile Include="draw_dropdown.cpp" />
     <ClCompile Include="grammar.cpp" />

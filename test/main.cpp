@@ -116,6 +116,7 @@ static void test_control() {
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
 		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
+		rc.y1 += test.toolbar(rc.x1, rc.y1, rc.width());
 		test.view(rc);
 		domodal();
 	}

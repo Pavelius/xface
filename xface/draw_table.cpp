@@ -121,8 +121,17 @@ void table::view(rect rc) {
 		list::view(rc);
 }
 
+bool table::setting(bool run) {
+	return true;
+}
+
 const control::command* table::getcommands() const {
-	static command elements[] = {{"setting", "Настройки", &table::setting},
+	static command add_elements[] = {{"add", "Добавить", 0, 0, &table::add},
+	{"addcopy", "Скопировать", 9, 0, &table::addcopy},
+	{"change", "Изменить", 10, 0, &table::addcopy},
+	{}};
+	static command elements[] = {{add_elements},
+	{"setting", "Настройки", 16, 0, &table::setting},
 	{list::getcommands()},
 	{}};
 	return elements;

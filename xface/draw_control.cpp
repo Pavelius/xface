@@ -5,7 +5,7 @@ using namespace draw::controls;
 
 static control*	current_hilite;
 static control*	current_focus;
-static void (control::*current_execute)();
+static control::callback current_execute;
 static control* current_execute_control;
 
 static struct control_plugin : draw::plugin {
@@ -13,8 +13,6 @@ static struct control_plugin : draw::plugin {
 	void before() override {
 		current_hilite = 0;
 		current_focus = 0;
-		current_execute = 0;
-		current_execute_control = 0;
 	}
 
 	bool translate(int id) override {
@@ -63,7 +61,7 @@ void control::mouseleft(point position) {
 }
 
 static void control_execute() {
-	(current_execute_control->*current_execute)();
+	(current_execute_control->*current_execute)(true);
 }
 
 static const control::command* find(const control::command* p, const char* id) {
@@ -83,6 +81,10 @@ static const control::command* find(const control::command* p, const char* id) {
 
 const control::command* control::getcommand(const char* id) const {
 	return find(getcommands(), id);
+}
+
+void control::icon(int x, int y, bool disabled, const command& cmd) const {
+	image(x, y, getimages(), cmd.image, 0, disabled ? 0x80 : 0xFF);
 }
 
 void control::execute(control::callback proc) const {

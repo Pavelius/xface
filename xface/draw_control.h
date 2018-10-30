@@ -56,28 +56,39 @@ struct column {
 	draw_event_s		getcontol() const { return (draw_event_s)(flags&ControlMask); }
 };
 struct control {
-	typedef void		(control::*callback)();
-	typedef bool		(control::*calltest)() const;
+	enum show_s : unsigned char { NoView, ViewIcon, ViewText, ViewIconAndText };
+	typedef bool			(control::*callback)(bool run);
 	struct command {
+		struct builder {
+			virtual void	add(const control::command& cmd) = 0;
+			virtual void	addseparator() = 0;
+			void			render(const control::command* commands);
+		private:
+			void			render(const control::command* commands, bool& separator);
+		};
 		const char*			id;
 		const char*			name;
 		union {
 			callback		proc;
 			const command*	child;
 		};
-		calltest			test;
-		constexpr command() : id(0), name(0), proc(0), test(0) {}
-		constexpr command(const command* child) : id("*"), name(0), child(child), test(0) {}
-		template<class T> command(const char* id, const char* name, void (T::*proc)()) : id(id), name(name), proc((callback)proc), test(0) {}
-		template<class T> command(const char* id, const char* name, void (T::*proc)(), bool (T::*test)()) : id(id), name(name), proc((callback)proc), test((calltest)test) {}
+		unsigned			key;
+		int					image;
+		show_s				view;
+		constexpr command() : id(0), name(0), proc(0), key(0), image(0), view(ViewIcon) {}
+		constexpr command(const command* child) : id("*"), name(0), child(child), key(0), image(0), view(ViewIcon) {}
+		template<class T> command(const char* id, const char* name, int image, unsigned key, bool (T::*proc)(bool run)) : id(id), name(name), proc((callback)proc), key(key), image(image), view(ViewIcon) {}
 		explicit operator bool() const { return id != 0; }
 	};
 	bool				show_border;
 	bool				show_background;
+	static const sprite* standart_toolbar;
 	control();
 	void				execute(callback proc) const;
 	const command*		getcommand(const char* id) const;
 	virtual const command* getcommands() const { return 0; }
+	virtual const sprite* getimages() const { return standart_toolbar; }
+	virtual void		icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool		isfocusable() const { return true; }
 	bool				isfocused() const;
 	bool				ishilited() const;
@@ -96,6 +107,7 @@ struct control {
 	virtual void		mouseleft(point position); // Default behaivor set focus
 	virtual void		mouseleftdbl(point position) {}
 	virtual void		mousewheel(point position, int step) {}
+	int					toolbar(int x, int y, int width) const;
 	virtual void		view(rect rc);
 };
 // Analog of listbox element
@@ -138,7 +150,10 @@ struct table : list {
 	bool				show_header;
 	bool				no_change_order;
 	table(const column* columns) : columns(columns), show_totals(false), show_header(true), no_change_order(false) {}
+	bool				add(bool run) { return true; }
+	bool				addcopy(bool run) { return true; }
 	virtual void		clickcolumn(int column) const {}
+	bool				change(bool run) { return true; }
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	virtual const command* getcommands() const override;
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
@@ -147,7 +162,7 @@ struct table : list {
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
 	virtual int			rowheader(rect rc) const; // Draw header row
-	void				setting() {}
+	bool				setting(bool run);
 	void				view(rect rc) override;
 	void				viewtotal(rect rc) const;
 };
