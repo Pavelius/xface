@@ -111,41 +111,29 @@ public:
 	constexpr bool			is(T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
 };
-struct amem : collection {
-	constexpr amem(unsigned size = 0) : data(0), size(size), count(0), count_maximum(0) {}
-	~amem();
-	virtual void*			add() override;
-	virtual void			clear() override;
-	virtual void*			get(int index) const override { return (char*)data + size * index; }
-	virtual unsigned		getmaxcount() const override { return count_maximum; }
-	virtual unsigned		getcount() const override { return count; }
-	virtual unsigned		getsize() const override { return size; }
-	void					reserve(unsigned new_count);
-	virtual void			setcount(unsigned value) { count = value;  }
-	void					setup(unsigned size);
-private:
-	void*					data;
-	unsigned				size;
-	unsigned				count;
-	unsigned				count_maximum;
-};
 struct avec : collection {
-	constexpr avec() : data(0), size(0), count_maximum(0), count(count_value), count_value(0) {}
 	avec(const avec& source) = default;
-	template<typename T, unsigned N> constexpr avec(adat<T, N>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(N), count_value(0) {}
-	template<typename T> constexpr avec(aref<T>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(e.count), count_value(0) {}
-	template<typename T, unsigned N> constexpr avec(T e[N]) : data(e), size(sizeof(T)), count(count_value), count_maximum(N), count_value(0) {}
-	virtual void*			add() override { return (char*)data + getsize()*((count < count_maximum) ? count++ : 0); }
-	virtual void			clear() override { count = 0; }
-	virtual void*			get(int index) const override { return (char*)data + size * index; }
-	virtual unsigned		getmaxcount() const override { return count_maximum; }
-	virtual unsigned		getcount() const override { return count; }
-	virtual unsigned		getsize() const override { return size; }
+	constexpr avec() : data(0), size(0), count_maximum(0), count(count_value), count_value(0), can_grow(false) {}
+	constexpr avec(unsigned size) : data(0), size(size), count_maximum(0), count(count_value), count_value(0), can_grow(true) {}
+	template<typename T, unsigned N> constexpr avec(adat<T, N>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(N), count_value(0), can_grow(false) {}
+	template<typename T> constexpr avec(aref<T>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(e.count), count_value(0), can_grow(false) {}
+	template<typename T, unsigned N> constexpr avec(T e[N]) : data(e), size(sizeof(T)), count(count_value), count_maximum(N), count_value(0), can_grow(false) {}
+	~avec();
+	virtual void*			add() override;
+	void					clear() override;
+	virtual void*			get(int index) const { return (char*)data + size * index; }
+	unsigned				getmaxcount() const { return count_maximum; }
+	unsigned				getcount() const { return count; }
+	unsigned				getsize() const { return size; }
+	bool					isgrowable() const { return can_grow; }
 	virtual void			setcount(unsigned value) { count = value; }
+	void					setup(unsigned size);
+	void					reserve(unsigned count);
 private:
 	void*					data;
 	unsigned				size;
 	unsigned&				count;
 	unsigned				count_maximum;
 	unsigned				count_value;
+	bool					can_grow;
 };

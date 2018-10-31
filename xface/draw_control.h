@@ -146,16 +146,21 @@ struct list : control {
 };
 struct table : list {
 	const column*		columns;
+	int					current_column;
+	bool				no_change_order;
+	bool				select_full_row;
 	bool				show_totals;
 	bool				show_header;
-	bool				no_change_order;
-	table(const column* columns) : columns(columns), show_totals(false), show_header(true), no_change_order(false) {}
+	table(const column* columns) : columns(columns), current_column(0), show_totals(false), show_header(true), no_change_order(false), select_full_row(false) {}
 	virtual void		clickcolumn(int column) const {}
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
+	virtual int			getcolumn() const override { return current_column; }
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
+	void				keyleft(int id) override;
+	void				keyright(int id) override;
 	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
 	virtual int			rowheader(rect rc) const; // Draw header row
 	void				view(rect rc) override;

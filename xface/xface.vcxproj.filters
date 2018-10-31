@@ -141,9 +141,6 @@
     <ClCompile Include="bsreq.cpp">
       <Filter>collections</Filter>
     </ClCompile>
-    <ClCompile Include="array.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="resources.cpp">
       <Filter>draw\core</Filter>
     </ClCompile>
@@ -179,6 +176,9 @@
     </ClCompile>
     <ClCompile Include="draw_toolbar.cpp">
       <Filter>draw\simple</Filter>
+    </ClCompile>
+    <ClCompile Include="avec.cpp">
+      <Filter>collections</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

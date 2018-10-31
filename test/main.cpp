@@ -109,7 +109,7 @@ static void test_control() {
 	elements.add({"Pavel", Male, ChaoticEvil});
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
-	controls::grid test(columns, element_type, elements);
+	controls::grid test(columns, element_type, elements);//sizeof(element));
 	test.no_change_order = false;
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
@@ -211,7 +211,7 @@ static void simple_controls() {
 }
 
 static void test_array() {
-	amem a1(sizeof(testinfo));
+	avec a1(sizeof(testinfo));
 	auto p1 = (testinfo*)a1.add();
 	p1->name = "Test";
 	p1->value = 1;

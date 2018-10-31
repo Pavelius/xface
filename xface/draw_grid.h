@@ -7,8 +7,9 @@ namespace draw {
 namespace controls {
 struct grid : table, avec {
 	const bsreq*			type;
+	bool					select_full_row;
 	//
-	grid(const column* columns, const bsreq* type, const avec& source) : table(columns), type(type), avec(source) {}
+	grid(const column* columns, const bsreq* type, const avec& source) : table(columns), type(type), avec(source), can_grow(false) {}
 	bool					add(bool run);
 	bool					addcopy(bool run);
 	bool					change(bool run);
@@ -19,6 +20,8 @@ struct grid : table, avec {
 	virtual int				getmaximum() const override { return avec::getcount(); }
 	virtual bsval			getvalue(int row, int column) const;
 	bool					setting(bool run);
+private:
+	bool					can_grow;
 };
 }
 }

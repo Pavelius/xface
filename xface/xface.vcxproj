@@ -116,7 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="archive.cpp" />
-    <ClCompile Include="array.cpp" />
+    <ClCompile Include="avec.cpp" />
     <ClCompile Include="bsdata.cpp" />
     <ClCompile Include="bsreq.cpp" />
     <ClCompile Include="bstream.cpp" />

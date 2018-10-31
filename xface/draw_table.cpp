@@ -61,10 +61,18 @@ static void table_check() {
 
 void table::row(rect rc, int index) const {
 	char temp[260];
-	rowhilite(rc, index);
+	area(rc);
+	if(select_full_row)
+		rowhilite(rc, index);
 	rc.offset(4, 4);
+	auto current_column = getcolumn();
 	for(auto i = 0; columns[i]; i++) {
 		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
+		area(rt);
+		if(!select_full_row) {
+			if(index == current && i==current_column)
+				hilight({rt.x1-4, rt.y1-4, rt.x2, rt.y2+4});
+		}
 		temp[0] = 0;
 		const char* p;
 		int number_value;
@@ -73,11 +81,6 @@ void table::row(rect rc, int index) const {
 			p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, i);
 			if(p)
 				draw::text(rt, p, (columns[i].flags & AlignMask));
-			//number_value = getnumber(index, i);
-			//if((columns[i].flags & HideZero) == 0 || number_value != 0) {
-			//	szprints(temp, temp + sizeof(temp) + 1, "%1i", number_value);
-			//	draw::text(rt, temp, columns[i].flags);
-			//}
 			break;
 		case Check:
 			number_value = getnumber(index, i);
@@ -119,4 +122,10 @@ void table::view(rect rc) {
 		viewtotal({rc.x1, rc.y2 - getrowheight(), rc.x2, rc.y2});
 	} else
 		list::view(rc);
+}
+
+void table::keyleft(int id) {
+}
+
+void table::keyright(int id) {
 }

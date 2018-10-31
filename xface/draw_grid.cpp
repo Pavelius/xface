@@ -6,15 +6,15 @@ using namespace draw;
 using namespace draw::controls;
 
 static grid*	current_element;
-static int		current_column;
+static int		current_sort_column;
 static int		current_order;
 
 static int compare_column(const void* v1, const void* v2) {
 	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
 	auto i1 = current_element->indexof(v1);
 	auto i2 = current_element->indexof(v2);
-	auto n1 = current_element->getname(t1, zendof(t1), i1, current_column);
-	auto n2 = current_element->getname(t2, zendof(t2), i2, current_column);
+	auto n1 = current_element->getname(t1, zendof(t1), i1, current_sort_column);
+	auto n2 = current_element->getname(t2, zendof(t2), i2, current_sort_column);
 	return strcmp(n1, n2)*current_order;
 }
 
@@ -29,7 +29,7 @@ static void table_sort_column() {
 
 void grid::clickcolumn(int column) const {
 	current_element = const_cast<grid*>(this);
-	current_column = column;
+	current_sort_column = column;
 	draw::execute(table_sort_column);
 }
 
@@ -63,10 +63,26 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 }
 
 bool grid::add(bool run) {
+	if(getcount() >= (unsigned)getmaximum())
+		return false;
+	if(run) {
+		select(indexof(avec::add()));
+		change(run);
+	}
 	return true;
 }
 
 bool grid::addcopy(bool run) {
+	if(getcount() >= (unsigned)getmaximum())
+		return false;
+	if(run) {
+		auto c = avec::get(current);
+		auto p = avec::add();
+		if(p)
+			memcpy(p, c, getsize());
+		select(indexof(p));
+		change(run);
+	}
 	return true;
 }
 
