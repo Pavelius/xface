@@ -31,6 +31,7 @@ static struct control_plugin : draw::plugin {
 			case KeyPageDown: current_focus->keypagedown(id); return true;
 			case InputSymbol: current_focus->keysymbol(hot.param); break;
 			}
+			return current_focus->translate(id);
 		}
 		if(current_hilite) {
 			switch(id) {
@@ -107,4 +108,16 @@ void control::view(rect rc) {
 		rectf(rc, colors::window);
 	if(show_border)
 		rectb(rc, colors::border);
+}
+
+bool control::translate(unsigned key) {
+	auto pc = getcommands();
+	if(!pc)
+		return false;
+	while(*pc) {
+		if(pc->key == key)
+			return (this->*pc->proc)(true);
+		pc++;
+	}
+	return false;
 }

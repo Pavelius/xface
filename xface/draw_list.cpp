@@ -6,7 +6,7 @@ using namespace draw::controls;
 static char		search_text[32];
 static unsigned	search_time;
 
-list::list() : origin(0), current(0), current_hilite(-1),
+list::list() : origin(0), current(0), current_hilite(-1), current_column(0), current_hilite_column(-1),
 maximum_width(0), origin_width(0),
 lines_per_page(0), pixels_per_line(0),
 show_grid_lines(false),
@@ -21,8 +21,9 @@ void list::ensurevisible() {
 		origin = current - lines_per_page + 1;
 }
 
-void list::select(int index) {
+void list::select(int index, int column) {
 	current = index;
+	current_column = column;
 	ensurevisible();
 }
 

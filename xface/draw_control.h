@@ -108,12 +108,14 @@ struct control {
 	virtual void		mouseleftdbl(point position) {}
 	virtual void		mousewheel(point position, int step) {}
 	int					toolbar(int x, int y, int width) const;
+	bool				translate(unsigned key);
 	virtual void		view(rect rc);
 };
 // Analog of listbox element
 struct list : control {
-	int					origin, current, current_hilite;
-	int					maximum_width, origin_width;
+	int					origin, origin_width;
+	int					current, current_column, current_hilite, current_hilite_column;
+	int					maximum_width;
 	int					lines_per_page, pixels_per_line;
 	bool				show_grid_lines, show_selection;
 	bool				hilite_odd_lines;
@@ -127,6 +129,7 @@ struct list : control {
 	virtual const char* getname(char* result, const char* result_max, int line, int column) const { return 0; }
 	virtual int			getmaximum() const { return 0; }
 	static int			getrowheight(); // Get default row height for any List Control
+	virtual int			getwidth(int column) const { return 0; } // get column width
 	void				hilight(rect rc) const;
 	void				keydown(int id) override;
 	void				keyend(int id) override;
@@ -138,7 +141,7 @@ struct list : control {
 	void				keyup(int id) override;
 	void				mouseleftdbl(point position) override;
 	void				mousewheel(point position, int step) override;
-	void				select(int index);
+	void				select(int index, int column = 0);
 	virtual void		mouseselect(int id, bool pressed, int index) { if(pressed) select(index); }
 	virtual void		row(rect rc, int index) const; // Draw single row - part of list
 	virtual void		rowhilite(rect rc, int index) const;
@@ -146,12 +149,11 @@ struct list : control {
 };
 struct table : list {
 	const column*		columns;
-	int					current_column;
 	bool				no_change_order;
 	bool				select_full_row;
 	bool				show_totals;
 	bool				show_header;
-	table(const column* columns) : columns(columns), current_column(0), show_totals(false), show_header(true), no_change_order(false), select_full_row(false) {}
+	table(const column* columns) : columns(columns), show_totals(false), show_header(true), no_change_order(false), select_full_row(false) {}
 	virtual void		clickcolumn(int column) const {}
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	virtual int			getcolumn() const override { return current_column; }
