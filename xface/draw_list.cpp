@@ -6,14 +6,6 @@ using namespace draw::controls;
 static char		search_text[32];
 static unsigned	search_time;
 
-list::list() : origin(0), current(0), current_hilite(-1), current_column(0), current_hilite_column(-1),
-maximum_width(0), origin_width(0),
-lines_per_page(0), pixels_per_line(0),
-show_grid_lines(false),
-show_selection(true),
-hilite_odd_lines(true) {
-}
-
 void list::ensurevisible() {
 	if(current < origin)
 		origin = current;
@@ -23,7 +15,6 @@ void list::ensurevisible() {
 
 void list::select(int index, int column) {
 	current = index;
-	current_column = column;
 	ensurevisible();
 }
 
@@ -82,6 +73,17 @@ int	list::getrowheight() {
 	return texth() + 8;
 }
 
+void list::mousehiliting(const rect& screen, point mouse) {
+	current_hilite = origin + (mouse.y - screen.y1) / pixels_per_line;
+}
+
+void list::mouseselect(int id, bool pressed) {
+	if(current_hilite < 0)
+		return;
+	if(pressed)
+		select(current_hilite, getcolumn());
+}
+
 void list::view(rect rcorigin) {
 	control::view(rcorigin);
 	rect rc = rcorigin; rc.offset(1, 1);
@@ -97,20 +99,19 @@ void list::view(rect rcorigin) {
 	correction();
 	if(maximum > lines_per_page)
 		scroll.set(rcorigin.x2 - metrics::scroll, rcorigin.y1, rcorigin.x2, rcorigin.y2);
+	auto maximum_width = getmaximumwidth();
 	if(maximum_width > rc.width())
 		scrollh.set(rcorigin.x1, rcorigin.y2 - metrics::scroll, rcorigin.x2, rcorigin.y2);
 	int rk = hot.key&CommandMask;
 	if(draw::areb(rc)) {
 		if(hot.mouse.y > rc.y1 && hot.mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
 			if(!scroll.width() || hot.mouse.x < scroll.x1)
-				current_hilite = origin + (hot.mouse.y - rc.y1) / pixels_per_line;
+				mousehiliting(rc, hot.mouse);
 		}
-		// Mouse select
-		if(rk == MouseLeft || rk == MouseRight) {
-			if(current_hilite != -1)
-				mouseselect(rk, hot.pressed, current_hilite);
-		}
+		if(rk == MouseLeft || rk == MouseRight)
+			mouseselect(rk, hot.pressed);
 	}
+	auto origin_width = getoriginwidth();
 	if(true) {
 		draw::state push;
 		setclip(rcorigin);
@@ -211,7 +212,7 @@ int list::find(int line, int column, const char* value, int lenght) const {
 	while(line < m) {
 		char temp[260]; temp[0] = 0;
 		auto p = getname(temp, temp + sizeof(temp) - 1, line, column);
-		if(p && szcmpi(p, value, lenght)==0)
+		if(p && szcmpi(p, value, lenght) == 0)
 			return line;
 		line++;
 	}
@@ -222,7 +223,7 @@ void list::keysymbol(int symbol) {
 	if(!symbol || symbol < 0x20)
 		return;
 	auto time_clock = clock();
-	if(!search_time || (time_clock - search_time) >1500)
+	if(!search_time || (time_clock - search_time) > 1500)
 		search_text[0] = 0;
 	search_time = time_clock;
 	char* p = zend(search_text);

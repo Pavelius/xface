@@ -54,6 +54,7 @@ struct column {
 	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
 	explicit operator bool() const { return id != 0; }
 	draw_event_s		getcontol() const { return (draw_event_s)(flags&ControlMask); }
+	bool				isvisible() const { return true; }
 };
 struct control {
 	enum show_s : unsigned char { NoView, ViewIcon, ViewText, ViewIconAndText };
@@ -83,7 +84,7 @@ struct control {
 	bool				show_border;
 	bool				show_background;
 	static const sprite* standart_toolbar;
-	control();
+	constexpr control(): show_border(true), show_background(true) {}
 	void				execute(callback proc) const;
 	const command*		getcommand(const char* id) const;
 	virtual const command* getcommands() const { return 0; }
@@ -113,13 +114,12 @@ struct control {
 };
 // Analog of listbox element
 struct list : control {
-	int					origin, origin_width;
-	int					current, current_column, current_hilite, current_hilite_column;
-	int					maximum_width;
+	int					origin, current, current_hilite;
 	int					lines_per_page, pixels_per_line;
 	bool				show_grid_lines, show_selection;
 	bool				hilite_odd_lines;
-	list();
+	constexpr list() : origin(0), current(0), current_hilite(-1),
+		lines_per_page(0), pixels_per_line(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true) {}
 	void				correction();
 	void				ensurevisible(); // ensure that current selected item was visible on screen if current 'count' is count of items per line
 	int					find(int line, int column, const char* name, int lenght = -1) const;
@@ -128,6 +128,8 @@ struct list : control {
 	int					getlinesperpage(int height) const { return height / pixels_per_line; }
 	virtual const char* getname(char* result, const char* result_max, int line, int column) const { return 0; }
 	virtual int			getmaximum() const { return 0; }
+	virtual int			getmaximumwidth() const { return 0; }
+	virtual int			getoriginwidth() const { return 0; }
 	static int			getrowheight(); // Get default row height for any List Control
 	virtual int			getwidth(int column) const { return 0; } // get column width
 	void				hilight(rect rc) const;
@@ -139,32 +141,38 @@ struct list : control {
 	void				keypagedown(int id) override;
 	void				keysymbol(int symbol) override;
 	void				keyup(int id) override;
+	void				mousehiliting(const rect& rc, point mouse);
 	void				mouseleftdbl(point position) override;
 	void				mousewheel(point position, int step) override;
-	void				select(int index, int column = 0);
-	virtual void		mouseselect(int id, bool pressed, int index) { if(pressed) select(index); }
+	virtual void		select(int index, int column);
+	virtual void		mouseselect(int id, bool pressed);
 	virtual void		row(rect rc, int index) const; // Draw single row - part of list
 	virtual void		rowhilite(rect rc, int index) const;
 	void				view(rect rc) override;
 };
 struct table : list {
 	const column*		columns;
+	int					origin_width, current_column, current_hilite_column, current_column_maximum, maximum_width;
 	bool				no_change_order;
 	bool				select_full_row;
 	bool				show_totals;
 	bool				show_header;
-	table(const column* columns) : columns(columns), show_totals(false), show_header(true), no_change_order(false), select_full_row(false) {}
+	constexpr table(const column* columns) : columns(columns), origin_width(0), current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
+		show_totals(false), show_header(true), no_change_order(false), select_full_row(false) {}
 	virtual void		clickcolumn(int column) const {}
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	virtual int			getcolumn() const override { return current_column; }
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }
+	virtual int			getmaximumwidth() const { return maximum_width; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	void				keyleft(int id) override;
 	void				keyright(int id) override;
+	void				mouseselect(int id, bool pressed) override;
 	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
 	virtual int			rowheader(rect rc) const; // Draw header row
+	void				select(int index, int column = 0) override;
 	void				view(rect rc) override;
 	void				viewtotal(rect rc) const;
 };

@@ -138,8 +138,8 @@ struct combo_list : controls::list, adat<void*, 64> {
 		return getcount();
 	}
 
-	void mouseselect(int id, bool pressed, int index) override {
-		select(index);
+	void mouseselect(int id, bool pressed) override {
+		list::mouseselect(id, pressed);
 		keyenter(0);
 	}
 

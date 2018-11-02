@@ -46,9 +46,6 @@ static struct control_plugin : draw::plugin {
 
 } plugin_instance;
 
-control::control() : show_border(true), show_background(true) {
-}
-
 bool control::ishilited() const {
 	return current_hilite == this;
 }

@@ -3,6 +3,18 @@
 
 using namespace draw::controls;
 
+void table::select(int index, int column) {
+	current_column = column;
+	list::select(index, column);
+}
+
+void table::mouseselect(int id, bool pressed) {
+	if(current_hilite == -1 || current_hilite_column == -1)
+		return;
+	if(pressed)
+		select(current_hilite, current_hilite_column);
+}
+
 int table::rowheader(rect rc) const {
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
@@ -13,6 +25,8 @@ int table::rowheader(rect rc) const {
 	gradv(rch, b1, b2);
 	rectb(rch, colors::border);
 	for(auto i = 0; columns[i]; i++) {
+		if(!columns[i].isvisible())
+			continue;
 		const int header_padding = 4;
 		rect r1 = {rc.x1, rc.y1, rc.x1 + columns[i].width, rc.y1 + height};
 		color active = colors::button.mix(colors::edit, 128);
@@ -67,6 +81,8 @@ void table::row(rect rc, int index) const {
 	rc.offset(4, 4);
 	auto current_column = getcolumn();
 	for(auto i = 0; columns[i]; i++) {
+		if(!columns[i].isvisible())
+			continue;
 		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
 		area(rt);
 		if(!select_full_row) {
@@ -97,7 +113,9 @@ void table::row(rect rc, int index) const {
 void table::viewtotal(rect rc) const {
 	rc.offset(1, 1);
 	rc.offset(4, 4);
-	for(auto i = 0; columns[i].title; i++) {
+	for(auto i = 0; columns[i]; i++) {
+		if(!columns[i].isvisible())
+			continue;
 		char temp[260]; temp[0] = 0;
 		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
 		auto p = gettotal(temp, temp + sizeof(temp) - 1, i);
@@ -115,6 +133,21 @@ void table::viewtotal(rect rc) const {
 }
 
 void table::view(rect rc) {
+	current_hilite_column = -1;
+	maximum_width = 0;
+	for(auto i = 0; columns[i]; i++) {
+		if(!columns[i].isvisible())
+			continue;
+		rect rt;
+		rt.x1 = rc.x1 - origin_width + maximum_width;
+		rt.x2 = rt.x1 + columns[i].width;
+		rt.y1 = rc.y1;
+		rt.y2 = rc.y2;
+		if(hot.mouse.in(rt))
+			current_hilite_column = i;
+		maximum_width += columns[i].width;
+		current_column_maximum = i;
+	}
 	if(show_header)
 		rc.y1 += rowheader(rc);
 	if(show_totals) {
@@ -125,7 +158,11 @@ void table::view(rect rc) {
 }
 
 void table::keyleft(int id) {
+	if(current_column > 0)
+		current_column--;
 }
 
 void table::keyright(int id) {
+	if(current_column < current_column_maximum)
+		current_column++;
 }
