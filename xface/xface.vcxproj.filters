@@ -180,6 +180,9 @@
     <ClCompile Include="avec.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="requisit.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
@@ -250,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="draw_grid.h">
       <Filter>draw\controls</Filter>
+    </ClInclude>
+    <ClInclude Include="requisit.h">
+      <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

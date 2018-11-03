@@ -5,6 +5,7 @@
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
 #include "xface/variable.h"
+#include "xface/requisit.h"
 
 using namespace draw;
 
@@ -227,6 +228,19 @@ static void test_array() {
 
 void set_dark_theme();
 void set_light_theme();
+
+using namespace compiler;
+
+static void test_requisit() {
+	auto p2 = compiler::object->add("pointer");
+	p2->add("x", number);
+	p2->add("y", number);
+	auto p1 = compiler::object->add("rect");
+	p1->add("x1", number);
+	p1->add("y1", number);
+	p1->add("x2", number);
+	p1->add("y2", number);
+}
 
 int main() {
 	test_array();

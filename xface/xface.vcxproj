@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="archive.cpp" />
+    <ClCompile Include="requisit.cpp" />
     <ClCompile Include="avec.cpp" />
     <ClCompile Include="bsdata.cpp" />
     <ClCompile Include="bsreq.cpp" />
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h" />
+    <ClInclude Include="requisit.h" />
     <ClInclude Include="bsdata.h" />
     <ClInclude Include="bsreq.h" />
     <ClInclude Include="bstream.h" />
