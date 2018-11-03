@@ -232,6 +232,10 @@ void set_light_theme();
 using namespace compiler;
 
 static void test_requisit() {
+	string strings;
+	auto s1 = strings.add("Test");
+	auto s2 = strings.add("Test");
+	auto s3 = strings.add("Test1");
 	auto p2 = compiler::object->add("pointer");
 	p2->add("x", number);
 	p2->add("y", number);
@@ -243,6 +247,7 @@ static void test_requisit() {
 }
 
 int main() {
+	test_requisit();
 	test_array();
 	set_light_theme();
 	// Инициализация библиотеки
