@@ -5,7 +5,7 @@
 namespace compiler {
 struct string : arem<char> {
 	arem<unsigned>	index;
-	constexpr string() : arem(), index() {}
+	constexpr string() : index() {}
 	unsigned		add(const char* value);
 	const char*		get(unsigned value) const;
 };
