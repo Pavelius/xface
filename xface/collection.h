@@ -5,32 +5,12 @@
 unsigned					rmoptimal(unsigned need_count);
 void*						rmreserve(void* data, unsigned new_size);
 
-// Abstract collection
-struct collection {
-	virtual void*			add() = 0; // Add new empthy element to collection
-	void					add(const void* element); // Add new element to collection
-	virtual void			clear() = 0; // Clear all elements in collection
-	int						find(const char* value, unsigned offset = 0); // Find value by name
-	virtual void*			get(int index) const = 0; // Get content of element with index
-	virtual unsigned		getmaxcount() const = 0; // Get maximum possible elements
-	virtual unsigned		getcount() const = 0; // Get count of elements in collection
-	virtual unsigned		getsize() const = 0; // Get size of one element in collection
-	virtual int				indexof(const void* element) const;
-	void*					insert(int index, const void* object); // Insert new element to collection by specific index
-	bool					read(const char* url, const struct bsreq* fields);
-	virtual void			remove(int index, int count = 1); // Remove element from collection
-	virtual void			setcount(unsigned value) = 0;
-	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);	// Sort collection
-	void					swap(int i1, int i2); // Swap elements
-	bool					write(const char* url, const struct bsreq* fields);
-};
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
 	T						data[count_max];
 	unsigned				count;
-	//
-	constexpr adat() : data(), count(0) {}
+	constexpr adat() : count(0) {}
 	constexpr adat(std::initializer_list<T> list) : count(0) { for(auto& e : list) *add() = e; }
 	constexpr const T& operator[](unsigned index) const { return data[index]; }
 	constexpr T& operator[](unsigned index) { return data[index]; }
@@ -41,7 +21,6 @@ struct adat {
 	const T*				begin() const { return data; }
 	void					clear() { count = 0; }
 	T*						end() { return data + count; }
-	T*						endof() { return data + count_max; }
 	const T*				end() const { return data + count; }
 	template<class Z> T*	find(Z id) { auto e1 = data + count; for(T* e = data; e < e1; e++) { if(e->id == id) return e; } return 0; }
 	inline int				getcount() const { return count; }
@@ -72,68 +51,60 @@ template<class T> struct aref {
 	bool					is(const T value) const { return indexof(value) != -1; }
 	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
 };
+// Autogrow typized array
 template<class T> struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(), count_maximum() {}
-	T* add() {
-		if(aref<T>::count >= count_maximum) {
-			count_maximum = rmoptimal(aref<T>::count + 1);
-			aref<T>::data = (T*)rmreserve(aref<T>::data, count_maximum * sizeof(T));
-		}
-		return &aref<T>::data[aref<T>::count++];
-	}
+	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++];}
 	void					add(const T& e) { *(add()) = e; }
+	void					reserve(unsigned count) { if(count >= count_maximum) { count_maximum = rmoptimal(count + 1); this->data = (T*)rmreserve(this->data, count_maximum * sizeof(T)); } }
 };
 // Abstract flag data bazed on enumerator
-template<typename T, typename DT = unsigned> class cflags {
-	static constexpr T maximum = (T)(sizeof(DT) * 8);
-	struct iter {
-		T	current;
-		DT	data;
-		iter(T current, DT data) : current(getnext(current, data)), data(data) {}
-		T operator*() const { return (T)current; }
-		bool operator!=(const iter& e) const { return e.current != current; }
-		void operator++() { current = getnext((T)(current + 1), data); }
-		constexpr T getnext(T current, unsigned data) const {
-			while(current < maximum && (data & (1 << current)) == 0)
-				current = (T)(current + 1);
-			return current;
-		}
-	};
-public:
+template<typename T, typename DT = unsigned> struct cflags {
 	DT						data;
 	constexpr cflags() : data(0) {}
 	constexpr cflags(std::initializer_list<T> list) : data() { for(auto e : list) add(e); }
-	constexpr void			add(T id) { data |= 1 << id; }
-	iter					begin() const { return iter((T)0, data); }
-	void					clear() { data = 0; }
-	iter					end() const { return iter(maximum, data); }
-	constexpr bool			is(T id) const { return (data & (1 << id)) != 0; }
+	constexpr void			add(const T id) { data |= 1 << id; }
+	constexpr void			clear() { data = 0; }
+	constexpr bool			is(const T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
 };
-struct avec : collection {
-	avec(const avec& source) = default;
-	constexpr avec() : data(0), size(0), count_maximum(0), count(count_value), count_value(0), can_grow(false) {}
-	constexpr avec(unsigned size) : data(0), size(size), count_maximum(0), count(count_value), count_value(0), can_grow(true) {}
-	template<typename T, unsigned N> constexpr avec(adat<T, N>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(N), count_value(0), can_grow(false) {}
-	template<typename T> constexpr avec(aref<T>& e) : data(e.data), size(sizeof(T)), count(e.count), count_maximum(e.count), count_value(0), can_grow(false) {}
-	template<typename T, unsigned N> constexpr avec(T e[N]) : data(e), size(sizeof(T)), count(count_value), count_maximum(N), count_value(0), can_grow(false) {}
-	~avec();
-	virtual void*			add() override;
-	void					clear() override;
-	virtual void*			get(int index) const { return (char*)data + size * index; }
-	unsigned				getmaxcount() const { return count_maximum; }
-	unsigned				getcount() const { return count; }
-	unsigned				getsize() const { return size; }
-	bool					isgrowable() const { return can_grow; }
-	virtual void			setcount(unsigned value) { count = value; }
-	void					setup(unsigned size);
-	void					reserve(unsigned count);
-private:
+// Abstract array vector
+class array {
 	void*					data;
 	unsigned				size;
 	unsigned&				count;
-	unsigned				count_maximum;
 	unsigned				count_value;
+	unsigned				count_maximum;
 	bool					can_grow;
+public:
+	constexpr array() : data(0), size(0), count_maximum(0), count(count_value), count_value(0), can_grow(false) {}
+	constexpr array(unsigned size) : data(0), size(size), count_maximum(0), count(count_value), count_value(0), can_grow(true) {}
+	constexpr array(void* data, unsigned size, unsigned count_maximum) : data(data), size(size), count_maximum(count_maximum), count(count_value), count_value(count_maximum), can_grow(false) {}
+	constexpr array(void* data, unsigned size, unsigned count_maximum, unsigned& count) : data(data), size(size), count_maximum(count_maximum), count(count), count_value(0), can_grow(false) {}
+	template<typename T, unsigned N> constexpr array(adat<T, N>& e) : array(e.data, sizeof(T), N, e.count) {}
+	template<typename T> constexpr array(const aref<T>& e) : array(e.data, sizeof(T), e.count) {}
+	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e.data, sizeof(T), N) {}
+	~array();
+	void*					add();
+	void					add(const void* element);
+	char*					begin() { return (char*)data; }
+	const char*				begin() const { return (char*)data; }
+	void					clear();
+	char*					end() { return (char*)data + size * count; }
+	const char*				end() const { return (char*)data + size * count; }
+	int						find(const char* value, unsigned offset) const;
+	void*					get(int index) const { return (char*)data + size * index; }
+	unsigned				getmaxcount() const { return count_maximum; }
+	unsigned				getcount() const { return count; }
+	unsigned				getsize() const { return size; }
+	int						indexof(const void* element) const;
+	void*					insert(int index, const void* element);
+	bool					isgrowable() const { return can_grow; }
+	void					remove(int index, int elements_count);
+	void					setcount(unsigned value) { count = value; }
+	void					setup(unsigned size);
+	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);
+	void					swap(int i1, int i2);
+	void					reserve(unsigned count);
 };

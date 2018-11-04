@@ -22,12 +22,12 @@ void* rmreserve(void* data, unsigned new_size) {
 	return malloc(new_size);
 }
 
-avec::~avec() {
+array::~array() {
 	if(can_grow)
 		clear();
 }
 
-void avec::clear() {
+void array::clear() {
 	count = 0;
 	if(!can_grow)
 		return;
@@ -37,14 +37,14 @@ void avec::clear() {
 	data = 0;
 }
 
-void avec::setup(unsigned size) {
+void array::setup(unsigned size) {
 	if(!can_grow)
 		return;
 	clear();
 	this->size = size;
 }
 
-void* avec::add() {
+void* array::add() {
 	if(can_grow) {
 		reserve(count + 1);
 		auto p = (char*)data + size * count;
@@ -54,7 +54,7 @@ void* avec::add() {
 	return (char*)data + getsize()*((count < count_maximum) ? count++ : 0);
 }
 
-void avec::reserve(unsigned count) {
+void array::reserve(unsigned count) {
 	if(!can_grow)
 		return;
 	if(!size)

@@ -75,7 +75,7 @@ static void* find_next(const bsval& e1, comparer c1) {
 	auto n2 = "";
 	void* e2 = 0;
 	auto pe = ps->end();
-	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
+	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->getsize()) {
 		auto nx = (const char*)pf->get(pf->ptr(ex));
 		if(!nx)
 			nx = "";
@@ -95,7 +95,7 @@ static void* find_name(const bsreq* type, const char* name) {
 	if(!pf)
 		return 0;
 	auto pe = ps->end();
-	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
+	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->getsize()) {
 		auto nx = (const char*)pf->get(pf->ptr(ex));
 		if(!nx || nx[0] == 0)
 			continue;
@@ -167,7 +167,7 @@ static void show_drop_down() {
 		return;
 	auto pe = ps->end();
 	auto value = get_value(combo_value);
-	for(auto p = ps->begin(); p < pe; p += ps->size)
+	for(auto p = ps->begin(); p < pe; p += ps->getsize())
 		list.add(p);
 	qsort(list.data, list.getcount(), sizeof(list.data[0]), compare_objects);
 	list.pixels_per_line = list.getrowheight();

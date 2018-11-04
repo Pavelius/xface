@@ -66,7 +66,7 @@ bool grid::add(bool run) {
 	if(getcount() >= (unsigned)getmaximum())
 		return false;
 	if(run) {
-		select(indexof(avec::add()));
+		select(indexof(array::add()));
 		change(run);
 	}
 	return true;
@@ -76,8 +76,8 @@ bool grid::addcopy(bool run) {
 	if(getcount() >= (unsigned)getmaximum())
 		return false;
 	if(run) {
-		auto c = avec::get(current);
-		auto p = avec::add();
+		auto c = array::get(current);
+		auto p = array::add();
 		if(p)
 			memcpy(p, c, getsize());
 		select(indexof(p));

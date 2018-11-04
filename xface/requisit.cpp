@@ -2,10 +2,6 @@
 #include "crt.h"
 #include "requisit.h"
 
-extern "C" void* malloc(unsigned size);
-extern "C" void* realloc(void *ptr, unsigned size);
-extern "C" void	free(void* pointer);
-
 namespace compiler {
 struct archive {
 	struct header {
@@ -27,49 +23,10 @@ struct archive {
 
 using namespace compiler;
 
-static adat<requisit, 8192> elements;
-
-requisit compiler::number[] = {{"number"}};
-requisit compiler::pointer[] = {{"pointer"}};
-requisit compiler::text[] = {{"string"}};
-requisit compiler::object[] = {{"object"}}; // All types get this type parent
-
-static unsigned optimal(unsigned need_count) {
-	const unsigned mc = 256 * 256 * 256;
-	unsigned m = 64;
-	while(m < mc) {
-		if(need_count < m)
-			return m;
-		m = m << 1;
-	}
-	return m;
-}
-
-void* compiler::rmreserve(void* data, unsigned count, unsigned& count_maximum, unsigned size) {
-	if(!size)
-		return data;
-	if(data && count < count_maximum)
-		return data;
-	count_maximum = optimal(count);
-	if(data)
-		data = realloc(data, count_maximum*size);
-	else
-		data = malloc(count_maximum*size);
-	return data;
-}
-
-array::~array() {
-	if(data)
-		free(data);
-	data = 0;
-}
-
-void* array::add() {
-	reserve(count + 1);
-	auto p = (char*)data + size * count;
-	count++;
-	return p;
-}
+requisit compiler::number[1];
+requisit compiler::pointer[1];
+requisit compiler::text[1];
+requisit compiler::object[1]; // All types get this type parent
 
 unsigned string::add(const char* v) {
 	if(!v || v[0]==0)
@@ -82,21 +39,13 @@ unsigned string::add(const char* v) {
 	}
 	index.add(count);
 	auto n = zlen(v);
-	data = (char*)rmreserve(data, count + n + 1, count_maximum, sizeof(char));
+	reserve(count + n + 1);
 	memcpy(data + count, v, n + 1);
 	return index.count - 1;
 }
 
 const char* string::get(unsigned value) const {
 	return (value < index.count) ? (char*)data + ((unsigned*)index.data)[value] : "";
-}
-
-void* requisit::operator new(unsigned size) {
-	return elements.add();
-}
-
-void requisit::operator delete(void* ptr, unsigned size) {
-	memset(ptr, 0, size);
 }
 
 void requisit::clear() {
@@ -110,29 +59,35 @@ bool requisit::isobject() const {
 	return false;
 }
 
-requisit* requisit::add(const char* id, requisit* type) {
-	auto p = new requisit;
+requisit* manager::create(const char* name) {
+	auto p = requisits.add();
+	auto id = strings.add(name);
 	p->clear();
-	p->id = szdup(id);
-	p->type = type;
-	p->parent = this;
+	p->id = id;
+	p->parent = object;
 	return p;
 }
 
-requisit* requisit::add(const char* id) {
-	return object->add(id, 0);
+requisit* manager::add(requisit* parent, const char* name, requisit* type) {
+	auto p = requisits.add();
+	auto id = strings.add(name);
+	p->clear();
+	p->id = id;
+	p->parent = parent;
+	p->type = type;
+	return p;
 }
 
-requisit* requisit::reference() const {
-	for(auto& e : elements) {
+requisit* manager::reference(const requisit* req) {
+	for(auto& e : requisits) {
 		if(e.parent != pointer)
 			continue;
-		if(e.type == this)
+		if(e.type == req)
 			return &e;
 	}
 	auto p = new requisit;
 	p->clear();
-	p->type = const_cast<requisit*>(this);
+	p->type = const_cast<requisit*>(req);
 	p->parent = pointer;
 	return p;
 }
@@ -141,12 +96,4 @@ requisit* requisit::dereference() const {
 	if(parent != pointer)
 		return 0;
 	return type;
-}
-
-requisit* manager::create(const char* name) {
-	auto p = requisits.add();
-	auto id = add(name);
-	p->clear();
-	p->id = id;
-	p->parent = 
 }

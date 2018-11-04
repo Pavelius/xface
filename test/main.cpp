@@ -212,7 +212,7 @@ static void simple_controls() {
 }
 
 static void test_array() {
-	avec a1(sizeof(testinfo));
+	array a1(sizeof(testinfo));
 	auto p1 = (testinfo*)a1.add();
 	p1->name = "Test";
 	p1->value = 1;
@@ -232,18 +232,18 @@ void set_light_theme();
 using namespace compiler;
 
 static void test_requisit() {
-	string strings;
-	auto s1 = strings.add("Test");
-	auto s2 = strings.add("Test");
-	auto s3 = strings.add("Test1");
-	auto p2 = compiler::object->add("pointer");
-	p2->add("x", number);
-	p2->add("y", number);
-	auto p1 = compiler::object->add("rect");
-	p1->add("x1", number);
-	p1->add("y1", number);
-	p1->add("x2", number);
-	p1->add("y2", number);
+	manager man;
+	auto s1 = man.strings.add("Test");
+	auto s2 = man.strings.add("Test");
+	auto s3 = man.strings.add("Test1");
+	auto p2 = man.create("pointer");
+	man.add(p2, "x", number);
+	man.add(p2, "y", number);
+	auto p1 = man.create("rect");
+	man.add(p1, "x1", number);
+	man.add(p1, "y1", number);
+	man.add(p1, "x2", number);
+	man.add(p1, "y2", number);
 }
 
 int main() {

@@ -5,11 +5,11 @@
 
 namespace draw {
 namespace controls {
-struct grid : table, avec {
+struct grid : table, array {
 	const bsreq*			type;
 	bool					select_full_row;
 	//
-	grid(const column* columns, const bsreq* type, const avec& source) : table(columns), type(type), avec(source), can_grow(false) {}
+	grid(const column* columns, const bsreq* type, const array& source) : table(columns), type(type), array(source), can_grow(false) {}
 	bool					add(bool run);
 	bool					addcopy(bool run);
 	bool					change(bool run);
@@ -17,7 +17,7 @@ struct grid : table, avec {
 	const control::command* getcommands() const override;
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const override;
 	virtual int				getnumber(int line, int column) const override;
-	virtual int				getmaximum() const override { return avec::getcount(); }
+	virtual int				getmaximum() const override { return array::getcount(); }
 	virtual bsval			getvalue(int row, int column) const;
 	bool					setting(bool run);
 private:

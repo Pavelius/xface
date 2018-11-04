@@ -1,12 +1,7 @@
 #include "collection.h"
 #include "crt.h"
 
-void collection::add(const void* element) {
-	auto p = add();
-	memcpy(p, element, getsize());
-}
-
-int collection::find(const char* value, unsigned offset) {
+int array::find(const char* value, unsigned offset) const {
 	auto m = getcount();
 	for(unsigned i = 0; i < m; i++) {
 		auto p = (const char**)((char*)get(i) + offset);
@@ -18,7 +13,7 @@ int collection::find(const char* value, unsigned offset) {
 	return -1;
 }
 
-void collection::swap(int i1, int i2) {
+void array::swap(int i1, int i2) {
 	auto p1 = (char*)get(i1);
 	auto p2 = (char*)get(i2);
 	auto s = getsize();
@@ -29,7 +24,7 @@ void collection::swap(int i1, int i2) {
 	}
 }
 
-void collection::sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param) {
+void array::sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param) {
 	for(int i = i2; i > i1; i--) {
 		for(int j = i1; j < i; j++) {
 			auto t1 = get(j);
@@ -40,31 +35,32 @@ void collection::sort(int i1, int i2, int(*compare)(const void* p1, const void* 
 	}
 }
 
-void* collection::insert(int index, const void* object) {
-	auto size = getsize();
+void array::remove(int index, int elements_count) {
+	if(((unsigned)index) >= count)
+		return;
+	if((unsigned)index < count - elements_count)
+		memcpy(get(index), get(index + elements_count), (count - (index + elements_count))*getsize());
+	count -= elements_count;
+}
+
+int	array::indexof(const void* element) const {
+	if(element >= data && element < ((char*)data + size*count))
+		return ((char*)element - (char*)data) / size;
+	return -1;
+}
+
+void* array::insert(int index, const void* element) {
 	auto count_before = getcount(); add();
-	auto start = (char*)get(0);
-	memmove(start + (index + 1)*size, start + index * size, (count_before - index)*size);
+	memmove((char*)data + (index + 1)*size, (char*)data + index * size, (count_before - index)*size);
 	void* p = get(index);
-	if(object)
-		memcpy(p, object, size);
+	if(element)
+		memcpy(p, element, size);
 	else
 		memset(p, 0, size);
 	return p;
 }
 
-int	collection::indexof(const void* element) const {
-	auto p0 = get(0);
-	if(element >= p0 && element < get(getmaxcount()))
-		return ((char*)element - (char*)p0)/getsize();
-	return -1;
-}
-
-void collection::remove(int index, int elements_count) {
-	auto current_count = getcount();
-	if(((unsigned)index) >= current_count)
-		return;
-	if((unsigned)index < current_count - elements_count)
-		memcpy(get(index), get(index + elements_count), (current_count - (index + elements_count))*getsize());
-	setcount(current_count - elements_count);
+void array::add(const void* element) {
+	auto p = add();
+	memcpy(p, element, getsize());
 }

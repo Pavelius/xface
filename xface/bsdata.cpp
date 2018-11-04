@@ -3,15 +3,11 @@
 
 bsdata* bsdata::first;
 
-void bsdata::globalize() {
+void bsdata::globalize(bool make_global) {
+	if(!make_global)
+		return;
 	if(!find(fields))
 		seqlink(this);
-}
-
-void* bsdata::add() {
-	if(getcount() >= getmaxcount())
-		return get(0);
-	return get(count++);
 }
 
 bsdata* bsdata::find(const char* id) {
@@ -34,21 +30,15 @@ bsdata* bsdata::find(const bsreq* type) {
 	return 0;
 }
 
-int bsdata::indexof(const void* object) const {
-	if(object >= data && object <= (char*)data + maximum_count*size)
-		return ((char*)object - (char*)data) / size;
-	return -1;
-}
-
-void bsdata::remove(int index, int elements_count) {
-	if(((unsigned)index) >= getcount())
-		return;
-	if((unsigned)index < getcount() - 1)
-		memcpy((char*)data + index*size,
-		(char*)data + (index + elements_count)*size,
-			(getcount() - (index + elements_count))*size);
-	count -= elements_count;
-}
+//void bsdata::remove(int index, int elements_count) {
+//	if(((unsigned)index) >= getcount())
+//		return;
+//	if((unsigned)index < getcount() - 1)
+//		memcpy((char*)data + index*size,
+//		(char*)data + (index + elements_count)*size,
+//			(getcount() - (index + elements_count))*size);
+//	count -= elements_count;
+//}
 
 bsdata* bsdata::findbyptr(const void* object) {
 	if(!object)
@@ -62,9 +52,9 @@ bsdata* bsdata::findbyptr(const void* object) {
 void* bsdata::find(const bsreq* id, const char* value) {
 	if(!id || id->type != text_type)
 		return 0;
-	auto ps = (char*)id->ptr(data);
-	auto pe = ps + size*getcount();
-	for(; ps < pe; ps += size) {
+	auto ps = (char*)id->ptr(begin());
+	auto pe = ps + getsize()*getcount();
+	for(; ps < pe; ps += getsize()) {
 		auto ps_value = (const char*)id->get(ps);
 		if(!ps_value)
 			continue;
