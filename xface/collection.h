@@ -22,11 +22,10 @@ struct adat {
 	void					clear() { count = 0; }
 	T*						end() { return data + count; }
 	const T*				end() const { return data + count; }
-	template<class Z> T*	find(Z id) { auto e1 = data + count; for(T* e = data; e < e1; e++) { if(e->id == id) return e; } return 0; }
-	inline int				getcount() const { return count; }
-	int						indexof(const T* e) const { if(e >= data && e <= data + count) return e - data; return -1; }
+	int						getcount() const { return count; }
+	int						indexof(const T* e) const { if(e >= data && e < data + count) return e - data; return -1; }
 	int						indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
-	bool					is(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return true; return false; }
+	bool					is(const T t) const { return indexof(t) != -1; }
 	void					remove(int index, int remove_count = 1) { if(index < 0) return; if(index<int(count - 1)) memcpy(data + index, data + index + 1, sizeof(data[0])*(count - index - 1)); count--; }
 };
 // Reference to array with dymanic size
@@ -48,7 +47,7 @@ template<class T> struct aref {
 	constexpr const T*		end() const { return data + count; }
 	int						indexof(const T* t) const { if(t<data || t>data + count) return -1; return t - data; }
 	int						indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
-	bool					is(const T value) const { return indexof(value) != -1; }
+	bool					is(const T t) const { return indexof(t) != -1; }
 	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
 };
 // Autogrow typized array

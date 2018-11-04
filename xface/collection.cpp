@@ -22,6 +22,19 @@ void* rmreserve(void* data, unsigned new_size) {
 	return malloc(new_size);
 }
 
+void* array::add() {
+	if(can_grow) {
+		reserve(count + 1);
+		return (char*)data + size * (count++);
+	}
+	return (char*)data + getsize()*((count < count_maximum) ? count++ : 0);
+}
+
+void array::add(const void* element) {
+	auto p = add();
+	memcpy(p, element, getsize());
+}
+
 array::~array() {
 	if(can_grow)
 		clear();
@@ -42,16 +55,6 @@ void array::setup(unsigned size) {
 		return;
 	clear();
 	this->size = size;
-}
-
-void* array::add() {
-	if(can_grow) {
-		reserve(count + 1);
-		auto p = (char*)data + size * count;
-		count++;
-		return p;
-	}
-	return (char*)data + getsize()*((count < count_maximum) ? count++ : 0);
 }
 
 void array::reserve(unsigned count) {
@@ -125,9 +128,4 @@ void* array::insert(int index, const void* element) {
 	else
 		memset(p, 0, size);
 	return p;
-}
-
-void array::add(const void* element) {
-	auto p = add();
-	memcpy(p, element, getsize());
 }
