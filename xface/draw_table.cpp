@@ -24,6 +24,8 @@ int table::rowheader(rect rc) const {
 		b1 = b1.mix(b2, 192);
 	gradv(rch, b1, b2);
 	rectb(rch, colors::border);
+	draw::state push;
+	draw::setclip(rc);
 	for(auto i = 0; columns[i]; i++) {
 		if(!columns[i].isvisible())
 			continue;
