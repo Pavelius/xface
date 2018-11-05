@@ -37,11 +37,11 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	switch(a) {
 	case AreaHilited:
 		rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
-		buttonv({scroll.x1, p, scroll.x1 + scroll.width(), p + ss}, false, false, false, true, 0);
+		buttonv({scroll.x1, p, scroll.x2, p + ss}, false, false, false, true, 0);
 		break;
 	case AreaHilitedPressed:
 		rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
-		buttonv({scroll.x1, p, scroll.x1 + scroll.width(), p + ss}, true, false, false, true, 0);
+		buttonv({scroll.x1, p, scroll.x2, p + ss}, true, false, false, true, 0);
 		break;
 	default:
 		if(focused)
@@ -86,11 +86,11 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int count, int maxim
 	switch(a) {
 	case AreaHilited:
 		rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
-		buttonh({p, scroll.y1, ss, scroll.height()}, false, false, false, true, 0);
+		buttonh({p, scroll.y1, ss, scroll.y2}, false, false, false, true, 0);
 		break;
 	case AreaHilitedPressed:
 		rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
-		buttonh({p, scroll.y1, ss, scroll.height()}, true, false, false, true, 0);
+		buttonh({p, scroll.y1, ss, scroll.y2}, true, false, false, true, 0);
 		break;
 	default:
 		if(focused)
