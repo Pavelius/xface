@@ -16,6 +16,14 @@ static struct control_plugin : draw::plugin {
 	}
 
 	bool translate(int id) override {
+		if(current_hilite) {
+			switch(id) {
+			case MouseLeft: current_hilite->mouseleft(hot.mouse); return true;
+			case MouseLeftDBL: current_hilite->mouseleftdbl(hot.mouse); return true;
+			case MouseWheelUp: current_hilite->mousewheel(hot.mouse, -1); return true;
+			case MouseWheelDown: current_hilite->mousewheel(hot.mouse, 1); return true;
+			}
+		}
 		if(current_focus) {
 			switch(id&0xFFFF) {
 			case KeyBackspace: current_focus->keybackspace(id); return true;
@@ -29,16 +37,8 @@ static struct control_plugin : draw::plugin {
 			case KeyEnd: current_focus->keyend(id); return true;
 			case KeyPageUp: current_focus->keypageup(id); return true;
 			case KeyPageDown: current_focus->keypagedown(id); return true;
-			case InputSymbol: current_focus->keysymbol(hot.param); break;
-			}
-			return current_focus->translate(id);
-		}
-		if(current_hilite) {
-			switch(id) {
-			case MouseLeft: current_hilite->mouseleft(hot.mouse); return true;
-			case MouseLeftDBL: current_hilite->mouseleftdbl(hot.mouse); return true;
-			case MouseWheelUp: current_hilite->mousewheel(hot.mouse, -1); return true;
-			case MouseWheelDown: current_hilite->mousewheel(hot.mouse, 1); return true;
+			case InputSymbol: current_focus->keysymbol(hot.param); return true;
+			default: return current_focus->translate(id);
 			}
 		}
 		return false;
@@ -72,6 +72,21 @@ static const control::command* find(const control::command* p, const char* id) {
 				return p1;
 		}
 		if(strcmp(p->id, id) == 0)
+			return p;
+	}
+	return 0;
+}
+
+static const control::command* find(const control::command* p, unsigned key) {
+	if(!p)
+		return 0;
+	for(; *p; p++) {
+		if(p->id[0] == '*') {
+			auto p1 = find(p->child, key);
+			if(p1)
+				return p1;
+		}
+		if(p->key==key)
 			return p;
 	}
 	return 0;
@@ -111,10 +126,8 @@ bool control::translate(unsigned key) {
 	auto pc = getcommands();
 	if(!pc)
 		return false;
-	while(*pc) {
-		if(pc->key == key)
-			return (this->*pc->proc)(true);
-		pc++;
-	}
-	return false;
+	auto pn = find(pc, key);
+	if(!pn)
+		return false;
+	return (this->*pn->proc)(true);
 }

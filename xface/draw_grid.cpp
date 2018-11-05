@@ -49,9 +49,8 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 	if(!bv.type)
 		return "";
 	if(bv.type->type == number_type) {
-		auto number = getnumber(line, column);
 		stringcreator sc;
-		sc.prints(result, result_max, "%1i", number);
+		sc.prints(result, result_max, "%1i", getnumber(line, column));
 		return result;
 	} else if(bv.type->type == text_type) {
 		auto p = (const char*)bv.get();
@@ -87,6 +86,19 @@ bool grid::addcopy(bool run) {
 }
 
 bool grid::change(bool run) {
+	if(run) {
+		if(!current_rect)
+			return false;
+		auto push_focus = getfocus();
+		char temp[8192]; auto pn = getname(temp, zendof(temp), current, current_column);
+		if(pn != temp)
+			zcpy(temp, pn, sizeof(temp) - 1);
+		textedit te(temp, sizeof(temp) - 1, true);
+		setfocus((int)&te, true);
+		te.show_border = false;
+		te.editing({current_rect.x1, current_rect.y1, current_rect.x2+1, current_rect.y2+1});
+		setfocus(push_focus, true);
+	}
 	return true;
 }
 
@@ -94,10 +106,18 @@ bool grid::setting(bool run) {
 	return true;
 }
 
+void grid::keyenter(int id) {
+	change(true);
+}
+
+void grid::mouseleftdbl(point position) {
+	change(true);
+}
+
 const control::command* grid::getcommands() const {
 	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
 	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
-	{"change", "Изменить", 10, 0, &grid::change},
+	{"change", "Изменить", 10, F2, &grid::change},
 	{}};
 	static command move_elements[] = {{"moveup", "Переместить вверх", 0, 0, &grid::add},
 	{"movedown", "Переместить вверх", 0, 0, &grid::add},

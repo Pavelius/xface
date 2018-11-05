@@ -111,7 +111,8 @@ static void test_control() {
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
 	controls::grid test(columns, element_type, elements);//sizeof(element));
-	test.no_change_order = false;
+	test.no_change_order = true;
+	test.show_grid_lines = true;
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
@@ -229,9 +230,8 @@ static void test_array() {
 void set_dark_theme();
 void set_light_theme();
 
-using namespace compiler;
-
 static void test_requisit() {
+	using namespace compiler;
 	manager man;
 	auto s1 = man.strings.add("Test");
 	auto s2 = man.strings.add("Test");

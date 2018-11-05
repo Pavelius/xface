@@ -19,6 +19,8 @@ struct grid : table, array {
 	virtual int				getnumber(int line, int column) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
 	virtual bsval			getvalue(int row, int column) const;
+	void					keyenter(int id) override;
+	void					mouseleftdbl(point position) override;
 	bool					setting(bool run);
 private:
 	bool					can_grow;

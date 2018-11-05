@@ -36,12 +36,11 @@ void list::hilight(rect rc) const {
 	auto focused = isfocused();
 	const color c1 = focused ? colors::edit : colors::edit.mix(colors::window, 192);
 	rc.y2--; rc.x2--;
-	if(!focused)
-		rc.y2--;
 	rectf(rc, c1);
 	rectb(rc, c1);
 	if(focused)
 		rectx(rc, colors::text.mix(colors::form, 200));
+	const_cast<list*>(this)->current_rect = rc;
 }
 
 void list::rowhilite(rect rc, int index) const {
@@ -85,6 +84,7 @@ void list::mouseselect(int id, bool pressed) {
 }
 
 void list::view(rect rcorigin) {
+	current_rect.clear();
 	control::view(rcorigin);
 	rect rc = rcorigin; rc.offset(1, 1);
 	if(!pixels_per_line)

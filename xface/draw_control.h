@@ -118,8 +118,10 @@ struct list : control {
 	int					lines_per_page, pixels_per_line;
 	bool				show_grid_lines, show_selection;
 	bool				hilite_odd_lines;
+	rect				current_rect;
 	constexpr list() : origin(0), current(0), current_hilite(-1),
-		lines_per_page(0), pixels_per_line(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true) {}
+		lines_per_page(0), pixels_per_line(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true),
+		current_rect() {}
 	void				correction();
 	void				ensurevisible(); // ensure that current selected item was visible on screen if current 'count' is count of items per line
 	int					find(int line, int column, const char* name, int lenght = -1) const;

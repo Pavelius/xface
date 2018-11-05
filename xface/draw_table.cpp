@@ -84,10 +84,12 @@ void table::row(rect rc, int index) const {
 		if(!columns[i].isvisible())
 			continue;
 		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
+		if(show_grid_lines)
+			draw::line(rt.x2 - 1, rt.y1 - 4, rt.x2 - 1, rt.y2 + 4, colors::border);
 		area(rt);
 		if(!select_full_row) {
 			if(index == current && i==current_column)
-				hilight({rt.x1-4, rt.y1-4, rt.x2, rt.y2+4});
+				hilight({rt.x1-4, rt.y1-4, rt.x2-1, rt.y2+3});
 		}
 		temp[0] = 0;
 		const char* p;
