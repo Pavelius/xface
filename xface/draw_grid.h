@@ -13,6 +13,7 @@ struct grid : table, array {
 	bool					add(bool run);
 	bool					addcopy(bool run);
 	bool					change(bool run);
+	bool					changing(int line, int column, const char* name);
 	void					clickcolumn(int column) const override;
 	const control::command* getcommands() const override;
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const override;

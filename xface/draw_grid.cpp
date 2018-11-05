@@ -1,4 +1,5 @@
 #include "crt.h"
+#include "screenshoot.h"
 #include "stringcreator.h"
 #include "draw_grid.h"
 
@@ -61,6 +62,19 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 		return bv.getname();
 }
 
+bool grid::changing(int line, int column, const char* name) {
+	auto bv = getvalue(line, column);
+	if(!bv.type)
+		return false;
+	if(bv.type->type == number_type)
+		bv.set(sz2num(name));
+	else if(bv.type->type == text_type)
+		bv.set((int)szdup(name));
+	else
+		return false;
+	return true;
+}
+
 bool grid::add(bool run) {
 	if(getcount() >= (unsigned)getmaximum())
 		return false;
@@ -85,19 +99,77 @@ bool grid::addcopy(bool run) {
 	return true;
 }
 
+static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
+	draw::screenshoot screen;
+	auto push_focus = getfocus();
+	while(ismodal()) {
+		screen.restore();
+		draw::combobox(rc.x1, rc.y1, rc.width(), Focused, bv, 0, tips, 0);
+		domodal();
+		switch(hot.key) {
+		case KeyEscape:
+		case InputUpdate:
+			breakmodal(0);
+			break;
+		case KeyTab:
+		case KeyTab | Shift:
+			breakmodal(0);
+			execute(hot);
+			break;
+		case MouseLeft:
+		case MouseLeft + Ctrl:
+		case MouseLeft + Shift:
+		case MouseLeftDBL:
+		case MouseLeftDBL + Ctrl:
+		case MouseLeftDBL + Shift:
+			if(hot.pressed) {
+				if(!areb(rc)) {
+					breakmodal(0);
+					execute(hot);
+				}
+			}
+			break;
+		}
+	}
+	setfocus(push_focus, true);
+	return getresult() != 0;
+}
+
 bool grid::change(bool run) {
-	if(run) {
-		if(!current_rect)
-			return false;
-		auto push_focus = getfocus();
-		char temp[8192]; auto pn = getname(temp, zendof(temp), current, current_column);
-		if(pn != temp)
-			zcpy(temp, pn, sizeof(temp) - 1);
-		textedit te(temp, sizeof(temp) - 1, true);
-		setfocus((int)&te, true);
-		te.show_border = false;
-		te.editing({current_rect.x1, current_rect.y1, current_rect.x2+1, current_rect.y2+1});
-		setfocus(push_focus, true);
+	switch(columns[current_column].getcontol()) {
+	case Field:
+		if(run) {
+			if(!current_rect)
+				break;
+			auto bv = getvalue(current, current_column);
+			if(bv.type->type->issimple()) {
+				auto push_focus = getfocus();
+				char temp[8192]; auto pn = getname(temp, zendof(temp), current, current_column);
+				if(pn != temp)
+					zcpy(temp, pn, sizeof(temp) - 1);
+				textedit te(temp, sizeof(temp) - 1, true);
+				setfocus((int)&te, true);
+				te.show_border = false;
+				auto result = te.editing({current_rect.x1, current_rect.y1, current_rect.x2 + 1, current_rect.y2 + 1});
+				setfocus(push_focus, true);
+				if(result)
+					changing(current, current_column, temp);
+			} else {
+				change_simple({current_rect.x1-4, current_rect.y1-4, current_rect.x2 + 4,
+					current_rect.y2 + 1}, getvalue(current, current_column), 0);
+			}
+		}
+		break;
+	case Check:
+		if(run) {
+			if(getnumber(current, current_column))
+				changing(current, current_column, "1");
+			else
+				changing(current, current_column, "0");
+		}
+		break;
+	default:
+		break;
 	}
 	return true;
 }
