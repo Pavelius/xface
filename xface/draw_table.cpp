@@ -51,7 +51,10 @@ int table::rowheader(rect rc) const {
 			if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
 				clickcolumn(i);
 		}
-		line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
+		// Нарисуем границу только когда она далеко от края
+		// Чтобы она была не видна, если ширина элемента впритык к краю.
+		if(r1.x2 < rc.x2 - 2)
+			line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)
@@ -71,10 +74,6 @@ int table::rowheader(rect rc) const {
 	return height;
 }
 
-static void table_check() {
-
-}
-
 void table::row(rect rc, int index) const {
 	char temp[260];
 	area(rc);
@@ -86,8 +85,10 @@ void table::row(rect rc, int index) const {
 		if(!columns[i].isvisible())
 			continue;
 		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
-		if(show_grid_lines)
-			draw::line(rt.x2 - 1, rt.y1 - 4, rt.x2 - 1, rt.y2 + 4, colors::border);
+		if(show_grid_lines) {
+			if(rt.x2 < rc.x2 + 2)
+				draw::line(rt.x2 - 1, rt.y1 - 4, rt.x2 - 1, rt.y2 + 4, colors::border);
+		}
 		area(rt);
 		if(!select_full_row) {
 			if(index == current && i == current_column)

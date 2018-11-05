@@ -114,7 +114,7 @@ static void test_control() {
 	elements.add({"Valentin", Male, NeutralGood});
 	controls::grid test(columns, element_type, elements);//sizeof(element));
 	test.no_change_order = false;
-	test.show_grid_lines = false;
+	test.show_grid_lines = true;
 	test.read_only = false;
 	test.no_change_count = false;
 	while(ismodal()) {
