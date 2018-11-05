@@ -46,6 +46,25 @@ const bsreq* bsreq::find(const char* name, const bsreq* type) const {
 	return 0;
 }
 
+const bsreq* bsreq::find(const char* name, unsigned count) const {
+	if(!this)
+		return 0;
+	for(auto p = this; p->id; p++) {
+		if(p->type != type)
+			continue;
+		auto found = true;
+		for(unsigned i = 0; i < count; i++) {
+			if(p->id[i] != name[i]) {
+				found = false;
+				break;
+			}
+		}
+		if(found)
+			return p;
+	}
+	return 0;
+}
+
 int bsreq::get(const void* p) const {
 	switch(size) {
 	case sizeof(char) : return *((char*)p);

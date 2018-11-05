@@ -44,6 +44,7 @@ struct bsreq {
 	operator bool() const { return id != 0; }
 	//
 	const bsreq*		find(const char* name) const;
+	const bsreq*		find(const char* name, unsigned count) const;
 	const bsreq*		find(const char* name, const bsreq* type) const;
 	int					get(const void* p) const;
 	const char*			getdata(char* result, const char* id, const void* object, bool tobuffer) const;
@@ -63,6 +64,7 @@ struct bsval {
 	explicit operator bool() const { return data != 0; }
 	int					get() const { return type->get(type->ptr(data)); }
 	const char*			getname() const;
+	bsval				ptr(const char* id);
 	void				set(int value) const { type->set(type->ptr(data), value); }
 };
 struct bsfunc {

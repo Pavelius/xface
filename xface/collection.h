@@ -75,8 +75,8 @@ class array {
 	unsigned&				count;
 	unsigned				count_value;
 	unsigned				count_maximum;
-	bool					can_grow;
 public:
+	bool					can_grow;
 	constexpr array() : data(0), size(0), count_maximum(0), count(count_value), count_value(0), can_grow(false) {}
 	constexpr array(unsigned size) : data(0), size(size), count_maximum(0), count(count_value), count_value(0), can_grow(true) {}
 	constexpr array(void* data, unsigned size, unsigned count_maximum) : data(data), size(size), count_maximum(count_maximum), count(count_value), count_value(count_maximum), can_grow(false) {}

@@ -24,8 +24,7 @@ static void table_sort_column() {
 		current_order = -1;
 	else
 		current_order = 1;
-	qsort(current_element->get(0), current_element->getcount(), current_element->getsize(),
-		compare_column);
+	qsort(current_element->get(0), current_element->getcount(), current_element->getsize(), compare_column);
 }
 
 void grid::clickcolumn(int column) const {
@@ -76,6 +75,8 @@ bool grid::changing(int line, int column, const char* name) {
 }
 
 bool grid::add(bool run) {
+	if(read_only)
+		return false;
 	if(getcount() >= (unsigned)getmaximum())
 		return false;
 	if(run) {
@@ -86,7 +87,7 @@ bool grid::add(bool run) {
 }
 
 bool grid::addcopy(bool run) {
-	if(getcount() >= (unsigned)getmaximum())
+	if(!add(false))
 		return false;
 	if(run) {
 		auto c = array::get(current);
@@ -136,6 +137,8 @@ static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
 }
 
 bool grid::change(bool run) {
+	if(read_only)
+		return false;
 	switch(columns[current_column].getcontol()) {
 	case Field:
 		if(run) {
@@ -155,7 +158,7 @@ bool grid::change(bool run) {
 				if(result)
 					changing(current, current_column, temp);
 			} else {
-				change_simple({current_rect.x1-4, current_rect.y1-4, current_rect.x2 + 4,
+				change_simple({current_rect.x1 - 4, current_rect.y1 - 4, current_rect.x2 + 4,
 					current_rect.y2 + 1}, getvalue(current, current_column), 0);
 			}
 		}
@@ -186,15 +189,39 @@ void grid::mouseleftdbl(point position) {
 	change(true);
 }
 
+bool grid::moveup(bool run) {
+	if(no_change_order)
+		return false;
+	if(current <= 0)
+		return false;
+	if(run) {
+		swap(current - 1, current);
+		select(current - 1, getcolumn());
+	}
+	return true;
+}
+
+bool grid::movedown(bool run) {
+	if(no_change_order)
+		return false;
+	if(current >= int(getcount() - 1))
+		return false;
+	if(run) {
+		swap(current + 1, current);
+		select(current + 1, getcolumn());
+	}
+	return true;
+}
+
 const control::command* grid::getcommands() const {
 	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
 	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
 	{"change", "Изменить", 10, F2, &grid::change},
 	{}};
-	static command move_elements[] = {{"moveup", "Переместить вверх", 0, 0, &grid::add},
-	{"movedown", "Переместить вверх", 0, 0, &grid::add},
-	{"sortas", "Сортировать по возрастанию", 0, 0, &grid::add},
-	{"sortas", "Сортировать по убыванию", 0, 0, &grid::add},
+	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &grid::moveup},
+	{"movedown", "Переместить вверх", 22, 0, &grid::movedown},
+	{"sortas", "Сортировать по возрастанию", 11, 0, &grid::add},
+	{"sortas", "Сортировать по убыванию", 12, 0, &grid::add},
 	{}};
 	static command elements[] = {{add_elements},
 	{move_elements},

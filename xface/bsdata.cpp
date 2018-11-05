@@ -82,3 +82,32 @@ const char* bsval::getname() const {
 		return "";
 	return p;
 }
+
+const char* get_last(const char* id) {
+	while(*id && *id != '.')
+		id++;
+	return id;
+}
+
+bsval bsval::ptr(const char* id) {
+	auto result = *this;
+	auto p = get_last(id);
+	while(true) {
+		result.type = result.type->find(id, p - id);
+		if(!result.type)
+			return result;
+		if(p[0] == '.') {
+			id = p + 1;
+			if(result.type->isenum) {
+				auto b = bsdata::find(result.type->type);
+				if(!b)
+					return bsval();
+				result.data = b->get(result.get());
+				result.type = b->fields;
+			}
+			continue;
+		}
+		break;
+	}
+	return bsval{type, data};
+}

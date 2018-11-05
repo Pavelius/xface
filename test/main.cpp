@@ -100,6 +100,7 @@ static void test_control() {
 	{Check, "check", 0, 28, "Это тултипс колонки"},
 	{Field, "gender", "Пол", 128},
 	{Field, "count", "К-во", 48},
+	{Field, "alignment", "Мировозрение", 200},
 	{}};
 	static bsreq element_type[] = {
 		BSREQ(element, name, text_type),
@@ -111,8 +112,9 @@ static void test_control() {
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
 	controls::grid test(columns, element_type, elements);//sizeof(element));
-	test.no_change_order = true;
-	test.show_grid_lines = true;
+	test.no_change_order = false;
+	test.show_grid_lines = false;
+	test.read_only = false;
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
