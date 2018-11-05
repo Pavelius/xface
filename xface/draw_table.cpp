@@ -16,6 +16,7 @@ void table::mouseselect(int id, bool pressed) {
 }
 
 int table::rowheader(rect rc) const {
+	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
 	color b1 = colors::button.lighten();
@@ -29,7 +30,6 @@ int table::rowheader(rect rc) const {
 	for(auto i = 0; columns[i]; i++) {
 		if(!columns[i].isvisible())
 			continue;
-		const int header_padding = 4;
 		rect r1 = {rc.x1, rc.y1, rc.x1 + columns[i].width, rc.y1 + height};
 		color active = colors::button.mix(colors::edit, 128);
 		color a1 = active.lighten();
@@ -39,19 +39,19 @@ int table::rowheader(rect rc) const {
 			if(columns[i].tips && columns[i].tips[0])
 				tooltips(columns[i].tips);
 		}
-		if(no_change_order) {
-			gradv(r1, b1, b2);
-		} else {
+		if(!no_change_order) {
 			switch(a) {
-			case AreaHilited: gradv(r1, a1, a2); break;
-			case AreaHilitedPressed: gradv(r1, a2, a1); break;
-			default: gradv(r1, b1, b2);
+			case AreaHilited:
+				gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a1, a2);
+				break;
+			case AreaHilitedPressed:
+				gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a2, a1);
 				break;
 			}
 			if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
 				clickcolumn(i);
 		}
-		rectb(r1, colors::border);
+		line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)
@@ -90,8 +90,8 @@ void table::row(rect rc, int index) const {
 			draw::line(rt.x2 - 1, rt.y1 - 4, rt.x2 - 1, rt.y2 + 4, colors::border);
 		area(rt);
 		if(!select_full_row) {
-			if(index == current && i==current_column)
-				hilight({rt.x1-4, rt.y1-4, rt.x2-1, rt.y2+3});
+			if(index == current && i == current_column)
+				hilight({rt.x1 - 4, rt.y1 - 4, rt.x2 - 1, rt.y2 + 3});
 		}
 		temp[0] = 0;
 		const char* p;
