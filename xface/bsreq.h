@@ -9,8 +9,6 @@ type,\
 bsreq::refi<decltype(cls::field)>::count,\
 bsreq::enmi<decltype(cls::field)>::value}
 
-const int bsreq_max_text = 8192;
-
 // Metadata field descriptor
 struct bsreq {
 	template<class T> struct refi { static constexpr int count = 0; };
@@ -56,16 +54,22 @@ struct bsreq {
 	void				set(const void* p, int value) const;
 	void				setdata(const char* result, const char* id, void* object) const;
 };
+extern bsreq			number_type[]; // standart integer value
+extern bsreq			text_type[]; // stantart zero ending string
+extern bsreq			bsreq_type[]; // requisit metadata
 struct bsval {
 	const bsreq*		type;
 	void*				data;
 	constexpr bsval() : type(0), data(0) {}
 	constexpr bsval(const bsreq* type, void* data) : type(type), data(data) {}
 	explicit operator bool() const { return data != 0; }
+	bsval&				dereference();
 	int					get() const { return type->get(type->ptr(data)); }
+	bsval&				get(const char* id);
 	const char*			getname() const;
-	bsval				ptr(const char* id);
 	void				set(int value) const { type->set(type->ptr(data), value); }
+private:
+	const char*			findpart(const char* id);
 };
 struct bsfunc {
 	const char*			id;
@@ -73,6 +77,3 @@ struct bsfunc {
 	const char*			code;
 	operator bool() const { return id != 0; }
 };
-extern bsreq			number_type[]; // standart integer value
-extern bsreq			text_type[]; // stantart zero ending string
-extern bsreq			bsreq_type[]; // requisit metadata

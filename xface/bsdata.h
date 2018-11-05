@@ -25,12 +25,12 @@ struct bsdata : array {
 	static bsdata*		first;
 	//
 	constexpr bsdata(const bsreq* fields) : id(""), fields(fields), next(0) {}
-	template<typename T, unsigned N> bsdata(const char* id, adat<T, N>& e, const bsreq* fields) : array(e.data, sizeof(T), N, e.count), id(id), fields(fields) { globalize(true); }
-	template<typename T, unsigned N> bsdata(const char* id, T(&e)[N], const bsreq* fields) : array(e, sizeof(T), N), id(id), fields(fields) { globalize(true); }
+	template<typename T, unsigned N> bsdata(const char* id, adat<T, N>& e, const bsreq* fields) : array(e.data, sizeof(T), N, e.count), id(id), fields(fields) { globalize(); }
+	template<typename T, unsigned N> bsdata(const char* id, T(&e)[N], const bsreq* fields) : array(e, sizeof(T), N), id(id), fields(fields) { globalize(); }
 	//
 	static int			evalute(const char* code);
 	static int			evalute(const char* code, bsval context, bsfunc* functions = 0, unsigned functions_count = 0);
-	void				globalize(bool make_global);
+	void				globalize();
 	static bsdata*		find(const char* id);
 	static bsdata*		find(const bsreq* id);
 	void*				find(const bsreq* id, const char* value);

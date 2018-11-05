@@ -97,17 +97,18 @@ static void test_control() {
 		alignment_s		alignment;
 	};
 	static controls::column columns[] = {{Field, "name", "Наименование", 200},
-	{Check, "check", 0, 28, "Это тултипс колонки"},
 	{Field, "gender", "Пол", 128},
-	{Field, "count", "К-во", 48},
 	{Field, "alignment", "Мировозрение", 200},
+	{Field, "alignment.id", "Мировозрение (англ)", 200},
+	{Check, "check", 0, 28, "Это тултипс колонки"},
+	{Field, "count", "К-во", 48, "Этой колонки нет в описании полей"},
 	{}};
 	static bsreq element_type[] = {
 		BSREQ(element, name, text_type),
 		BSREQ(element, gender, gender_type),
 		BSREQ(element, alignment, alignment_type),
 	{}};
-	adat<element, 32> elements;
+	adat<element, 6> elements;
 	elements.add({"Pavel", Male, ChaoticEvil});
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
@@ -115,6 +116,7 @@ static void test_control() {
 	test.no_change_order = false;
 	test.show_grid_lines = false;
 	test.read_only = false;
+	test.no_change_count = false;
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
@@ -153,9 +155,9 @@ static void test_widget() {
 	{Radio, "radio", "Glass", 4},
 	{Radio, "radio", "Keeps", 5},
 	{}};
-	static widget brands[] = {//{Image, "cat", "art/pictures", 0, 5},
-		{Group, 0, 0, 0, 3, 0, 0, elements_left},
+	static widget brands[] = {{Group, 0, 0, 0, 3, 0, 0, elements_left},
 	{Group, 0, 0, 0, 3, 0, 0, elements_right},
+	{Image, "cat", "art/pictures", 0, 5},
 	{}};
 	static widget field_group_left[] = {{Field, "name", "Имя"},
 	{Field, "surname", "Фамилия"},
@@ -189,8 +191,7 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 	return (const char*)object;
 }
 
-static void disabled_button() {
-}
+static void disabled_button() {}
 
 static void simple_controls() {
 	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};

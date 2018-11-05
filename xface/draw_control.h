@@ -155,12 +155,16 @@ struct list : control {
 struct table : list {
 	const column*		columns;
 	int					origin_width, current_column, current_hilite_column, current_column_maximum, maximum_width;
+	bool				no_change_count;
 	bool				no_change_order;
+	bool				read_only;
 	bool				select_full_row;
 	bool				show_totals;
 	bool				show_header;
 	constexpr table(const column* columns) : columns(columns), origin_width(0), current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
-		show_totals(false), show_header(true), no_change_order(false), select_full_row(false) {}
+		show_totals(false), show_header(true),
+		no_change_order(false), no_change_count(false), read_only(false),
+		select_full_row(false) {}
 	virtual void		clickcolumn(int column) const {}
 	virtual void		custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	virtual int			getcolumn() const override { return current_column; }

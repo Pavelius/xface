@@ -8,96 +8,37 @@ using namespace draw::controls;
 
 static grid*	current_element;
 static int		current_sort_column;
-static int		current_order;
+static bool		current_order;
 
-static int compare_column(const void* v1, const void* v2) {
+static int compare_column_ascending(const void* v1, const void* v2) {
 	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
 	auto i1 = current_element->indexof(v1);
 	auto i2 = current_element->indexof(v2);
 	auto n1 = current_element->getname(t1, zendof(t1), i1, current_sort_column);
 	auto n2 = current_element->getname(t2, zendof(t2), i2, current_sort_column);
-	return strcmp(n1, n2)*current_order;
+	return strcmp(n1, n2);
+}
+
+static int compare_column_descending(const void* v1, const void* v2) {
+	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
+	auto i1 = current_element->indexof(v1);
+	auto i2 = current_element->indexof(v2);
+	auto n1 = current_element->getname(t1, zendof(t1), i1, current_sort_column);
+	auto n2 = current_element->getname(t2, zendof(t2), i2, current_sort_column);
+	return strcmp(n2, n1);
+}
+
+void grid::sort(int column, bool ascending) {
+	current_sort_column = column;
+	qsort(get(0), getcount(), getsize(), ascending ? compare_column_ascending : compare_column_descending);
 }
 
 static void table_sort_column() {
-	if(current_order == 1)
-		current_order = -1;
+	if(hot.param==current_sort_column)
+		current_order = !current_order;
 	else
-		current_order = 1;
-	qsort(current_element->get(0), current_element->getcount(), current_element->getsize(), compare_column);
-}
-
-void grid::clickcolumn(int column) const {
-	current_element = const_cast<grid*>(this);
-	current_sort_column = column;
-	draw::execute(table_sort_column);
-}
-
-bsval grid::getvalue(int row, int column) const {
-	return {type->find(columns[column].id), get(row)};
-}
-
-int grid::getnumber(int line, int column) const {
-	auto bv = getvalue(line, column);
-	if(bv.type && bv.type->type == number_type)
-		return bv.get();
-	return 0;
-}
-
-const char* grid::getname(char* result, const char* result_max, int line, int column) const {
-	auto bv = getvalue(line, column);
-	if(!bv.type)
-		return "";
-	if(bv.type->type == number_type) {
-		stringcreator sc;
-		sc.prints(result, result_max, "%1i", getnumber(line, column));
-		return result;
-	} else if(bv.type->type == text_type) {
-		auto p = (const char*)bv.get();
-		if(p)
-			return p;
-		return "";
-	} else
-		return bv.getname();
-}
-
-bool grid::changing(int line, int column, const char* name) {
-	auto bv = getvalue(line, column);
-	if(!bv.type)
-		return false;
-	if(bv.type->type == number_type)
-		bv.set(sz2num(name));
-	else if(bv.type->type == text_type)
-		bv.set((int)szdup(name));
-	else
-		return false;
-	return true;
-}
-
-bool grid::add(bool run) {
-	if(read_only)
-		return false;
-	if(getcount() >= (unsigned)getmaximum())
-		return false;
-	if(run) {
-		select(indexof(array::add()));
-		change(run);
-	}
-	return true;
-}
-
-bool grid::addcopy(bool run) {
-	if(!add(false))
-		return false;
-	if(run) {
-		auto c = array::get(current);
-		auto p = array::add();
-		if(p)
-			memcpy(p, c, getsize());
-		select(indexof(p));
-		change(run);
-	}
-	return true;
+		current_order = true;
+	current_element->sort(hot.param, current_order);
 }
 
 static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
@@ -136,8 +77,92 @@ static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
 	return getresult() != 0;
 }
 
+void grid::clickcolumn(int column) const {
+	current_element = const_cast<grid*>(this);
+	draw::execute(table_sort_column, column);
+}
+
+bsval grid::getvalue(int row, int column) const {
+	return bsval(type, get(row)).get(columns[column].id);
+}
+
+int grid::getnumber(int line, int column) const {
+	auto bv = getvalue(line, column);
+	if(bv.type && bv.type->type == number_type)
+		return bv.get();
+	return 0;
+}
+
+const char* grid::getname(char* result, const char* result_max, int line, int column) const {
+	auto bv = getvalue(line, column);
+	if(!bv)
+		return "";
+	if(bv.type->type == number_type) {
+		stringcreator sc;
+		sc.prints(result, result_max, "%1i", getnumber(line, column));
+		return result;
+	} else if(bv.type->type == text_type) {
+		auto p = (const char*)bv.get();
+		if(p)
+			return p;
+		return "";
+	} else
+		return bv.dereference().getname();
+}
+
+bool grid::changing(int line, int column, const char* name) {
+	auto bv = getvalue(line, column);
+	if(!bv)
+		return false;
+	if(bv.type->type == number_type)
+		bv.set(sz2num(name));
+	else if(bv.type->type == text_type)
+		bv.set((int)szdup(name));
+	else
+		return false;
+	return true;
+}
+
+void grid::adding(void* new_row) {
+	memset(new_row, 0, getsize());
+}
+
+bool grid::add(bool run) {
+	if(read_only)
+		return false;
+	if(no_change_count)
+		return false;
+	if(getcount() >= (unsigned)getmaxcount())
+		return false;
+	if(run) {
+		auto p = array::add();
+		adding(p);
+		select(indexof(p));
+		change(run);
+	}
+	return true;
+}
+
+bool grid::addcopy(bool run) {
+	if(!add(false))
+		return false;
+	if(!getcount())
+		return false;
+	if(run) {
+		auto c = array::get(current);
+		auto p = array::add();
+		if(p)
+			memcpy(p, c, getsize());
+		select(indexof(p));
+		change(true);
+	}
+	return true;
+}
+
 bool grid::change(bool run) {
 	if(read_only)
+		return false;
+	if(zchr(columns[current_column].id, '.'))
 		return false;
 	switch(columns[current_column].getcontol()) {
 	case Field:
@@ -213,15 +238,44 @@ bool grid::movedown(bool run) {
 	return true;
 }
 
+bool grid::remove(bool run) {
+	if(read_only)
+		return false;
+	if(no_change_count)
+		return false;
+	if(!getcount())
+		return false;
+	if(run)
+		array::remove(current, 1);
+	return true;
+}
+
+bool grid::sortas(bool run) {
+	if(no_change_order)
+		return false;
+	if(run)
+		sort(current_column, true);
+	return true;
+}
+
+bool grid::sortds(bool run) {
+	if(no_change_order)
+		return false;
+	if(run)
+		sort(current_column, false);
+	return true;
+}
+
 const control::command* grid::getcommands() const {
 	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
 	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
 	{"change", "Изменить", 10, F2, &grid::change},
+	{"remove", "Удалить", 19, KeyDelete, &grid::remove},
 	{}};
 	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &grid::moveup},
 	{"movedown", "Переместить вверх", 22, 0, &grid::movedown},
-	{"sortas", "Сортировать по возрастанию", 11, 0, &grid::add},
-	{"sortas", "Сортировать по убыванию", 12, 0, &grid::add},
+	{"sortas", "Сортировать по возрастанию", 11, 0, &grid::sortas},
+	{"sortas", "Сортировать по убыванию", 12, 0, &grid::sortds},
 	{}};
 	static command elements[] = {{add_elements},
 	{move_elements},

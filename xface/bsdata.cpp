@@ -3,9 +3,7 @@
 
 bsdata* bsdata::first;
 
-void bsdata::globalize(bool make_global) {
-	if(!make_global)
-		return;
+void bsdata::globalize() {
 	if(!find(fields))
 		seqlink(this);
 }
@@ -29,16 +27,6 @@ bsdata* bsdata::find(const bsreq* type) {
 	}
 	return 0;
 }
-
-//void bsdata::remove(int index, int elements_count) {
-//	if(((unsigned)index) >= getcount())
-//		return;
-//	if((unsigned)index < getcount() - 1)
-//		memcpy((char*)data + index*size,
-//		(char*)data + (index + elements_count)*size,
-//			(getcount() - (index + elements_count))*size);
-//	count -= elements_count;
-//}
 
 bsdata* bsdata::findbyptr(const void* object) {
 	if(!object)
@@ -65,49 +53,54 @@ void* bsdata::find(const bsreq* id, const char* value) {
 }
 
 const char* bsval::getname() const {
-	auto d = data;
-	if(type->isenum) {
-		auto b = bsdata::find(type->type);
-		if(!b)
-			return "No base";
-		auto i = type->get(type->ptr(d));
-		d = b->get(i);
-	}
-	auto t = type->type;
-	auto f = t->find("name", text_type);
+	if(!data)
+		return "";
+	auto f = type->find("name", text_type);
 	if(!f)
 		return "";
-	auto p = (const char*)f->get(f->ptr(d));
+	auto p = (const char*)f->get(f->ptr(data));
 	if(!p)
 		return "";
 	return p;
 }
 
-const char* get_last(const char* id) {
-	while(*id && *id != '.')
-		id++;
-	return id;
+const char* bsval::findpart(const char* id) {
+	for(auto f = type; *f; f++) {
+		for(auto i = 0; true; i++) {
+			if(id[i]==0 || id[i] == '.') {
+				if(f->id[i] == 0) {
+					type = f;
+					if(id[i] == '.')
+						return id + i + 1;
+					return 0;
+				}
+			} else if(id[i] != f->id[i])
+				break;
+		}
+	}
+	data = 0;
+	return 0;
 }
 
-bsval bsval::ptr(const char* id) {
-	auto result = *this;
-	auto p = get_last(id);
-	while(true) {
-		result.type = result.type->find(id, p - id);
-		if(!result.type)
-			return result;
-		if(p[0] == '.') {
-			id = p + 1;
-			if(result.type->isenum) {
-				auto b = bsdata::find(result.type->type);
-				if(!b)
-					return bsval();
-				result.data = b->get(result.get());
-				result.type = b->fields;
-			}
-			continue;
-		}
-		break;
+bsval& bsval::get(const char* id) {
+	while((id=findpart(id))!=0) {
+		if(!dereference())
+			data = 0;
 	}
-	return bsval{type, data};
+	return *this;
+}
+
+bsval& bsval::dereference() {
+	if(data) {
+		if(type->isenum) {
+			auto b = bsdata::find(type->type);
+			if(!b)
+				data = 0;
+			else {
+				data = b->get(get());
+				type = b->fields;
+			}
+		}
+	}
+	return *this;
 }

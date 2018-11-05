@@ -102,7 +102,7 @@ void control::icon(int x, int y, bool disabled, const command& cmd) const {
 
 void control::execute(control::callback proc) const {
 	current_execute = proc;
-	current_execute_control = (control*)this;
+	current_execute_control = const_cast<control*>(this);
 	draw::execute(control_execute);
 }
 
