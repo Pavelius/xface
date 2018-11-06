@@ -138,6 +138,7 @@ bool grid::add(bool run) {
 		auto p = array::add();
 		adding(p);
 		select(indexof(p));
+		redraw();
 		change(run);
 	}
 	return true;
@@ -154,6 +155,7 @@ bool grid::addcopy(bool run) {
 		if(p)
 			memcpy(p, c, getsize());
 		select(indexof(p));
+		redraw();
 		change(true);
 	}
 	return true;

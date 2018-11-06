@@ -138,6 +138,7 @@ void table::viewtotal(rect rc) const {
 }
 
 void table::view(rect rc) {
+	view_rect = rc;
 	current_hilite_column = -1;
 	maximum_width = 0;
 	for(auto i = 0; columns[i]; i++) {
@@ -170,4 +171,8 @@ void table::keyleft(int id) {
 void table::keyright(int id) {
 	if(current_column < current_column_maximum)
 		current_column++;
+}
+
+void table::redraw() {
+	view(view_rect);
 }
