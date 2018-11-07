@@ -8,6 +8,7 @@ using namespace draw::controls;
 
 static int		current_sort_column;
 static bool		current_order;
+static grid*	current_element;
 
 struct grid_sort_param {
 	grid*		element;
@@ -40,8 +41,6 @@ void grid::sort(int column, bool ascending) {
 	param.column = column;
 	array::sort(0, getcount()-1, ascending ? compare_column_ascending : compare_column_descending, &param);
 }
-
-static grid* current_element;
 
 static void table_sort_column() {
 	if(hot.param==current_sort_column)
@@ -105,14 +104,21 @@ int grid::getnumber(int line, int column) const {
 	return 0;
 }
 
+static const char* def_number(char* result, const char* result_max, int value) {
+	stringcreator sc;
+	sc.prints(result, result_max, "%1i", value);
+	return result;
+}
+
 const char* grid::getname(char* result, const char* result_max, int line, int column) const {
 	auto bv = getvalue(line, column);
 	if(!bv)
 		return "";
 	if(bv.type->type == number_type) {
-		stringcreator sc;
-		sc.prints(result, result_max, "%1i", getnumber(line, column));
-		return result;
+		auto value = getnumber(line, column);
+		if(columns[column].present)
+			return columns[column].present(result, result_max, value);
+		return def_number(result, result_max, value);
 	} else if(bv.type->type == text_type) {
 		auto p = (const char*)bv.get();
 		if(p)

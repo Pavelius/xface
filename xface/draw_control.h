@@ -51,6 +51,7 @@ struct column {
 	const char*			title;
 	int					width;
 	const char*			tips;
+	const char*			(*present)(char* temp, const char* temp_maximum, int value);
 	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
 	explicit operator bool() const { return id != 0; }
 	draw_event_s		getcontol() const { return (draw_event_s)(flags&ControlMask); }

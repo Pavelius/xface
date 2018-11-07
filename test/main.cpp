@@ -6,6 +6,7 @@
 #include "xface/draw_grid.h"
 #include "xface/variable.h"
 #include "xface/requisit.h"
+#include "xface/stringcreator.h"
 
 using namespace draw;
 
@@ -126,10 +127,16 @@ static void test_grid() {
 	}
 }
 
+const char* number_precent(char* result, const char* result_maximum, int value) {
+	stringcreator sc;
+	sc.prints(result, result_maximum, "%1i%%", value);
+	return result;
+}
+
 static void test_grid_ref() {
 	static controls::column columns[] = {{Field, "name", "Наименование", 200},
 	{Field, "cult_land", "Обрабатывается", 128},
-	{Field, "cult_land_peracent", "Обрабатывается (%)", 200},
+	{Field, "cult_land_percent", "Обрабатывается (%)", 200, 0, number_precent},
 	{}};
 	controls::gridref test(columns, cultivated_land_manager.fields);
 	test.add(cultivated_land_manager.get(0));
@@ -229,8 +236,7 @@ static void test_drag_drop() {
 			rc.y2 = rc.y1 + sy;
 			char temp[260];
 			text(10, 10, szprints(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
-		}
-		else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
+		} else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
 			drag::begin(1);
 		rectf(rc, colors::form);
 		rectb(rc, colors::border);
