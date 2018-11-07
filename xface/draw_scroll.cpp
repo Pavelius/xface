@@ -61,14 +61,11 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int ma
 		return;
 	int p = (origin*ds) / dr + scroll.x1;
 	areas a = area(scroll);
+	auto need_correct = false;
 	if(drag::active(id, DragScrollH)) {
 		a = AreaHilitedPressed;
 		p1 = hot.mouse.x - drag::value;
 		origin = ((p1 - scroll.x1)*dr) / ds;
-		if(origin < 0)
-			origin = 0;
-		if(origin + per_page > maximum)
-			origin = maximum - per_page;
 	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
 		if(hot.mouse.x < p)
 			origin -= per_page;
@@ -82,15 +79,35 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int ma
 			origin = 0;
 		if(origin + per_page > maximum)
 			origin = maximum - per_page;
+	} else if(a == AreaHilited || a == AreaHilitedPressed) {
+		auto inc = per_page / 10;
+		if(inc < 1)
+			inc = 1;
+		switch(hot.key) {
+		case MouseWheelUp:
+			origin -= inc;
+			need_correct = true;
+			break;
+		case MouseWheelDown:
+			origin += inc;
+			need_correct = true;
+			break;
+		}
+	}
+	if(need_correct) {
+		if(origin < 0)
+			origin = 0;
+		if(origin + per_page > maximum)
+			origin = maximum - per_page;
 	}
 	switch(a) {
 	case AreaHilited:
 		rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
-		buttonh({p, scroll.y1, ss, scroll.y2}, false, false, false, true, 0);
+		buttonh({p, scroll.y1, p + ss, scroll.y2}, false, false, false, true, 0);
 		break;
 	case AreaHilitedPressed:
 		rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
-		buttonh({p, scroll.y1, ss, scroll.y2}, true, false, false, true, 0);
+		buttonh({p, scroll.y1, p + ss, scroll.y2}, true, false, false, true, 0);
 		break;
 	default:
 		if(focused)

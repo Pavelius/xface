@@ -194,10 +194,16 @@ static void test_drag_drop() {
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		rect rc = {x, y, x + 50, y + 25};
-		if(drag::active(1))
-			rc.move(
-				x + (hot.mouse.x - drag::mouse.x),
-				y + (hot.mouse.y - drag::mouse.y));
+		if(drag::active(1)) {
+			auto sx = rc.width();
+			auto sy = rc.height();
+			rc.x1 = x + (hot.mouse.x - drag::mouse.x);
+			rc.y1 = y + (hot.mouse.y - drag::mouse.y);
+			rc.x2 = rc.x1 + sx;
+			rc.y2 = rc.y1 + sy;
+			char temp[260];
+			text(10, 10, szprints(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
+		}
 		else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
 			drag::begin(1);
 		rectf(rc, colors::form);
