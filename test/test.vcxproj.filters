@@ -25,6 +25,9 @@
     <ClCompile Include="..\..\formats\convert\base64.cpp">
       <Filter>Плагины\Кодировка</Filter>
     </ClCompile>
+    <ClCompile Include="cultivated_lands.cpp">
+      <Filter>Логика</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Плагины">

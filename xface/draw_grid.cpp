@@ -6,38 +6,50 @@
 using namespace draw;
 using namespace draw::controls;
 
-static grid*	current_element;
 static int		current_sort_column;
 static bool		current_order;
 
-static int compare_column_ascending(const void* v1, const void* v2) {
+struct grid_sort_param {
+	grid*		element;
+	int			column;
+};
+
+static int compare_column_ascending(const void* v1, const void* v2, void* p) {
+	auto pr = (grid_sort_param*)p;
 	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
-	auto i1 = current_element->indexof(v1);
-	auto i2 = current_element->indexof(v2);
-	auto n1 = current_element->getname(t1, zendof(t1), i1, current_sort_column);
-	auto n2 = current_element->getname(t2, zendof(t2), i2, current_sort_column);
+	auto i1 = pr->element->indexof(v1);
+	auto i2 = pr->element->indexof(v2);
+	auto n1 = pr->element->getname(t1, zendof(t1), i1, pr->column);
+	auto n2 = pr->element->getname(t2, zendof(t2), i2, pr->column);
 	return strcmp(n1, n2);
 }
 
-static int compare_column_descending(const void* v1, const void* v2) {
+static int compare_column_descending(const void* v1, const void* v2, void* p) {
+	auto pr = (grid_sort_param*)p;
 	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
-	auto i1 = current_element->indexof(v1);
-	auto i2 = current_element->indexof(v2);
-	auto n1 = current_element->getname(t1, zendof(t1), i1, current_sort_column);
-	auto n2 = current_element->getname(t2, zendof(t2), i2, current_sort_column);
+	auto i1 = pr->element->indexof(v1);
+	auto i2 = pr->element->indexof(v2);
+	auto n1 = pr->element->getname(t1, zendof(t1), i1, pr->column);
+	auto n2 = pr->element->getname(t2, zendof(t2), i2, pr->column);
 	return strcmp(n2, n1);
 }
 
 void grid::sort(int column, bool ascending) {
-	current_sort_column = column;
-	qsort(get(0), getcount(), getsize(), ascending ? compare_column_ascending : compare_column_descending);
+	grid_sort_param param;
+	param.element = this;
+	param.column = column;
+	array::sort(0, getcount()-1, ascending ? compare_column_ascending : compare_column_descending, &param);
 }
+
+static grid* current_element;
 
 static void table_sort_column() {
 	if(hot.param==current_sort_column)
 		current_order = !current_order;
-	else
+	else {
+		current_sort_column = hot.param;
 		current_order = true;
+	}
 	current_element->sort(hot.param, current_order);
 }
 
@@ -88,7 +100,7 @@ bsval grid::getvalue(int row, int column) const {
 
 int grid::getnumber(int line, int column) const {
 	auto bv = getvalue(line, column);
-	if(bv.type && bv.type->type == number_type)
+	if(bv && bv.type->type == number_type)
 		return bv.get();
 	return 0;
 }
@@ -262,6 +274,14 @@ bool grid::sortds(bool run) {
 	if(run)
 		sort(current_column, false);
 	return true;
+}
+
+void gridref::add(void* object) {
+	array::add(&object);
+}
+
+void* gridref::get(int index) const {
+	return *((void**)array::get(index));
 }
 
 const control::command* grid::getcommands() const {

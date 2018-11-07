@@ -132,6 +132,7 @@
     <ClCompile Include="..\..\formats\convert\base64.cpp" />
     <ClCompile Include="..\..\formats\convert\rle.cpp" />
     <ClCompile Include="..\..\formats\convert\zip.cpp" />
+    <ClCompile Include="cultivated_lands.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

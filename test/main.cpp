@@ -12,6 +12,8 @@ using namespace draw;
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
+extern bsdata cultivated_land_manager;
+
 enum alignment_s : unsigned char {
 	LawfulGood, NeutralGood, ChaoticGood,
 	LawfulNeutral, TrueNeutral, ChaoticNeutral,
@@ -104,11 +106,35 @@ static void test_grid() {
 		BSREQ(element, gender, gender_type),
 		BSREQ(element, alignment, alignment_type),
 	{}};
-	adat<element, 6> elements;
+	adat<element, 32> elements;
 	elements.add({"Pavel", Male, ChaoticEvil});
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
 	controls::grid test(columns, element_type, elements);//sizeof(element));
+	test.no_change_order = false;
+	test.show_grid_lines = true;
+	test.read_only = false;
+	test.no_change_count = false;
+	while(ismodal()) {
+		rect rc = {0, 0, getwidth(), getheight()};
+		rectf(rc, colors::form);
+		rc.offset(4 * 2);
+		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
+		rc.y1 += test.toolbar(rc.x1, rc.y1, rc.width());
+		test.view(rc);
+		domodal();
+	}
+}
+
+static void test_grid_ref() {
+	static controls::column columns[] = {{Field, "name", "Наименование", 200},
+	{Field, "cult_land", "Обрабатывается", 128},
+	{Field, "cult_land_peracent", "Обрабатывается (%)", 200},
+	{}};
+	controls::gridref test(columns, cultivated_land_manager.fields);
+	test.add(cultivated_land_manager.get(0));
+	test.add(cultivated_land_manager.get(1));
+	test.add(cultivated_land_manager.get(1));
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;
@@ -221,6 +247,7 @@ static void start_menu() {
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
 	{"Таблица с ячейками", test_grid},
+	{"Таблица ссылок", test_grid_ref},
 	{"Виджеты", test_widget},
 	{"Перетаскивание", test_drag_drop},
 	{0}};
