@@ -111,7 +111,6 @@ void list::view(rect rcorigin) {
 		if(rk == MouseLeft || rk == MouseRight)
 			mouseselect(rk, hot.pressed);
 	}
-	auto origin_width = getoriginwidth();
 	if(true) {
 		draw::state push;
 		setclip(rcorigin);
@@ -187,9 +186,6 @@ void list::keypagedown(int id) {
 
 void list::mouseleftdbl(point position) {
 	keyenter(KeyEnter);
-}
-
-void list::keyenter(int id) {
 }
 
 void list::mousewheel(point position, int step) {

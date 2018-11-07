@@ -882,7 +882,7 @@ rect draw::getarea() {
 void draw::drag::begin(int id, drag_part_s part) {
 	drag_id = id;
 	drag_part = part;
-	drag::mouse = hot.mouse;
+	mouse = hot.mouse;
 }
 
 bool draw::drag::active() {

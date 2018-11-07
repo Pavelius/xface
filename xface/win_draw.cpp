@@ -105,6 +105,8 @@ static int handle(MSG& msg) {
 		TrackMouseEvent(&tm);
 		hot.mouse.x = LOWORD(msg.lParam);
 		hot.mouse.y = HIWORD(msg.lParam);
+		if(draw::drag::active())
+			return MouseMove;
 		if(draw::mouseinput && sys_optimize_mouse_move) {
 			if(hot.mouse.in(sys_static_area))
 				return InputNoUpdate;

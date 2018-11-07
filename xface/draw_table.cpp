@@ -27,10 +27,11 @@ int table::rowheader(rect rc) const {
 	rectb(rch, colors::border);
 	draw::state push;
 	draw::setclip(rc);
+	auto x1 = header_padding*2 - origin_width;
 	for(auto i = 0; columns[i]; i++) {
 		if(!columns[i].isvisible())
 			continue;
-		rect r1 = {rc.x1, rc.y1, rc.x1 + columns[i].width, rc.y1 + height};
+		rect r1 = {x1, rc.y1, x1 + columns[i].width, rc.y1 + height};
 		color active = colors::button.mix(colors::edit, 128);
 		color a1 = active.lighten();
 		color a2 = active.darken();
@@ -63,13 +64,12 @@ int table::rowheader(rect rc) const {
 		if(a == AreaHilited || a == AreaHilitedPressed) {
 			hot.cursor = CursorLeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
-				//auto column_total_width = w - e.width;
-				//drag::begin((int)this, DragColumn);
-				//drag::mouse.x = hot.mouse.x - r1.x1;
-				//drag::value = i;
+				drag::begin((int)this, DragColumn);
+				drag::mouse.x = hot.mouse.x - r1.x1;
+				drag::value = i;
 			}
 		}
-		rc.x1 += columns[i].width;
+		x1 += columns[i].width;
 	}
 	return height;
 }
@@ -140,15 +140,15 @@ void table::viewtotal(rect rc) const {
 void table::view(rect rc) {
 	view_rect = rc;
 	current_hilite_column = -1;
+	rect rt;
+	rt.y1 = rc.y1;
+	rt.y2 = rc.y2;
 	maximum_width = 0;
 	for(auto i = 0; columns[i]; i++) {
 		if(!columns[i].isvisible())
 			continue;
-		rect rt;
 		rt.x1 = rc.x1 - origin_width + maximum_width;
 		rt.x2 = rt.x1 + columns[i].width;
-		rt.y1 = rc.y1;
-		rt.y2 = rc.y2;
 		if(hot.mouse.in(rt))
 			current_hilite_column = i;
 		maximum_width += columns[i].width;

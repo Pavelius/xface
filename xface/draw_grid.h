@@ -27,7 +27,6 @@ struct grid : table, array {
 	void					keyenter(int id) override;
 	bool					movedown(bool run);
 	bool					moveup(bool run);
-	void					mouseleftdbl(point position) override;
 	bool					remove(bool run);
 	bool					setting(bool run);
 	void					sort(int column, bool ascending);

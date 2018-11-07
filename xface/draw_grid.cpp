@@ -212,10 +212,6 @@ void grid::keyenter(int id) {
 	change(true);
 }
 
-void grid::mouseleftdbl(point position) {
-	change(true);
-}
-
 bool grid::moveup(bool run) {
 	if(no_change_order)
 		return false;

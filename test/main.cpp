@@ -86,11 +86,7 @@ static void basic_drawing() {
 	settimer(0);
 }
 
-static void button_accept() {
-	basic_drawing();
-}
-
-static void test_control() {
+static void test_grid() {
 	struct element {
 		const char*		name;
 		gender_s		gender;
@@ -193,24 +189,41 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 
 static void disabled_button() {}
 
-static void simple_controls() {
-	static const char* elements[] = {"Файл", "Правка", "Вид", "Окна"};
-	setfocus(3, true);
-	int current_hilite;
-	const char* t1 = "Тест 1";
-	char t2 = 20;
+static void test_drag_drop() {
+	auto x = 100, y = 200;
+	while(ismodal()) {
+		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		rect rc = {x, y, x + 50, y + 25};
+		if(drag::active(1))
+			rc.move(
+				x + (hot.mouse.x - drag::mouse.x),
+				y + (hot.mouse.y - drag::mouse.y));
+		else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
+			drag::begin(1);
+		rectf(rc, colors::form);
+		rectb(rc, colors::border);
+		button(getwidth() - 110, 10, 100, buttoncancel, "Отмена");
+		domodal();
+	}
+}
+
+static void start_menu() {
+	struct element {
+		const char*		name;
+		callback_proc	proc;
+		const char*		tips;
+	};
+	static element element_data[] = {{"Графические примитивы", basic_drawing},
+	{"Таблица с ячейками", test_grid},
+	{"Виджеты", test_widget},
+	{"Перетаскивание", test_drag_drop},
+	{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
 		auto x = 10; auto y = 10;
-		auto result = tabs(x, y, getwidth() - x * 2, false, false, (void**)elements, 0, sizeof(elements) / sizeof(elements[0]), 0, &current_hilite,
-			get_text, {}); y += 40;
-		if(current_hilite != -1)
-			statusbar("Выбрать закладку '%1'", elements[current_hilite]);
-		y += button(x, y, 200, button_accept, "Графические примитивы", "Кнопка, которая отображает подсказку");
-		y += button(x, y, 200, test_control, "Элемент управления");
-		y += button(x, y, 200, test_widget, "Виджеты");
-		y += button(x, y, 200, Disabled, cmd(disabled_button), "Недоступная кнопка", "Кнопка, которая недоступная для нажатия");
+		for(auto p = element_data; p->name; p++)
+			y += button(x, y, 200, p->proc, p->name, p->tips);
 		domodal();
 	}
 }
@@ -258,7 +271,7 @@ int main() {
 	// Создание окна
 	create(-1, -1, 640, 480, WFResize | WFMinmax, 32);
 	setcaption("X-Face C++ library");
-	simple_controls();
+	start_menu();
 	return 0;
 }
 

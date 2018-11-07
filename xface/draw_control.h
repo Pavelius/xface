@@ -114,12 +114,12 @@ struct control {
 };
 // Analog of listbox element
 struct list : control {
-	int					origin, current, current_hilite;
+	int					origin, current, current_hilite, origin_width;
 	int					lines_per_page, pixels_per_line;
 	bool				show_grid_lines, show_selection;
 	bool				hilite_odd_lines;
 	rect				current_rect;
-	constexpr list() : origin(0), current(0), current_hilite(-1),
+	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true),
 		current_rect() {}
 	void				correction();
@@ -131,13 +131,12 @@ struct list : control {
 	virtual const char* getname(char* result, const char* result_max, int line, int column) const { return 0; }
 	virtual int			getmaximum() const { return 0; }
 	virtual int			getmaximumwidth() const { return 0; }
-	virtual int			getoriginwidth() const { return 0; }
 	static int			getrowheight(); // Get default row height for any List Control
 	virtual int			getwidth(int column) const { return 0; } // get column width
 	void				hilight(rect rc) const;
 	void				keydown(int id) override;
 	void				keyend(int id) override;
-	void				keyenter(int id) override;
+	void				keyenter(int id) override {}
 	void				keyhome(int id) override;
 	void				keypageup(int id) override;
 	void				keypagedown(int id) override;
@@ -148,20 +147,20 @@ struct list : control {
 	void				mousewheel(point position, int step) override;
 	virtual void		select(int index, int column);
 	virtual void		mouseselect(int id, bool pressed);
-	virtual void		row(rect rc, int index) const; // Draw single row - part of list
+	virtual void		row(rect rc, int index) const;
 	virtual void		rowhilite(rect rc, int index) const;
 	void				view(rect rc) override;
 };
 struct table : list {
 	const column*		columns;
-	int					origin_width, current_column, current_hilite_column, current_column_maximum, maximum_width;
+	int					current_column, current_hilite_column, current_column_maximum, maximum_width;
 	bool				no_change_count;
 	bool				no_change_order;
 	bool				read_only;
 	bool				select_full_row;
 	bool				show_totals;
 	bool				show_header;
-	constexpr table(const column* columns) : columns(columns), origin_width(0), current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
+	constexpr table(const column* columns) : columns(columns), current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
 		show_totals(false), show_header(true),
 		no_change_order(false), no_change_count(false), read_only(false),
 		select_full_row(false) {}
@@ -171,7 +170,6 @@ struct table : list {
 	virtual const char*	getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int			getnumber(int line, int column) const { return 0; }
 	virtual int			getmaximumwidth() const { return maximum_width; }
-	virtual int			getoriginwidth() const override { return origin_width; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	void				keyleft(int id) override;

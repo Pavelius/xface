@@ -50,13 +50,13 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	}
 }
 
-void draw::scrollh(int id, const rect& scroll, int& origin, int count, int maximum, bool focused) {
+void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int maximum, bool focused) {
 	if(!maximum)
 		return;
 	int p1;
-	int ss = ((scroll.x2 - scroll.x1)*count) / maximum;
+	int ss = ((scroll.x2 - scroll.x1)*per_page) / maximum;
 	int ds = scroll.x2 - scroll.x1 - ss;
-	int dr = maximum - count;
+	int dr = maximum - per_page;
 	if(!dr)
 		return;
 	int p = (origin*ds) / dr + scroll.x1;
@@ -67,21 +67,21 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int count, int maxim
 		origin = ((p1 - scroll.x1)*dr) / ds;
 		if(origin < 0)
 			origin = 0;
-		if(origin + count > maximum)
-			origin = maximum - count;
+		if(origin + per_page > maximum)
+			origin = maximum - per_page;
 	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
 		if(hot.mouse.x < p)
-			origin -= count;
+			origin -= per_page;
 		else if(hot.mouse.x > p + ss)
-			origin += count;
+			origin += per_page;
 		else {
 			drag::begin(id, DragScrollH);
 			drag::value = hot.mouse.x - p;
 		}
 		if(origin < 0)
 			origin = 0;
-		if(origin + count > maximum)
-			origin = maximum - count;
+		if(origin + per_page > maximum)
+			origin = maximum - per_page;
 	}
 	switch(a) {
 	case AreaHilited:
