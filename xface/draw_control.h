@@ -9,6 +9,10 @@ void					copy(const void* string, int lenght);
 char*					paste();
 }
 namespace draw {
+enum column_size_s : unsigned char {
+	SizeDefault,
+	SizeResized, SizeFixed, SizeAuto,
+};
 struct runable {
 	virtual int			getid() const = 0;
 	virtual void		execute() const = 0;
@@ -97,17 +101,20 @@ struct visual {
 	const char*				id;
 	const char*				name;
 	int						minimal_width, default_width;
+	column_size_s			size;
 	union {
 		proc_render			render;
 		const visual*		child;
 	};
 	proc_change				change;
 	visual() = default;
-	template<typename T, typename U> visual(const char* id, const char* name, int mw, int dw,
-		(T::*pr)(const rect& rc, int line, int column) const,
-		(U::*pc)(const rect& rc, int line, int column)) : id(id), name(name),
-		render((proc_render)pr), change((proc_change)pc), minimal_width(mw), default_width(dw) {}
-	constexpr visual(const visual* vs) : id("*"), name(""), change(0), minimal_width(0), default_width(0), child(vs) {}
+	template<typename T, typename U> visual(const char* id, const char* name, int mw, int dw, column_size_s sz,
+		void (T::*pr)(const rect& rc, int line, int column) const,
+		void (U::*pc)(const rect& rc, int line, int column)) : id(id), name(name),
+		render((proc_render)pr), change((proc_change)pc),
+		size(sz), minimal_width(mw), default_width(dw) {}
+	constexpr visual(const visual* vs) : id("*"), name(""), change(0), minimal_width(0),
+		default_width(0), child(vs), size(SizeDefault) {}
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };
@@ -117,6 +124,7 @@ struct column {
 	const char*				title;
 	int						width;
 	const char*				tips;
+	column_size_s			size;
 	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
 	explicit operator bool() const { return method != 0; }
 	bool					isvisible() const { return true; }
@@ -167,7 +175,7 @@ struct table : list {
 		no_change_order(false), no_change_count(false), read_only(false),
 		select_full_row(false),
 		view_rect() {}
-	virtual column*			addcol(const char* id, const char* name, const char* type, int width = 0);
+	virtual column*			addcol(const char* id, const char* name, const char* type, column_size_s size = SizeDefault, int width = 0);
 	bool					change(bool run);
 	virtual bool			changing(int line, int column, const char* name) { return false; }
 	void					changecheck(const rect& rc, int line, int column);
@@ -197,6 +205,7 @@ struct table : list {
 	void					viewtotal(rect rc) const;
 private:
 	rect					view_rect;
+	void					update_columns();
 };
 // Abstract scrollable element. Scroll apear automatically if needed.
 struct scrollable : control {

@@ -106,8 +106,8 @@ static void test_grid() {
 	elements.add({"Valentin", Male, NeutralGood});
 	controls::grid test(element_type, elements);
 	test.addcol("name", "Наименование", "text");
-	test.addcol("gender", "Пол", "text");
-	test.addcol("alignment", "Мировозрение", "text");
+	test.addcol("gender", "Пол", "ref");
+	test.addcol("alignment", "Мировозрение", "ref");
 	test.addcol("alignment.id", "Мировозрение (англ)", "text");
 	test.no_change_order = false;
 	test.show_grid_lines = true;
@@ -126,7 +126,7 @@ static void test_grid() {
 
 static void test_grid_ref() {
 	controls::gridref test(cultivated_land_manager.fields);
-	test.addcol("name", "Наименование", "text");
+	test.addcol("name", "Наименование", "text", SizeAuto);
 	test.addcol("cult_land", "Обрабатывается", "number");
 	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
 	test.add(cultivated_land_manager.get(0));

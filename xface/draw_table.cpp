@@ -3,6 +3,42 @@
 
 using namespace draw::controls;
 
+void table::update_columns() {
+	int w1 = view_rect.width() - 2;
+	int w2 = 0;
+	int c2 = 0;
+	const int min_width = 8;
+	if(!columns)
+		return;
+	for(auto& e : columns) {
+		if(e.size == SizeAuto) {
+			w2 += min_width;
+			c2++;
+		} else {
+			if(e.method->minimal_width) {
+				if(e.width < e.method->minimal_width)
+					e.width = e.method->minimal_width;
+			}
+			w2 += e.width;
+		}
+	}
+	// calculate auto sized width
+	if(w2 < w1 && c2) {
+		int d1 = w1 - w2;
+		int d2 = d1 / c2;
+		for(auto& e : columns) {
+			if(e.size==SizeAuto) {
+				if(d2 < d1)
+					e.width = min_width + d2;
+				else {
+					e.width = min_width + d1;
+					break;
+				}
+			}
+		}
+	}
+}
+
 void table::select(int index, int column) {
 	current_column = column;
 	list::select(index, column);
@@ -125,6 +161,7 @@ void table::viewtotal(rect rc) const {
 void table::view(rect rc) {
 	view_rect = rc;
 	current_hilite_column = -1;
+	update_columns();
 	rect rt;
 	rt.y1 = rc.y1;
 	rt.y2 = rc.y2;
@@ -167,7 +204,7 @@ void table::redraw() {
 	view(view_rect);
 }
 
-column* table::addcol(const char* id, const char* name, const char* type, int width) {
+column* table::addcol(const char* id, const char* name, const char* type, draw::column_size_s size, int width) {
 	auto pf = getvisuals()->find(type);
 	if(!pf)
 		return 0;
@@ -176,6 +213,9 @@ column* table::addcol(const char* id, const char* name, const char* type, int wi
 	p->id = szdup(id);
 	p->title = szdup(name);
 	p->tips = 0;
+	p->size = size;
+	if(p->size == SizeDefault)
+		p->size = p->method->size;
 	p->width = width;
 	if(!p->width)
 		p->width = p->method->default_width;
@@ -265,10 +305,10 @@ void table::fieldpercent(const rect& rc, int line, int column) const {
 }
 
 const visual* table::getvisuals() const {
-	static visual elements[] = {{"checkbox", "Пометка", 20, 20, &table::checkbox, &table::changecheck},
-	{"text", "Текстовое поле", 8, 200, &table::fieldtext, &table::changetext},
-	{"number", "Числовое поле", 8, 80, &table::fieldnumber, &table::changenumber},
-	{"percent", "Процент", 8, 80, &table::fieldpercent, &table::changenumber},
+	static visual elements[] = {{"checkbox", "Пометка", 20, 20, SizeFixed, &table::checkbox, &table::changecheck},
+	{"text", "Текстовое поле", 8, 200, SizeResized, &table::fieldtext, &table::changetext},
+	{"number", "Числовое поле", 8, 80, SizeResized, &table::fieldnumber, &table::changenumber},
+	{"percent", "Процент", 40, 60, SizeResized, &table::fieldpercent, &table::changenumber},
 	{}};
 	return elements;
 }

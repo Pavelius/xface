@@ -119,7 +119,7 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 }
 
 void grid::changeref(const rect& rc, int line, int column) {
-	change_simple(rc, getvalue(line, column), 0);
+	change_simple({rc.x1 - 4, rc.y1 - 4, rc.x2 + 4, rc.y2 + 3}, getvalue(line, column), 0);
 }
 
 bool grid::changing(int line, int column, const char* name) {
@@ -239,7 +239,7 @@ bool grid::sortds(bool run) {
 
 const visual* grid::getvisuals() const {
 	static visual elements[] = {{table::getvisuals()},
-	{"combobox", "Выпадающий список", 8, 200, &table::fieldtext, &grid::changeref},
+	{"ref", "Ссылка", 8, 200, SizeResized, &table::fieldtext, &grid::changeref},
 	{}};
 	return elements;
 }

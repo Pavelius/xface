@@ -54,6 +54,7 @@ template<class T> struct aref {
 template<class T> struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(), count_maximum() {}
+	~arem() { if(this->data) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
 	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++];}
 	void					add(const T& e) { *(add()) = e; }
 	void					reserve(unsigned count) { if(count >= count_maximum) { count_maximum = rmoptimal(count + 1); this->data = (T*)rmreserve(this->data, count_maximum * sizeof(T)); } }
