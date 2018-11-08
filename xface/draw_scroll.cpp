@@ -11,14 +11,12 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	int dr = maximum - count;
 	int p = (origin*ds) / dr + scroll.y1;
 	auto a = area(scroll);
+	auto need_correct = false;
 	if(drag::active(id, DragScrollV)) {
 		a = AreaHilitedPressed;
 		p1 = hot.mouse.y - drag::value;
 		origin = ((p1 - scroll.y1)*dr) / ds;
-		if(origin < 0)
-			origin = 0;
-		if(origin + count > maximum)
-			origin = maximum - count;
+		need_correct = true;
 	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
 		if(hot.mouse.y < p)
 			origin -= count;
@@ -28,10 +26,7 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 			drag::begin(id, DragScrollV);
 			drag::value = hot.mouse.y - p;
 		}
-		if(origin < 0)
-			origin = 0;
-		if(origin + count > maximum)
-			origin = maximum - count;
+		need_correct = true;
 	}
 	// show scroll area
 	switch(a) {
@@ -47,6 +42,12 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 		if(focused)
 			rectf({scroll.x2 - 2, p, scroll.x2 + 2, p + ss}, colors::blue, 128);
 		break;
+	}
+	if(need_correct) {
+		if(origin < 0)
+			origin = 0;
+		if(origin + count > maximum)
+			origin = maximum - count;
 	}
 }
 
@@ -66,6 +67,7 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int ma
 		a = AreaHilitedPressed;
 		p1 = hot.mouse.x - drag::value;
 		origin = ((p1 - scroll.x1)*dr) / ds;
+		need_correct = true;
 	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
 		if(hot.mouse.x < p)
 			origin -= per_page;
@@ -75,10 +77,7 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int ma
 			drag::begin(id, DragScrollH);
 			drag::value = hot.mouse.x - p;
 		}
-		if(origin < 0)
-			origin = 0;
-		if(origin + per_page > maximum)
-			origin = maximum - per_page;
+		need_correct = true;
 	} else if(a == AreaHilited || a == AreaHilitedPressed) {
 		auto inc = per_page / 10;
 		if(inc < 1)

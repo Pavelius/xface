@@ -27,8 +27,8 @@ int table::rowheader(rect rc) const {
 	rectb(rch, colors::border);
 	draw::state push;
 	draw::setclip(rc);
-	auto x1 = header_padding*2 - origin_width;
-	for(auto i = 0; columns[i]; i++) {
+	auto x1 = header_padding * 2 - origin_width;
+	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
 			continue;
 		rect r1 = {x1, rc.y1, x1 + columns[i].width, rc.y1 + height};
@@ -81,7 +81,7 @@ void table::row(rect rc, int index) const {
 		rowhilite(rc, index);
 	rc.offset(4, 4);
 	auto current_column = getcolumn();
-	for(auto i = 0; columns[i]; i++) {
+	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
 			continue;
 		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
@@ -95,22 +95,7 @@ void table::row(rect rc, int index) const {
 				hilight({rt.x1 - 4, rt.y1 - 4, rt.x2 - 1, rt.y2 + 3});
 		}
 		temp[0] = 0;
-		const char* p;
-		int number_value;
-		switch(columns[i].getcontol()) {
-		case Field:
-			p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, i);
-			if(p)
-				draw::text(rt, p, (columns[i].flags & AlignMask));
-			break;
-		case Check:
-			number_value = getnumber(index, i);
-			clipart(rt.x1 + 2, rt.y1 + imax((rt.height() - 14) / 2, 0), 0, number_value ? Check : 0, ":check");
-			break;
-		default:
-			custom(temp, temp + sizeof(temp) - 1, rc, index, i);
-			break;
-		}
+		(this->*columns.data[i].method->render)(rt, index, i);
 		rc.x1 += columns[i].width;
 	}
 }
@@ -118,7 +103,7 @@ void table::row(rect rc, int index) const {
 void table::viewtotal(rect rc) const {
 	rc.offset(1, 1);
 	rc.offset(4, 4);
-	for(auto i = 0; columns[i]; i++) {
+	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
 			continue;
 		char temp[260]; temp[0] = 0;
@@ -132,7 +117,7 @@ void table::viewtotal(rect rc) const {
 			}
 		}
 		if(p)
-			draw::text(rt, p, columns[i].flags);
+			draw::text(rt, p, AlignRight);
 		rc.x1 += columns[i].width;
 	}
 }
@@ -144,7 +129,7 @@ void table::view(rect rc) {
 	rt.y1 = rc.y1;
 	rt.y2 = rc.y2;
 	maximum_width = 0;
-	for(auto i = 0; columns[i]; i++) {
+	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
 			continue;
 		rt.x1 = rc.x1 - origin_width + maximum_width;
@@ -180,4 +165,47 @@ bool table::keyinput(unsigned id) {
 
 void table::redraw() {
 	view(view_rect);
+}
+
+void table::addcol(const char* id, const char* name, const char* type, int width) {
+	auto pf = getvisuals()->find(type);
+	if(!pf)
+		return;
+	auto p = columns.add();
+	p->method = pf;
+	p->id = szdup(id);
+	p->title = szdup(name);
+	p->tips = 0;
+	p->width = width;
+	if(!p->width)
+		p->width = p->method->default_width;
+	if(!p->width)
+		p->width = 100;
+}
+
+void table::checkbox(const rect& rc, int line, int column) const {
+	auto number_value = getnumber(line, column);
+	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, number_value ? Check : 0, ":check");
+}
+
+void table::fieldtext(const rect& rc, int line, int column) const {
+	char temp[260];
+	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, line, column);
+	if(p)
+		draw::text(rc, p, AlignLeft);
+}
+
+void table::fieldnumber(const rect& rc, int line, int column) const {
+	char temp[32];
+	auto v = getnumber(line, column);
+	szprints(temp, zendof(temp), "%1i", v);
+	draw::text(rc, temp, AlignRight);
+}
+
+const visual* table::getvisuals() const {
+	static visual elements[] = {{"checkbox", "Пометка", 20, 20, &table::checkbox},
+	{"text", "Текстовое поле", 8, 200, &table::fieldtext},
+	{"number", "Числовое поле", 8, 80, &table::fieldnumber},
+	{}};
+	return elements;
 }

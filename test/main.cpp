@@ -95,13 +95,6 @@ static void test_grid() {
 		gender_s		gender;
 		alignment_s		alignment;
 	};
-	static controls::column columns[] = {{Field, "name", "Наименование", 200},
-	{Field, "gender", "Пол", 128},
-	{Field, "alignment", "Мировозрение", 200},
-	{Field, "alignment.id", "Мировозрение (англ)", 200},
-	{Check, "check", 0, 28, "Это тултипс колонки"},
-	{Field, "count", "К-во", 48, "Этой колонки нет в описании полей"},
-	{}};
 	static bsreq element_type[] = {
 		BSREQ(element, name, text_type),
 		BSREQ(element, gender, gender_type),
@@ -111,7 +104,11 @@ static void test_grid() {
 	elements.add({"Pavel", Male, ChaoticEvil});
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
-	controls::grid test(columns, element_type, elements);//sizeof(element));
+	controls::grid test(element_type, elements);
+	test.addcol("name", "Наименование", "text");
+	test.addcol("gender", "Пол", "text");
+	test.addcol("alignment", "Мировозрение", "text");
+	test.addcol("alignment.id", "Мировозрение (англ)", "text");
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;
@@ -127,18 +124,11 @@ static void test_grid() {
 	}
 }
 
-const char* number_precent(char* result, const char* result_maximum, int value) {
-	stringcreator sc;
-	sc.prints(result, result_maximum, "%1i%%", value);
-	return result;
-}
-
 static void test_grid_ref() {
-	static controls::column columns[] = {{Field, "name", "Наименование", 200},
-	{Field, "cult_land", "Обрабатывается", 128},
-	{Field, "cult_land_percent", "Обрабатывается (%)", 200, 0, number_precent},
-	{}};
-	controls::gridref test(columns, cultivated_land_manager.fields);
+	controls::gridref test(cultivated_land_manager.fields);
+	test.addcol("name", "Наименование", "text");
+	test.addcol("cult_land", "Обрабатывается", "number");
+	test.addcol("cult_land_percent", "Обрабатывается (%)", "number");
 	test.add(cultivated_land_manager.get(0));
 	test.add(cultivated_land_manager.get(1));
 	test.add(cultivated_land_manager.get(1));

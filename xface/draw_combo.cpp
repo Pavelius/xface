@@ -140,7 +140,7 @@ struct combo_list : controls::list, adat<void*, 64> {
 
 	void mouseselect(int id, bool pressed) override {
 		list::mouseselect(id, pressed);
-		keyinput(0);
+		keyinput(KeyEnter);
 	}
 
 	bool keyinput(unsigned id) override {

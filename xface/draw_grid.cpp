@@ -70,11 +70,11 @@ static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
 			execute(hot);
 			break;
 		case MouseLeft:
-		case MouseLeft + Ctrl:
-		case MouseLeft + Shift:
+		case MouseLeft | Ctrl:
+		case MouseLeft | Shift:
+		case MouseLeftDBL | Ctrl:
+		case MouseLeftDBL | Shift:
 		case MouseLeftDBL:
-		case MouseLeftDBL + Ctrl:
-		case MouseLeftDBL + Shift:
 			if(hot.pressed) {
 				if(!areb(rc)) {
 					breakmodal(0);
@@ -104,21 +104,15 @@ int grid::getnumber(int line, int column) const {
 	return 0;
 }
 
-static const char* def_number(char* result, const char* result_max, int value) {
-	stringcreator sc;
-	sc.prints(result, result_max, "%1i", value);
-	return result;
-}
-
 const char* grid::getname(char* result, const char* result_max, int line, int column) const {
 	auto bv = getvalue(line, column);
 	if(!bv)
 		return "";
 	if(bv.type->type == number_type) {
+		stringcreator sc;
 		auto value = getnumber(line, column);
-		if(columns[column].present)
-			return columns[column].present(result, result_max, value);
-		return def_number(result, result_max, value);
+		sc.prints(result, result_max, "%1i", value);
+		return result;
 	} else if(bv.type->type == text_type) {
 		auto p = (const char*)bv.get();
 		if(p)
@@ -182,43 +176,42 @@ bool grid::addcopy(bool run) {
 bool grid::change(bool run) {
 	if(read_only)
 		return false;
+	if(!columns)
+		return false;
 	if(zchr(columns[current_column].id, '.'))
 		return false;
-	switch(columns[current_column].getcontol()) {
-	case Field:
-		if(run) {
-			if(!current_rect)
-				break;
-			auto bv = getvalue(current, current_column);
-			if(bv.type->type->issimple()) {
-				auto push_focus = getfocus();
-				char temp[8192]; auto pn = getname(temp, zendof(temp), current, current_column);
-				if(pn != temp)
-					zcpy(temp, pn, sizeof(temp) - 1);
-				textedit te(temp, sizeof(temp) - 1, true);
-				setfocus((int)&te, true);
-				te.show_border = false;
-				auto result = te.editing({current_rect.x1, current_rect.y1, current_rect.x2 + 1, current_rect.y2 + 1});
-				setfocus(push_focus, true);
-				if(result)
-					changing(current, current_column, temp);
-			} else {
-				change_simple({current_rect.x1 - 4, current_rect.y1 - 4, current_rect.x2 + 4,
-					current_rect.y2 + 1}, getvalue(current, current_column), 0);
-			}
+	auto pv = columns[current_column].method;
+	if(!pv)
+		return false;
+	if(!pv->change)
+		return false;
+	if(run) {
+		if(!current_rect)
+			return true;
+		auto bv = getvalue(current, current_column);
+		if(bv.type->type->issimple()) {
+			auto push_focus = getfocus();
+			char temp[8192]; auto pn = getname(temp, zendof(temp), current, current_column);
+			if(pn != temp)
+				zcpy(temp, pn, sizeof(temp) - 1);
+			textedit te(temp, sizeof(temp) - 1, true);
+			setfocus((int)&te, true);
+			te.show_border = false;
+			auto result = te.editing({current_rect.x1, current_rect.y1, current_rect.x2 + 1, current_rect.y2 + 1});
+			setfocus(push_focus, true);
+			if(result)
+				changing(current, current_column, temp);
+		} else {
+			change_simple({current_rect.x1 - 4, current_rect.y1 - 4, current_rect.x2 + 4,
+				current_rect.y2 + 1}, getvalue(current, current_column), 0);
 		}
-		break;
-	case Check:
-		if(run) {
-			if(getnumber(current, current_column))
-				changing(current, current_column, "1");
-			else
-				changing(current, current_column, "0");
-		}
-		break;
-	default:
-		break;
 	}
+	//if(run) {
+	//	if(getnumber(current, current_column))
+	//		changing(current, current_column, "1");
+	//	else
+	//		changing(current, current_column, "0");
+	//}
 	return true;
 }
 

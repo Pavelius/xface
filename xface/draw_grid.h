@@ -7,12 +7,12 @@ namespace draw {
 namespace controls {
 struct grid : table, array {
 	const bsreq*			type;
-	constexpr grid(const column* columns, const bsreq* type, unsigned size) : table(columns), type(type), array(size) {}
-	constexpr grid(const column* columns, const bsreq* type, void* data, unsigned size, unsigned count_maximum) : table(columns), type(type), array(data, size, count_maximum) {}
-	constexpr grid(const column* columns, const bsreq* type, void* data, unsigned size, unsigned count_maximum, unsigned& count) : table(columns), type(type),  array(data, size, count_maximum, count) {}
-	constexpr grid(const column* columns, bsdata& manager) : table(columns), type(manager.fields), array(manager.data, manager.size, manager.count_maximum, manager.count) {}
-	template<typename T, unsigned N> constexpr grid(const column* columns, const bsreq* type, adat<T, N>& e) : grid(columns, type, e.data, sizeof(T), N, e.count) {}
-	template<typename T, unsigned N> constexpr grid(const column* columns, const bsreq* type, T(&e)[N]) : grid(columns, type, e.data, sizeof(T), N) {}
+	constexpr grid(const bsreq* type, unsigned size) : type(type), array(size) {}
+	constexpr grid(const bsreq* type, void* data, unsigned size, unsigned count_maximum) : type(type), array(data, size, count_maximum) {}
+	constexpr grid(const bsreq* type, void* data, unsigned size, unsigned count_maximum, unsigned& count) : type(type),  array(data, size, count_maximum, count) {}
+	constexpr grid(bsdata& manager) : type(manager.fields), array(manager.data, manager.size, manager.count_maximum, manager.count) {}
+	template<typename T, unsigned N> constexpr grid(const bsreq* type, adat<T, N>& e) : grid(type, e.data, sizeof(T), N, e.count) {}
+	template<typename T, unsigned N> constexpr grid(const bsreq* type, T(&e)[N]) : grid(type, e.data, sizeof(T), N) {}
 	bool					add(bool run);
 	virtual void			adding(void* value); // Default proc set all bits to zero
 	bool					addcopy(bool run);
@@ -35,7 +35,7 @@ struct grid : table, array {
 	bool					sortds(bool run);
 };
 struct gridref : grid {
-	constexpr gridref(const column* columns, const bsreq* type, unsigned size=sizeof(void*)) : grid(columns, type, size) {}
+	constexpr gridref(const bsreq* type, unsigned size=sizeof(void*)) : grid(type, size) {}
 	void					add(void* object);
 	void*					get(int index) const override;
 };

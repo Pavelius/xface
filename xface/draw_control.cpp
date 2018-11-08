@@ -58,6 +58,16 @@ static void control_execute() {
 	(current_execute_control->*current_execute)(true);
 }
 
+const visual* visual::find(const char* id) const {
+	if(!this)
+		return 0;
+	for(auto p = this; *p; p++) {
+		if(strcmp(p->id, id) == 0)
+			return p;
+	}
+	return 0;
+}
+
 const control::command* control::command::find(const char* id) const {
 	if(!this)
 		return 0;
