@@ -128,7 +128,7 @@ static void test_grid_ref() {
 	controls::gridref test(cultivated_land_manager.fields);
 	test.addcol("name", "Наименование", "text");
 	test.addcol("cult_land", "Обрабатывается", "number");
-	test.addcol("cult_land_percent", "Обрабатывается (%)", "number");
+	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
 	test.add(cultivated_land_manager.get(0));
 	test.add(cultivated_land_manager.get(1));
 	test.add(cultivated_land_manager.get(1));

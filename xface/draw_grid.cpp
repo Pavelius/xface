@@ -59,7 +59,7 @@ static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
 		screen.restore();
 		draw::combobox(rc.x1, rc.y1, rc.width(), Focused, bv, 0, tips, 0);
 		domodal();
-		switch(hot.key) {
+		switch(hot.key & CommandMask) {
 		case KeyEscape:
 		case InputUpdate:
 			breakmodal(0);
@@ -70,10 +70,6 @@ static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
 			execute(hot);
 			break;
 		case MouseLeft:
-		case MouseLeft | Ctrl:
-		case MouseLeft | Shift:
-		case MouseLeftDBL | Ctrl:
-		case MouseLeftDBL | Shift:
 		case MouseLeftDBL:
 			if(hot.pressed) {
 				if(!areb(rc)) {
@@ -120,6 +116,10 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 		return "";
 	} else
 		return bv.dereference().getname();
+}
+
+void grid::changeref(const rect& rc, int line, int column) {
+	change_simple(rc, getvalue(line, column), 0);
 }
 
 bool grid::changing(int line, int column, const char* name) {
@@ -170,48 +170,6 @@ bool grid::addcopy(bool run) {
 		redraw();
 		change(true);
 	}
-	return true;
-}
-
-bool grid::change(bool run) {
-	if(read_only)
-		return false;
-	if(!columns)
-		return false;
-	if(zchr(columns[current_column].id, '.'))
-		return false;
-	auto pv = columns[current_column].method;
-	if(!pv)
-		return false;
-	if(!pv->change)
-		return false;
-	if(run) {
-		if(!current_rect)
-			return true;
-		auto bv = getvalue(current, current_column);
-		if(bv.type->type->issimple()) {
-			auto push_focus = getfocus();
-			char temp[8192]; auto pn = getname(temp, zendof(temp), current, current_column);
-			if(pn != temp)
-				zcpy(temp, pn, sizeof(temp) - 1);
-			textedit te(temp, sizeof(temp) - 1, true);
-			setfocus((int)&te, true);
-			te.show_border = false;
-			auto result = te.editing({current_rect.x1, current_rect.y1, current_rect.x2 + 1, current_rect.y2 + 1});
-			setfocus(push_focus, true);
-			if(result)
-				changing(current, current_column, temp);
-		} else {
-			change_simple({current_rect.x1 - 4, current_rect.y1 - 4, current_rect.x2 + 4,
-				current_rect.y2 + 1}, getvalue(current, current_column), 0);
-		}
-	}
-	//if(run) {
-	//	if(getnumber(current, current_column))
-	//		changing(current, current_column, "1");
-	//	else
-	//		changing(current, current_column, "0");
-	//}
 	return true;
 }
 
@@ -277,6 +235,13 @@ bool grid::sortds(bool run) {
 	if(run)
 		sort(current_column, false);
 	return true;
+}
+
+const visual* grid::getvisuals() const {
+	static visual elements[] = {{table::getvisuals()},
+	{"combobox", "Выпадающий список", 8, 200, &table::fieldtext, &grid::changeref},
+	{}};
+	return elements;
 }
 
 void gridref::add(void* object) {

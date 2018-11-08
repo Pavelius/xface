@@ -97,12 +97,15 @@ struct visual {
 	const char*				id;
 	const char*				name;
 	int						minimal_width, default_width;
-	proc_render				render;
+	union {
+		proc_render			render;
+		const visual*		child;
+	};
 	proc_change				change;
 	visual() = default;
-	template<class T> constexpr visual(const char* id, const char* name, int mw, int dw, void(T::*pr)(const rect& rc, int line, int column) const) : id(id), name(name),
-		render((proc_render)pr),
-		minimal_width(mw), default_width(dw) {}
+	constexpr visual(const char* id, const char* name, int mw, int dw, proc_render pr, proc_change pc) : id(id), name(name),
+		render(pr), change(pc), minimal_width(mw), default_width(dw) {}
+	constexpr visual(const visual* vs) : id("*"), name(""), change(0), minimal_width(0), default_width(0), child(vs) {}
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };
@@ -162,11 +165,17 @@ struct table : list {
 		no_change_order(false), no_change_count(false), read_only(false),
 		select_full_row(false),
 		view_rect() {}
-	virtual void			addcol(const char* id, const char* name, const char* type, int width = 0);
+	virtual column*			addcol(const char* id, const char* name, const char* type, int width = 0);
+	bool					change(bool run);
+	virtual bool			changing(int line, int column, const char* name) { return false; }
+	void					changecheck(const rect& rc, int line, int column);
+	bool					changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum);
+	void					changenumber(const rect& rc, int line, int column);
+	void					changetext(const rect& rc, int line, int column);
 	void					checkbox(const rect& rc, int line, int column) const;
 	virtual void			clickcolumn(int column) const {}
-	virtual void			custom(char* buffer, const char* buffer_maximum, const rect& rc, int line, int column) const {}
 	void					fieldnumber(const rect& rc, int line, int column) const;
+	void					fieldpercent(const rect& rc, int line, int column) const;
 	void					fieldtext(const rect& rc, int line, int column) const;
 	virtual int				getcolumn() const override { return current_column; }
 	virtual aref<column>	getcolumns() const { return aref<column>(); }

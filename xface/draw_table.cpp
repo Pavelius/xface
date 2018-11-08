@@ -79,24 +79,24 @@ void table::row(rect rc, int index) const {
 	area(rc);
 	if(select_full_row)
 		rowhilite(rc, index);
-	rc.offset(4, 4);
 	auto current_column = getcolumn();
 	for(unsigned i = 0; i < columns.count; i++) {
-		if(!columns[i].isvisible())
+		auto pc = columns.data + i;
+		if(!pc->isvisible())
 			continue;
-		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
+		rect rt = {rc.x1 + 4, rc.y1 + 4, rc.x1 + pc->width - 4, rc.y2 - 4};
 		if(show_grid_lines) {
-			if(rt.x2 < rc.x2 + 2)
-				draw::line(rt.x2 - 1, rt.y1 - 4, rt.x2 - 1, rt.y2 + 4, colors::border);
+			if(rt.x2 < rc.x2 - 1)
+				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 4, colors::border);
 		}
 		area(rt);
 		if(!select_full_row) {
 			if(index == current && i == current_column)
-				hilight({rt.x1 - 4, rt.y1 - 4, rt.x2 - 1, rt.y2 + 3});
+				hilight({rt.x1 - 4, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3});
 		}
 		temp[0] = 0;
-		(this->*columns.data[i].method->render)(rt, index, i);
-		rc.x1 += columns[i].width;
+		(this->*pc->method->render)(rt, index, i);
+		rc.x1 += pc->width;
 	}
 }
 
@@ -167,10 +167,10 @@ void table::redraw() {
 	view(view_rect);
 }
 
-void table::addcol(const char* id, const char* name, const char* type, int width) {
+column* table::addcol(const char* id, const char* name, const char* type, int width) {
 	auto pf = getvisuals()->find(type);
 	if(!pf)
-		return;
+		return 0;
 	auto p = columns.add();
 	p->method = pf;
 	p->id = szdup(id);
@@ -181,6 +181,61 @@ void table::addcol(const char* id, const char* name, const char* type, int width
 		p->width = p->method->default_width;
 	if(!p->width)
 		p->width = 100;
+	return p;
+}
+
+bool table::changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum) {
+	auto push_focus = getfocus();
+	auto pn = getname(result, result_maximum, current, current_column);
+	if(pn != result)
+		zcpy(result, pn, result_maximum - result - 1);
+	textedit te(result, result_maximum - result - 1, true);
+	setfocus((int)&te, true);
+	te.show_border = false;
+	te.align = flags;
+	te.rctext.x2++;
+	auto r = te.editing({current_rect.x1, current_rect.y1, current_rect.x2 + 1, current_rect.y2 + 1});
+	setfocus(push_focus, true);
+	return r;
+}
+
+void table::changenumber(const rect& rc, int line, int column) {
+	char temp[32];
+	if(changefield(rc, AlignRight, temp, zendof(temp)))
+		changing(current, current_column, temp);
+}
+
+void table::changetext(const rect& rc, int line, int column) {
+	char temp[8192];
+	if(changefield(rc, 0, temp, zendof(temp)))
+		changing(current, current_column, temp);
+}
+
+void table::changecheck(const rect& rc, int line, int column) {
+	if(getnumber(current, current_column))
+		changing(current, current_column, "1");
+	else
+		changing(current, current_column, "0");
+}
+
+bool table::change(bool run) {
+	if(read_only)
+		return false;
+	if(!columns)
+		return false;
+	if(zchr(columns[current_column].id, '.'))
+		return false;
+	auto pv = columns[current_column].method;
+	if(!pv)
+		return false;
+	if(!pv->change)
+		return false;
+	if(run) {
+		if(!current_rect)
+			return true;
+		(this->*pv->change)(current_rect, current, current_column);
+	}
+	return true;
 }
 
 void table::checkbox(const rect& rc, int line, int column) const {
@@ -202,10 +257,18 @@ void table::fieldnumber(const rect& rc, int line, int column) const {
 	draw::text(rc, temp, AlignRight);
 }
 
+void table::fieldpercent(const rect& rc, int line, int column) const {
+	char temp[32];
+	auto v = getnumber(line, column);
+	szprints(temp, zendof(temp), "%1i%%", v);
+	draw::text(rc, temp, AlignRight);
+}
+
 const visual* table::getvisuals() const {
-	static visual elements[] = {{"checkbox", "Пометка", 20, 20, &table::checkbox},
-	{"text", "Текстовое поле", 8, 200, &table::fieldtext},
-	{"number", "Числовое поле", 8, 80, &table::fieldnumber},
+	static visual elements[] = {{"checkbox", "Пометка", 20, 20, &table::checkbox, &table::changecheck},
+	{"text", "Текстовое поле", 8, 200, &table::fieldtext, &table::changetext},
+	{"number", "Числовое поле", 8, 80, &table::fieldnumber, &table::changenumber},
+	{"percent", "Процент", 8, 80, &table::fieldpercent, &table::changenumber},
 	{}};
 	return elements;
 }

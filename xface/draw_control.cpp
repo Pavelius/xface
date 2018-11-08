@@ -62,7 +62,11 @@ const visual* visual::find(const char* id) const {
 	if(!this)
 		return 0;
 	for(auto p = this; *p; p++) {
-		if(strcmp(p->id, id) == 0)
+		if(p->id[0] == '*') {
+			auto pf = p->child->find(id);
+			if(pf)
+				return pf;
+		} else if(strcmp(p->id, id) == 0)
 			return p;
 	}
 	return 0;
