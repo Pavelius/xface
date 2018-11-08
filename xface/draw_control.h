@@ -103,8 +103,10 @@ struct visual {
 	};
 	proc_change				change;
 	visual() = default;
-	constexpr visual(const char* id, const char* name, int mw, int dw, proc_render pr, proc_change pc) : id(id), name(name),
-		render(pr), change(pc), minimal_width(mw), default_width(dw) {}
+	template<typename T, typename U> visual(const char* id, const char* name, int mw, int dw,
+		(T::*pr)(const rect& rc, int line, int column) const,
+		(U::*pc)(const rect& rc, int line, int column)) : id(id), name(name),
+		render((proc_render)pr), change((proc_change)pc), minimal_width(mw), default_width(dw) {}
 	constexpr visual(const visual* vs) : id("*"), name(""), change(0), minimal_width(0), default_width(0), child(vs) {}
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
