@@ -137,58 +137,82 @@ void list::view(rect rcorigin) {
 		draw::scrollh((int)this, scrollh, origin_width, rc.width(), maximum_width, isfocused());
 }
 
-void list::keyup(int id) {
-	current--;
-	correction();
-	ensurevisible();
+bool list::keyinput(unsigned id) {
+	int m;
+	switch(id) {
+	case KeyUp:
+		current--;
+		correction();
+		ensurevisible();
+		break;
+	case KeyDown:
+		current++;
+		correction();
+		ensurevisible();
+		break;
+	case KeyHome:
+		if(current == 0)
+			break;
+		current = 0;
+		correction();
+		ensurevisible();
+		break;
+	case KeyEnd:
+		m = getmaximum();
+		if(current == m - 1)
+			break;
+		current = m - 1;
+		correction();
+		ensurevisible();
+		break;
+	case KeyPageUp:
+		if(current != origin)
+			current = origin;
+		else
+			current -= lines_per_page - 1;
+		correction();
+		ensurevisible();
+		break;
+	case KeyPageDown:
+		if(current != (origin + lines_per_page - 1))
+			current = (origin + lines_per_page - 1);
+		else
+			current += lines_per_page - 1;
+		correction();
+		ensurevisible();
+		break;
+	case InputSymbol:
+		if(hot.key >= 0x20) {
+			auto time_clock = clock();
+			if(!search_time || (time_clock - search_time) > 1500)
+				search_text[0] = 0;
+			search_time = time_clock;
+			char* p = zend(search_text);
+			szput(&p, hot.param); p[0] = 0;
+			int i1 = find(-1, -1, search_text);
+			if(i1 != -1) {
+				current = i1;
+				correction();
+				ensurevisible();
+			}
+		}
+		break;
+	default:
+		return control::keyinput(id);
+	}
+	return true;
 }
 
-void list::keydown(int id) {
-	current++;
-	correction();
-	ensurevisible();
+void list::mouseinput(unsigned id, point position) {
+	switch(id) {
+	case MouseLeftDBL:
+		keyinput(KeyEnter);
+		break;
+	default: control::mouseinput(id, position);
+	}
 }
 
-void list::keyhome(int id) {
-	if(current == 0)
-		return;
-	current = 0;
-	correction();
-	ensurevisible();
-}
-
-void list::keyend(int id) {
-	auto maximum = getmaximum();
-	if(current == maximum - 1)
-		return;
-	current = maximum - 1;
-	correction();
-	ensurevisible();
-}
-
-void list::keypageup(int id) {
-	if(current != origin)
-		current = origin;
-	else
-		current -= lines_per_page - 1;
-	correction();
-	ensurevisible();
-}
-
-void list::keypagedown(int id) {
-	if(current != (origin + lines_per_page - 1))
-		current = (origin + lines_per_page - 1);
-	else
-		current += lines_per_page - 1;
-	correction();
-	ensurevisible();
-}
-
-void list::mouseleftdbl(point position) {
-	keyenter(KeyEnter);
-}
-
-void list::mousewheel(point position, int step) {
+void list::mousewheel(unsigned id, point position, int step) {
 	origin += step;
 	auto maximum = getmaximum();
 	if(origin > maximum - lines_per_page)
@@ -213,21 +237,4 @@ int list::find(int line, int column, const char* value, int lenght) const {
 		line++;
 	}
 	return -1;
-}
-
-void list::keysymbol(int symbol) {
-	if(!symbol || symbol < 0x20)
-		return;
-	auto time_clock = clock();
-	if(!search_time || (time_clock - search_time) > 1500)
-		search_text[0] = 0;
-	search_time = time_clock;
-	char* p = zend(search_text);
-	szput(&p, hot.param); p[0] = 0;
-	int i1 = find(-1, -1, search_text);
-	if(i1 != -1) {
-		current = i1;
-		correction();
-		ensurevisible();
-	}
 }

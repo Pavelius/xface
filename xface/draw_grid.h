@@ -25,7 +25,7 @@ struct grid : table, array {
 	virtual int				getnumber(int line, int column) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
 	virtual bsval			getvalue(int row, int column) const;
-	void					keyenter(int id) override;
+	bool					keyinput(unsigned id) override;
 	bool					movedown(bool run);
 	bool					moveup(bool run);
 	bool					remove(bool run);

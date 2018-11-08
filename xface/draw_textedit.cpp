@@ -290,7 +290,7 @@ bool textedit::editing(rect rc) {
 		case MouseLeftDBL | Ctrl:
 		case MouseLeftDBL | Shift:
 			if(records && isshowrecords() && areb(rcv)) {
-				keyenter(hot.key);
+				records->keyinput(hot.key);
 				break;
 			}
 			if(!areb(rc) && hot.pressed) {
@@ -312,49 +312,76 @@ bool textedit::editing(rect rc) {
 	return false;
 }
 
-void textedit::keydown(int id) {
-	if(isshowrecords()) {
-		records->keydown(id);
-		return;
+bool textedit::keyinput(unsigned id) {
+	switch(id) {
+	case KeyDown:
+		if(isshowrecords()) {
+			records->keyinput(id);
+			break;
+		}
+		if(true) {
+			auto pt = getpos(rcclient, p1, align);
+			auto i = hittest(rcclient, {pt.x, (short)(pt.y + texth())}, align);
+			if(i == -3)
+				i = linee(linee(p1) + 1);
+			if(i >= 0)
+				select(i, (id & Shift) != 0);
+		}
+		break;
+	case KeyUp:
+		if(true) {
+			auto pt = getpos(rcclient, p1, align);
+			auto i = hittest(rcclient, {pt.x, (short)(pt.y - texth())}, align);
+			if(i == -3)
+				i = linee(lineb(p1) - 1);
+			if(i >= 0)
+				select(i, (id & Shift) != 0);
+		}
+		break;
+	case KeyRight:
+	case KeyRight | Shift:
+	case KeyRight | Ctrl:
+	case KeyRight | Shift | Ctrl:
+		right((id&Shift) != 0, (id&Ctrl) != 0);
+		break;
+	case KeyLeft:
+	case KeyLeft | Shift:
+	case KeyLeft | Ctrl:
+	case KeyLeft | Shift | Ctrl:
+		left((id&Shift) != 0, (id&Ctrl) != 0);
+		break;
+	case KeyBackspace:
+		if(!readonly) {
+			if((p2 == -1 || p1 == p2) && p1 > 0)
+				select(p1 - 1, true);
+			clear();
+		}
+		break;
+	case KeyDelete:
+		if(!readonly) {
+			if(p2 == -1 || p1 == p2)
+				select(p1 + 1, true);
+			clear();
+		}
+		break;
+	case InputSymbol:
+		if(hot.param >= 0x20 && !readonly) {
+			char temp[8];
+			paste(szput(temp, hot.param));
+		}
+		break;
+	case KeyHome:
+	case KeyHome | Shift:
+		select(lineb(p1), (id&Shift) != 0);
+		break;
+	case KeyEnd:
+	case KeyEnd | Shift:
+		select(linee(p1), (id&Shift) != 0);
+		break;
+	default:
+		return scrollable::keyinput(id);
 	}
-	auto pt = getpos(rcclient, p1, align);
-	auto i = hittest(rcclient, {pt.x, (short)(pt.y + texth())}, align);
-	if(i == -3)
-		i = linee(linee(p1) + 1);
-	if(i >= 0)
-		select(i, (id & Shift) != 0);
-}
-
-void textedit::keyup(int id) {
-	auto pt = getpos(rcclient, p1, align);
-	auto i = hittest(rcclient, {pt.x, (short)(pt.y - texth())}, align);
-	if(i == -3)
-		i = linee(lineb(p1) - 1);
-	if(i >= 0)
-		select(i, (id & Shift) != 0);
-}
-
-void textedit::keysymbol(int symbol) {
-	char temp[8];
-	if(symbol < 0x20 || readonly)
-		return;
-	paste(szput(temp, symbol));
-}
-
-void textedit::keybackspace(int id) {
-	if(readonly)
-		return;
-	if((p2 == -1 || p1 == p2) && p1 > 0)
-		select(p1 - 1, true);
-	clear();
-}
-
-void textedit::keydelete(int id) {
-	if(readonly)
-		return;
-	if(p2 == -1 || p1 == p2)
-		select(p1 + 1, true);
-	clear();
+	return true;
 }
 
 unsigned textedit::select_all(bool run) {
@@ -363,22 +390,6 @@ unsigned textedit::select_all(bool run) {
 		select(zlen(string), true);
 	}
 	return 0;
-}
-
-void textedit::keyright(int id) {
-	right((id&Shift) != 0, (id&Ctrl) != 0);
-}
-
-void textedit::keyleft(int id) {
-	left((id&Shift) != 0, (id&Ctrl) != 0);
-}
-
-void textedit::keyhome(int id) {
-	select(lineb(p1), (id&Shift) != 0);
-}
-
-void textedit::keyend(int id) {
-	select(linee(p1), (id&Shift) != 0);
 }
 
 unsigned textedit::copy(bool run) {

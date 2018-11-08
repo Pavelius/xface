@@ -140,11 +140,15 @@ struct combo_list : controls::list, adat<void*, 64> {
 
 	void mouseselect(int id, bool pressed) override {
 		list::mouseselect(id, pressed);
-		keyenter(0);
+		keyinput(0);
 	}
 
-	void keyenter(int id) override {
-		breakmodal(1);
+	bool keyinput(unsigned id) override {
+		switch(id) {
+		case KeyEnter: breakmodal(1); break;
+		default: return list::keyinput(id);
+		}
+		return true;
 	}
 
 	int find(const void* object) const {

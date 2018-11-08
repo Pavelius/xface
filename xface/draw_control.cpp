@@ -17,30 +17,22 @@ static struct control_plugin : draw::plugin {
 
 	bool translate(int id) override {
 		if(current_hilite) {
-			switch(id) {
-			case MouseLeft: current_hilite->mouseleft(hot.mouse); return true;
-			case MouseLeftDBL: current_hilite->mouseleftdbl(hot.mouse); return true;
-			case MouseWheelUp: current_hilite->mousewheel(hot.mouse, -1); return true;
-			case MouseWheelDown: current_hilite->mousewheel(hot.mouse, 1); return true;
+			switch(id & CommandMask) {
+			case MouseLeft:
+			case MouseRight:
+			case MouseLeftDBL:
+				current_hilite->mouseinput(id, hot.mouse);
+				return true;
+			case MouseWheelDown:
+				current_hilite->mousewheel(id, hot.mouse, 1);
+				return true;
+			case MouseWheelUp:
+				current_hilite->mousewheel(id, hot.mouse, -1);
+				return true;
 			}
 		}
-		if(current_focus) {
-			switch(id&0xFFFF) {
-			case KeyBackspace: current_focus->keybackspace(id); return true;
-			case KeyDelete: current_focus->keydelete(id); return true;
-			case KeyEnter: current_focus->keyenter(id); return true;
-			case KeyUp: current_focus->keyup(id); return true;
-			case KeyDown: current_focus->keydown(id); return true;
-			case KeyLeft: current_focus->keyleft(id); return true;
-			case KeyRight: current_focus->keyright(id); return true;
-			case KeyHome: current_focus->keyhome(id); return true;
-			case KeyEnd: current_focus->keyend(id); return true;
-			case KeyPageUp: current_focus->keypageup(id); return true;
-			case KeyPageDown: current_focus->keypagedown(id); return true;
-			case InputSymbol: current_focus->keysymbol(hot.param); return true;
-			default: return current_focus->translate(id);
-			}
-		}
+		if(current_focus)
+			return current_focus->keyinput(id);
 		return false;
 	}
 
@@ -54,20 +46,24 @@ bool control::isfocused() const {
 	return current_focus == this;
 }
 
-void control::mouseleft(point position) {
-	setfocus((int)this, true);
+void control::mouseinput(unsigned id, point position) {
+	switch(id) {
+	case MouseLeft:
+		setfocus((int)this, true);
+		break;
+	}
 }
 
 static void control_execute() {
 	(current_execute_control->*current_execute)(true);
 }
 
-static const control::command* find(const control::command* p, const char* id) {
-	if(!p)
+const control::command* control::command::find(const char* id) const {
+	if(!this)
 		return 0;
-	for(; *p; p++) {
+	for(auto p = this; *p; p++) {
 		if(p->id[0] == '*') {
-			auto p1 = find(p->child, id);
+			auto p1 = p->child->find(id);
 			if(p1)
 				return p1;
 		}
@@ -77,12 +73,12 @@ static const control::command* find(const control::command* p, const char* id) {
 	return 0;
 }
 
-static const control::command* find(const control::command* p, unsigned key) {
-	if(!p)
+const control::command* control::command::find(unsigned key) const {
+	if(!this)
 		return 0;
-	for(; *p; p++) {
+	for(auto p = this; *p; p++) {
 		if(p->id[0] == '*') {
-			auto p1 = find(p->child, key);
+			auto p1 = p->child->find(key);
 			if(p1)
 				return p1;
 		}
@@ -90,10 +86,6 @@ static const control::command* find(const control::command* p, unsigned key) {
 			return p;
 	}
 	return 0;
-}
-
-const control::command* control::getcommand(const char* id) const {
-	return find(getcommands(), id);
 }
 
 void control::icon(int x, int y, bool disabled, const command& cmd) const {
@@ -122,11 +114,8 @@ void control::view(rect rc) {
 		rectb(rc, colors::border);
 }
 
-bool control::translate(unsigned key) {
-	auto pc = getcommands();
-	if(!pc)
-		return false;
-	auto pn = find(pc, key);
+bool control::keyinput(unsigned key) {
+	auto pn = getcommands()->find(key);
 	if(!pn)
 		return false;
 	return (this->*pn->proc)(true);

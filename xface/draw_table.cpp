@@ -163,14 +163,19 @@ void table::view(rect rc) {
 		list::view(rc);
 }
 
-void table::keyleft(int id) {
-	if(current_column > 0)
-		current_column--;
-}
-
-void table::keyright(int id) {
-	if(current_column < current_column_maximum)
-		current_column++;
+bool table::keyinput(unsigned id) {
+	switch(id) {
+	case KeyLeft:
+		if(current_column > 0)
+			current_column--;
+		break;
+	case KeyRight:
+		if(current_column < current_column_maximum)
+			current_column++;
+		break;
+	default: return list::keyinput(id);
+	}
+	return true;
 }
 
 void table::redraw() {

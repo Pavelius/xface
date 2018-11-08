@@ -81,36 +81,25 @@ struct control {
 		constexpr command(const command* child) : id("*"), name(0), child(child), key(0), image(0), view(ViewIcon) {}
 		template<class T> command(const char* id, const char* name, int image, unsigned key, bool (T::*proc)(bool run)) : id(id), name(name), proc((callback)proc), key(key), image(image), view(ViewIcon) {}
 		explicit operator bool() const { return id != 0; }
+		const command*		find(const char* id) const;
+		const command*		find(unsigned key) const;
 	};
 	bool				show_border;
 	bool				show_background;
 	static const sprite* standart_toolbar;
 	constexpr control(): show_border(true), show_background(true) {}
 	void				execute(callback proc) const;
-	const command*		getcommand(const char* id) const;
+	const command*		getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command* getcommands() const { return 0; }
 	virtual const sprite* getimages() const { return standart_toolbar; }
 	virtual void		icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool		isfocusable() const { return true; }
 	bool				isfocused() const;
 	bool				ishilited() const;
-	virtual void		keybackspace(int id) {}
-	virtual void		keydelete(int id) {}
-	virtual void		keydown(int id) {}
-	virtual void		keyend(int id) {}
-	virtual void		keyenter(int id) {}
-	virtual void		keyleft(int id) {}
-	virtual void		keyhome(int id) {}
-	virtual void		keypageup(int id) {}
-	virtual void		keypagedown(int id) {}
-	virtual void		keyright(int id) {}
-	virtual void		keysymbol(int symbol) {}
-	virtual void		keyup(int id) {}
-	virtual void		mouseleft(point position); // Default behaivor set focus
-	virtual void		mouseleftdbl(point position) {}
-	virtual void		mousewheel(point position, int step) {}
+	virtual bool		keyinput(unsigned id); // Default behaivor call shortcut function
+	virtual void		mouseinput(unsigned id, point mouse); // Default behaivor set focus
+	virtual void		mousewheel(unsigned id, point mouse, int value) {}
 	int					toolbar(int x, int y, int width) const;
-	bool				translate(unsigned key);
 	virtual void		view(rect rc);
 };
 // Analog of listbox element
@@ -135,19 +124,12 @@ struct list : control {
 	static int			getrowheight(); // Get default row height for any List Control
 	virtual int			getwidth(int column) const { return 0; } // get column width
 	void				hilight(rect rc) const;
-	void				keydown(int id) override;
-	void				keyend(int id) override;
-	void				keyenter(int id) override {}
-	void				keyhome(int id) override;
-	void				keypageup(int id) override;
-	void				keypagedown(int id) override;
-	void				keysymbol(int symbol) override;
-	void				keyup(int id) override;
+	bool				keyinput(unsigned id) override;
 	void				mousehiliting(const rect& rc, point mouse);
-	void				mouseleftdbl(point position) override;
-	void				mousewheel(point position, int step) override;
 	virtual void		select(int index, int column);
+	virtual void		mouseinput(unsigned id, point position) override;
 	virtual void		mouseselect(int id, bool pressed);
+	virtual void		mousewheel(unsigned id, point position, int step) override;
 	virtual void		row(rect rc, int index) const;
 	virtual void		rowhilite(rect rc, int index) const;
 	void				view(rect rc) override;
@@ -173,8 +155,7 @@ struct table : list {
 	virtual int			getmaximumwidth() const { return maximum_width; }
 	virtual int			gettotal(int column) const { return 0; }
 	virtual const char*	gettotal(char* result, const char* result_maximum, int column) const { return 0; }
-	void				keyleft(int id) override;
-	void				keyright(int id) override;
+	bool				keyinput(unsigned id) override;
 	void				mouseselect(int id, bool pressed) override;
 	void				redraw();
 	virtual void		row(rect rc, int index) const override; // Draw single row - part of list
@@ -217,17 +198,9 @@ struct textedit : scrollable {
 	void				ensurevisible(int linenumber);
 	int					getrecordsheight() const;
 	int					hittest(rect rc, point pt, unsigned state) const;
-	void				keysymbol(int symbol) override;
 	void				invalidate() override;
 	bool				isshowrecords() const;
-	void				keybackspace(int id) override;
-	void				keydelete(int id) override;
-	void				keydown(int id) override;
-	void				keyend(int id) override;
-	void				keyhome(int id) override;
-	void				keyleft(int id) override;
-	void				keyright(int id) override;
-	void				keyup(int id) override;
+	bool				keyinput(unsigned id) override;
 	int					lineb(int index) const;
 	int					linee(int index) const;
 	int					linen(int index) const;

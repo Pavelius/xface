@@ -226,8 +226,12 @@ bool grid::setting(bool run) {
 	return true;
 }
 
-void grid::keyenter(int id) {
-	change(true);
+bool grid::keyinput(unsigned id) {
+	switch(id) {
+	case KeyEnter: change(true); break;
+	default: return table::keyinput(id);
+	}
+	return true;
 }
 
 bool grid::moveup(bool run) {
