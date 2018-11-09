@@ -93,7 +93,7 @@ struct control {
 	virtual void			mouseinput(unsigned id, point mouse); // Default behaivor set focus
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
 	int						toolbar(int x, int y, int width) const;
-	virtual void			view(rect rc);
+	virtual void			view(const rect& rc);
 };
 struct visual {
 	typedef void			(control::*proc_render)(const rect& rc, int line, int column) const;
@@ -150,16 +150,16 @@ struct list : control {
 	virtual int				getmaximumwidth() const { return 0; }
 	static int				getrowheight(); // Get default row height for any List Control
 	virtual int				getwidth(int column) const { return 0; } // Get column width
-	void					hilight(rect rc) const;
+	void					hilight(const rect& rc) const;
 	bool					keyinput(unsigned id) override;
 	void					mousehiliting(const rect& rc, point mouse);
 	virtual void			select(int index, int column);
 	virtual void			mouseinput(unsigned id, point position) override;
 	virtual void			mouseselect(int id, bool pressed);
 	virtual void			mousewheel(unsigned id, point position, int step) override;
-	virtual void			row(rect rc, int index) const;
-	virtual void			rowhilite(rect rc, int index) const;
-	void					view(rect rc) override;
+	virtual void			row(const rect& rc, int index) const;
+	virtual void			rowhilite(const rect& rc, int index) const;
+	void					view(const rect& rc) override;
 };
 struct table : list {
 	arem<column>			columns;
@@ -198,10 +198,10 @@ struct table : list {
 	bool					keyinput(unsigned id) override;
 	void					mouseselect(int id, bool pressed) override;
 	void					redraw();
-	virtual void			row(rect rc, int index) const override; // Draw single row - part of list
-	virtual int				rowheader(rect rc) const; // Draw header row
+	virtual void			row(const rect& rc, int index) const override; // Draw single row - part of list
+	virtual int				rowheader(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
-	void					view(rect rc) override;
+	void					view(const rect& rc) override;
 	void					viewtotal(rect rc) const;
 private:
 	rect					view_rect;
@@ -216,7 +216,7 @@ struct scrollable : control {
 	rect					centerview(rect rc);
 	virtual void			invalidate();
 	virtual void			redraw(rect rc) {}
-	void					view(rect rc) override;
+	void					view(const rect& rc) override;
 };
 struct textedit : scrollable {
 	char*					string;

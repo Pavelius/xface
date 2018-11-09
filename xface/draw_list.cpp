@@ -32,18 +32,17 @@ void list::correction() {
 	}
 }
 
-void list::hilight(rect rc) const {
+void list::hilight(const rect& rc) const {
 	auto focused = isfocused();
 	const color c1 = focused ? colors::edit : colors::edit.mix(colors::window, 192);
-	rc.y2--; rc.x2--;
-	rectf(rc, c1);
-	rectb(rc, c1);
+	rect r1 = {rc.x1, rc.y1, rc.x2-1, rc.y2-1};
+	rectf(r1, c1); rectb(r1, c1);
 	if(focused)
 		rectx(rc, colors::text.mix(colors::form, 200));
 	const_cast<list*>(this)->current_rect = rc;
 }
 
-void list::rowhilite(rect rc, int index) const {
+void list::rowhilite(const rect& rc, int index) const {
 	if(show_selection) {
 		area(rc);
 		if(index == current)
@@ -60,7 +59,7 @@ void list::rowhilite(rect rc, int index) const {
 	}
 }
 
-void list::row(rect rc, int index) const {
+void list::row(const rect& rc, int index) const {
 	char temp[260]; temp[0] = 0;
 	rowhilite(rc, index);
 	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
@@ -83,7 +82,7 @@ void list::mouseselect(int id, bool pressed) {
 		select(current_hilite, getcolumn());
 }
 
-void list::view(rect rcorigin) {
+void list::view(const rect& rcorigin) {
 	current_rect.clear();
 	control::view(rcorigin);
 	rect rc = rcorigin; rc.offset(1, 1);

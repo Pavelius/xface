@@ -112,7 +112,7 @@ void control::execute(control::callback proc) const {
 	draw::execute(control_execute);
 }
 
-void control::view(rect rc) {
+void control::view(const rect& rc) {
 	if(isfocusable()) {
 		addelement((int)this, rc);
 		if(!getfocus())

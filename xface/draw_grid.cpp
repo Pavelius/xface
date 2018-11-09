@@ -244,14 +244,6 @@ const visual* grid::getvisuals() const {
 	return elements;
 }
 
-void gridref::add(void* object) {
-	array::add(&object);
-}
-
-void* gridref::get(int index) const {
-	return *((void**)array::get(index));
-}
-
 const control::command* grid::getcommands() const {
 	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
 	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
@@ -268,4 +260,12 @@ const control::command* grid::getcommands() const {
 	{"setting", "Настройки", 16, 0, &grid::setting},
 	{}};
 	return elements;
+}
+
+void gridref::add(void* object) {
+	array::add(&object);
+}
+
+void* gridref::get(int index) const {
+	return *((void**)array::get(index));
 }

@@ -16,9 +16,8 @@ void scrollable::invalidate() {
 	maximum.x = 0;
 }
 
-void scrollable::view(rect rc) {
-	struct rect scrollv;
-	struct rect scrollh;
+void scrollable::view(const rect& rcc) {
+	rect scrollv, scrollh, rc = rcc;
 	int rcheight = rc.height();
 	int rcwidth = rc.width();
 	control::view(rc);

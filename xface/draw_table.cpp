@@ -51,7 +51,7 @@ void table::mouseselect(int id, bool pressed) {
 		select(current_hilite, current_hilite_column);
 }
 
-int table::rowheader(rect rc) const {
+int table::rowheader(const rect& rc) const {
 	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
@@ -63,14 +63,14 @@ int table::rowheader(rect rc) const {
 	rectb(rch, colors::border);
 	draw::state push;
 	draw::setclip(rc);
-	auto x1 = header_padding * 2 - origin_width;
+	color active = colors::button.mix(colors::edit, 128);
+	color a1 = active.lighten();
+	color a2 = active.darken();
+	auto x1 = rch.x1 - origin_width;
 	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
 			continue;
-		rect r1 = {x1, rc.y1, x1 + columns[i].width, rc.y1 + height};
-		color active = colors::button.mix(colors::edit, 128);
-		color a1 = active.lighten();
-		color a2 = active.darken();
+		rect r1 = {x1, rch.y1, x1 + columns[i].width, rch.y2};
 		auto a = area(r1);
 		if(a == AreaHilited) {
 			if(columns[i].tips && columns[i].tips[0])
@@ -110,19 +110,20 @@ int table::rowheader(rect rc) const {
 	return height;
 }
 
-void table::row(rect rc, int index) const {
+void table::row(const rect& rc, int index) const {
 	char temp[260];
 	area(rc);
 	if(select_full_row)
 		rowhilite(rc, index);
 	auto current_column = getcolumn();
+	auto x1 = rc.x1;
 	for(unsigned i = 0; i < columns.count; i++) {
 		auto pc = columns.data + i;
 		if(!pc->isvisible())
 			continue;
-		rect rt = {rc.x1 + 4, rc.y1 + 4, rc.x1 + pc->width - 4, rc.y2 - 4};
+		rect rt = {x1 + 4, rc.y1 + 4, x1 + pc->width - 4, rc.y2 - 4};
 		if(show_grid_lines) {
-			if(rt.x2 < rc.x2 - 1)
+			if(rt.x2 + 3 < rc.x2 - 2)
 				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 4, colors::border);
 		}
 		area(rt);
@@ -132,7 +133,7 @@ void table::row(rect rc, int index) const {
 		}
 		temp[0] = 0;
 		(this->*pc->method->render)(rt, index, i);
-		rc.x1 += pc->width;
+		x1 += pc->width;
 	}
 }
 
@@ -158,7 +159,7 @@ void table::viewtotal(rect rc) const {
 	}
 }
 
-void table::view(rect rc) {
+void table::view(const rect& rc) {
 	view_rect = rc;
 	current_hilite_column = -1;
 	update_columns();
@@ -176,13 +177,14 @@ void table::view(rect rc) {
 		maximum_width += columns[i].width;
 		current_column_maximum = i;
 	}
+	rt = rc;
 	if(show_header)
-		rc.y1 += rowheader(rc);
+		rt.y1 += rowheader(rt);
 	if(show_totals) {
-		list::view({rc.x1, rc.y1, rc.x2, rc.y2 - getrowheight()});
-		viewtotal({rc.x1, rc.y2 - getrowheight(), rc.x2, rc.y2});
+		list::view({rt.x1, rt.y1, rt.x2, rt.y2 - getrowheight()});
+		viewtotal({rt.x1, rt.y2 - getrowheight(), rt.x2, rt.y2});
 	} else
-		list::view(rc);
+		list::view(rt);
 }
 
 bool table::keyinput(unsigned id) {
