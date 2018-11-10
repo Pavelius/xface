@@ -35,27 +35,28 @@ void list::correction() {
 void list::hilight(const rect& rc) const {
 	auto focused = isfocused();
 	const color c1 = focused ? colors::edit : colors::edit.mix(colors::window, 192);
-	rect r1 = {rc.x1, rc.y1, rc.x2-1, rc.y2-1};
+	rect r1 = {rc.x1+1, rc.y1+1, rc.x2-1, rc.y2-1};
 	rectf(r1, c1); rectb(r1, c1);
 	if(focused)
-		rectx(rc, colors::text.mix(colors::form, 200));
+		rectx(r1, colors::text.mix(colors::form, 200));
 	const_cast<list*>(this)->current_rect = rc;
 }
 
 void list::rowhilite(const rect& rc, int index) const {
+	rect r1 = {rc.x1 + 1, rc.y1 + 1, rc.x2 - 1, rc.y2 - 1};
 	if(show_selection) {
 		area(rc);
 		if(index == current)
 			hilight(rc);
 		else if(index == current_hilite)
-			rectf({rc.x1, rc.y1, rc.x2, rc.y2 - 1}, colors::edit.mix(colors::window, 96));
+			rectf(r1, colors::edit.mix(colors::window, 96));
 		else if(hilite_odd_lines) {
 			if(index & 1)
-				rectf({rc.x1, rc.y1, rc.x2, rc.y2 - 1}, colors::edit, 64);
+				rectf(r1, colors::edit, 64);
 		}
 	} else if(hilite_odd_lines) {
 		if(index & 1)
-			rectf({rc.x1, rc.y1, rc.x2, rc.y2 - 1}, colors::edit, 64);
+			rectf(r1, colors::edit, 64);
 	}
 }
 
@@ -85,7 +86,7 @@ void list::mouseselect(int id, bool pressed) {
 void list::view(const rect& rcorigin) {
 	current_rect.clear();
 	control::view(rcorigin);
-	rect rc = rcorigin; rc.offset(1, 1);
+	rect rc = rcorigin;
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
 	current_hilite = -1;

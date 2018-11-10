@@ -15,6 +15,9 @@ static unsigned check_button = 0;
 
 extern bsdata cultivated_land_manager;
 
+static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phone", "Smartphone", "Pencil", "Keyboard",
+"Car", "Bus", "Flashmemory"};
+
 enum alignment_s : unsigned char {
 	LawfulGood, NeutralGood, ChaoticGood,
 	LawfulNeutral, TrueNeutral, ChaoticNeutral,
@@ -73,6 +76,19 @@ static int button(int x, int y, int width, void(*proc)(), const char* title, con
 	return result;
 }
 
+static int show_control(controls::control& e) {
+	while(ismodal()) {
+		rect rc = {0, 0, getwidth(), getheight()};
+		rectf(rc, colors::form);
+		rc.offset(4 * 2);
+		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
+		rc.y1 += e.toolbar(rc.x1, rc.y1, rc.width());
+		e.view(rc);
+		domodal();
+	}
+	return getresult();
+}
+
 static void basic_drawing() {
 	static int tick = 10;
 	settimer(100);
@@ -113,15 +129,7 @@ static void test_grid() {
 	test.show_grid_lines = true;
 	test.read_only = false;
 	test.no_change_count = false;
-	while(ismodal()) {
-		rect rc = {0, 0, getwidth(), getheight()};
-		rectf(rc, colors::form);
-		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
-		rc.y1 += test.toolbar(rc.x1, rc.y1, rc.width());
-		test.view(rc);
-		domodal();
-	}
+	show_control(test);
 }
 
 static void test_grid_ref() {
@@ -136,15 +144,7 @@ static void test_grid_ref() {
 	test.show_grid_lines = true;
 	test.read_only = false;
 	test.no_change_count = false;
-	while(ismodal()) {
-		rect rc = {0, 0, getwidth(), getheight()};
-		rectf(rc, colors::form);
-		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
-		rc.y1 += test.toolbar(rc.x1, rc.y1, rc.width());
-		test.view(rc);
-		domodal();
-	}
+	show_control(test);
 }
 
 static void test_widget() {
@@ -206,6 +206,18 @@ static void test_widget() {
 	}
 }
 
+static void test_list() {
+	struct test_class : controls::list {
+		const char* getname(char* result, const char* result_maximum, int line, int column) const override {
+			return product_category[line];
+		}
+		int getmaximum() const override {
+			return sizeof(product_category) / sizeof(product_category[0]);
+		}
+	} test;
+	show_control(test);
+}
+
 static const char* get_text(char* result, const char* result_maximum, void* object) {
 	return (const char*)object;
 }
@@ -242,6 +254,7 @@ static void start_menu() {
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
+	{"Список", test_list},
 	{"Таблица с ячейками", test_grid},
 	{"Таблица ссылок", test_grid_ref},
 	{"Виджеты", test_widget},
