@@ -49,13 +49,6 @@ void list::rowhilite(const rect& rc, int index) const {
 			hilight(rc);
 		else if(index == current_hilite)
 			rectf(rc, colors::edit.mix(colors::window, 96));
-		else if(hilite_odd_lines) {
-			if(index & 1)
-				rectf(rc, colors::edit, 64);
-		}
-	} else if(hilite_odd_lines) {
-		if(index & 1)
-			rectf(rc, colors::edit, 64);
 	}
 }
 
@@ -117,12 +110,17 @@ void list::view(const rect& rcorigin) {
 		auto x1 = rc.x1 - origin_width, y1 = rc.y1;
 		auto x2 = rc.x2;
 		auto ix = origin;
+		auto hl = colors::border.mix(colors::window, 12);
 		while(true) {
 			if(y1 >= rc.y2)
 				break;
 			if(ix >= maximum)
 				break;
 			rect rcm = {x1, y1, x2, y1 + pixels_per_line};
+			if(hilite_odd_lines) {
+				if(ix & 1)
+					rectf(rcm, hl);
+			}
 			if(show_grid_lines)
 				line(rc.x1, rcm.y2 - 1, rc.x2, rcm.y2 - 1, colors::border);
 			row(rcm, ix);
