@@ -4,7 +4,7 @@
 using namespace draw::controls;
 
 void table::update_columns() {
-	int w1 = view_rect.width() - 2;
+	int w1 = view_rect.width() - 1;
 	int w2 = 0;
 	int c2 = 0;
 	const int min_width = 8;
@@ -90,7 +90,7 @@ int table::rowheader(const rect& rc) const {
 		}
 		// Нарисуем границу только когда она далеко от края
 		// Чтобы она была не видна, если ширина элемента впритык к краю.
-		if(r1.x2 < rc.x2 - 2)
+		if(r1.x2 < rc.x2 - 1)
 			line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
@@ -123,8 +123,8 @@ void table::row(const rect& rc, int index) const {
 			continue;
 		rect rt = {x1 + 4, rc.y1 + 4, x1 + pc->width - 4, rc.y2 - 4};
 		if(show_grid_lines) {
-			if(rt.x2 + 3 < rc.x2 - 2)
-				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 4, colors::border);
+			if(rt.x2 + 3 < rc.x2 - 1)
+				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
 		}
 		area(rt);
 		if(!select_full_row) {
@@ -236,7 +236,7 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 	te.show_border = false;
 	te.align = flags;
 	te.rctext.x2++;
-	auto r = te.editing({current_rect.x1, current_rect.y1, current_rect.x2 + 1, current_rect.y2 + 1});
+	auto r = te.editing({current_rect.x1, current_rect.y1, current_rect.x2, current_rect.y2});
 	setfocus(push_focus, true);
 	return r;
 }

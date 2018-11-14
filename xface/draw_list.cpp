@@ -35,7 +35,7 @@ void list::correction() {
 void list::hilight(const rect& rc) const {
 	auto focused = isfocused();
 	const color c1 = focused ? colors::edit : colors::edit.mix(colors::window, 192);
-	rect r1 = {rc.x1+1, rc.y1+1, rc.x2-1, rc.y2-1};
+	rect r1 = {rc.x1, rc.y1, rc.x2-1, rc.y2-1};
 	rectf(r1, c1); rectb(r1, c1);
 	if(focused)
 		rectx(r1, colors::text.mix(colors::form, 200));
@@ -43,20 +43,19 @@ void list::hilight(const rect& rc) const {
 }
 
 void list::rowhilite(const rect& rc, int index) const {
-	rect r1 = {rc.x1 + 1, rc.y1 + 1, rc.x2 - 1, rc.y2 - 1};
 	if(show_selection) {
-		area(rc);
+		area({rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1});
 		if(index == current)
 			hilight(rc);
 		else if(index == current_hilite)
-			rectf(r1, colors::edit.mix(colors::window, 96));
+			rectf(rc, colors::edit.mix(colors::window, 96));
 		else if(hilite_odd_lines) {
 			if(index & 1)
-				rectf(r1, colors::edit, 64);
+				rectf(rc, colors::edit, 64);
 		}
 	} else if(hilite_odd_lines) {
 		if(index & 1)
-			rectf(r1, colors::edit, 64);
+			rectf(rc, colors::edit, 64);
 	}
 }
 
@@ -85,8 +84,9 @@ void list::mouseselect(int id, bool pressed) {
 
 void list::view(const rect& rcorigin) {
 	current_rect.clear();
-	control::view(rcorigin);
 	rect rc = rcorigin;
+	control::view(rcorigin);
+	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
 	current_hilite = -1;
@@ -95,13 +95,13 @@ void list::view(const rect& rcorigin) {
 		return;
 	rect scroll = {0};
 	rect scrollh = {0};
-	lines_per_page = getlinesperpage(rcorigin.height());
+	lines_per_page = getlinesperpage(rc.height());
 	correction();
 	if(maximum > lines_per_page)
-		scroll.set(rcorigin.x2 - metrics::scroll, rcorigin.y1, rcorigin.x2, rcorigin.y2);
+		scroll.set(rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2);
 	auto maximum_width = getmaximumwidth();
 	if(maximum_width > rc.width())
-		scrollh.set(rcorigin.x1, rcorigin.y2 - metrics::scroll, rcorigin.x2, rcorigin.y2);
+		scrollh.set(rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2);
 	int rk = hot.key&CommandMask;
 	if(draw::areb(rc)) {
 		if(hot.mouse.y > rc.y1 && hot.mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
@@ -113,19 +113,18 @@ void list::view(const rect& rcorigin) {
 	}
 	if(true) {
 		draw::state push;
-		setclip(rcorigin);
-		int x1 = rc.x1;
-		int y1 = rc.y1;
-		int rw = rc.x2 - x1 + 1;
-		int ix = origin;
+		setclip(rc);
+		auto x1 = rc.x1 - origin_width, y1 = rc.y1;
+		auto x2 = rc.x2;
+		auto ix = origin;
 		while(true) {
 			if(y1 >= rc.y2)
 				break;
 			if(ix >= maximum)
 				break;
-			rect rcm = {x1 - origin_width, y1, rc.x1 + rw, y1 + pixels_per_line};
+			rect rcm = {x1, y1, x2, y1 + pixels_per_line};
 			if(show_grid_lines)
-				line(rcm.x1, rcm.y2 - 1, rcm.x2, rcm.y2 - 1, colors::border);
+				line(rc.x1, rcm.y2 - 1, rc.x2, rcm.y2 - 1, colors::border);
 			row(rcm, ix);
 			y1 += pixels_per_line;
 			ix++;

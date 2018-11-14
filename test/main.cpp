@@ -64,6 +64,36 @@ struct testinfo {
 	int				value;
 };
 
+struct cmd_value : runable {
+	
+	callback_proc	id;
+	void*			param;
+
+	constexpr cmd_value(callback_proc id, void* param) : id(id), param(param) {}
+	constexpr cmd_value(bool& value) : cmd_value(execute_bool, &value) {}
+
+	void execute() const override {
+		draw::execute(id, (int)param);
+	}
+
+	int	getid() const override {
+		return (int)param;
+	}
+
+
+	static void execute_bool() {
+		auto v = *((bool*)hot.param);
+		*((bool*)hot.param) = !v;
+	}
+
+};
+
+static int checkbox(int x, int y, int width, bool& value, const char* title, const char* tips = 0) {
+	return checkbox(x, y, width,
+		value ? Checked : 0, cmd_value(value), title)
+		+ metrics::padding;
+}
+
 static int button(int x, int y, int width, void(*proc)(), const char* title, const char* tips = 0) {
 	auto result = button(x, y, width, 0, cmd(proc), title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
@@ -82,6 +112,22 @@ static int show_control(controls::control& e) {
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
 		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
+		rc.y1 += e.toolbar(rc.x1, rc.y1, rc.width());
+		e.view(rc);
+		domodal();
+	}
+	return getresult();
+}
+
+static int show_table(controls::table& e) {
+	while(ismodal()) {
+		rect rc = {0, 0, getwidth(), getheight()};
+		rectf(rc, colors::form);
+		rc.offset(4 * 2);
+		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
+		rc.y2 -= checkbox(rc.x1, rc.y2 - draw::texth() - metrics::padding, rc.width(), e.show_grid_lines, "Показывть линии");
+		rc.y2 -= checkbox(rc.x1, rc.y2 - draw::texth() - metrics::padding, rc.width(), e.show_header, "Показывть заголовок");
+		rc.y2 -= checkbox(rc.x1, rc.y2 - draw::texth() - metrics::padding, rc.width(), e.hilite_odd_lines, "Подсвечивать нечетные рядки");
 		rc.y1 += e.toolbar(rc.x1, rc.y1, rc.width());
 		e.view(rc);
 		domodal();
@@ -129,7 +175,7 @@ static void test_grid() {
 	test.show_grid_lines = true;
 	test.read_only = false;
 	test.no_change_count = false;
-	show_control(test);
+	show_table(test);
 }
 
 static void test_grid_ref() {
@@ -144,7 +190,7 @@ static void test_grid_ref() {
 	test.show_grid_lines = true;
 	test.read_only = false;
 	test.no_change_count = false;
-	show_control(test);
+	show_table(test);
 }
 
 static void test_widget() {
