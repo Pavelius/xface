@@ -151,6 +151,25 @@ static void basic_drawing() {
 	settimer(0);
 }
 
+static void many_lines() {
+	draw::state push;
+	while(ismodal()) {
+		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		auto x = 100;
+		auto y = 100;
+		linw = 1;
+		line(x, y, x + 100, y + 100); y += 40; linw = 2;
+		line(x, y, x + 100, y + 100); y += 40; linw = 3;
+		line(x, y, x + 100, y + 100); y += 40; linw = 4;
+		line(x, y, x + 100, y + 100); y += 40; linw = 5;
+		line(x, y, x + 60, y + 100);
+		rectb({300, 100, 500, 300}, colors::green);
+		linw = 1.0;
+		button(getwidth() - 110, 10, 100, buttoncancel, "Отмена");
+		domodal();
+	}
+}
+
 static void test_grid() {
 	struct element {
 		const char*		name;
@@ -300,6 +319,7 @@ static void start_menu() {
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
+	{"Линии", many_lines},
 	{"Список", test_list},
 	{"Таблица с ячейками", test_grid},
 	{"Таблица ссылок", test_grid_ref},

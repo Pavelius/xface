@@ -985,7 +985,9 @@ static void linew(int x0, int y0, int x1, int y1, float wd) {
 void draw::line(int x0, int y0, int x1, int y1) {
 	if(!canvas)
 		return;
-	if(y0 == y1) {
+	if(linw != 1.0)
+		linew(x0, y0, x1, y1, linw);
+	else if(y0 == y1) {
 		if(!correct(x0, y0, x1, y1, clipping, false))
 			return;
 		set32(canvas->ptr(x0, y0), canvas->scanline, x1 - x0 + 1, 1, fore);
@@ -994,31 +996,27 @@ void draw::line(int x0, int y0, int x1, int y1) {
 			return;
 		set32(canvas->ptr(x0, y0), canvas->scanline, 1, y1 - y0 + 1, fore);
 	} else if(line_antialiasing) {
-		if(linw != 1.0)
-			linew(x0, y0, x1, y1, linw);
-		else {
-			int dx = iabs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-			int dy = iabs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-			int err = dx - dy, e2, x2; // error value e_xy
-			int ed = dx + dy == 0 ? 1 : isqrt(dx*dx + dy * dy);
-			for(;;) {
-				pixel(x0, y0, 255 * iabs(err - dx + dy) / ed);
-				e2 = err; x2 = x0;
-				if(2 * e2 >= -dx) // x step
-				{
-					if(x0 == x1) break;
-					if(e2 + dy < ed)
-						pixel(x0, y0 + sy, 255 * (e2 + dy) / ed);
-					err -= dy; x0 += sx;
-				}
-				if(2 * e2 <= dy) // y step
-				{
-					if(y0 == y1)
-						break;
-					if(dx - e2 < ed)
-						pixel(x2 + sx, y0, 255 * (dx - e2) / ed);
-					err += dx; y0 += sy;
-				}
+		int dx = iabs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+		int dy = iabs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+		int err = dx - dy, e2, x2; // error value e_xy
+		int ed = dx + dy == 0 ? 1 : isqrt(dx*dx + dy * dy);
+		for(;;) {
+			pixel(x0, y0, 255 * iabs(err - dx + dy) / ed);
+			e2 = err; x2 = x0;
+			if(2 * e2 >= -dx) // x step
+			{
+				if(x0 == x1) break;
+				if(e2 + dy < ed)
+					pixel(x0, y0 + sy, 255 * (e2 + dy) / ed);
+				err -= dy; x0 += sx;
+			}
+			if(2 * e2 <= dy) // y step
+			{
+				if(y0 == y1)
+					break;
+				if(dx - e2 < ed)
+					pixel(x2 + sx, y0, 255 * (dx - e2) / ed);
+				err += dx; y0 += sy;
 			}
 		}
 	} else {
