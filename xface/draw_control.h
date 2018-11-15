@@ -213,7 +213,7 @@ struct scrollable : control {
 	pointl					maximum;
 	point					wheels;
 	scrollable();
-	rect					centerview(rect rc);
+	rect					centerview(const rect& rc);
 	virtual void			invalidate();
 	virtual void			redraw(rect rc) {}
 	void					view(const rect& rc) override;

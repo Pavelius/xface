@@ -94,7 +94,7 @@ void scrollable::view(const rect& rcc) {
 	}
 }
 
-rect draw::controls::scrollable::centerview(rect rc) {
+rect draw::controls::scrollable::centerview(const rect& rc) {
 	rect rs = rc;
 	if(rc.width() > maximum.x) {
 		rs.x1 = rc.x1 + (rc.width() - maximum.x) / 2;
