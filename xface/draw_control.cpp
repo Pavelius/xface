@@ -54,6 +54,20 @@ void control::mouseinput(unsigned id, point position) {
 	case MouseLeft:
 		setfocus((int)this, true);
 		break;
+	case MouseRight:
+		if(true) {
+			auto cm = getcommands();
+			if(cm) {
+				auto pm = createmenu();
+				if(pm) {
+					pm->start();
+					pm->render(getcommands());
+					pm->finish();
+					delete pm;
+				}
+			}
+		}
+		break;
 	}
 }
 

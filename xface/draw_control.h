@@ -61,7 +61,9 @@ struct control {
 			virtual ~builder() {}
 			virtual void	add(const control::command& cmd) = 0;
 			virtual void	addseparator() = 0;
+			virtual const cmd* finish() const { return 0; }
 			void			render(const control::command* commands);
+			virtual void	start() const {}
 		private:
 			void			render(const control::command* commands, bool& separator, int& count);
 		};
@@ -87,7 +89,7 @@ struct control {
 	static const sprite*	standart_tree;
 	constexpr control() : show_border(true), show_background(true) {}
 	virtual ~control() {}
-	command::builder*		createmenu(const char* id);
+	command::builder*		createmenu();
 	void					execute(callback proc) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }

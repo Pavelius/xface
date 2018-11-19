@@ -25,6 +25,6 @@ struct menu_builder : control::command::builder {
 
 };
 
-control::command::builder* control::createmenu(const char* id) {
+control::command::builder* control::createmenu() {
 	return new menu_builder(this);
 }
