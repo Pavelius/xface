@@ -11,7 +11,7 @@ char*					paste();
 namespace draw {
 enum column_size_s : unsigned char {
 	SizeDefault,
-	SizeResized, SizeFixed, SizeAuto,
+	SizeResized, SizeFixed, SizeInner, SizeAuto,
 };
 struct runable {
 	virtual int			getid() const = 0;
@@ -79,12 +79,14 @@ struct control {
 	bool					show_border;
 	bool					show_background;
 	static const sprite*	standart_toolbar;
+	static const sprite*	standart_tree;
 	constexpr control() : show_border(true), show_background(true) {}
 	virtual ~control() {}
 	void					execute(callback proc) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
+	virtual const sprite*	gettreeimages() const { return standart_tree; }
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool			isfocusable() const { return true; }
 	bool					isfocused() const;
@@ -112,6 +114,10 @@ struct visual {
 		void (T::*pr)(const rect& rc, int line, int column) const,
 		void (U::*pc)(const rect& rc, int line, int column)) : id(id), name(name),
 		render((proc_render)pr), change((proc_change)pc),
+		size(sz), minimal_width(mw), default_width(dw) {}
+	template<typename T> visual(const char* id, const char* name, int mw, int dw, column_size_s sz,
+		void (T::*pr)(const rect& rc, int line, int column) const) : id(id), name(name),
+		render((proc_render)pr), change((proc_change)0),
 		size(sz), minimal_width(mw), default_width(dw) {}
 	constexpr visual(const visual* vs) : id("*"), name(""), change(0), minimal_width(0),
 		default_width(0), child(vs), size(SizeDefault) {}
@@ -188,6 +194,7 @@ struct table : list {
 	void					changetext(const rect& rc, int line, int column);
 	void					checkbox(const rect& rc, int line, int column) const;
 	virtual void			clickcolumn(int column) const {}
+	void					fieldimage(const rect& rc, int line, int column) const;
 	void					fieldnumber(const rect& rc, int line, int column) const;
 	void					fieldpercent(const rect& rc, int line, int column) const;
 	void					fieldtext(const rect& rc, int line, int column) const;

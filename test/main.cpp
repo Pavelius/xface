@@ -179,6 +179,7 @@ static void test_grid() {
 		const char*		name;
 		gender_s		gender;
 		alignment_s		alignment;
+		char			image;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, name, text_type),
@@ -189,7 +190,9 @@ static void test_grid() {
 	elements.add({"Pavel", Male, ChaoticEvil});
 	elements.add({"Olga", Female, ChaoticGood});
 	elements.add({"Valentin", Male, NeutralGood});
+	elements.add({"Jorgun", Male, LawfulGood, 1});
 	controls::grid test(element_type, elements);
+	test.addcol("image", 0, "image");
 	test.addcol("name", "Наименование", "text");
 	test.addcol("gender", "Пол", "ref");
 	test.addcol("alignment", "Мировозрение", "ref");

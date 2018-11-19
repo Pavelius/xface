@@ -1,3 +1,4 @@
+#include "crt.h"
 #include "draw_control.h"
 
 using namespace draw;
@@ -7,6 +8,8 @@ static control*	current_hilite;
 static control*	current_focus;
 static control::callback current_execute;
 static control* current_execute_control;
+const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
+const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 
 static struct control_plugin : draw::plugin {
 

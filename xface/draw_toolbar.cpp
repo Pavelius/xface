@@ -1,10 +1,7 @@
-#include "crt.h"
 #include "draw_control.h"
 
 using namespace draw;
 using namespace draw::controls;
-
-const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 
 struct toolbar_builder : control::command::builder {
 

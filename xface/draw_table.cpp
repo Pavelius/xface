@@ -66,11 +66,17 @@ int table::rowheader(const rect& rc) const {
 	color active = colors::button.mix(colors::edit, 128);
 	color a1 = active.lighten();
 	color a2 = active.darken();
-	auto x1 = rch.x1 - origin_width;
+	rect r1;
+	r1.x1 = rch.x1 - origin_width;
+	r1.x2 = r1.x1;
+	r1.y1 = rch.y1;
+	r1.y2 = rch.y2;
 	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
 			continue;
-		rect r1 = {x1, rch.y1, x1 + columns[i].width, rch.y2};
+		r1.x2 = r1.x2 + columns[i].width;
+		if(columns[i].size == SizeInner)
+			continue;
 		auto a = area(r1);
 		if(a == AreaHilited) {
 			if(columns[i].tips && columns[i].tips[0])
@@ -105,7 +111,7 @@ int table::rowheader(const rect& rc) const {
 				drag::value = i;
 			}
 		}
-		x1 += columns[i].width;
+		r1.x1 = r1.x2;
 	}
 	return height;
 }
@@ -122,7 +128,7 @@ void table::row(const rect& rc, int index) const {
 		if(!pc->isvisible())
 			continue;
 		rect rt = {x1 + 4, rc.y1 + 4, x1 + pc->width - 4, rc.y2 - 4};
-		if(show_grid_lines) {
+		if(show_grid_lines && columns[i].size!=SizeInner) {
 			if(rt.x2 + 3 < rc.x2 - 1)
 				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
 		}
@@ -292,6 +298,13 @@ void table::fieldtext(const rect& rc, int line, int column) const {
 		draw::text(rc, p, AlignLeft);
 }
 
+void table::fieldimage(const rect& rc, int line, int column) const {
+	auto v = getnumber(line, column);
+	auto s = gettreeimages();
+	if(s)
+		image(rc.x1 + rc.width() / 2, rc.y1 + rc.height() / 2, s, v, 0);
+}
+
 void table::fieldnumber(const rect& rc, int line, int column) const {
 	char temp[32];
 	auto v = getnumber(line, column);
@@ -311,6 +324,7 @@ const visual* table::getvisuals() const {
 	{"text", "Текстовое поле", 8, 200, SizeResized, &table::fieldtext, &table::changetext},
 	{"number", "Числовое поле", 8, 80, SizeResized, &table::fieldnumber, &table::changenumber},
 	{"percent", "Процент", 40, 60, SizeResized, &table::fieldpercent, &table::changenumber},
+	{"image", "Изображение", 20, 20, SizeInner, &table::fieldimage},
 	{}};
 	return elements;
 }
