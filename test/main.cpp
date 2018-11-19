@@ -221,9 +221,14 @@ static void test_grid_ref() {
 
 static void test_tree() {
 	controls::tree test(cultivated_land_manager.fields);
+	test.select_mode = SelectText;
+	test.addcol("image", 0, "image", SizeInner);
 	test.addcol("name", "Наименование", "text", SizeAuto);
 	test.addcol("cult_land", "Обрабатывается", "number");
 	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
+	test.add(cultivated_land_manager.get(0), 0);
+	test.add(cultivated_land_manager.get(1), 1, 1, 0, 1);
+	test.add(cultivated_land_manager.get(2), 1, 1, 0, 1);
 	show_table(test);
 }
 

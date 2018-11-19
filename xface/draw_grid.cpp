@@ -239,7 +239,7 @@ bool grid::sortds(bool run) {
 
 const visual* grid::getvisuals() const {
 	static visual elements[] = {{table::getvisuals()},
-	{"ref", "—сылка", 8, 200, SizeResized, &table::fieldtext, &grid::changeref},
+	{"ref", "—сылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
 	{}};
 	return elements;
 }

@@ -5,25 +5,21 @@ using namespace draw::controls;
 
 #define TIGroup 1
 
-int	tree::findbyparam(int value) const {
+int	tree::find(const void* value) const {
 	auto count = getcount();
 	for(unsigned i = 0; i < count; i++) {
-		if(((element*)array::get(i))->param==value)
+		if(((element*)array::get(i))->object==value)
 			return i;
 	}
 	return -1;
 }
 
 void* tree::get(int index) const {
-	return (void*)((element*)array::get(index))->param;
+	return (void*)((element*)array::get(index))->object;
 }
 
 int tree::getlevel(int index) const {
 	return ((element*)array::get(index))->level;
-}
-
-int	tree::getparam(int index) const {
-	return ((element*)array::get(index))->param;
 }
 
 int	tree::getimage(int index) const {
@@ -41,6 +37,18 @@ int tree::getroot(int index) const {
 			return index;
 		index = parent;
 	}
+}
+
+int	tree::getnumber(int line, int column) const {
+	if(columns[column].id) {
+		if(strcmp(columns[column].id, "image") == 0)
+			return getimage(line);
+		else if(strcmp(columns[column].id, "type") == 0)
+			return gettype(line);
+		else if(strcmp(columns[column].id, "level") == 0)
+			return getlevel(line);
+	}
+	return grid::getnumber(line, column);
 }
 
 int tree::getparent(int index) const {
@@ -177,16 +185,17 @@ void tree::open(int max_level) {
 //	else
 //		amem::insert(++index, &e);
 //}
-//
-//void tree::addrow(unsigned param, unsigned char flags, unsigned char type, unsigned char image) {
-//	element e;
-//	e.param = param;
-//	e.image = image;
-//	e.flags = flags;
-//	e.type = type;
-//	addrow(e);
-//}
-//
+
+void tree::add(void* object, unsigned char level, unsigned char image, unsigned char type, unsigned char flags) {
+	element e;
+	e.object = object;
+	e.image = image;
+	e.flags = flags;
+	e.level = level;
+	e.type = type;
+	array::add(&e);
+}
+
 //void tree::addrow(void* object) {
 //	if(getsize() != sizeof(element))
 //		return;

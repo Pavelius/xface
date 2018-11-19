@@ -46,22 +46,22 @@ struct tree : grid {
 		unsigned char		flags;
 		unsigned char		type;
 		unsigned char		image;
-		unsigned			param;
+		void*				object;
 	};
 	bool					sort_rows_by_name;
 	constexpr tree(const bsreq* type, unsigned size = sizeof(element)) : grid(type, size), sort_rows_by_name(false) {}
+	void					add(void* object, unsigned char level, unsigned char image = 0, unsigned char type = 0, unsigned char flags = 0);
 	void					collapse(int index);
 	virtual void			expand(int index, int level) {}
-	int						findbyparam(int value) const;
+	int						find(const void* value) const;
 	void*					get(int index) const override;
 	int						getimage(int index) const;
 	int						getlastchild(int index) const;
-	int						getlevel(int index) const;
-	int						getparam(int index) const;
+	int						getlevel(int index) const override;
+	int						getnumber(int line, int column) const override;
 	int						getparent(int index) const;
 	int						getroot(int index) const;
 	int						gettype(int index) const;
-	//bool					haselement(int param) const;
 	bool					isgroup(int index) const override;
 	void					open(int max_level);
 	void					toggle(int index);

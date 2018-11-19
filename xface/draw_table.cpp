@@ -138,30 +138,47 @@ int table::rowheader(const rect& rc) const {
 	return height;
 }
 
-void table::row(const rect& rc, int index) const {
+void table::row(const rect& rc, int index) {
 	char temp[260];
 	area(rc);
-	if(select_full_row)
+	if(select_mode==SelectRow)
 		rowhilite(rc, index);
 	auto current_column = getcolumn();
 	auto x1 = rc.x1;
+	auto need_tree = true;
+	auto level_ident = 0;
 	for(unsigned i = 0; i < columns.count; i++) {
 		auto pc = columns.data + i;
 		if(!pc->isvisible())
 			continue;
+		if(need_tree) {
+			auto level = getlevel(index);
+			if(level) {
+				int dy = getident();
+				level_ident = level * dy;
+				x1 = x1 + level_ident;
+				treemark({x1 - dy, rc.y1, x1, rc.y2}, index, level);
+			}
+			need_tree = false;
+		}
 		rect rt = {x1 + 4, rc.y1 + 4, x1 + pc->width - 4, rc.y2 - 4};
+		if(level_ident) {
+			if(columns[i].size != SizeInner && columns[i].size != SizeFixed) {
+				auto mx = rt.width();
+				if(mx > level_ident)
+					mx = level_ident;
+				rt.x2 -= mx;
+				level_ident -= mx;
+			}
+		}
 		if(show_grid_lines && columns[i].size != SizeInner) {
 			if(rt.x2 + 3 < rc.x2 - 1)
 				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
 		}
 		area(rt);
-		if(!select_full_row) {
-			if(index == current && i == current_column)
-				hilight({rt.x1 - 4, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3});
-		}
 		temp[0] = 0;
 		(this->*pc->method->render)(rt, index, i);
-		x1 += pc->width;
+		x1 += rt.width() + 8;
 	}
 }
 
@@ -306,45 +323,72 @@ bool table::change(bool run) {
 	return true;
 }
 
-void table::checkbox(const rect& rc, int line, int column) const {
+void table::cellbox(const rect& rc, int line, int column) {
 	auto number_value = getnumber(line, column);
 	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, number_value ? Check : 0, ":check");
 }
 
-void table::fieldtext(const rect& rc, int line, int column) const {
-	char temp[260];
-	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, line, column);
-	if(p)
-		draw::text(rc, p, AlignLeft);
+void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {
+	if(line == current && column == current_column) {
+		rect rch = {rc.x1 - 4, rc.y1 - 4, rc.x2 + 3, rc.y2 + 3};
+		switch(select_mode) {
+		case SelectCell:
+			hilight(rch);
+			break;
+		case SelectText:
+			switch(aling) {
+			case AlignRight:
+			case AlignRightCenter:
+			case AlignRightBottom:
+				hilight({rc.x2 - 3 - draw::textw(text), rc.y1 - 4, rc.x2 + 3, rc.y2 + 3}, &rch);
+				break;
+			default:
+				hilight({rc.x1 - 4, rc.y1 - 4, rc.x1 + draw::textw(text) + 5, rc.y2 + 3}, &rch);
+				break;
+			}
+			break;
+		}
+	}
 }
 
-void table::fieldimage(const rect& rc, int line, int column) const {
+void table::celltext(const rect& rc, int line, int column) {
+	char temp[260];
+	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, line, column);
+	if(p) {
+		cellhilite(rc, line, column, p, AlignLeft);
+		draw::text(rc, p, AlignLeft);
+	}
+}
+
+void table::cellimage(const rect& rc, int line, int column) {
 	auto v = getnumber(line, column);
 	auto s = gettreeimages();
 	if(s)
 		image(rc.x1 + rc.width() / 2, rc.y1 + rc.height() / 2, s, v, 0);
 }
 
-void table::fieldnumber(const rect& rc, int line, int column) const {
+void table::cellnumber(const rect& rc, int line, int column) {
 	char temp[32];
 	auto v = getnumber(line, column);
 	szprints(temp, zendof(temp), "%1i", v);
+	cellhilite(rc, line, column, temp, AlignRight);
 	draw::text(rc, temp, AlignRight);
 }
 
-void table::fieldpercent(const rect& rc, int line, int column) const {
+void table::cellpercent(const rect& rc, int line, int column) {
 	char temp[32];
 	auto v = getnumber(line, column);
 	szprints(temp, zendof(temp), "%1i%%", v);
+	cellhilite(rc, line, column, temp, AlignRight);
 	draw::text(rc, temp, AlignRight);
 }
 
 const visual* table::getvisuals() const {
-	static visual elements[] = {{"checkbox", "Пометка", 20, 20, SizeFixed, &table::checkbox, &table::changecheck},
-	{"text", "Текстовое поле", 8, 200, SizeResized, &table::fieldtext, &table::changetext},
-	{"number", "Числовое поле", 8, 80, SizeResized, &table::fieldnumber, &table::changenumber},
-	{"percent", "Процент", 40, 60, SizeResized, &table::fieldpercent, &table::changenumber},
-	{"image", "Изображение", 20, 20, SizeInner, &table::fieldimage},
+	static visual elements[] = {{"checkbox", "Пометка", 20, 20, SizeFixed, &table::cellbox, &table::changecheck},
+	{"text", "Текстовое поле", 8, 200, SizeResized, &table::celltext, &table::changetext},
+	{"number", "Числовое поле", 8, 80, SizeResized, &table::cellnumber, &table::changenumber},
+	{"percent", "Процент", 40, 60, SizeResized, &table::cellpercent, &table::changenumber},
+	{"image", "Изображение", 20, 20, SizeInner, &table::cellimage},
 	{}};
 	return elements;
 }

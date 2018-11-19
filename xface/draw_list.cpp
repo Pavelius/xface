@@ -32,14 +32,16 @@ void list::correction() {
 	}
 }
 
-void list::hilight(const rect& rc) const {
+void list::hilight(const rect& rc, const rect* p_current_rect) const {
+	if(!p_current_rect)
+		p_current_rect = &rc;
 	auto focused = isfocused();
 	const color c1 = focused ? colors::edit : colors::edit.mix(colors::window, 192);
 	rect r1 = {rc.x1, rc.y1, rc.x2-1, rc.y2-1};
 	rectf(r1, c1); rectb(r1, c1);
 	if(focused)
 		rectx(r1, colors::text.mix(colors::form, 200));
-	const_cast<list*>(this)->current_rect = rc;
+	const_cast<list*>(this)->current_rect = *p_current_rect;
 }
 
 void list::rowhilite(const rect& rc, int index) const {
@@ -52,7 +54,7 @@ void list::rowhilite(const rect& rc, int index) const {
 	}
 }
 
-void list::row(const rect& rc, int index) const {
+void list::row(const rect& rc, int index) {
 	char temp[260]; temp[0] = 0;
 	rowhilite(rc, index);
 	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
@@ -138,14 +140,6 @@ void list::view(const rect& rcorigin) {
 			if(ix >= maximum)
 				break;
 			rect rcm = {x1, y1, x2, y1 + pixels_per_line};
-			auto level = getlevel(ix);
-			if(level) {
-				int dy = rc.height() - 2;
-				rcm.x1 = rcm.x1 + (level - 1) * dy;
-				rcm.x2 = rcm.x1 + dy;
-				treemark(rcm, ix, level);
-				rcm.x1 = rcm.x2;
-			}
 			if(hilite_odd_lines) {
 				if(ix & 1)
 					rectf(rcm, hl);
