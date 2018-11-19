@@ -143,6 +143,7 @@ struct list : control {
 	void					ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
 	int						find(int line, int column, const char* name, int lenght = -1) const;
 	virtual int				getcolumn() const { return 0; } // Get current column
+	virtual int				getlevel(int index) const { return 0; } // get row ident in levels
 	inline int				getline() const { return current; } // get current line
 	int						getlinesperpage(int height) const { return height / pixels_per_line; }
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const { return 0; }
@@ -151,6 +152,8 @@ struct list : control {
 	static int				getrowheight(); // Get default row height for any List Control
 	virtual int				getwidth(int column) const { return 0; } // Get column width
 	void					hilight(const rect& rc) const;
+	virtual bool			isgroup(int index) const { return false; }
+	bool					isopen(int index) const;
 	bool					keyinput(unsigned id) override;
 	void					mousehiliting(const rect& rc, point mouse);
 	virtual void			select(int index, int column);
@@ -159,6 +162,7 @@ struct list : control {
 	virtual void			mousewheel(unsigned id, point position, int step) override;
 	virtual void			row(const rect& rc, int index) const;
 	virtual void			rowhilite(const rect& rc, int index) const;
+	void					treemark(rect rc, int index, int level) const;
 	void					view(const rect& rc) override;
 };
 struct table : list {

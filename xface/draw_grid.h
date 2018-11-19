@@ -43,10 +43,28 @@ struct gridref : grid {
 struct tree : grid {
 	struct element {
 		unsigned char		level;
+		unsigned char		flags;
+		unsigned char		type;
 		unsigned char		image;
-		unsigned short		flags;
-		void*				param;
+		unsigned			param;
 	};
+	bool					sort_rows_by_name;
+	constexpr tree(const bsreq* type, unsigned size = sizeof(element)) : grid(type, size), sort_rows_by_name(false) {}
+	void					collapse(int index);
+	virtual void			expand(int index, int level) {}
+	int						findbyparam(int value) const;
+	void*					get(int index) const override;
+	int						getimage(int index) const;
+	int						getlastchild(int index) const;
+	int						getlevel(int index) const;
+	int						getparam(int index) const;
+	int						getparent(int index) const;
+	int						getroot(int index) const;
+	int						gettype(int index) const;
+	//bool					haselement(int param) const;
+	bool					isgroup(int index) const override;
+	void					open(int max_level);
+	void					toggle(int index);
 };
 }
 }

@@ -15,8 +15,12 @@ static unsigned check_button = 0;
 
 extern bsdata cultivated_land_manager;
 
-static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phone", "Smartphone", "Pencil", "Keyboard",
-"Car", "Bus", "Flashmemory"};
+static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phone", "Smartphone", "Pencil",
+"Keyboard", "Mouse", "Headphones",
+"Car", "Bus", "Flashmemory",
+"Mute", "Guitar", "Piano",
+"Soldier", "Heavy Soldier", "Sniper", "Commando"
+};
 
 enum alignment_s : unsigned char {
 	LawfulGood, NeutralGood, ChaoticGood,
@@ -65,7 +69,7 @@ struct testinfo {
 };
 
 struct cmd_value : runable {
-	
+
 	callback_proc	id;
 	void*			param;
 
@@ -212,6 +216,14 @@ static void test_grid_ref() {
 	show_table(test);
 }
 
+static void test_tree() {
+	controls::tree test(cultivated_land_manager.fields);
+	test.addcol("name", "Наименование", "text", SizeAuto);
+	test.addcol("cult_land", "Обрабатывается", "number");
+	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
+	show_table(test);
+}
+
 static void test_widget() {
 	struct element {
 		const char*		surname;
@@ -323,6 +335,7 @@ static void start_menu() {
 	{"Список", test_list},
 	{"Таблица с ячейками", test_grid},
 	{"Таблица ссылок", test_grid_ref},
+	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
 	{"Перетаскивание", test_drag_drop},
 	{0}};

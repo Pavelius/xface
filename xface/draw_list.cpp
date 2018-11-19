@@ -75,6 +75,27 @@ void list::mouseselect(int id, bool pressed) {
 		select(current_hilite, getcolumn());
 }
 
+bool list::isopen(int index) const {
+	return (index < getmaximum() - 1) ? (getlevel(index + 1) > getlevel(index)) : false;
+}
+
+void list::treemark(rect rc, int index, int level) const {
+	if(!isgroup(index))
+		return;
+	color c1 = colors::text;
+	auto count = getmaximum();
+	auto isopen = list::isopen(index);
+	int x = rc.x1 + rc.width() / 2;
+	int y = rc.y1 + rc.height() / 2 - 1;
+	areas a = area(rc);
+	if(a == AreaHilitedPressed)
+		circlef(x, y, 6, colors::window.mix(colors::button, 196));
+	circle(x, y, 6, c1);
+	line(x - 4, y, x + 4, y, c1);
+	if(!isopen)
+		line(x, y - 4, x, y + 4, c1);
+}
+
 void list::view(const rect& rcorigin) {
 	current_rect.clear();
 	rect rc = rcorigin;
@@ -117,6 +138,14 @@ void list::view(const rect& rcorigin) {
 			if(ix >= maximum)
 				break;
 			rect rcm = {x1, y1, x2, y1 + pixels_per_line};
+			auto level = getlevel(ix);
+			if(level) {
+				int dy = rc.height() - 2;
+				rcm.x1 = rcm.x1 + (level - 1) * dy;
+				rcm.x2 = rcm.x1 + dy;
+				treemark(rcm, ix, level);
+				rcm.x1 = rcm.x2;
+			}
 			if(hilite_odd_lines) {
 				if(ix & 1)
 					rectf(rcm, hl);

@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="archive.cpp" />
+    <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="requisit.cpp" />
     <ClCompile Include="bsdata.cpp" />
     <ClCompile Include="bsreq.cpp" />
