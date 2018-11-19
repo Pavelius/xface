@@ -27,7 +27,7 @@ void table::update_columns() {
 		int d1 = w1 - w2;
 		int d2 = d1 / c2;
 		for(auto& e : columns) {
-			if(e.size==SizeAuto) {
+			if(e.size == SizeAuto) {
 				if(d2 < d1)
 					e.width = min_width + d2;
 				else {
@@ -37,6 +37,25 @@ void table::update_columns() {
 			}
 		}
 	}
+	current_column = getvalid(current_column, 1);
+}
+
+int	table::getvalid(int column, int direction) const {
+	auto start = column - direction;
+	if(!columns.count)
+		return 0;
+	for(; start != column; column += direction) {
+		if(column < 0)
+			column = columns.count - 1;
+		if((unsigned)column >= columns.count)
+			column = 0;
+		if(!columns[column].isvisible())
+			continue;
+		if(columns[column].size == SizeInner)
+			continue;
+		break;
+	}
+	return column;
 }
 
 void table::select(int index, int column) {
@@ -48,7 +67,7 @@ void table::mouseselect(int id, bool pressed) {
 	if(current_hilite == -1 || current_hilite_column == -1)
 		return;
 	if(pressed)
-		select(current_hilite, current_hilite_column);
+		select(current_hilite, getvalid(current_hilite_column));
 }
 
 int table::rowheader(const rect& rc) const {
@@ -128,7 +147,7 @@ void table::row(const rect& rc, int index) const {
 		if(!pc->isvisible())
 			continue;
 		rect rt = {x1 + 4, rc.y1 + 4, x1 + pc->width - 4, rc.y2 - 4};
-		if(show_grid_lines && columns[i].size!=SizeInner) {
+		if(show_grid_lines && columns[i].size != SizeInner) {
 			if(rt.x2 + 3 < rc.x2 - 1)
 				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
 		}
@@ -197,11 +216,11 @@ bool table::keyinput(unsigned id) {
 	switch(id) {
 	case KeyLeft:
 		if(current_column > 0)
-			current_column--;
+			current_column = getvalid(current_column - 1, -1);
 		break;
 	case KeyRight:
 		if(current_column < current_column_maximum)
-			current_column++;
+			current_column = getvalid(current_column + 1);
 		break;
 	default: return list::keyinput(id);
 	}

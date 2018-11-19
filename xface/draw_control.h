@@ -205,6 +205,7 @@ struct table : list {
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	virtual int				gettotal(int column) const { return 0; }
 	virtual const char*		gettotal(char* result, const char* result_maximum, int column) const { return 0; }
+	int						getvalid(int column, int direction = 1) const;
 	virtual const visual*	getvisuals() const;
 	bool					keyinput(unsigned id) override;
 	void					mouseselect(int id, bool pressed) override;
