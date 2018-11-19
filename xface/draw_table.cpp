@@ -41,18 +41,21 @@ void table::update_columns() {
 }
 
 int	table::getvalid(int column, int direction) const {
-	auto start = column - direction;
-	if(!columns.count)
-		return 0;
-	for(; start != column; column += direction) {
-		if(column < 0)
-			column = columns.count - 1;
-		if((unsigned)column >= columns.count)
-			column = 0;
-		if(!columns[column].isvisible())
+	unsigned count = 0;
+	while(true) {
+		if(count >= columns.count)
+			return current_column;
+		if(column < 0 || (unsigned)column >= columns.count)
+			return current_column;
+		if(!columns[column].isvisible()
+			|| columns[column].size == SizeInner) {
+			if(direction)
+				column += direction;
+			else
+				column += 1;
+			count++;
 			continue;
-		if(columns[column].size == SizeInner)
-			continue;
+		}
 		break;
 	}
 	return column;
@@ -215,12 +218,10 @@ void table::view(const rect& rc) {
 bool table::keyinput(unsigned id) {
 	switch(id) {
 	case KeyLeft:
-		if(current_column > 0)
-			current_column = getvalid(current_column - 1, -1);
+		current_column = getvalid(current_column - 1, -1);
 		break;
 	case KeyRight:
-		if(current_column < current_column_maximum)
-			current_column = getvalid(current_column + 1);
+		current_column = getvalid(current_column + 1);
 		break;
 	default: return list::keyinput(id);
 	}
