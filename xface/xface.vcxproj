@@ -165,6 +165,7 @@
     <ClCompile Include="win_clipboard.cpp" />
     <ClCompile Include="win_draw.cpp" />
     <ClCompile Include="win_io_file.cpp" />
+    <ClCompile Include="win_menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h" />

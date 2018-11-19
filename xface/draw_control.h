@@ -57,6 +57,8 @@ struct control {
 	typedef bool			(control::*callback)(bool run);
 	struct command {
 		struct builder {
+			builder() = default;
+			virtual ~builder() {}
 			virtual void	add(const control::command& cmd) = 0;
 			virtual void	addseparator() = 0;
 			void			render(const control::command* commands);
@@ -85,6 +87,7 @@ struct control {
 	static const sprite*	standart_tree;
 	constexpr control() : show_border(true), show_background(true) {}
 	virtual ~control() {}
+	command::builder*		createmenu(const char* id);
 	void					execute(callback proc) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }

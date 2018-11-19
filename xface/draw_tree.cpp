@@ -195,11 +195,3 @@ void tree::add(void* object, unsigned char level, unsigned char image, unsigned 
 	e.type = type;
 	array::add(&e);
 }
-
-//void tree::addrow(void* object) {
-//	if(getsize() != sizeof(element))
-//		return;
-//	element e = {0};
-//	e.param = (int)object;
-//	rows.add(&e);
-//}

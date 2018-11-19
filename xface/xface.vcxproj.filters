@@ -183,6 +183,9 @@
     <ClCompile Include="draw_control.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="win_menu.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="crt.h">
