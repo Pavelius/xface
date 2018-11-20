@@ -3,112 +3,109 @@
 #include "crt.h"
 #include "requisit.h"
 
-namespace compiler {
-//struct archive {
-//	struct header {
-//		char		signature[4];
-//		char		version[4];
-//		void		set(const char* v) { signature[0] = v[0]; signature[1] = v[1]; signature[2] = v[2]; signature[3] = 0; }
-//		void		set(int v1, int v2) { version[0] = v1 + 0x30; version[1] = '.'; version[2] = v2 + 0x30; version[3] = 0; }
-//	};
-//	struct placement {
-//		unsigned	offset;
-//		unsigned	count;
-//	};
-//	struct file : header {
-//		placement	strings;
-//		placement	requisits;
-//	};
-//};
-}
-
 using namespace compiler;
 
-requisit compiler::number[1];
-requisit compiler::pointer[1];
-requisit compiler::text[1];
-requisit compiler::object[1]; // All types get this type parent
-
-unsigned string::add(const char* v) {
-	if(!v || v[0]==0)
-		return 0xFFFFFFFF;
-	if(index.count) {
-		for(unsigned i = 0; i < index.count; i++) {
-			if(strcmp(data.data + index.data[i], v) == 0)
-				return i;
-		}
+namespace compiler {
+const unsigned	pointer_size = sizeof(void*);
+struct serial {
+	char			signature[4];
+	void set(const char* v) {
+		signature[0] = v[0];
+		signature[1] = v[1];
+		signature[2] = v[2];
+		signature[3] = 0;
 	}
-	index.add(data.count);
+};
+struct classtype {
+	unsigned		id; // Can be null
+	unsigned		type; // Can be null
+	unsigned		size;
+};
+struct requisit {
+	unsigned		id; // Can be null
+	unsigned		parent;
+	unsigned		type;
+	unsigned		count;
+	unsigned		size;
+	unsigned		offset;
+	unsigned getlenght() const {
+		return size * count;
+	}
+};
+}
+
+unsigned manager::get(const char* v) {
+	if(!v || v[0] == 0)
+		return Null;
+	for(unsigned i = 0; i < strings.count; i++) {
+		if(strcmp(section_strings.data + strings.data[i], v) == 0)
+			return i;
+	}
+	strings.reserve();
+	strings.data[strings.count] = section_strings.count;
 	auto n = zlen(v);
-	data.reserve(data.count + n + 1);
-	memcpy(data.data + data.count, v, n + 1);
-	data.count += n + 1;
-	return index.count - 1;
+	section_strings.reserve(section_strings.count + n + 1);
+	memcpy(section_strings.data + section_strings.count, v, n + 1);
+	section_strings.count += n + 1;
+	return strings.count++;
 }
 
-const char* string::get(unsigned value) const {
-	return (value < index.count) ? (char*)data.data + ((unsigned*)index.data)[value] : "";
+unsigned manager::getsize(unsigned v) const {
+	return requisits.data[v].size;
 }
 
-void requisit::clear() {
-	memset(this, 0, sizeof(requisit));
+unsigned manager::create(const char* name) {
+	classes.reserve();
+	auto p = classes.data + (classes.count++);
+	p->id = get(name);
+	return p - classes.data;
 }
 
-bool requisit::isobject() const {
-	for(auto p = parent; p; p = p->parent)
-		if(p == object)
-			return true;
-	return false;
-}
-
-requisit* manager::create(const char* name) {
-	auto p = requisits.add();
-	auto id = strings.add(name);
-	p->clear();
-	p->id = id;
-	p->parent = object;
-	return p;
-}
-
-requisit* manager::add(requisit* parent, const char* name, requisit* type) {
-	auto p = requisits.add();
-	auto id = strings.add(name);
-	p->clear();
-	p->id = id;
+unsigned manager::add(unsigned parent, const char* name, unsigned type, unsigned count, unsigned size) {
+	requisits.reserve();
+	auto p = requisits.data + (requisits.count++);
+	p->id = get(name);
 	p->parent = parent;
 	p->type = type;
-	return p;
-}
-
-requisit* manager::reference(const requisit* req) {
-	for(auto& e : requisits) {
-		if(e.parent != pointer)
-			continue;
-		if(e.type == req)
-			return &e;
+	p->count = count;
+	p->offset = 0;
+	if(!size)
+		size = getsize(type);
+	p->size = size;
+	if(!ispredefined(parent)) {
+		p->offset = getsize(parent);
+		requisits.data[parent].size += p->getlenght();
 	}
-	auto p = new requisit;
-	p->clear();
-	p->type = const_cast<requisit*>(req);
-	p->parent = pointer;
-	return p;
+	return p - requisits.data;
 }
 
-requisit* requisit::dereference() const {
-	if(parent != pointer)
-		return 0;
-	return type;
+unsigned manager::reference(unsigned v) {
+	for(unsigned i = 0; i < requisits.count; i++) {
+		if(requisits.data[i].parent != Pointer)
+			continue;
+		if(requisits.data[i].type == v)
+			return i;
+	}
+	auto p = requisits.data + (requisits.count++);
+	p->id = Null;
+	p->parent = Pointer;
+	p->type = v;
+	p->count = 1;
+	p->size = pointer_size;
+	p->offset = 0;
+	return p - requisits.data;
 }
 
-template<> void archive::set<string>(string& e) {
-	set(e.index);
-	set(e.data);
+bool manager::isreference(unsigned v) const {
+	return !ispredefined(v) && requisits.data[v].parent == Pointer;
+}
+
+unsigned manager::dereference(unsigned v) const {
+	if(!isreference(v))
+		return Null;
+	return requisits.data[v].type;
 }
 
 void manager::write(const char* url) {
-	io::file file(url, StreamWrite);
-	if(!file)
-		return;
-	archive e(file, true);
-	e.set(strings);
+
 }

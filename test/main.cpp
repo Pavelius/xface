@@ -383,18 +383,21 @@ void set_light_theme();
 static void test_requisit() {
 	using namespace compiler;
 	manager man;
-	auto s1 = man.strings.add("Test");
-	auto s2 = man.strings.add("Test");
-	auto s3 = man.strings.add("Test1");
-	auto s4 = man.strings.add("Zero Way is always way");
+	auto s1 = man.get("Test");
+	auto s2 = man.get("Test");
+	auto s3 = man.get("Test2");
+	auto s4 = man.get("All correct");
 	auto p2 = man.create("pointer");
-	man.add(p2, "x", number);
-	man.add(p2, "y", number);
+	man.add(p2, "x", Number, 1, 2);
+	man.add(p2, "y", Number, 1, 2);
 	auto p1 = man.create("rect");
-	man.add(p1, "x1", number);
-	man.add(p1, "y1", number);
-	man.add(p1, "x2", number);
-	man.add(p1, "y2", number);
+	man.add(p1, "x1", Number, 1, 4);
+	man.add(p1, "y1", Number, 1, 4);
+	man.add(p1, "x2", Number, 1, 4);
+	man.add(p1, "y2", Number, 1, 4);
+	auto p3 = man.create("region");
+	man.add(p2, "rect", man.reference(p1));
+	man.add(p2, "point", man.reference(p2), 2);
 	man.write("test.udt");
 }
 
