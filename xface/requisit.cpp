@@ -1,24 +1,25 @@
+#include "archive.h"
 #include "collection.h"
 #include "crt.h"
 #include "requisit.h"
 
 namespace compiler {
-struct archive {
-	struct header {
-		char		signature[4];
-		char		version[4];
-		void		set(const char* v) { signature[0] = v[0]; signature[1] = v[1]; signature[2] = v[2]; signature[3] = 0; }
-		void		set(int v1, int v2) { version[0] = v1 + 0x30; version[1] = '.'; version[2] = v2 + 0x30; version[3] = 0; }
-	};
-	struct placement {
-		unsigned	offset;
-		unsigned	count;
-	};
-	struct file : header {
-		placement	strings;
-		placement	requisits;
-	};
-};
+//struct archive {
+//	struct header {
+//		char		signature[4];
+//		char		version[4];
+//		void		set(const char* v) { signature[0] = v[0]; signature[1] = v[1]; signature[2] = v[2]; signature[3] = 0; }
+//		void		set(int v1, int v2) { version[0] = v1 + 0x30; version[1] = '.'; version[2] = v2 + 0x30; version[3] = 0; }
+//	};
+//	struct placement {
+//		unsigned	offset;
+//		unsigned	count;
+//	};
+//	struct file : header {
+//		placement	strings;
+//		placement	requisits;
+//	};
+//};
 }
 
 using namespace compiler;
@@ -33,19 +34,20 @@ unsigned string::add(const char* v) {
 		return 0xFFFFFFFF;
 	if(index.count) {
 		for(unsigned i = 0; i < index.count; i++) {
-			if(strcmp(data + index.data[i], v) == 0)
+			if(strcmp(data.data + index.data[i], v) == 0)
 				return i;
 		}
 	}
-	index.add(count);
+	index.add(data.count);
 	auto n = zlen(v);
-	reserve(count + n + 1);
-	memcpy(data + count, v, n + 1);
+	data.reserve(data.count + n + 1);
+	memcpy(data.data + data.count, v, n + 1);
+	data.count += n + 1;
 	return index.count - 1;
 }
 
 const char* string::get(unsigned value) const {
-	return (value < index.count) ? (char*)data + ((unsigned*)index.data)[value] : "";
+	return (value < index.count) ? (char*)data.data + ((unsigned*)index.data)[value] : "";
 }
 
 void requisit::clear() {
@@ -96,4 +98,17 @@ requisit* requisit::dereference() const {
 	if(parent != pointer)
 		return 0;
 	return type;
+}
+
+template<> void archive::set<string>(string& e) {
+	set(e.index);
+	set(e.data);
+}
+
+void manager::write(const char* url) {
+	io::file file(url, StreamWrite);
+	if(!file)
+		return;
+	archive e(file, true);
+	e.set(strings);
 }

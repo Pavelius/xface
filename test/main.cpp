@@ -220,15 +220,20 @@ static void test_grid_ref() {
 }
 
 static void test_tree() {
-	controls::tree test(cultivated_land_manager.fields);
+	struct test_tree_control : controls::tree {
+		void expanding(builder&  e) {
+			e.add(cultivated_land_manager.get(1), 1, 0, true);
+			e.add(cultivated_land_manager.get(2), 1, 0, true);
+			e.add(cultivated_land_manager.get(0), 0, 0, false);
+		}
+		constexpr test_tree_control() : tree(cultivated_land_manager.fields){}
+	} test;
 	test.select_mode = SelectText;
 	test.addcol("image", 0, "image", SizeInner);
 	test.addcol("name", "Наименование", "text", SizeAuto);
 	test.addcol("cult_land", "Обрабатывается", "number");
 	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-	test.add(cultivated_land_manager.get(0), 0);
-	test.add(cultivated_land_manager.get(1), 1, 1, 0, 1);
-	test.add(cultivated_land_manager.get(2), 1, 1, 0, 1);
+	test.expand(0, 0);
 	show_table(test);
 }
 
@@ -381,6 +386,7 @@ static void test_requisit() {
 	auto s1 = man.strings.add("Test");
 	auto s2 = man.strings.add("Test");
 	auto s3 = man.strings.add("Test1");
+	auto s4 = man.strings.add("Zero Way is always way");
 	auto p2 = man.create("pointer");
 	man.add(p2, "x", number);
 	man.add(p2, "y", number);
@@ -389,6 +395,7 @@ static void test_requisit() {
 	man.add(p1, "y1", number);
 	man.add(p1, "x2", number);
 	man.add(p1, "y2", number);
+	man.write("test.udt");
 }
 
 int main() {

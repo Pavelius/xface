@@ -48,11 +48,19 @@ struct tree : grid {
 		unsigned char		image;
 		void*				object;
 	};
+	struct builder {
+		int					index;
+		unsigned char		level;
+		tree*				pc;
+		constexpr builder(tree* pc, int index, unsigned char level) : pc(pc), index(index), level(level) {}
+		void*				add(void* object, unsigned char image, unsigned char type, bool group);
+	};
 	bool					sort_rows_by_name;
 	constexpr tree(const bsreq* type, unsigned size = sizeof(element)) : grid(type, size), sort_rows_by_name(false) {}
-	void					add(void* object, unsigned char level, unsigned char image = 0, unsigned char type = 0, unsigned char flags = 0);
+	void*					add(void* object, unsigned char level, unsigned char image = 0, unsigned char type = 0, unsigned char flags = 0);
 	void					collapse(int index);
-	virtual void			expand(int index, int level) {}
+	void					expand(int index, int level);
+	virtual void			expanding(builder& e) {}
 	int						find(const void* value) const;
 	void*					get(int index) const override;
 	int						getimage(int index) const;

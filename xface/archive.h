@@ -65,6 +65,13 @@ struct archive {
 		for(auto& e : value)
 			set(e);
 	}
+	// Fixed amem collection
+	template<typename T> void set(arem<T>& value) {
+		set(value.count);
+		if(!writemode)
+			value.reserve(value.count);
+		set(value.data, value.count * sizeof(T));
+	}
 	// Custom aref collection
 	template<typename T> void set(aref<T>& value) {
 		set(value.count);

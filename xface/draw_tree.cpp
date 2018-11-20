@@ -5,6 +5,12 @@ using namespace draw::controls;
 
 #define TIGroup 1
 
+void* tree::builder::add(void* object, unsigned char image, unsigned char type, bool group) {
+	auto result = pc->add(object, level + 1, image, type, group ? TIGroup : 0);
+	index++;
+	return result;
+}
+
 int	tree::find(const void* value) const {
 	auto count = getcount();
 	for(unsigned i = 0; i < count; i++) {
@@ -141,57 +147,40 @@ void tree::open(int max_level) {
 	}
 }
 
-//void tree::expand(int index, int level) {
-//	this->index = index;
-//	this->level = level;
-//	expanding();
-//	if(this->index != index) {
-//		auto p = (element*)rows.get(index);
-//		p->flags |= TIGroup;
-//	}
-//	// Remove unused rows
-//	unsigned i1 = this->index + 1;
-//	unsigned i2 = i1;
-//	while(i2<rows.getcount()) {
-//		auto p2 = (element*)rows.get(i2);
-//		if(p2->level >= (level+1))
-//			i2++;
-//		else
-//			break;
-//	}
-//	if(i1 != i2)
-//		rows.remove(i1, i2 - i1);
-//	// Finally sort all rows
-//	if(sort_rows_by_name) {
-//		if(level == 0)
-//			amem::sort(0, getcount() - 1, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
-//		else
-//			amem::sort(index + 1, this->index, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
-//	}
-//}
-//
-//void tree::addrow(tree::element& e) {
-//	e.level = level + 1;
-//	if((unsigned)(index + 1) < rows.getcount()) {
-//		auto p = (element*)rows.get(index + 1);
-//		if(p->level >= e.level) {
-//			memcpy(p, &e, getsize());
-//			index++;
-//			return;
-//		}
-//	}
-//	if(level == 0)
-//		collection::add(&e);
-//	else
-//		amem::insert(++index, &e);
-//}
+void tree::expand(int index, int level) {
+	builder e(this, index, level);
+	expanding(e);
+	if(e.index != index) {
+		auto p = (element*)array::get(index);
+		p->flags |= TIGroup;
+	}
+	// Remove unused rows
+	unsigned i1 = e.index + 1;
+	unsigned i2 = i1;
+	while(i2<array::getcount()) {
+		auto p2 = (element*)array::get(i2);
+		if(p2->level >= (level+1))
+			i2++;
+		else
+			break;
+	}
+	if(i1 != i2)
+		array::remove(i1, i2 - i1);
+	// Finally sort all rows
+	if(sort_rows_by_name) {
+	//	if(level == 0)
+	//		amem::sort(0, getcount() - 1, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
+	//	else
+	//		amem::sort(index + 1, this->index, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
+	}
+}
 
-void tree::add(void* object, unsigned char level, unsigned char image, unsigned char type, unsigned char flags) {
-	element e;
-	e.object = object;
-	e.image = image;
-	e.flags = flags;
-	e.level = level;
-	e.type = type;
-	array::add(&e);
+void* tree::add(void* object, unsigned char level, unsigned char image, unsigned char type, unsigned char flags) {
+	auto p = (element*)array::add();
+	p->object = object;
+	p->image = image;
+	p->flags = flags;
+	p->type = type;
+	p->level = level;
+	return p;
 }
