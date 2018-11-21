@@ -4,7 +4,6 @@
 #include "xface/crt.h"
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
-#include "xface/variable.h"
 #include "xface/requisit.h"
 #include "xface/stringcreator.h"
 
@@ -401,9 +400,23 @@ static void test_requisit() {
 	man.write("test.udt");
 }
 
+static bool test_map() {
+	amap<const char*, int> map;
+	map.add("Test", 1);
+	map.add("Test", 2);
+	map.add("Color", 3);
+	map.add("Four", 4);
+	auto v4 = map.get("Four");
+	auto k4 = map.getv(4);
+	if(v4 != 4)
+		return false;
+	return true;
+}
+
 int main() {
 	test_requisit();
 	test_array();
+	test_map();
 	set_light_theme();
 	// Инициализация библиотеки
 	initialize();

@@ -91,3 +91,7 @@ unsigned manager::dereference(unsigned v) const {
 void manager::write(const char* url) {
 
 }
+
+struct archive_manager {
+
+};

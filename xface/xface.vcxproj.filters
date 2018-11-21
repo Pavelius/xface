@@ -129,9 +129,6 @@
     <ClCompile Include="draw_field.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
-    <ClCompile Include="variable.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="draw_form.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
@@ -232,9 +229,6 @@
     </ClInclude>
     <ClInclude Include="screenshoot.h">
       <Filter>draw\core</Filter>
-    </ClInclude>
-    <ClInclude Include="variable.h">
-      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="bsreq.h">
       <Filter>collections</Filter>

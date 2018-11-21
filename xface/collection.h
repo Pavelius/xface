@@ -38,6 +38,7 @@ struct agrw {
 	T*						add() { auto p = this; while(p->count >= N) { if(!p->next) p->next = new agrw; p = p->next; } return p->data + (p->count++); }
 	T*						begin() { return data; }
 	const T*				begin() const { return data; }
+	void					clear() { auto p = this; while(p) { p->count = 0; p = p->next; } }
 	T*						end() { return data + count; }
 	const T*				end() const { return data + count; }
 };
@@ -84,6 +85,21 @@ struct cflags {
 	constexpr void			clear() { data = 0; }
 	constexpr bool			is(const T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
+};
+// Abstract pair element
+template<typename K, typename V>
+struct pair {
+	K						key;
+	V						value;
+};
+// Abstract map collection
+template<typename K, typename V>
+struct amap : arem<pair<K, V>> {
+	void					add(const K& key, const V& value) { auto p = const_cast<pair<K,V>*>(find(key)); if(!p) { p = arem<pair<K,V>>::add(); p->key = key; } p->value = value; }
+	const pair<K, V>*		find(K key) const { for(auto& e : *this) if(e.key == key) return &e; return 0; }
+	const pair<K, V>*		findv(V value) const { for(auto& e : *this) if(e.value == value) return &e; return 0; }
+	V						get(K key) const { auto p = find(key); if(p) return p->value; return V(); }
+	K						getv(V value) const { auto p = findv(value); if(p) return p->key; return K(); }
 };
 // Abstract array vector
 struct array {
