@@ -22,13 +22,13 @@ struct archive {
 	io::stream&			source;
 	bool				writemode;
 	aref<dataset>		pointers;
-	amap<void*, void*>	pointers_change;
 
-	archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
-	archive(io::stream& source, bool writemode, const aref<dataset>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
+	constexpr archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
+	constexpr archive(io::stream& source, bool writemode, const aref<dataset>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 
-	void				set(void* value, unsigned size);
-	void				setpointer(void** value);
+	virtual void		set(void* value, unsigned size);
+	virtual void		setpointer(void** value);
+	virtual void		setstring(const char*& value);
 	bool				signature(const char* id);
 	bool				version(short major, short minor);
 
@@ -36,24 +36,9 @@ struct archive {
 	template<class T> void set(T*& value) {
 		setpointer((void**)&value);
 	}
-	// Full specialization for strings
+	// Strings case
 	template<> void set<const char>(const char*& e) {
-		if(writemode) {
-			unsigned len = zlen(e);
-			source.write(&len, sizeof(len));
-			if(len)
-				source.write(e, len);
-		} else {
-			unsigned len;
-			char temp[128 * 128];
-			source.read(&len, sizeof(len));
-			e = 0;
-			if(len) {
-				source.read(temp, len);
-				temp[len] = 0;
-				e = szdup(temp);
-			}
-		}
+		setstring(e);
 	}
 	// Array with fixed count
 	template<typename T, unsigned N> void set(T(&value)[N]) {
@@ -81,9 +66,6 @@ struct archive {
 	}
 	// All simple types and requisites
 	template<class T> void set(T& value) {
-		if(writemode)
-			source.write(&value, sizeof(value));
-		else
-			source.read(&value, sizeof(value));
+		set(&value, sizeof(value));
 	}
 };

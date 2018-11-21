@@ -5,9 +5,9 @@ bool archive::signature(const char* id) {
 	if(writemode) {
 		memset(temp, 0, sizeof(temp));
 		zcpy(temp, id, sizeof(temp) - 1);
-		source.write(temp, sizeof(temp));
+		set(temp, sizeof(temp));
 	} else {
-		source.read(temp, sizeof(temp));
+		set(temp, sizeof(temp));
 		if(szcmpi(temp, id) != 0)
 			return false;
 	}
@@ -28,15 +28,32 @@ bool archive::version(short major, short minor) {
 	return true;
 }
 
+void archive::setstring(const char*& e) {
+	unsigned len = 0;
+	char temp[128 * 128];
+	if(writemode) {
+		if(e)
+			len = zlen(e);
+		source.write(&len, sizeof(len));
+		if(len)
+			source.write(e, len);
+	} else {
+		source.read(&len, sizeof(len));
+		e = 0;
+		if(len) {
+			source.read(temp, len);
+			temp[len] = 0;
+			e = szdup(temp);
+		}
+	}
+}
+
 void archive::setpointer(void** value) {
 	unsigned pid;
 	if(writemode) {
 		pid = -1;
 		auto j = 0;
 		auto v = *value;
-		auto v1 = pointers_change.getv(v);
-		if(!v1)
-			v1 = v;
 		for(auto& e : pointers) {
 			auto i = e.indexof(v);
 			if(i != -1) {
@@ -52,11 +69,7 @@ void archive::setpointer(void** value) {
 		if(pid != -1) {
 			auto bi = pid >> 24;
 			auto ii = pid & 0xFFFFFF;
-			auto v = pointers[bi].get(ii);
-			auto v1 = pointers_change.get(v);
-			if(!v1)
-				v1 = v;
-			*value = v1;
+			*value = pointers[bi].get(ii);
 		}
 	}
 }

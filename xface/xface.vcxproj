@@ -158,6 +158,7 @@
     <ClCompile Include="io.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="stringcreator.cpp" />
+    <ClCompile Include="strlib.cpp" />
     <ClCompile Include="surface_serial.cpp" />
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="win_clipboard.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="screenshoot.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
+    <ClInclude Include="strlib.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,10 +2,6 @@
 
 #pragma once
 
-// Macros for defining metadata information, where
-// 'c' is class,
-// 'f' is field of this class
-// 't' is type
 #define	BSREQ(c, f, t) {#f, (unsigned)&((c*)0)->f,\
 bsreq::isize<decltype(c::f)>::value,\
 sizeof(c::f),\

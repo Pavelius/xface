@@ -41,13 +41,6 @@ unsigned io::stream::getLE32() {
 	return (u4 << 24) | (u3 << 16) | (u2 << 8) | u1;
 }
 
-unsigned io::stream::getsize() {
-	unsigned s = seek(0, SeekCur);
-	unsigned r = seek(0, SeekEnd);
-	seek(s, SeekSet);
-	return r;
-}
-
 void* loadb(const char* url, int* size, int additional) {
 	void* p = 0;
 	if(size)

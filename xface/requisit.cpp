@@ -1,7 +1,8 @@
 #include "archive.h"
-#include "collection.h"
+#include "bsreq.h"
 #include "crt.h"
 #include "requisit.h"
+#include "strlib.h"
 
 using namespace compiler;
 
@@ -88,10 +89,69 @@ unsigned manager::dereference(unsigned v) const {
 	return requisits.data[v].type;
 }
 
-void manager::write(const char* url) {
+struct archive_requisit : archive {
 
-}
+	strlib		strings;
+	bool		string_analize;
 
-struct archive_manager {
+	archive_requisit(io::file& e, bool writemode) : archive(e, writemode), string_analize(true) {}
+	
+	template<class T> void set(T& value) {
+		archive::set(value);
+	}
+
+	void set(void* value, unsigned size) override {
+		if(string_analize)
+			return;
+		archive::set(value, size);
+	}
+
+	void setstring(const char*& value) override {
+		unsigned index = 0;
+		if(writemode)
+			index = strings.add(value);
+		if(string_analize)
+			return;
+		set(index);
+	}
+
+	void setpointer(void** value) override {
+		if(string_analize)
+			return;
+		archive::setpointer(value);
+	}
 
 };
+
+template<> void archive::set<strlib>(strlib& e);
+
+template<> void archive::set<bsreq>(bsreq& e) {
+	set(e.id);
+	set(e.offset);
+	set(e.size);
+	set(e.lenght);
+	set(e.count);
+	set(e.type);
+	set(e.reference);
+	set(e.subtype);
+}
+
+void manager::write(const char* url) {
+	bsreq test[] = {
+		BSREQ(bsreq, id, text_type),
+		BSREQ(bsreq, offset, number_type),
+		BSREQ(bsreq, size, number_type),
+	{}};
+	io::file file(url, StreamWrite);
+	if(!file)
+		return;
+	archive_requisit a(file, true);
+	a.set(test);
+	a.string_analize = false;
+	if(!a.signature("MTD"))
+		return;
+	if(!a.version(1, 0))
+		return;
+	a.set(a.strings);
+	a.set(test);
+}

@@ -17,7 +17,6 @@ struct stream {
 	unsigned char		get();
 	unsigned short		getLE16();
 	unsigned			getLE32();
-	unsigned			getsize();
 	virtual int			read(void* result, int count) = 0;
 	template<class T> void read(T& object) { read(&object, sizeof(object)); }
 	virtual int			seek(int count, int rel = SeekCur) { return 0; };
