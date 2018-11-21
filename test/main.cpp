@@ -291,7 +291,7 @@ static void test_widget() {
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
-		draw::render(10, 10, 500, bsval(element_type, &test), elements);
+		draw::render(10, 10, 500, bsval(&test, element_type), elements);
 		domodal();
 	}
 }

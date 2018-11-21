@@ -28,8 +28,22 @@ struct adat {
 	bool					is(const T t) const { return indexof(t) != -1; }
 	void					remove(int index, int remove_count = 1) { if(index < 0) return; if(index<int(count - 1)) memcpy(data + index, data + index + 1, sizeof(data[0])*(count - index - 1)); count--; }
 };
+template<class T, unsigned N = 128>
+struct agrw {
+	T						data[N];
+	unsigned				count;
+	agrw*					next;
+	constexpr agrw() : adat(), next(0) {}
+	~agrw() { delete next; next = 0; }
+	T*						add() { auto p = this; while(p->count >= N) { if(!p->next) p->next = new agrw; p = p->next; } return p->data + (p->count++); }
+	T*						begin() { return data; }
+	const T*				begin() const { return data; }
+	T*						end() { return data + count; }
+	const T*				end() const { return data + count; }
+};
 // Reference to array with dymanic size
-template<class T> struct aref {
+template<class T>
+struct aref {
 	T*						data;
 	unsigned				count;
 	constexpr aref() = default;
@@ -51,7 +65,8 @@ template<class T> struct aref {
 	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
 };
 // Autogrow typized array
-template<class T> struct arem : aref<T> {
+template<class T>
+struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(), count_maximum() {}
 	~arem() { if(this->data) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
@@ -60,7 +75,8 @@ template<class T> struct arem : aref<T> {
 	void					reserve(unsigned count) { if(count >= count_maximum) { count_maximum = rmoptimal(count + 1); this->data = (T*)rmreserve(this->data, count_maximum * sizeof(T)); } }
 };
 // Abstract flag data bazed on enumerator
-template<typename T, typename DT = unsigned> struct cflags {
+template<typename T, typename DT = unsigned>
+struct cflags {
 	DT						data;
 	constexpr cflags() : data(0) {}
 	constexpr cflags(std::initializer_list<T> list) : data() { for(auto e : list) add(e); }

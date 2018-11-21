@@ -92,7 +92,7 @@ bsval& bsval::get(const char* id) {
 
 bsval& bsval::dereference() {
 	if(data) {
-		if(type->isenum) {
+		if(type->subtype==bsreq::Enum) {
 			auto b = bsdata::find(type->type);
 			if(!b)
 				data = 0;

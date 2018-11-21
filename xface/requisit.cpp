@@ -16,22 +16,6 @@ struct serial {
 		signature[3] = 0;
 	}
 };
-struct classtype {
-	unsigned		id; // Can be null
-	unsigned		type; // Can be null
-	unsigned		size;
-};
-struct requisit {
-	unsigned		id; // Can be null
-	unsigned		parent;
-	unsigned		type;
-	unsigned		count;
-	unsigned		size;
-	unsigned		offset;
-	unsigned getlenght() const {
-		return size * count;
-	}
-};
 }
 
 unsigned manager::get(const char* v) {
@@ -41,13 +25,13 @@ unsigned manager::get(const char* v) {
 		if(strcmp(section_strings.data + strings.data[i], v) == 0)
 			return i;
 	}
-	strings.reserve();
-	strings.data[strings.count] = section_strings.count;
+	auto result = strings.count;
+	strings.add(section_strings.count);
 	auto n = zlen(v);
 	section_strings.reserve(section_strings.count + n + 1);
 	memcpy(section_strings.data + section_strings.count, v, n + 1);
 	section_strings.count += n + 1;
-	return strings.count++;
+	return result;
 }
 
 unsigned manager::getsize(unsigned v) const {
@@ -55,15 +39,13 @@ unsigned manager::getsize(unsigned v) const {
 }
 
 unsigned manager::create(const char* name) {
-	classes.reserve();
-	auto p = classes.data + (classes.count++);
+	auto p = classes.add();
 	p->id = get(name);
 	return p - classes.data;
 }
 
 unsigned manager::add(unsigned parent, const char* name, unsigned type, unsigned count, unsigned size) {
-	requisits.reserve();
-	auto p = requisits.data + (requisits.count++);
+	auto p = requisits.add();
 	p->id = get(name);
 	p->parent = parent;
 	p->type = type;

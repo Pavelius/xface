@@ -23,7 +23,7 @@ static int compare_name_ds(const char* n1, const char* n2) {
 
 static void* get_value(const bsval& e) {
 	auto type = e.type;
-	if(type->isenum) {
+	if(type->subtype==bsreq::Enum) {
 		auto b = bsdata::find(type->type);
 		if(!b)
 			return 0;
@@ -40,7 +40,7 @@ static void set_value(const bsval& e1, void* value) {
 	auto index = ps->indexof(value);
 	if(index == -1)
 		return;
-	if(e1.type->isenum)
+	if(e1.type->subtype==bsreq::Enum)
 		e1.set(index);
 	else if(e1.type->size == sizeof(void*))
 		e1.set((int)value);

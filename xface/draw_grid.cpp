@@ -90,7 +90,7 @@ void grid::clickcolumn(int column) const {
 }
 
 bsval grid::getvalue(int row, int column) const {
-	return bsval(type, get(row)).get(columns[column].id);
+	return bsval(get(row), type).get(columns[column].id);
 }
 
 int grid::getnumber(int line, int column) const {

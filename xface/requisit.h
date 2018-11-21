@@ -1,30 +1,29 @@
-#pragma once
+#include "collection.h"
 
-unsigned					rmoptimal(unsigned need_count);
-void*						rmreserve(void* data, unsigned new_size);
+#pragma once
 
 namespace compiler {
 enum standart_s : unsigned {
 	Number = 0xFFFFFF00, Text, Pointer,
 	Null = 0xFFFFFFFF,
 };
-struct requisit;
-struct classtype;
+struct classtype {
+	unsigned		id; // Can be null
+	unsigned		type; // Can be null
+	unsigned		size;
+};
+struct requisit {
+	unsigned		id; // Can be null
+	unsigned		parent;
+	unsigned		type;
+	unsigned		count;
+	unsigned		size;
+	unsigned		offset;
+	unsigned getlenght() const {
+		return size * count;
+	}
+};
 struct manager {
-	template<class T>
-	struct pref {
-		T*			data;
-		unsigned	count;
-		unsigned	count_maximum;
-		constexpr pref() : data(0), count(0), count_maximum(0) {}
-		void reserve(unsigned count) {
-			if(count >= count_maximum) {
-				count_maximum = rmoptimal(count + 1);
-				data = (T*)rmreserve(data, count_maximum * sizeof(T));
-			}
-		}
-		void reserve() { reserve(count + 1); }
-	};
 	unsigned		add(unsigned parent, const char* name, unsigned type, unsigned count = 1, unsigned size = 0);
 	unsigned		create(const char* id);
 	unsigned		dereference(unsigned v) const;
@@ -35,9 +34,9 @@ struct manager {
 	unsigned		reference(unsigned v);
 	void			write(const char* url);
 private:
-	pref<unsigned>	strings;
-	pref<classtype>	classes;
-	pref<requisit>	requisits;
-	pref<char>		section_strings;
+	arem<unsigned>	strings;
+	arem<classtype>	classes;
+	arem<requisit>	requisits;
+	arem<char>		section_strings;
 };
 }

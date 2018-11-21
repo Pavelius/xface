@@ -70,7 +70,8 @@ struct archive {
 		set(value.count);
 		if(!writemode)
 			value.reserve(value.count);
-		set(value.data, value.count * sizeof(T));
+		for(auto& e : value)
+			set(e);
 	}
 	// Custom aref collection
 	template<typename T> void set(aref<T>& value) {

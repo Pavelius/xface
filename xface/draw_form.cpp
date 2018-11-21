@@ -133,7 +133,7 @@ struct dlgform : bsval {
 				auto pv = (void*)bsval::get();
 				if(!pv)
 					return "";
-				return getstring({type->type->getkey(), pv}, result, result_maximum, force_result);
+				return getstring({pv, type->type->getkey()}, result, result_maximum, force_result);
 			}
 			return result;
 		}
@@ -178,7 +178,7 @@ struct dlgform : bsval {
 		auto f = type->find(id);
 		if(!f)
 			return {0, 0};
-		return {f, (void*)data};
+		return {data, f};
 	}
 
 	int vertical(int x, int y, int width, const widget* p) {

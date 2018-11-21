@@ -37,7 +37,6 @@ void table::update_columns() {
 			}
 		}
 	}
-	current_column = getvalid(current_column, 1);
 }
 
 int	table::getvalid(int column, int direction) const {
@@ -266,6 +265,7 @@ column* table::addcol(const char* id, const char* name, const char* type, draw::
 		p->width = p->method->default_width;
 	if(!p->width)
 		p->width = 100;
+	current_column = getvalid(current_column, 1);
 	return p;
 }
 
