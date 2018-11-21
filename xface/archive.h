@@ -8,28 +8,29 @@
 struct archive {
 
 	struct dataset {
-		void*		data;
+		void*			data;
 		template<class T, unsigned N> constexpr dataset(T(&data)[N]) : data(&data), size(sizeof(T)), count(current_count), current_count(N), maximum_count(N) {}
 		template<class T, unsigned N> constexpr dataset(adat<T, N>& data) : data(&data.data), size(sizeof(T)), count(data.count), current_count(0), maximum_count(N) {}
-		void*		get(int index) const { return (char*)data + index * size; }
-		int			indexof(void* p) const { if(((char*)p) >= ((char*)data) && ((char*)p) < ((char*)data + size * count)) return ((char*)p - (char*)data) / size; return -1; }
+		void*			get(int index) const { return (char*)data + index * size; }
+		int				indexof(void* p) const { if(((char*)p) >= ((char*)data) && ((char*)p) < ((char*)data + size * count)) return ((char*)p - (char*)data) / size; return -1; }
 	private:
-		unsigned	size;
-		unsigned	maximum_count;
-		unsigned	current_count;
-		unsigned&	count;
+		unsigned		size;
+		unsigned		maximum_count;
+		unsigned		current_count;
+		unsigned&		count;
 	};
-	io::stream&		source;
-	bool			writemode;
-	aref<dataset>	pointers;
+	io::stream&			source;
+	bool				writemode;
+	aref<dataset>		pointers;
+	amap<void*, void*>	pointers_change;
 
 	archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
 	archive(io::stream& source, bool writemode, const aref<dataset>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 
-	void			set(void* value, unsigned size);
-	void			setpointer(void** value);
-	bool			signature(const char* id);
-	bool			version(short major, short minor);
+	void				set(void* value, unsigned size);
+	void				setpointer(void** value);
+	bool				signature(const char* id);
+	bool				version(short major, short minor);
 
 	// Any pointer class
 	template<class T> void set(T*& value) {
@@ -85,5 +86,4 @@ struct archive {
 		else
 			source.read(&value, sizeof(value));
 	}
-
 };

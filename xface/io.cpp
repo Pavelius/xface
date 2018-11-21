@@ -21,15 +21,6 @@ io::stream&	io::stream::operator<<(const char* t) {
 	return *this;
 }
 
-void io::stream::writescan(void* p, int width, int height, int scan_line, int element_size) {
-	char* pc = (char*)p;
-	while(height > 0) {
-		write(pc, width*element_size);
-		pc += scan_line;
-		height--;
-	}
-}
-
 unsigned char io::stream::get() {
 	unsigned char r = 0;
 	read(&r, 1);
@@ -55,27 +46,6 @@ unsigned io::stream::getsize() {
 	unsigned r = seek(0, SeekEnd);
 	seek(s, SeekSet);
 	return r;
-}
-
-void io::stream::puttext(const char* text) {
-	int m = text ? zlen(text) : 0;
-	write(m);
-	if(m)
-		write(text, m);
-}
-
-void io::stream::gettext(char* result, int max_buffer) {
-	int m = 0;
-	result[0] = 0;
-	read(&m, sizeof(m));
-	if(!m)
-		return;
-	max_buffer = imin(m, max_buffer - 1);
-	read(result, max_buffer);
-	result[max_buffer] = 0;
-	m -= max_buffer;
-	if(m)
-		seek(m, SeekCur);
 }
 
 void* loadb(const char* url, int* size, int additional) {

@@ -18,28 +18,11 @@ struct stream {
 	unsigned short		getLE16();
 	unsigned			getLE32();
 	unsigned			getsize();
-	void				gettext(char* result, int max_buffer);
 	virtual int			read(void* result, int count) = 0;
-	void				read(bool& value) { read(&value, sizeof(value)); }
-	void				read(int& value) { read(&value, sizeof(value)); }
-	void				read(unsigned& value) { read(&value, sizeof(value)); }
-	void				read(short& value) { read(&value, sizeof(value)); }
-	void				read(unsigned short& value) { read(&value, sizeof(value)); }
-	void				read(unsigned char& value) { read(&value, sizeof(value)); }
-	template<class T> void read(T& object);
-	int					readsig(char* signature) { return read(signature, 4); }
-	void				puttext(const char* text);
+	template<class T> void read(T& object) { read(&object, sizeof(object)); }
 	virtual int			seek(int count, int rel = SeekCur) { return 0; };
 	virtual int			write(const void* result, int count) = 0;
-	void				write(bool value) { write(&value, sizeof(value)); }
-	void				write(int value) { write(&value, sizeof(value)); }
-	void				write(unsigned value) { write(&value, sizeof(value)); }
-	void				write(short value) { write(&value, sizeof(value)); }
-	void				write(unsigned short value) { write(&value, sizeof(value)); }
-	void				write(unsigned char value) { write(&value, sizeof(value)); }
-	template<class T> void write(const T& e); // For overloaded stream output
-	void				writescan(void* p, int width, int heght, int scan_line, int element_size);
-	int					writesig(const char* signature) { return write(signature, 4); }
+	template<class T> void write(const T& e) { write(&e, sizeof(e)); }
 };
 struct sequence : stream {
 	int					read(void* result, int count) override;

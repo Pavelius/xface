@@ -125,7 +125,6 @@
     <ClCompile Include="color.cpp" />
     <ClCompile Include="converter.cpp" />
     <ClCompile Include="crt.cpp" />
-    <ClCompile Include="dlgerr.cpp" />
     <ClCompile Include="draw_button.cpp" />
     <ClCompile Include="draw_clipart.cpp" />
     <ClCompile Include="draw_combo.cpp" />

@@ -147,9 +147,6 @@
     <ClCompile Include="converter.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="dlgerr.cpp">
-      <Filter>runtime</Filter>
-    </ClCompile>
     <ClCompile Include="bstream.cpp">
       <Filter>support</Filter>
     </ClCompile>
