@@ -32,7 +32,6 @@ struct manager {
 	bool			ispredefined(unsigned v) const { return v >= Number; }
 	bool			isreference(unsigned v) const;
 	unsigned		reference(unsigned v);
-	void			write(const char* url);
 private:
 	arem<unsigned>	strings;
 	arem<classtype>	classes;

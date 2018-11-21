@@ -35,4 +35,5 @@ struct bsdata : array {
 	static void			read(const char* url, bsdata** custom = 0, parser* callback = 0);
 	static void			write(const char* url, const char** baseids, bool(*comparer)(void* object, const bsreq* type) = 0);
 	static void			write(const char* url, const char* baseid);
+	static void			write(const char* url, const array& source, const bsreq* fields);
 };

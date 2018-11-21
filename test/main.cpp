@@ -397,7 +397,6 @@ static void test_requisit() {
 	auto p3 = man.create("region");
 	man.add(p2, "rect", man.reference(p1));
 	man.add(p2, "point", man.reference(p2), 2);
-	man.write("test.udt");
 }
 
 static bool test_map() {
