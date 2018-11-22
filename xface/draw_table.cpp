@@ -4,12 +4,13 @@
 using namespace draw::controls;
 
 void table::update_columns() {
-	int w1 = view_rect.width() - 1;
+	int w1 = view_rect.width();
 	int w2 = 0;
 	int c2 = 0;
 	const int min_width = 8;
 	if(!columns)
 		return;
+	// Get count of al elements
 	for(auto& e : columns) {
 		if(e.size == SizeAuto) {
 			w2 += min_width;
@@ -22,7 +23,7 @@ void table::update_columns() {
 			w2 += e.width;
 		}
 	}
-	// calculate auto sized width
+	// Calculate auto sized width
 	if(w2 < w1 && c2) {
 		int d1 = w1 - w2;
 		int d2 = d1 / c2;
@@ -117,8 +118,7 @@ int table::rowheader(const rect& rc) const {
 		}
 		// Ќарисуем границу только когда она далеко от кра€
 		// „тобы она была не видна, если ширина элемента впритык к краю.
-		if(r1.x2 < rc.x2 - 1)
-			line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
+		line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)
@@ -140,7 +140,7 @@ int table::rowheader(const rect& rc) const {
 void table::row(const rect& rc, int index) {
 	char temp[260];
 	area(rc);
-	if(select_mode==SelectRow)
+	if(select_mode == SelectRow)
 		rowhilite(rc, index);
 	auto current_column = getcolumn();
 	auto x1 = rc.x1;
@@ -170,10 +170,8 @@ void table::row(const rect& rc, int index) {
 				level_ident -= mx;
 			}
 		}
-		if(show_grid_lines && columns[i].size != SizeInner) {
-			if(rt.x2 + 3 < rc.x2 - 1)
-				draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
-		}
+		if(show_grid_lines && columns[i].size != SizeInner)
+			draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
 		area(rt);
 		temp[0] = 0;
 		(this->*pc->method->render)(rt, index, i);
@@ -203,13 +201,33 @@ void table::viewtotal(rect rc) const {
 	}
 }
 
+void table::ensurevisible() {
+	list::ensurevisible();
+	// TODO: —делать позицинирование €чейки по горизонтале
+}
+
+rect table::getrect(const rect& rc, int row, int column) const {
+	rect rs;
+	rs.x1 = rc.x1 - origin_width;
+	rs.x2 = rs.x1;
+	rs.y1 = rc.y1 - origin + lines_per_page * row;
+	rs.y2 = rs.y1 + getrowheight();
+	for(auto i = 0; i < column; i++) {
+		if(!columns[i].isvisible())
+			continue;
+		rs.x1 = rs.x2;
+		rs.x2 = rs.x1 + columns[i].width;
+	}
+	return rs;
+}
+
 void table::view(const rect& rc) {
 	view_rect = rc;
 	current_hilite_column = -1;
-	update_columns();
 	rect rt;
 	rt.y1 = rc.y1;
 	rt.y2 = rc.y2;
+	update_columns();
 	maximum_width = 0;
 	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
@@ -221,6 +239,9 @@ void table::view(const rect& rc) {
 		maximum_width += columns[i].width;
 		current_column_maximum = i;
 	}
+	// ƒл€ того, чтобы не было видно самую правую границу колонки
+	if(maximum_width > 0)
+		maximum_width -= 1;
 	rt = rc;
 	if(show_header)
 		rt.y1 += rowheader(rt);
@@ -246,6 +267,7 @@ bool table::keyinput(unsigned id) {
 
 void table::redraw() {
 	view(view_rect);
+	// TODO: сделать этот метод в list чтобы обновл€лось только окно списка
 }
 
 column* table::addcol(const char* id, const char* name, const char* type, draw::column_size_s size, int width) {

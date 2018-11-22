@@ -28,22 +28,22 @@ bool archive::version(short major, short minor) {
 	return true;
 }
 
-void archive::setstring(const char*& e) {
+void archive::setstring(const char** e) {
 	unsigned len = 0;
 	char temp[128 * 128];
 	if(writemode) {
-		if(e)
-			len = zlen(e);
+		if(*e)
+			len = zlen(*e);
 		source.write(&len, sizeof(len));
 		if(len)
-			source.write(e, len);
+			source.write(*e, len);
 	} else {
 		source.read(&len, sizeof(len));
 		e = 0;
 		if(len) {
 			source.read(temp, len);
 			temp[len] = 0;
-			e = szdup(temp);
+			*e = szdup(temp);
 		}
 	}
 }

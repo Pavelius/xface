@@ -108,16 +108,16 @@ struct control {
 // Analog of listbox element
 struct list : control {
 	int						origin, current, current_hilite, origin_width;
-	int						lines_per_page, pixels_per_line;
+	int						lines_per_page, pixels_per_line, pixels_per_width;
 	bool					show_grid_lines, show_selection;
 	bool					hilite_odd_lines;
 	rect					current_rect;
 	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
-		lines_per_page(0), pixels_per_line(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true),
+		lines_per_page(0), pixels_per_line(0), pixels_per_width(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true),
 		current_rect() {
 	}
 	void					correction();
-	void					ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
+	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
 	int						find(int line, int column, const char* name, int lenght = -1) const;
 	virtual int				getcolumn() const { return 0; } // Get current column
 	virtual int				getident() const { return 6 * 2 + 4; } // get row ident in levels
@@ -183,11 +183,13 @@ struct table : list {
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
 	virtual void			clickcolumn(int column) const {}
+	virtual void			ensurevisible() override;
 	virtual int				getcolumn() const override { return current_column; }
 	virtual aref<column>	getcolumns() const { return aref<column>(); }
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int				getnumber(int line, int column) const { return 0; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
+	rect					getrect(const rect& rc, int row, int column) const;
 	virtual int				gettotal(int column) const { return 0; }
 	virtual const char*		gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	int						getvalid(int column, int direction = 1) const;

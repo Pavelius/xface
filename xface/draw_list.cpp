@@ -20,6 +20,7 @@ void list::select(int index, int column) {
 
 void list::correction() {
 	auto maximum = getmaximum();
+	auto maximum_width = getmaximumwidth();
 	if(current >= maximum)
 		current = maximum - 1;
 	if(current < 0)
@@ -29,6 +30,12 @@ void list::correction() {
 			origin = maximum - lines_per_page;
 		if(origin < 0)
 			origin = 0;
+	}
+	if(pixels_per_width) {
+		if(origin_width > maximum_width - pixels_per_width)
+			origin_width = maximum_width - pixels_per_width;
+		if(origin_width < 0)
+			origin_width = 0;
 	}
 }
 
@@ -99,29 +106,27 @@ void list::treemark(rect rc, int index, int level) const {
 }
 
 void list::view(const rect& rcorigin) {
+	control::view(rcorigin);
 	current_rect.clear();
 	rect rc = rcorigin;
-	control::view(rcorigin);
 	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
 	current_hilite = -1;
+	lines_per_page = getlinesperpage(rc.height());
+	pixels_per_width = rc.width();
+	correction();
 	auto maximum = getmaximum();
+	auto maximum_width = getmaximumwidth();
 	if(!pixels_per_line)
 		return;
-	rect scroll = {0};
-	rect scrollh = {0};
-	lines_per_page = getlinesperpage(rc.height());
-	correction();
-	if(maximum > lines_per_page)
-		scroll.set(rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2);
-	auto maximum_width = getmaximumwidth();
-	if(maximum_width > rc.width())
-		scrollh.set(rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2);
+	auto enable_scrollv = maximum > lines_per_page;
+	auto enable_scrollh = maximum_width > pixels_per_width;
 	int rk = hot.key&CommandMask;
 	if(draw::areb(rc)) {
 		if(hot.mouse.y > rc.y1 && hot.mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
-			if(!scroll.width() || hot.mouse.x < scroll.x1)
+			if((!enable_scrollv || hot.mouse.x < rc.x2 - metrics::scroll)
+				&& (!enable_scrollh || hot.mouse.y < rc.y2 - metrics::scroll))
 				mousehiliting(rc, hot.mouse);
 		}
 		if(rk == MouseLeft || rk == MouseRight)
@@ -151,10 +156,12 @@ void list::view(const rect& rcorigin) {
 			ix++;
 		}
 	}
-	if(scroll)
-		draw::scrollv((int)this, scroll, origin, lines_per_page, maximum, isfocused());
-	if(scrollh)
-		draw::scrollh((int)this, scrollh, origin_width, rc.width(), maximum_width, isfocused());
+	if(enable_scrollv)
+		draw::scrollv((int)this, {rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
+			origin, lines_per_page, maximum, isfocused());
+	if(enable_scrollh)
+		draw::scrollh((int)this, {rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
+			origin_width, pixels_per_width, maximum_width, isfocused());
 }
 
 bool list::keyinput(unsigned id) {

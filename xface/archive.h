@@ -13,7 +13,7 @@ struct archive {
 	constexpr archive(io::stream& source, bool writemode, const aref<array>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 	virtual void		set(void* value, unsigned size);
 	virtual void		setpointer(void** value);
-	virtual void		setstring(const char*& value);
+	virtual void		setstring(const char** value);
 	bool				signature(const char* id);
 	bool				version(short major, short minor);
 
@@ -23,7 +23,7 @@ struct archive {
 	}
 	// Strings case
 	template<> void set<const char>(const char*& e) {
-		setstring(e);
+		setstring(&e);
 	}
 	// Array with fixed count
 	template<typename T, unsigned N> void set(T(&value)[N]) {

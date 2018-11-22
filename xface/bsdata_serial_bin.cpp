@@ -26,6 +26,40 @@ struct bsdata_archive : archive {
 		return fields_copy;
 	}
 
+	void set(void* data, unsigned size) override {
+		archive::set(data, size);
+	}
+
+	void setfield(void* data, const bsreq* field) {
+		for(unsigned i = 0; i < field->count; i++) {
+			auto pv = (void*)field->ptr(data, i);
+			if(field->type == number_type) {
+				if(field->reference) {
+
+				} else
+					set(pv, field->lenght);
+			} else if(field->type == text_type) {
+				if(field->size==sizeof(const char*))
+					setstring((const char**)pv);
+			}
+		}
+	}
+
+	void set(void* data, const bsreq* fields) {
+		for(auto p = fields; *p; p++)
+			setfield(data, p);
+	}
+
+	void serialize(array& source, const bsreq* fields) {
+		get(fields);
+		archive::set(requisits);
+		archive::set(source.count);
+		auto pb = source.begin();
+		auto pe = source.end();
+		for(pb = source.begin(); pb < pe; pb += source.size)
+			set(pb, fields);
+	}
+
 };
 
 template<> void archive::set<bsreq>(bsreq& e) {
@@ -48,6 +82,5 @@ void bsdata::write(const char* url, const array& source, const bsreq* fields) {
 		return;
 	if(!a.version(1, 0))
 		return;
-	a.get(fields);
-	a.set(a.requisits);
+	a.serialize(const_cast<array&>(source), fields);
 }
