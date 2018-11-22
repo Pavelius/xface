@@ -4,7 +4,7 @@
 
 unsigned strlib::add(const char* v) {
 	if(!v || v[0] == 0)
-		return 0;
+		return 0xFFFFFFFF;
 	for(unsigned i = 0; i < indecies.count; i++) {
 		if(strcmp(data.data + indecies.data[i], v) == 0)
 			return i;

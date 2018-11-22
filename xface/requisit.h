@@ -1,4 +1,4 @@
-#include "collection.h"
+#include "strlib.h"
 
 #pragma once
 
@@ -27,15 +27,14 @@ struct manager {
 	unsigned		add(unsigned parent, const char* name, unsigned type, unsigned count = 1, unsigned size = 0);
 	unsigned		create(const char* id);
 	unsigned		dereference(unsigned v) const;
-	unsigned		get(const char* v);
+	unsigned		get(const char* v) { return strings.add(v); }
 	unsigned		getsize(unsigned v) const;
 	bool			ispredefined(unsigned v) const { return v >= Number; }
 	bool			isreference(unsigned v) const;
 	unsigned		reference(unsigned v);
 private:
-	arem<unsigned>	strings;
+	strlib			strings;
 	arem<classtype>	classes;
 	arem<requisit>	requisits;
-	arem<char>		section_strings;
 };
 }

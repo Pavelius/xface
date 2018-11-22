@@ -19,22 +19,6 @@ struct serial {
 };
 }
 
-unsigned manager::get(const char* v) {
-	if(!v || v[0] == 0)
-		return Null;
-	for(unsigned i = 0; i < strings.count; i++) {
-		if(strcmp(section_strings.data + strings.data[i], v) == 0)
-			return i;
-	}
-	auto result = strings.count;
-	strings.add(section_strings.count);
-	auto n = zlen(v);
-	section_strings.reserve(section_strings.count + n + 1);
-	memcpy(section_strings.data + section_strings.count, v, n + 1);
-	section_strings.count += n + 1;
-	return result;
-}
-
 unsigned manager::getsize(unsigned v) const {
 	return requisits.data[v].size;
 }

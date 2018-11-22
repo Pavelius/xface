@@ -117,6 +117,7 @@ struct array {
 	template<typename T, unsigned N> constexpr array(adat<T, N>& e) : array(e.data, sizeof(T), N, e.count) {}
 	template<typename T> constexpr array(const aref<T>& e) : array(e.data, sizeof(T), e.count) {}
 	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
+	template<typename T> constexpr array(T(&e)[]) : array(e, sizeof(T), 1) {}
 	~array();
 	void*					add();
 	void					add(const void* element);
