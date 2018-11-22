@@ -62,6 +62,28 @@ static bsreq alignment_type[] = {
 {}};
 BSMETA(alignment);
 
+static struct element {
+	const char*		surname;
+	const char*		name;
+	int				mark;
+	char			radio;
+	char			age;
+	gender_s		gender;
+	alignment_s		alignment;
+} element_data[] = {{"Ivanov", "Ivan", 0, 0, 20, Male, ChaoticGood},
+{"Petrov", "Peter", 0, 0, 25, Male, ChaoticNeutral},
+{"Ludina", "Iren", 0, 0, 25, Female, LawfulGood},
+};
+static bsreq element_type[] = {
+	BSREQ(element, mark, number_type),
+	BSREQ(element, radio, number_type),
+	BSREQ(element, name, text_type),
+	BSREQ(element, surname, text_type),
+	BSREQ(element, age, number_type),
+	BSREQ(element, gender, gender_type),
+	BSREQ(element, alignment, alignment_type),
+{}};
+
 struct testinfo {
 	const char*		name;
 	int				value;
@@ -237,24 +259,6 @@ static void test_tree() {
 }
 
 static void test_widget() {
-	struct element {
-		const char*		surname;
-		const char*		name;
-		int				mark;
-		char			radio;
-		char			age;
-		gender_s		gender;
-		alignment_s		alignment;
-	};
-	static bsreq element_type[] = {
-		BSREQ(element, mark, number_type),
-		BSREQ(element, radio, number_type),
-		BSREQ(element, name, text_type),
-		BSREQ(element, surname, text_type),
-		BSREQ(element, age, number_type),
-		BSREQ(element, gender, gender_type),
-		BSREQ(element, alignment, alignment_type),
-	{}};
 	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
 	{Radio, "radio", "Nokia", 1},
 	{Radio, "radio", "Google", 2},
@@ -399,6 +403,10 @@ static void test_requisit() {
 	man.add(p2, "point", man.reference(p2), 2);
 }
 
+static void test_binary_serial() {
+	bsdata::write("test.mtd", element_data, element_type);
+}
+
 static bool test_map() {
 	amap<const char*, int> map;
 	map.add("Test", 1);
@@ -416,6 +424,7 @@ int main() {
 	test_requisit();
 	test_array();
 	test_map();
+	test_binary_serial();
 	set_light_theme();
 	// Инициализация библиотеки
 	initialize();

@@ -100,6 +100,7 @@ struct amap : arem<pair<K, V>> {
 	const pair<K, V>*		findv(V value) const { for(auto& e : *this) if(e.value == value) return &e; return 0; }
 	V						get(K key) const { auto p = find(key); if(p) return p->value; return V(); }
 	K						getv(V value) const { auto p = findv(value); if(p) return p->key; return K(); }
+	bool					is(const K& key) const { return find(key) != 0; }
 };
 // Abstract array vector
 struct array {
@@ -115,7 +116,7 @@ struct array {
 	constexpr array(void* data, unsigned size, unsigned count_maximum, unsigned& count) : data(data), size(size), count_maximum(count_maximum), count(count), count_value(0), can_grow(false) {}
 	template<typename T, unsigned N> constexpr array(adat<T, N>& e) : array(e.data, sizeof(T), N, e.count) {}
 	template<typename T> constexpr array(const aref<T>& e) : array(e.data, sizeof(T), e.count) {}
-	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e.data, sizeof(T), N) {}
+	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
 	~array();
 	void*					add();
 	void					add(const void* element);

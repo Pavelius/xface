@@ -6,26 +6,11 @@
 
 // Fast and simple driver for streaming binary data
 struct archive {
-
-	struct dataset {
-		void*			data;
-		template<class T, unsigned N> constexpr dataset(T(&data)[N]) : data(&data), size(sizeof(T)), count(current_count), current_count(N), maximum_count(N) {}
-		template<class T, unsigned N> constexpr dataset(adat<T, N>& data) : data(&data.data), size(sizeof(T)), count(data.count), current_count(0), maximum_count(N) {}
-		void*			get(int index) const { return (char*)data + index * size; }
-		int				indexof(void* p) const { if(((char*)p) >= ((char*)data) && ((char*)p) < ((char*)data + size * count)) return ((char*)p - (char*)data) / size; return -1; }
-	private:
-		unsigned		size;
-		unsigned		maximum_count;
-		unsigned		current_count;
-		unsigned&		count;
-	};
 	io::stream&			source;
 	bool				writemode;
-	aref<dataset>		pointers;
-
+	aref<array>			pointers;
 	constexpr archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
-	constexpr archive(io::stream& source, bool writemode, const aref<dataset>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
-
+	constexpr archive(io::stream& source, bool writemode, const aref<array>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 	virtual void		set(void* value, unsigned size);
 	virtual void		setpointer(void** value);
 	virtual void		setstring(const char*& value);
