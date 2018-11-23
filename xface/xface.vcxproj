@@ -161,6 +161,7 @@
     <ClCompile Include="stringcreator.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="surface_serial.cpp" />
+    <ClCompile Include="sz2numf.cpp" />
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="win_clipboard.cpp" />
     <ClCompile Include="win_draw.cpp" />

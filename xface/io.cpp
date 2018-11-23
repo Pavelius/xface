@@ -154,11 +154,9 @@ bool io::read(const char* url, io::reader& e) {
 
 bool io::read(const char* url, const char* root_name, void* param) {
 	struct proxy : public io::reader {
-
 		const char*		root_name;
 		void*			param;
 		io::strategy*	st;
-
 		void open(node& e) {
 			switch(e.getlevel()) {
 			case 0:
@@ -178,7 +176,6 @@ bool io::read(const char* url, const char* root_name, void* param) {
 				break;
 			}
 		}
-
 		void set(node& e, int value) {
 			if(!st)
 				e.skip = true;

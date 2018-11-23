@@ -203,14 +203,20 @@ void table::viewtotal(rect rc) const {
 
 void table::ensurevisible() {
 	list::ensurevisible();
-	// TODO: —делать позицинирование €чейки по горизонтале
+	auto rc = getrect(current, current_column);
+	auto x1 = rc.x1 - (view_rect.x1 - origin_width);
+	auto x2 = rc.x2 - (view_rect.x1 - origin_width);
+	if(x1 > origin_width + view_rect.width())
+		origin_width = x1;
+	if(x2 < origin_width)
+		origin_width = x1;
 }
 
-rect table::getrect(const rect& rc, int row, int column) const {
+rect table::getrect(int row, int column) const {
 	rect rs;
-	rs.x1 = rc.x1 - origin_width;
+	rs.x1 = view_rect.x1 - origin_width;
 	rs.x2 = rs.x1;
-	rs.y1 = rc.y1 - origin + lines_per_page * row;
+	rs.y1 = view_rect.y1 - origin + lines_per_page * row;
 	rs.y2 = rs.y1 + getrowheight();
 	for(auto i = 0; i < column; i++) {
 		if(!columns[i].isvisible())

@@ -189,7 +189,7 @@ struct table : list {
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int				getnumber(int line, int column) const { return 0; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
-	rect					getrect(const rect& rc, int row, int column) const;
+	rect					getrect(int row, int column) const;
 	virtual int				gettotal(int column) const { return 0; }
 	virtual const char*		gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	int						getvalid(int column, int direction = 1) const;

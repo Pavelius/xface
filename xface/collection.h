@@ -5,6 +5,9 @@
 unsigned					rmoptimal(unsigned need_count);
 void*						rmreserve(void* data, unsigned new_size);
 
+// Untility structures
+template<typename T, T v> struct static_value { static constexpr T value = v; };
+template<int v> struct static_int : static_value<int, v> {};
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
