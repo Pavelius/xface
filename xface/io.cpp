@@ -78,6 +78,61 @@ char* loadt(const char* url, int* size) {
 	return (char*)p;
 }
 
+char* szurlc(char* result) {
+	char* p = result;
+	while(*p) {
+		if(*p == '\\')
+			*p = '/';
+		p++;
+	}
+	return zskipspcr(result);
+}
+
+char* szurl(char* p, const char* path, const char* name, const char* ext, const char* suffix) {
+	if(!p)
+		return 0;
+	*p = 0;
+	if(path) {
+		zcpy(p, path);
+		zcat(p, "/");
+	}
+	if(name)
+		zcat(p, name);
+	if(suffix)
+		zcat(p, suffix);
+	if(ext && szext(p) == 0) {
+		zcat(p, ".");
+		zcat(p, ext);
+	}
+	return szurlc(p);
+}
+
+const char* szext(const char* path) {
+	for(const char* r = zend((char*)path); r > path; r--) {
+		if(*r == '.')
+			return r + 1;
+		else if(*r == '\\' || *r == '/')
+			return 0;
+	}
+	return 0;
+}
+
+const char* szfname(const char* path) {
+	for(const char* r = zend((char*)path); r > path; r--) {
+		if(*r == '\\' || *r == '/')
+			return r + 1;
+	}
+	return path;
+}
+
+char* szfnamewe(char* result, const char* name) {
+	zcpy(result, szfname(name));
+	char* p = (char*)szext(result);
+	if(p && p != result)
+		p[-1] = 0;
+	return result;
+}
+
 io::plugin* io::plugin::first;
 
 io::plugin::plugin() : name(0), fullname(0), filter(0) {
