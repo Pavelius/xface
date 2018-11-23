@@ -53,17 +53,13 @@ struct aref {
 	constexpr T& operator[](int index) { return data[index]; }
 	constexpr const T& operator[](int index) const { return data[index]; }
 	explicit operator bool() const { return count != 0; }
-	T*						add() { return &data[count++]; }
-	void					add(const T& e) { data[count++] = e; }
 	constexpr T*			begin() { return data; }
 	constexpr const T*		begin() const { return data; }
-	void					clear() { count = 0; }
 	constexpr T*			end() { return data + count; }
 	constexpr const T*		end() const { return data + count; }
 	int						indexof(const T* t) const { if(t<data || t>data + count) return -1; return t - data; }
 	int						indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
 	bool					is(const T t) const { return indexof(t) != -1; }
-	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
 };
 // Autogrow typized array
 template<class T>
@@ -71,8 +67,10 @@ struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(), count_maximum() {}
 	~arem() { if(this->data) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
-	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++];}
+	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }
+	void					clear() { count = 0; }
+	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
 	void					reserve(unsigned count) { if(count >= count_maximum) { count_maximum = rmoptimal(count + 1); this->data = (T*)rmreserve(this->data, count_maximum * sizeof(T)); } }
 };
 // Abstract flag data bazed on enumerator
@@ -95,12 +93,22 @@ struct pair {
 // Abstract map collection
 template<typename K, typename V>
 struct amap : arem<pair<K, V>> {
-	void					add(const K& key, const V& value) { auto p = const_cast<pair<K,V>*>(find(key)); if(!p) { p = arem<pair<K,V>>::add(); p->key = key; } p->value = value; }
+	void					add(const K& key, const V& value) { auto p = const_cast<pair<K, V>*>(find(key)); if(!p) { p = arem<pair<K, V>>::add(); p->key = key; } p->value = value; }
 	const pair<K, V>*		find(K key) const { for(auto& e : *this) if(e.key == key) return &e; return 0; }
 	const pair<K, V>*		findv(V value) const { for(auto& e : *this) if(e.value == value) return &e; return 0; }
 	V						get(K key) const { auto p = find(key); if(p) return p->value; return V(); }
 	K						getv(V value) const { auto p = findv(value); if(p) return p->key; return K(); }
 	bool					is(const K& key) const { return find(key) != 0; }
+};
+template<typename T = char>
+class iterator {
+	char*					current;
+	unsigned				size;
+public:
+	constexpr iterator(char* current, unsigned size) : current(current), size(size) {}
+	constexpr T* operator*() const { return (T*)current; }
+	constexpr bool operator!=(const iterator& e) const { return e.current != current; }
+	constexpr void operator++() { current += size; }
 };
 // Abstract array vector
 struct array {
@@ -140,4 +148,18 @@ struct array {
 	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);
 	void					swap(int i1, int i2);
 	void					reserve(unsigned count);
+};
+struct arrayref {
+	char**					data;
+	unsigned&				count;
+	unsigned				size;
+	template<typename T> constexpr arrayref(aref<T>& e) : data((char**)&e.data), count(e.count), size(sizeof(T)), count_value(), data_value() {}
+	template<typename T, unsigned N> constexpr arrayref(adat<T, N>& e) : data((char**)&e.data), count(e.count), size(sizeof(T)), count_value(), data_value() {}
+	template<typename T> constexpr arrayref(T(&e)[]) : data(&data_value), count(count_value), size(sizeof(T)), count_value(1), data_value((char*)&e) {}
+	template<typename T, unsigned N> constexpr arrayref(T(&e)[N]) : data(&data_value), count(count_value), size(sizeof(T)), count_value(), data_value((char*)&e) {}
+	void*					get(int index) const { return (char*)(*data) + size * index; }
+	int						indexof(const void* t) const { if(t<(*data) || t>(*data) + count*size) return -1; return ((char*)t - (*data))/size; }
+private:
+	unsigned				count_value;
+	char*					data_value;
 };

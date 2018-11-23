@@ -106,6 +106,7 @@ void list::treemark(rect rc, int index, int level) const {
 }
 
 void list::view(const rect& rcorigin) {
+	view_rect = rcorigin;
 	control::view(rcorigin);
 	current_rect.clear();
 	rect rc = rcorigin;
@@ -162,6 +163,10 @@ void list::view(const rect& rcorigin) {
 	if(enable_scrollh)
 		draw::scrollh((int)this, {rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
 			origin_width, pixels_per_width, maximum_width, isfocused());
+}
+
+void list::redraw() {
+	list::view(view_rect);
 }
 
 bool list::keyinput(unsigned id) {

@@ -3,8 +3,8 @@
 
 using namespace draw::controls;
 
-void table::update_columns() {
-	int w1 = view_rect.width();
+void table::update_columns(const rect& rc) {
+	int w1 = rc.width();
 	int w2 = 0;
 	int c2 = 0;
 	const int min_width = 8;
@@ -222,12 +222,11 @@ rect table::getrect(const rect& rc, int row, int column) const {
 }
 
 void table::view(const rect& rc) {
-	view_rect = rc;
 	current_hilite_column = -1;
 	rect rt;
 	rt.y1 = rc.y1;
 	rt.y2 = rc.y2;
-	update_columns();
+	update_columns(rc);
 	maximum_width = 0;
 	for(unsigned i = 0; i < columns.count; i++) {
 		if(!columns[i].isvisible())
@@ -263,11 +262,6 @@ bool table::keyinput(unsigned id) {
 	default: return list::keyinput(id);
 	}
 	return true;
-}
-
-void table::redraw() {
-	view(view_rect);
-	// TODO: сделать этот метод в list чтобы обновлялось только окно списка
 }
 
 column* table::addcol(const char* id, const char* name, const char* type, draw::column_size_s size, int width) {

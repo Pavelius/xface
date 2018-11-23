@@ -8,9 +8,9 @@
 struct archive {
 	io::stream&			source;
 	bool				writemode;
-	aref<array>			pointers;
+	aref<arrayref>		pointers;
 	constexpr archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
-	constexpr archive(io::stream& source, bool writemode, const aref<array>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
+	constexpr archive(io::stream& source, bool writemode, const aref<arrayref>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 	virtual void		set(void* value, unsigned size);
 	virtual void		setpointer(void** value);
 	virtual void		setstring(const char** value);
