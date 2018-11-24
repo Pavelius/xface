@@ -17,6 +17,7 @@ struct grid : table, array {
 	bool					addcopy(bool run);
 	virtual void			adding(void* value); // Default proc set all bits to zero
 	void					celldate(const rect& rc, int line, int column);
+	void					celldatetime(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
 	bool					changing(int line, int column, const char* name) override;
 	void					clickcolumn(int column) const override;

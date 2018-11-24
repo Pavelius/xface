@@ -230,7 +230,7 @@ static void test_grid() {
 	test.addcol("gender", "Пол", "ref");
 	test.addcol("alignment", "Мировозрение", "ref");
 	test.addcol("alignment.id", "Мировозрение (англ)", "text");
-	test.addcol("date", "Дата", "date");
+	test.addcol("date", "Дата", "datetime");
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;

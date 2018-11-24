@@ -40,11 +40,11 @@ void grid::sort(int column, bool ascending) {
 	grid_sort_param param;
 	param.element = this;
 	param.column = column;
-	array::sort(0, getcount()-1, ascending ? compare_column_ascending : compare_column_descending, &param);
+	array::sort(0, getcount() - 1, ascending ? compare_column_ascending : compare_column_descending, &param);
 }
 
 static void table_sort_column() {
-	if(hot.param==current_sort_column)
+	if(hot.param == current_sort_column)
 		current_order = !current_order;
 	else {
 		current_sort_column = hot.param;
@@ -191,7 +191,7 @@ bool grid::moveup(bool run) {
 		return false;
 	if(current <= 0)
 		return false;
-	if(getcount()==1)
+	if(getcount() == 1)
 		return false;
 	if(run) {
 		swap(current - 1, current);
@@ -227,7 +227,7 @@ bool grid::remove(bool run) {
 bool grid::sortas(bool run) {
 	if(no_change_order)
 		return false;
-	if(getmaximum()<=1)
+	if(getmaximum() <= 1)
 		return false;
 	if(run)
 		sort(current_column, true);
@@ -255,10 +255,21 @@ void grid::celldate(const rect& rc, int line, int column) {
 	}
 }
 
+void grid::celldatetime(const rect& rc, int line, int column) {
+	char temp[260]; temp[0] = 0;
+	datetime d(getnumber(line, column));
+	if(d) {
+		szprint(temp, zendof(temp), "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
+			d.day(), d.month(), d.year(), d.hour(), d.minute());
+		cellhilite(rc, line, column, temp, AlignLeft);
+		draw::text(rc, temp, AlignLeft);
+	}
+}
+
 const visual* grid::getvisuals() const {
 	static visual elements[] = {{table::getvisuals()},
-	{"date", "Дата", 8, textw("0")*10+4 + 32, SizeResized, &grid::celldate},
-	{"datetime", "Дата и время", 8, 100, SizeResized, &grid::celldate},
+	{"date", "Дата", 8, textw("0") * 10 + 4, SizeResized, &grid::celldate},
+	{"datetime", "Дата и время", 8, textw("0") * 15 + 4, SizeResized, &grid::celldatetime},
 	{"ref", "Ссылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
 	{}};
 	return elements;
