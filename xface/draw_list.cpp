@@ -7,6 +7,7 @@ static char		search_text[32];
 static unsigned	search_time;
 
 void list::ensurevisible() {
+	correction();
 	if(current < origin)
 		origin = current;
 	if(current > origin + lines_per_page - 1)
@@ -18,9 +19,18 @@ void list::select(int index, int column) {
 	ensurevisible();
 }
 
+void list::correction_width() {
+	auto maximum_width = getmaximumwidth();
+	if(pixels_per_width) {
+		if(origin_width > maximum_width - pixels_per_width)
+			origin_width = maximum_width - pixels_per_width;
+		if(origin_width < 0)
+			origin_width = 0;
+	}
+}
+
 void list::correction() {
 	auto maximum = getmaximum();
-	auto maximum_width = getmaximumwidth();
 	if(current >= maximum)
 		current = maximum - 1;
 	if(current < 0)
@@ -30,12 +40,6 @@ void list::correction() {
 			origin = maximum - lines_per_page;
 		if(origin < 0)
 			origin = 0;
-	}
-	if(pixels_per_width) {
-		if(origin_width > maximum_width - pixels_per_width)
-			origin_width = maximum_width - pixels_per_width;
-		if(origin_width < 0)
-			origin_width = 0;
 	}
 }
 
@@ -109,15 +113,18 @@ void list::treemark(rect rc, int index, int level) const {
 
 void list::view(const rect& rcorigin) {
 	view_rect = rcorigin;
-	control::view(rcorigin);
-	current_rect.clear();
 	rect rc = rcorigin;
+	pixels_per_width = rc.width() - 1;
+	correction_width();
+	if(show_header)
+		rc.y1 += rowheader(rc);
+	control::view(rc);
+	current_rect.clear();
 	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
 	current_hilite = -1;
 	lines_per_page = getlinesperpage(rc.height());
-	pixels_per_width = rc.width();
 	correction();
 	auto maximum = getmaximum();
 	auto maximum_width = getmaximumwidth();
@@ -176,19 +183,16 @@ bool list::keyinput(unsigned id) {
 	switch(id) {
 	case KeyUp:
 		current--;
-		correction();
 		ensurevisible();
 		break;
 	case KeyDown:
 		current++;
-		correction();
 		ensurevisible();
 		break;
 	case KeyHome:
 		if(current == 0)
 			break;
 		current = 0;
-		correction();
 		ensurevisible();
 		break;
 	case KeyEnd:
@@ -196,7 +200,6 @@ bool list::keyinput(unsigned id) {
 		if(current == m - 1)
 			break;
 		current = m - 1;
-		correction();
 		ensurevisible();
 		break;
 	case KeyPageUp:
@@ -204,7 +207,6 @@ bool list::keyinput(unsigned id) {
 			current = origin;
 		else
 			current -= lines_per_page - 1;
-		correction();
 		ensurevisible();
 		break;
 	case KeyPageDown:
@@ -212,7 +214,6 @@ bool list::keyinput(unsigned id) {
 			current = (origin + lines_per_page - 1);
 		else
 			current += lines_per_page - 1;
-		correction();
 		ensurevisible();
 		break;
 	case InputSymbol:
@@ -226,7 +227,6 @@ bool list::keyinput(unsigned id) {
 			int i1 = find(-1, -1, search_text);
 			if(i1 != -1) {
 				current = i1;
-				correction();
 				ensurevisible();
 			}
 		}

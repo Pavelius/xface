@@ -2,6 +2,7 @@
 
 // Support class making string copy from strings storage.
 template <class T> struct strcol {
+
 	strcol*	next;
 	int		count;
 	T		data[256 * 255 / sizeof(T)]; // Inner buffer

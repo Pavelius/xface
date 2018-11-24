@@ -109,14 +109,16 @@ struct control {
 struct list : control {
 	int						origin, current, current_hilite, origin_width;
 	int						lines_per_page, pixels_per_line, pixels_per_width;
-	bool					show_grid_lines, show_selection;
+	bool					show_grid_lines, show_selection, show_header;
 	bool					hilite_odd_lines;
 	rect					current_rect, view_rect;
 	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
-		lines_per_page(0), pixels_per_line(0), pixels_per_width(0), show_grid_lines(false), show_selection(true), hilite_odd_lines(true),
+		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
+		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true),
 		current_rect(), view_rect() {
 	}
 	void					correction();
+	void					correction_width();
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
 	int						find(int line, int column, const char* name, int lenght = -1) const;
 	virtual int				getcolumn() const { return 0; } // Get current column
@@ -139,6 +141,7 @@ struct list : control {
 	virtual void			mouseinput(unsigned id, point position) override;
 	virtual void			mouseselect(int id, bool pressed);
 	virtual void			mousewheel(unsigned id, point position, int step) override;
+	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			row(const rect& rc, int index);
 	virtual void			rowhilite(const rect& rc, int index) const;
 	void					treemark(rect rc, int index, int level) const;
@@ -164,10 +167,8 @@ struct table : list {
 	bool					read_only;
 	select_mode_s			select_mode;
 	bool					show_totals;
-	bool					show_header;
 	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
-		show_totals(false), show_header(true),
-		no_change_order(false), no_change_count(false), read_only(false),
+		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
 		select_mode(SelectCell) {
 	}
 	virtual column*			addcol(const char* id, const char* name, const char* type, column_size_s size = SizeDefault, int width = 0);
@@ -198,7 +199,7 @@ struct table : list {
 	bool					keyinput(unsigned id) override;
 	void					mouseselect(int id, bool pressed) override;
 	virtual void			row(const rect& rc, int index) override; // Draw single row - part of list
-	virtual int				rowheader(const rect& rc) const; // Draw header row
+	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	void					select(int index, int column = 0) override;
 	void					view(const rect& rc) override;
 	void					viewtotal(rect rc) const;

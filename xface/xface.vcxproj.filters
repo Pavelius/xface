@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="runtime">
-      <UniqueIdentifier>{5c5eec06-e7bc-432a-80a7-f808a65c30b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="collections">
       <UniqueIdentifier>{32b6fc22-5eb7-44ef-be4e-11fec932a46b}</UniqueIdentifier>
     </Filter>
@@ -33,12 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="crt.cpp">
-      <Filter>runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="io.cpp">
-      <Filter>runtime</Filter>
-    </ClCompile>
     <ClCompile Include="collection.cpp">
       <Filter>collections</Filter>
     </ClCompile>
@@ -186,17 +177,17 @@
     <ClCompile Include="bsdata_serial_bin.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="crt.cpp">
+      <Filter>strings</Filter>
+    </ClCompile>
     <ClCompile Include="sz2numf.cpp">
-      <Filter>runtime</Filter>
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="io.cpp">
+      <Filter>support</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="crt.h">
-      <Filter>runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="io.h">
-      <Filter>runtime</Filter>
-    </ClInclude>
     <ClInclude Include="collection.h">
       <Filter>collections</Filter>
     </ClInclude>
@@ -262,6 +253,12 @@
     </ClInclude>
     <ClInclude Include="strlib.h">
       <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="crt.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="io.h">
+      <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

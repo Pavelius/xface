@@ -203,6 +203,7 @@ void table::viewtotal(rect rc) const {
 
 void table::ensurevisible() {
 	list::ensurevisible();
+	correction_width();
 	auto rc = getrect(current, current_column);
 	auto x1 = rc.x1 - (view_rect.x1 - origin_width);
 	auto x2 = rc.x2 - (view_rect.x1 - origin_width);
@@ -247,14 +248,11 @@ void table::view(const rect& rc) {
 	// Для того, чтобы не было видно самую правую границу колонки
 	if(maximum_width > 0)
 		maximum_width -= 1;
-	rt = rc;
-	if(show_header)
-		rt.y1 += rowheader(rt);
 	if(show_totals) {
-		list::view({rt.x1, rt.y1, rt.x2, rt.y2 - getrowheight()});
-		viewtotal({rt.x1, rt.y2 - getrowheight(), rt.x2, rt.y2});
+		list::view({rc.x1, rc.y1, rc.x2, rc.y2 - getrowheight()});
+		viewtotal({rc.x1, rc.y2 - getrowheight(), rc.x2, rc.y2});
 	} else
-		list::view(rt);
+		list::view(rc);
 }
 
 bool table::keyinput(unsigned id) {

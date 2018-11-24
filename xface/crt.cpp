@@ -1,40 +1,6 @@
 #include "crt.h"
 #include "io.h"
 
-const char* szskipcr(const char* p) {
-	if(*p == '\n') {
-		p++;
-		if(*p == '\r')
-			p++;
-	} else if(*p == '\r') {
-		p++;
-		if(*p == '\n')
-			p++;
-	}
-	return p;
-}
-
-const char* szskipcrr(const char* p0, const char* p) {
-	if(!p)
-		return 0;
-	if(p0 >= p)
-		return p;
-	if(p[-1] == '\n') {
-		p--;
-		if(p0 >= p)
-			return p;
-		if(p[-1] == '\r')
-			p--;
-	} else if(p[-1] == '\r') {
-		p--;
-		if(p0 >= p)
-			return p;
-		if(p[-1] == '\n')
-			p--;
-	}
-	return p;
-}
-
 int szcmpi(const char* p1, const char* p2) {
 	while(*p2 && *p1) {
 		unsigned s1 = szupper(szget(&p1));
