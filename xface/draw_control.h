@@ -141,15 +141,16 @@ struct list : control {
 	virtual void			mouseinput(unsigned id, point position) override;
 	virtual void			mouseselect(int id, bool pressed);
 	virtual void			mousewheel(unsigned id, point position, int step) override;
-	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			row(const rect& rc, int index);
+	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			rowhilite(const rect& rc, int index) const;
 	void					treemark(rect rc, int index, int level) const;
 	virtual bool			treemarking(bool run) { return true; }
 	void					view(const rect& rc) override;
 };
+struct visual;
 struct column {
-	const struct visual*	method;
+	const visual*			method;
 	const char*				id;
 	const char*				title;
 	int						width;
@@ -200,9 +201,9 @@ struct table : list {
 	void					mouseselect(int id, bool pressed) override;
 	virtual void			row(const rect& rc, int index) override; // Draw single row - part of list
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
+	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
 	void					view(const rect& rc) override;
-	void					viewtotal(rect rc) const;
 private:
 	void					update_columns(const rect& rc);
 };

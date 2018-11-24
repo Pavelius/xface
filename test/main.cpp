@@ -136,7 +136,7 @@ static int show_control(controls::control& e) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
+		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад", 0, KeyEscape);
 		rc.y1 += e.toolbar(rc.x1, rc.y1, rc.width());
 		e.view(rc);
 		domodal();
@@ -150,10 +150,17 @@ static int show_table(controls::table& e) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		rc.y2 -= button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 3, 100, 0, cmd(buttoncancel), "Назад");
-		rc.y2 -= checkbox(rc.x1, rc.y2 - draw::texth() - metrics::padding, rc.width(), e.show_grid_lines, "Показывть линии");
-		rc.y2 -= checkbox(rc.x1, rc.y2 - draw::texth() - metrics::padding, rc.width(), e.show_header, "Показывть заголовок");
-		rc.y2 -= checkbox(rc.x1, rc.y2 - draw::texth() - metrics::padding, rc.width(), e.hilite_odd_lines, "Подсвечивать нечетные рядки");
+		button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 2, 100, 0, cmd(buttoncancel), "Назад", 0, KeyEscape);
+		auto y0 = rc.y2 - (draw::texth() + metrics::padding) * 3;
+		auto x1 = rc.x1, y1 = y0, width = 300;
+		y1 += checkbox(x1, y1, width, e.show_grid_lines, "Показывть линии");
+		y1 += checkbox(x1, y1, width, e.show_header, "Показывть заголовок");
+		y1 += checkbox(x1, y1, width, e.hilite_odd_lines, "Подсвечивать нечетные рядки");
+		x1 += width + metrics::padding, y1 = y0;
+		y1 += checkbox(x1, y1, width, e.show_totals, "Показывть итоги");
+		y1 += checkbox(x1, y1, width, e.show_border, "Показывть границы");
+		y1 += checkbox(x1, y1, width, e.show_background, "Показывать фон");
+		rc.y2 = y0 - metrics::padding;
 		rc.y1 += e.toolbar(rc.x1, rc.y1, rc.width());
 		e.view(rc);
 		domodal();
@@ -170,7 +177,7 @@ static void basic_drawing() {
 		auto y = 100 + tick % 200;
 		circlef(x, y, 50 + tick % 40, colors::form);
 		circle(x, y, 50 + tick % 40, colors::border);
-		button(getwidth() - 110, 10, 100, buttoncancel, "Отмена");
+		button(10, 10, 100, 0, cmd(buttoncancel), "Отмена", 0, KeyEscape);
 		tick++;
 		domodal();
 	}
@@ -191,7 +198,7 @@ static void many_lines() {
 		line(x, y, x + 60, y + 100);
 		rectb({300, 100, 500, 300}, colors::green);
 		linw = 1.0;
-		button(getwidth() - 110, 10, 100, buttoncancel, "Отмена");
+		button(10, 10, 100, 0, cmd(buttoncancel), "Отмена", 0, KeyEscape);
 		domodal();
 	}
 }
@@ -331,12 +338,14 @@ static void test_drag_drop() {
 			rc.x2 = rc.x1 + sx;
 			rc.y2 = rc.y1 + sy;
 			char temp[260];
-			text(10, 10, szprints(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
+			text(10, 42, szprints(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
 		} else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
 			drag::begin(1);
+		if(drag::active(1))
+			line(rc.x1, rc.y1, drag::mouse.x, drag::mouse.y, colors::red);
 		rectf(rc, colors::form);
 		rectb(rc, colors::border);
-		button(getwidth() - 110, 10, 100, buttoncancel, "Отмена");
+		button(10, 10, 100, 0, cmd(buttoncancel), "Отмена", 0, KeyEscape);
 		domodal();
 	}
 }
@@ -349,12 +358,12 @@ static void start_menu() {
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
 	{"Линии", many_lines},
+	{"Перетаскивание", test_drag_drop},
 	{"Список", test_list},
 	{"Таблица с ячейками", test_grid},
 	{"Таблица ссылок", test_grid_ref},
 	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
-	{"Перетаскивание", test_drag_drop},
 	{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -430,8 +439,8 @@ int main() {
 	// Инициализация библиотеки
 	initialize();
 	// Создание окна
-	create(-1, -1, 640, 480, WFResize | WFMinmax, 32);
-	setcaption("X-Face C++ library");
+	create(-1, -1, 800, 600, WFResize | WFMinmax, 32);
+	setcaption("X-Face C++ library samples");
 	start_menu();
 	return 0;
 }

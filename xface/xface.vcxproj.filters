@@ -260,5 +260,8 @@
     <ClInclude Include="io.h">
       <Filter>support</Filter>
     </ClInclude>
+    <ClInclude Include="datetime.h">
+      <Filter>strings</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

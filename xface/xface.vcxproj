@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h" />
+    <ClInclude Include="datetime.h" />
     <ClInclude Include="requisit.h" />
     <ClInclude Include="bsdata.h" />
     <ClInclude Include="bsreq.h" />

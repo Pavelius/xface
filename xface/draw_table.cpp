@@ -84,7 +84,7 @@ int table::rowheader(const rect& rc) const {
 	gradv(rch, b1, b2);
 	rectb(rch, colors::border);
 	draw::state push;
-	draw::setclip(rc);
+	draw::setclip({rc.x1, rc.y1, rc.x2, rc.y2+1});
 	color active = colors::button.mix(colors::edit, 128);
 	color a1 = active.lighten();
 	color a2 = active.darken();
@@ -137,6 +137,46 @@ int table::rowheader(const rect& rc) const {
 	return height;
 }
 
+void table::rowtotal(const rect& rc) const {
+	const int header_padding = 4;
+	char temp[260]; auto height = getrowheight();
+	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
+	color b1 = colors::button.lighten();
+	color b2 = colors::button.darken();
+	gradv(rch, b1, b2);
+	rectb(rch, colors::border);
+	draw::state push;
+	draw::setclip({rc.x1, rc.y1, rc.x2, rc.y2 + 1});
+	color active = colors::button.mix(colors::edit, 128);
+	color a1 = active.lighten();
+	color a2 = active.darken();
+	rect r1;
+	r1.x1 = rch.x1 - origin_width;
+	r1.x2 = r1.x1;
+	r1.y1 = rch.y1;
+	r1.y2 = rch.y2;
+	for(unsigned i = 0; i < columns.count; i++) {
+		if(!columns[i].isvisible())
+			continue;
+		r1.x2 = r1.x2 + columns[i].width;
+		if(columns[i].size == SizeInner)
+			continue;
+		line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
+		temp[0] = 0;
+		auto p = gettotal(temp, temp + sizeof(temp) - 1, i);
+		if(!p) {
+			auto result = gettotal(i);
+			if(result) {
+				szprints(temp, temp + sizeof(temp) - 1, "%1i", result);
+				p = temp;
+			}
+		}
+		if(p)
+			draw::text(r1, p, AlignRight);
+		r1.x1 = r1.x2;
+	}
+}
+
 void table::row(const rect& rc, int index) {
 	char temp[260];
 	area(rc);
@@ -176,28 +216,6 @@ void table::row(const rect& rc, int index) {
 		temp[0] = 0;
 		(this->*pc->method->render)(rt, index, i);
 		x1 += rt.width() + 8;
-	}
-}
-
-void table::viewtotal(rect rc) const {
-	rc.offset(1, 1);
-	rc.offset(4, 4);
-	for(unsigned i = 0; i < columns.count; i++) {
-		if(!columns[i].isvisible())
-			continue;
-		char temp[260]; temp[0] = 0;
-		rect rt = {rc.x1, rc.y1, rc.x1 + columns[i].width - 4, rc.y2};
-		auto p = gettotal(temp, temp + sizeof(temp) - 1, i);
-		if(!p) {
-			auto result = gettotal(i);
-			if(result) {
-				szprints(temp, temp + sizeof(temp) - 1, "%1i", result);
-				p = temp;
-			}
-		}
-		if(p)
-			draw::text(rt, p, AlignRight);
-		rc.x1 += columns[i].width;
 	}
 }
 
@@ -252,7 +270,7 @@ void table::view(const rect& rc) {
 		maximum_width -= 1;
 	if(show_totals) {
 		list::view({rc.x1, rc.y1, rc.x2, rc.y2 - getrowheight()});
-		viewtotal({rc.x1, rc.y2 - getrowheight(), rc.x2, rc.y2});
+		rowtotal({rc.x1, rc.y2 - getrowheight(), rc.x2, rc.y2});
 	} else
 		list::view(rc);
 }

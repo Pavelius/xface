@@ -36,8 +36,6 @@ const codepages						code = CP1251;
 }
 //
 int									getdigitscount(unsigned number); // Get digits count of number. For example if number=100, result be 3.
-inline int							gethour(unsigned d) { return (d / 60) % 24; } // Get hour
-inline int							getminute(unsigned d) { return (d % 60); } // Get minute
 template<class T> const char*		getstr(T e); // Template to return string of small class
 bool								ischa(unsigned u); // is alphabetical character?
 inline bool							isnum(unsigned u) { return u >= '0' && u <= '9'; } // is numeric character?
