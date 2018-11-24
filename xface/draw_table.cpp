@@ -207,9 +207,9 @@ void table::ensurevisible() {
 	auto rc = getrect(current, current_column);
 	auto x1 = rc.x1 - (view_rect.x1 - origin_width);
 	auto x2 = rc.x2 - (view_rect.x1 - origin_width);
-	if(x1 > origin_width + view_rect.width())
-		origin_width = x1;
-	if(x2 < origin_width)
+	if(rc.x2 > view_rect.x2)
+		origin_width = origin_width + rc.width();
+	if(rc.x1 < view_rect.x1)
 		origin_width = x1;
 }
 
@@ -219,7 +219,9 @@ rect table::getrect(int row, int column) const {
 	rs.x2 = rs.x1;
 	rs.y1 = view_rect.y1 - origin + lines_per_page * row;
 	rs.y2 = rs.y1 + getrowheight();
-	for(auto i = 0; i < column; i++) {
+	if(column >= columns.getcount())
+		column = columns.getcount() - 1;
+	for(auto i = 0; i <= column; i++) {
 		if(!columns[i].isvisible())
 			continue;
 		rs.x1 = rs.x2;
@@ -259,9 +261,11 @@ bool table::keyinput(unsigned id) {
 	switch(id) {
 	case KeyLeft:
 		current_column = getvalid(current_column - 1, -1);
+		ensurevisible();
 		break;
 	case KeyRight:
 		current_column = getvalid(current_column + 1);
+		ensurevisible();
 		break;
 	default: return list::keyinput(id);
 	}

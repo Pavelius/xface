@@ -60,6 +60,7 @@ struct aref {
 	constexpr const T*		begin() const { return data; }
 	constexpr T*			end() { return data + count; }
 	constexpr const T*		end() const { return data + count; }
+	int						getcount() const { return count; }
 	int						indexof(const T* t) const { if(t<data || t>data + count) return -1; return t - data; }
 	int						indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
 	bool					is(const T t) const { return indexof(t) != -1; }
