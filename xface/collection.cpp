@@ -86,17 +86,6 @@ int array::find(const char* value, unsigned offset) const {
 	return -1;
 }
 
-void array::swap(int i1, int i2) {
-	auto p1 = (char*)get(i1);
-	auto p2 = (char*)get(i2);
-	auto s = getsize();
-	for(unsigned i = 0; i < s; i++) {
-		char a = p1[i];
-		p1[i] = p2[i];
-		p2[i] = a;
-	}
-}
-
 void array::sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param) {
 	for(int i = i2; i > i1; i--) {
 		for(int j = i1; j < i; j++) {
@@ -131,4 +120,31 @@ void* array::insert(int index, const void* element) {
 	else
 		memset(p, 0, size);
 	return p;
+}
+
+void array::swap(int i1, int i2) {	
+	unsigned char* a1 = (unsigned char*)get(i1);
+	unsigned char* a2 = (unsigned char*)get(i2);
+	for(unsigned i = 0; i < size; i++) {
+		char a = a1[i];
+		a1[i] = a2[i];
+		a2[i] = a;
+	}
+}
+
+void array::shift(int i1, int i2, unsigned c1, unsigned c2) {
+	if(i2 < i1) {
+		iswap(i2, i1);
+		iswap(c1, c2);
+	}
+	unsigned char* a1 = (unsigned char*)get(i1);
+	unsigned char* a2 = (unsigned char*)get(i2);
+	unsigned s1 = c1 * size;
+	unsigned s2 = c2 * size;
+	unsigned s = (a2 - a1) + s2 - 1;
+	for(unsigned i = 0; i < s1; i++) {
+		auto a = a1[0];
+		memcpy(a1, a1 + 1, s);
+		a1[s] = a;
+	}
 }

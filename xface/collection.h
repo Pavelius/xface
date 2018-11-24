@@ -148,7 +148,7 @@ struct array {
 	void					remove(int index, int elements_count);
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);
-	void					shift(int i1, int i2, int i1d);
+	void					shift(int i1, int i2, unsigned c1, unsigned c2);
 	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);
 	void					swap(int i1, int i2);
 	void					reserve(unsigned count);

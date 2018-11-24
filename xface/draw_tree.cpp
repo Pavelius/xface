@@ -12,7 +12,7 @@ void* tree::builder::add(void* object, unsigned char image, unsigned char type, 
 	e.flags = group ? TIGroup : 0;
 	e.type = type;
 	e.level = level + 1;
-	if(pc->count==0 || (unsigned)index>pc->count)
+	if(pc->count == 0 || (unsigned)index > pc->count)
 		return pc->array::add(&e);
 	return pc->array::insert(++index, &e);
 }
@@ -20,7 +20,7 @@ void* tree::builder::add(void* object, unsigned char image, unsigned char type, 
 int	tree::find(const void* value) const {
 	auto count = getcount();
 	for(unsigned i = 0; i < count; i++) {
-		if(((element*)array::get(i))->object==value)
+		if(((element*)array::get(i))->object == value)
 			return i;
 	}
 	return -1;
@@ -164,9 +164,9 @@ void tree::expand(int index, int level) {
 	// Remove unused rows
 	unsigned i1 = e.index + 1;
 	unsigned i2 = i1;
-	while(i2<array::getcount()) {
+	while(i2 < array::getcount()) {
 		auto p2 = (element*)array::get(i2);
-		if(p2->level >= (level+1))
+		if(p2->level >= (level + 1))
 			i2++;
 		else
 			break;
@@ -175,10 +175,10 @@ void tree::expand(int index, int level) {
 		array::remove(i1, i2 - i1);
 	// Finally sort all rows
 	if(sort_rows_by_name) {
-	//	if(level == 0)
-	//		amem::sort(0, getcount() - 1, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
-	//	else
-	//		amem::sort(index + 1, this->index, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
+		//	if(level == 0)
+		//		amem::sort(0, getcount() - 1, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
+		//	else
+		//		amem::sort(index + 1, this->index, group_sort_up ? compare_by_name_group_up : compare_by_name, this);
 	}
 }
 
@@ -224,12 +224,61 @@ bool tree::remove(bool run) {
 	return true;
 }
 
+int	tree::getnext(int index, int increment) const {
+	auto i = index;
+	auto level = getlevel(i);
+	auto maximum = getmaximum();
+	while(true) {
+		auto n = i + increment;
+		if((n < 0) || (n >= maximum))
+			return index;
+		auto m = getlevel(n);
+		if(m == level)
+			return n;
+		if(m < level)
+			return index;
+		i = n;
+	}
+}
+
+void tree::shift(int i1, int i2) {
+	auto c1 = getblockcount(i1);
+	auto c2 = getblockcount(i2);
+	array::shift(i1, i2, c1, c2);
+	if(i1 < i2)
+		select(i1, current_column);
+	else
+		select(i2+c1, current_column);
+}
+
+bool tree::moveup(bool run) {
+	if(!grid::moveup(false))
+		return false;
+	auto new_current = getnext(current, -1);
+	if(new_current == current)
+		return false;
+	if(run)
+		shift(new_current, current);
+	return true;
+}
+
+bool tree::movedown(bool run) {
+	if(!grid::moveup(false))
+		return false;
+	auto new_current = getnext(current, 1);
+	if(new_current == current)
+		return false;
+	if(run)
+		shift(new_current, current);
+	return true;
+}
+
 const control::command* tree::getcommands() const {
 	static command add_elements[] = {{"change", "Изменить", 10, F2, &grid::change},
 	{"remove", "Удалить", 19, KeyDelete, &tree::remove},
 	{}};
-	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &grid::moveup},
-	{"movedown", "Переместить вверх", 22, 0, &grid::movedown},
+	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &tree::moveup},
+	{"movedown", "Переместить вверх", 22, 0, &tree::movedown},
 	{"sortas", "Сортировать по возрастанию", 11, 0, &grid::sortas},
 	{"sortas", "Сортировать по убыванию", 12, 0, &grid::sortds},
 	{}};

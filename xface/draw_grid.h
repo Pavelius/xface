@@ -66,6 +66,7 @@ struct tree : grid {
 	const control::command* getcommands() const;
 	int						getimage(int index) const;
 	int						getlevel(int index) const override;
+	int						getnext(int index, int increment = 1) const;
 	int						getnumber(int line, int column) const override;
 	int						getparent(int index) const;
 	int						getroot(int index) const;
@@ -73,8 +74,11 @@ struct tree : grid {
 	int						gettype(int index) const;
 	bool					isgroup(int index) const override;
 	bool					keyinput(unsigned id) override;
+	bool					moveup(bool run);
+	bool					movedown(bool run);
 	void					open(int max_level);
 	bool					remove(bool run);
+	void					shift(int i1, int i2);
 	void					toggle(int index);
 	bool					treemarking(bool run) override;
 };
