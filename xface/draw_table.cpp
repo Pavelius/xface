@@ -319,6 +319,7 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 	textedit te(result, result_maximum - result - 1, true);
 	setfocus((int)&te, true);
 	te.show_border = false;
+	te.post_escape = false;
 	te.align = flags;
 	te.rctext.x2++;
 	auto r = te.editing({current_rect.x1, current_rect.y1, current_rect.x2, current_rect.y2});

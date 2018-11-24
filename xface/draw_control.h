@@ -257,6 +257,7 @@ struct textedit : scrollable {
 	bool					readonly;
 	bool					update_records;
 	bool					show_records;
+	bool					post_escape;
 	//
 	textedit(char* string, unsigned maximum_lenght, bool select_text);
 	//

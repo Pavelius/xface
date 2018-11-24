@@ -18,6 +18,7 @@ rctext(metrics::edit),
 records(0),
 update_records(true),
 show_records(true),
+post_escape(true),
 cashed_width(-1),
 cashed_string(0),
 cashed_origin(0) {
@@ -257,7 +258,12 @@ bool textedit::editing(rect rc) {
 				show_records = false;
 				break;
 			}
-			draw::execute(hot);
+			if(post_escape)
+				draw::execute(hot);
+			else {
+				hot.key = InputUpdate;
+				hot.param = 0;
+			}
 			return false;
 		case KeyTab:
 		case KeyTab | Shift:

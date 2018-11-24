@@ -159,12 +159,11 @@ extern point			mouse;
 extern int				value;
 }
 struct hotinfo {
-	unsigned			animate; // Frame tick count
 	cursors				cursor; // set this mouse cursor
-	unsigned			key; // [in] if pressed key or mouse this field has key
+	unsigned			key; // if pressed key or mouse this field has key
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed
-	int					param; // Draw command context. Application can extend this structure
+	int					param; // command context or parameters
 	explicit operator bool() const { return key != 0; }
 };
 extern hotinfo			hot;
