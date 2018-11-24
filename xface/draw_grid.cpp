@@ -190,6 +190,8 @@ bool grid::moveup(bool run) {
 		return false;
 	if(current <= 0)
 		return false;
+	if(getcount()==1)
+		return false;
 	if(run) {
 		swap(current - 1, current);
 		select(current - 1, getcolumn());
@@ -224,6 +226,8 @@ bool grid::remove(bool run) {
 bool grid::sortas(bool run) {
 	if(no_change_order)
 		return false;
+	if(getmaximum()<=1)
+		return false;
 	if(run)
 		sort(current_column, true);
 	return true;
@@ -231,6 +235,8 @@ bool grid::sortas(bool run) {
 
 bool grid::sortds(bool run) {
 	if(no_change_order)
+		return false;
+	if(getmaximum() <= 1)
 		return false;
 	if(run)
 		sort(current_column, false);

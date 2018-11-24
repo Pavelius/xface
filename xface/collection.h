@@ -131,7 +131,7 @@ struct array {
 	template<typename T> constexpr array(T(&e)[]) : array(e, sizeof(T), 1) {}
 	~array();
 	void*					add();
-	void					add(const void* element);
+	void*					add(const void* element);
 	char*					begin() { return (char*)data; }
 	const char*				begin() const { return (char*)data; }
 	void					clear();
@@ -148,6 +148,7 @@ struct array {
 	void					remove(int index, int elements_count);
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);
+	void					shift(int i1, int i2, int i1d);
 	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);
 	void					swap(int i1, int i2);
 	void					reserve(unsigned count);

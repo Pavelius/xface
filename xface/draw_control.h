@@ -90,7 +90,7 @@ struct control {
 	constexpr control() : show_border(true), show_background(true) {}
 	virtual ~control() {}
 	command::builder*		createmenu();
-	void					execute(callback proc) const;
+	void					execute(callback proc, int param = 0) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
@@ -142,6 +142,7 @@ struct list : control {
 	virtual void			row(const rect& rc, int index);
 	virtual void			rowhilite(const rect& rc, int index) const;
 	void					treemark(rect rc, int index, int level) const;
+	virtual bool			treemarking(bool run) { return true; }
 	void					view(const rect& rc) override;
 };
 struct column {

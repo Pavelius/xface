@@ -123,10 +123,10 @@ void control::icon(int x, int y, bool disabled, const command& cmd) const {
 	image(x, y, getimages(), cmd.image, 0, disabled ? 0x80 : 0xFF);
 }
 
-void control::execute(control::callback proc) const {
+void control::execute(control::callback proc, int param) const {
 	current_execute = proc;
 	current_execute_control = const_cast<control*>(this);
-	draw::execute(control_execute);
+	draw::execute(control_execute, param);
 }
 
 void control::view(const rect& rc) {

@@ -23,16 +23,19 @@ void* rmreserve(void* data, unsigned new_size) {
 }
 
 void* array::add() {
-	if(can_grow) {
-		reserve(count + 1);
-		return (char*)data + size * (count++);
+	if(count >= count_maximum) {
+		if(can_grow)
+			reserve(count + 1);
+		else
+			return (char*)data;
 	}
-	return (char*)data + getsize()*((count < count_maximum) ? count++ : 0);
+	return (char*)data + size * (count++);
 }
 
-void array::add(const void* element) {
+void* array::add(const void* element) {
 	auto p = add();
 	memcpy(p, element, getsize());
+	return p;
 }
 
 array::~array() {

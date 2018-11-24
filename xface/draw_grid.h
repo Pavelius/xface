@@ -57,22 +57,26 @@ struct tree : grid {
 	};
 	bool					sort_rows_by_name;
 	constexpr tree(const bsreq* type, unsigned size = sizeof(element)) : grid(type, size), sort_rows_by_name(false) {}
-	void*					add(void* object, unsigned char level, unsigned char image = 0, unsigned char type = 0, unsigned char flags = 0);
 	void					collapse(int index);
 	void					expand(int index, int level);
 	virtual void			expanding(builder& e) {}
 	int						find(const void* value) const;
 	void*					get(int index) const override;
+	int						getblockcount(int index) const;
+	const control::command* getcommands() const;
 	int						getimage(int index) const;
-	int						getlastchild(int index) const;
 	int						getlevel(int index) const override;
 	int						getnumber(int line, int column) const override;
 	int						getparent(int index) const;
 	int						getroot(int index) const;
+	int						gettreecolumn() const;
 	int						gettype(int index) const;
 	bool					isgroup(int index) const override;
+	bool					keyinput(unsigned id) override;
 	void					open(int max_level);
+	bool					remove(bool run);
 	void					toggle(int index);
+	bool					treemarking(bool run) override;
 };
 }
 }

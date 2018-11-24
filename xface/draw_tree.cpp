@@ -6,9 +6,15 @@ using namespace draw::controls;
 #define TIGroup 1
 
 void* tree::builder::add(void* object, unsigned char image, unsigned char type, bool group) {
-	auto result = pc->add(object, level + 1, image, type, group ? TIGroup : 0);
-	index++;
-	return result;
+	element e;
+	e.object = object;
+	e.image = image;
+	e.flags = group ? TIGroup : 0;
+	e.type = type;
+	e.level = level + 1;
+	if(pc->count==0 || (unsigned)index>pc->count)
+		return pc->array::add(&e);
+	return pc->array::insert(++index, &e);
 }
 
 int	tree::find(const void* value) const {
@@ -69,15 +75,16 @@ int tree::getparent(int index) const {
 	return -1;
 }
 
-int tree::getlastchild(int index) const {
-	int level = getlevel(index++) + 1;
-	int i2 = getmaximum();
-	while(index < i2) {
-		if(level != getlevel(index))
+int tree::getblockcount(int index) const {
+	auto start = index;
+	auto level = getlevel(index++);
+	auto index_last = getmaximum();
+	while(index < index_last) {
+		if(level >= getlevel(index))
 			break;
 		index++;
 	}
-	return index;
+	return index - start;
 }
 
 bool tree::isgroup(int index) const {
@@ -175,12 +182,60 @@ void tree::expand(int index, int level) {
 	}
 }
 
-void* tree::add(void* object, unsigned char level, unsigned char image, unsigned char type, unsigned char flags) {
-	auto p = (element*)array::add();
-	p->object = object;
-	p->image = image;
-	p->flags = flags;
-	p->type = type;
-	p->level = level;
-	return p;
+bool tree::treemarking(bool run) {
+	toggle(hot.param);
+	return true;
+}
+
+bool tree::keyinput(unsigned id) {
+	switch(id) {
+	case KeyLeft:
+		if(gettreecolumn() == current_column) {
+			if(isopen(current)) {
+				toggle(current);
+				break;
+			}
+			auto parent = getparent(current);
+			if(parent != current) {
+				select(parent, current_column);
+				break;
+			}
+		}
+		return grid::keyinput(id);
+	case KeyRight:
+		if(gettreecolumn() != current_column || isopen(current))
+			return grid::keyinput(id);
+		toggle(current);
+		break;
+	default: return grid::keyinput(id);
+	}
+	return true;
+}
+
+int	tree::gettreecolumn() const {
+	return getvalid(0, 1);
+}
+
+bool tree::remove(bool run) {
+	if(!grid::remove(false))
+		return false;
+	if(run)
+		array::remove(current, getblockcount(current));
+	return true;
+}
+
+const control::command* tree::getcommands() const {
+	static command add_elements[] = {{"change", "Изменить", 10, F2, &grid::change},
+	{"remove", "Удалить", 19, KeyDelete, &tree::remove},
+	{}};
+	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &grid::moveup},
+	{"movedown", "Переместить вверх", 22, 0, &grid::movedown},
+	{"sortas", "Сортировать по возрастанию", 11, 0, &grid::sortas},
+	{"sortas", "Сортировать по убыванию", 12, 0, &grid::sortds},
+	{}};
+	static command elements[] = {{add_elements},
+	{move_elements},
+	{"setting", "Настройки", 16, 0, &grid::setting},
+	{}};
+	return elements;
 }

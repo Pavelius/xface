@@ -330,6 +330,8 @@ bool table::change(bool run) {
 		return false;
 	if(!columns)
 		return false;
+	if(current >= getmaximum())
+		return false;
 	if(zchr(columns[current_column].id, '.'))
 		return false;
 	auto pv = columns[current_column].method;

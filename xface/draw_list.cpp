@@ -97,8 +97,10 @@ void list::treemark(rect rc, int index, int level) const {
 	int x = rc.x1 + rc.width() / 2;
 	int y = rc.y1 + rc.height() / 2 - 1;
 	areas a = area(rc);
-	if(a == AreaHilitedPressed)
-		circlef(x, y, 6, colors::window.mix(colors::button, 196));
+	if(a == AreaHilitedPressed) {
+		if(hot.key == MouseLeft)
+			execute((callback)&list::treemarking, index);
+	}
 	circle(x, y, 6, c1);
 	line(x - 4, y, x + 4, y, c1);
 	if(!isopen)

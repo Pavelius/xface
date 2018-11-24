@@ -145,6 +145,7 @@ static int show_control(controls::control& e) {
 }
 
 static int show_table(controls::table& e) {
+	setfocus((int)&e, true);
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
@@ -243,9 +244,9 @@ static void test_grid_ref() {
 static void test_tree() {
 	struct test_tree_control : controls::tree {
 		void expanding(builder&  e) {
+			e.add(cultivated_land_manager.get(0), 0, 0, false);
 			e.add(cultivated_land_manager.get(1), 1, 0, true);
 			e.add(cultivated_land_manager.get(2), 1, 0, true);
-			e.add(cultivated_land_manager.get(0), 0, 0, false);
 		}
 		constexpr test_tree_control() : tree(cultivated_land_manager.fields){}
 	} test;
