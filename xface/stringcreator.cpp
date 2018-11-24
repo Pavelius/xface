@@ -92,7 +92,7 @@ const char* stringcreator::parseformat(char* dst, const char* result_max, const 
 		prefix_plus = true;
 		src++;
 	}
-	if(*src >= '0' && *src <= '9') {
+	if(*src >= '1' && *src <= '9') {
 		// ≈сли число, просто подставим нужный параметр
 		int pn = 0, pnp = 0;
 		while(isnum(*src))
@@ -149,7 +149,7 @@ void stringcreator::printv(char* result, const char* result_maximum, const char*
 	}
 }
 
-void stringcreator::prints(char* result, const char* result_maximum, const char* src, ...) {
+void stringcreator::print(char* result, const char* result_maximum, const char* src, ...) {
 	printv(result, result_maximum, src, xva_start(src));
 }
 
@@ -159,7 +159,7 @@ char* szprintvs(char* result, const char* result_maximum, const char* src, const
 	return result;
 }
 
-char* szprints(char* result, const char* result_maximum, const char* src, ...) {
+char* szprint(char* result, const char* result_maximum, const char* src, ...) {
 	stringcreator e;
 	e.printv(result, result_maximum, src, xva_start(src));
 	return result;

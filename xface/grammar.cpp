@@ -105,7 +105,7 @@ char* grammar::get(char* result, const char* result_maximum, const char* word, i
 	if(count <= 1) {
 		zcpy(result, word);
 	} else {
-		szprints(result, result_maximum, "%1i ", count);
+		szprint(result, result_maximum, "%1i ", count);
 		auto p = zend(result);
 		if(count <= 4)
 			of(p, word);

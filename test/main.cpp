@@ -2,6 +2,7 @@
 #include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
+#include "xface/datetime.h"
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
 #include "xface/requisit.h"
@@ -209,23 +210,27 @@ static void test_grid() {
 		gender_s		gender;
 		alignment_s		alignment;
 		char			image;
+		datetime		date;
 	};
 	static bsreq element_type[] = {
 		BSREQ(element, name, text_type),
 		BSREQ(element, gender, gender_type),
 		BSREQ(element, alignment, alignment_type),
+		BSREQ(element, date, number_type),
+		BSREQ(element, image, number_type),
 	{}};
 	adat<element, 32> elements;
-	elements.add({"Pavel", Male, ChaoticEvil});
-	elements.add({"Olga", Female, ChaoticGood});
-	elements.add({"Valentin", Male, NeutralGood});
-	elements.add({"Jorgun", Male, LawfulGood, 1});
+	elements.add({"Pavel", Male, ChaoticEvil, 2, datetime::now()});
+	elements.add({"Olga", Female, ChaoticGood, 0, datetime::now() - 5*24*60});
+	elements.add({"Valentin", Male, NeutralGood, 1, datetime::now() - 3 * 24 * 60});
+	elements.add({"Jorgun", Male, LawfulGood, 0, datetime::now() - 4 * 24 * 60});
 	controls::grid test(element_type, elements);
 	test.addcol("image", 0, "image");
 	test.addcol("name", "Наименование", "text");
 	test.addcol("gender", "Пол", "ref");
 	test.addcol("alignment", "Мировозрение", "ref");
 	test.addcol("alignment.id", "Мировозрение (англ)", "text");
+	test.addcol("date", "Дата", "date");
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;
@@ -338,7 +343,7 @@ static void test_drag_drop() {
 			rc.x2 = rc.x1 + sx;
 			rc.y2 = rc.y1 + sy;
 			char temp[260];
-			text(10, 42, szprints(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
+			text(10, 42, szprint(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
 		} else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
 			drag::begin(1);
 		if(drag::active(1))
@@ -430,7 +435,16 @@ static bool test_map() {
 	return true;
 }
 
+static bool test_datetime() {
+	datetime d = datetime::now().daybegin() + 24*60;
+	auto iy = d.year();
+	auto im = d.month();
+	auto id = d.day();
+	return true;
+}
+
 int main() {
+	test_datetime();
 	test_requisit();
 	test_array();
 	test_map();

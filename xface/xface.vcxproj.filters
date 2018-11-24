@@ -186,6 +186,12 @@
     <ClCompile Include="io.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="datetime.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="win_datetime.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
@@ -261,7 +267,7 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="datetime.h">
-      <Filter>strings</Filter>
+      <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

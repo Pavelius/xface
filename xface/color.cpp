@@ -11,7 +11,7 @@ color colors::yellow = color::create(255, 244, 32);
 color colors::white = color::create(255, 255, 255);
 
 char* color::getname(char* result, const char* result_maximum) const {
-	szprints(result, result_maximum, "%1i, %2i, %3i", r, g, b);
+	szprint(result, result_maximum, "%1i, %2i, %3i", r, g, b);
 	return result;
 }
 

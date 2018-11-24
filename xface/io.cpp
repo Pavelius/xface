@@ -152,7 +152,7 @@ io::plugin* io::plugin::find(const char* name) {
 static char* add_filter(char* result, const char* result_maximum, const char* name, const char* filter) {
 	if(!filter)
 		return result;
-	szprints(result, result_maximum, "%1 (%2)", name, filter);
+	szprint(result, result_maximum, "%1 (%2)", name, filter);
 	szupper(result, 1);
 	result += zlen(result); *result++ = 0; *result = 0;
 	zcat(result, filter);

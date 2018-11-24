@@ -110,7 +110,7 @@ struct dlgform : bsval {
 					return "";
 				if(!force_result)
 					return p;
-				szprints(result, result_maximum, p);
+				szprint(result, result_maximum, p);
 			} else {
 				auto p = (const char*)source.type->ptr(source.data);
 				if(!force_result)
@@ -126,7 +126,7 @@ struct dlgform : bsval {
 
 		const char* get(char* result, const char* result_maximum, bool force_result) const override {
 			if(type->type == number_type)
-				szprints(result, result_maximum, "%1i", getnumber());
+				szprint(result, result_maximum, "%1i", getnumber());
 			else if(type->type == text_type)
 				return getstring(*this, result, result_maximum, force_result);
 			else {

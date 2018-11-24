@@ -1,4 +1,5 @@
 #include "crt.h"
+#include "datetime.h"
 #include "screenshoot.h"
 #include "stringcreator.h"
 #include "draw_grid.h"
@@ -107,7 +108,7 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 	if(bv.type->type == number_type) {
 		stringcreator sc;
 		auto value = getnumber(line, column);
-		sc.prints(result, result_max, "%1i", value);
+		sc.print(result, result_max, "%1i", value);
 		return result;
 	} else if(bv.type->type == text_type) {
 		auto p = (const char*)bv.get();
@@ -243,8 +244,21 @@ bool grid::sortds(bool run) {
 	return true;
 }
 
+void grid::celldate(const rect& rc, int line, int column) {
+	char temp[260]; temp[0] = 0;
+	datetime d(getnumber(line, column));
+	if(d) {
+		szprint(temp, zendof(temp), "%1.2i.%2.2i.%3.2i",
+			d.day(), d.month(), d.year());
+		cellhilite(rc, line, column, temp, AlignLeft);
+		draw::text(rc, temp, AlignLeft);
+	}
+}
+
 const visual* grid::getvisuals() const {
 	static visual elements[] = {{table::getvisuals()},
+	{"date", "Дата", 8, textw("0")*10+4 + 32, SizeResized, &grid::celldate},
+	{"datetime", "Дата и время", 8, 100, SizeResized, &grid::celldate},
 	{"ref", "Ссылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
 	{}};
 	return elements;

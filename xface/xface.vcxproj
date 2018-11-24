@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="bsdata_serial_bin.cpp" />
+    <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="requisit.cpp" />
     <ClCompile Include="bsdata.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="sz2numf.cpp" />
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="win_clipboard.cpp" />
+    <ClCompile Include="win_datetime.cpp" />
     <ClCompile Include="win_draw.cpp" />
     <ClCompile Include="win_io_file.cpp" />
     <ClCompile Include="win_menu.cpp" />

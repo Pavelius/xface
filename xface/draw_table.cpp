@@ -167,7 +167,7 @@ void table::rowtotal(const rect& rc) const {
 		if(!p) {
 			auto result = gettotal(i);
 			if(result) {
-				szprints(temp, temp + sizeof(temp) - 1, "%1i", result);
+				szprint(temp, temp + sizeof(temp) - 1, "%1i", result);
 				p = temp;
 			}
 		}
@@ -414,7 +414,7 @@ void table::cellimage(const rect& rc, int line, int column) {
 void table::cellnumber(const rect& rc, int line, int column) {
 	char temp[32];
 	auto v = getnumber(line, column);
-	szprints(temp, zendof(temp), "%1i", v);
+	szprint(temp, zendof(temp), "%1i", v);
 	cellhilite(rc, line, column, temp, AlignRight);
 	draw::text(rc, temp, AlignRight);
 }
@@ -422,7 +422,7 @@ void table::cellnumber(const rect& rc, int line, int column) {
 void table::cellpercent(const rect& rc, int line, int column) {
 	char temp[32];
 	auto v = getnumber(line, column);
-	szprints(temp, zendof(temp), "%1i%%", v);
+	szprint(temp, zendof(temp), "%1i%%", v);
 	cellhilite(rc, line, column, temp, AlignRight);
 	draw::text(rc, temp, AlignRight);
 }
