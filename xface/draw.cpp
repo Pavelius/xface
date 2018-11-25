@@ -2155,3 +2155,43 @@ void draw::initialize() {
 	draw::fore = colors::text;
 	draw::fore_stroke = colors::blue;
 }
+
+char* draw::key2str(char* result, int key) {
+	result[0] = 0;
+	if(key&Ctrl)
+		zcat(result, "Ctrl+");
+	if(key&Alt)
+		zcat(result, "Alt+");
+	if(key&Shift)
+		zcat(result, "Shift+");
+	key = key & 0xFFFF;
+	switch(key) {
+	case KeyDown: zcat(result, "Down"); break;
+	case KeyDelete: zcat(result, "Del"); break;
+	case KeyEnd: zcat(result, "End"); break;
+	case KeyEnter: zcat(result, "Enter"); break;
+	case KeyHome: zcat(result, "Home"); break;
+	case KeyLeft: zcat(result, "Left"); break;
+	case KeyPageDown: zcat(result, "Page Down"); break;
+	case KeyPageUp: zcat(result, "Page Up"); break;
+	case KeyRight: zcat(result, "Right"); break;
+	case KeyUp: zcat(result, "Up"); break;
+	case F1: zcat(result, "F1"); break;
+	case F2: zcat(result, "F2"); break;
+	case F3: zcat(result, "F3"); break;
+	case F4: zcat(result, "F4"); break;
+	case F5: zcat(result, "F5"); break;
+	case F6: zcat(result, "F6"); break;
+	case F7: zcat(result, "F7"); break;
+	case F8: zcat(result, "F8"); break;
+	case F9: zcat(result, "F9"); break;
+	case F10: zcat(result, "F10"); break;
+	case F11: zcat(result, "F11"); break;
+	case F12: zcat(result, "F12"); break;
+	case KeySpace: zcat(result, "Space"); break;
+	default:
+		zcat(result, char(szupper(key - Alpha)));
+		break;
+	}
+	return result;
+}

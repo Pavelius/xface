@@ -282,7 +282,7 @@ const control::command* grid::getcommands() const {
 	{"remove", "Удалить", 19, KeyDelete, &grid::remove},
 	{}};
 	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &grid::moveup},
-	{"movedown", "Переместить вверх", 22, 0, &grid::movedown},
+	{"movedown", "Переместить вниз", 22, 0, &grid::movedown},
 	{"sortas", "Сортировать по возрастанию", 11, 0, &grid::sortas},
 	{"sortas", "Сортировать по убыванию", 12, 0, &grid::sortds},
 	{}};

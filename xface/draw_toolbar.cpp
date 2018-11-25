@@ -30,8 +30,8 @@ struct toolbar_builder : control::command::builder {
 			auto name = cmd.name;
 			if(name) {
 				if(cmd.key) {
-					//char temp[128];
-					//tooltips("%1 (%2)", name, key2str(temp, p->key));
+					char temp[128];
+					tooltips("%1 (%2)", name, key2str(temp, cmd.key));
 				} else
 					tooltips(name);
 			}

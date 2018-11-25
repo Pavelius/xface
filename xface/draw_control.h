@@ -61,7 +61,7 @@ struct control {
 			virtual ~builder() {}
 			virtual void	add(const control::command& cmd) = 0;
 			virtual void	addseparator() = 0;
-			virtual const cmd* finish() const { return 0; }
+			virtual const command* finish() const { return 0; }
 			void			render(const control::command* commands);
 			virtual void	start() const {}
 		private:

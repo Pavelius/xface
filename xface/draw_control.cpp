@@ -62,8 +62,10 @@ void control::mouseinput(unsigned id, point position) {
 				if(pm) {
 					pm->start();
 					pm->render(getcommands());
-					pm->finish();
+					auto cmd = pm->finish();
 					delete pm;
+					if(cmd)
+						(this->*cmd->proc)(true);
 				}
 			}
 		}
