@@ -45,7 +45,7 @@ static int paint_control(rect rc, aref<control*> elements, int& current, bool sh
 		const int dy = texth() + 8;
 		line(rc.x1, rc.y1 + dy - 1, rc.x2, rc.y1 + dy, colors::border);
 		rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
-		if(tabs(rct, false, false, (void**)pages, 0, count,
+		if(tabs(rct, false, false, (void**)elements.data, 0, elements.count,
 			current, &current_hilite, get_control_name)) {
 			if(current_hilite != -1)
 				current = current_hilite;
@@ -54,7 +54,9 @@ static int paint_control(rect rc, aref<control*> elements, int& current, bool sh
 		}
 		rc.y1 += dy;
 	}
-	ec.viewf(rc, show_toolbar);
+	if(show_toolbar)
+		rc.y1 += ec.toolbar(rc.x1, rc.y1, rc.width());
+	ec.view(rc);
 	return rc.y1 - y1;
 }
 

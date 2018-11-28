@@ -344,7 +344,7 @@ int						statusbardw();
 int						sheetline(rect rc, bool background);
 int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext = 0, rect position = {0, 0, 0, 0});
 bool					tool(const rect& rc, bool disabled, bool checked, bool press, bool focused = false, int key = 0);
-int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext, rect position);
+int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext, rect position = {0,0,0,0});
 void					tooltips(const char* format, ...);
 void					tooltips(int x, int y, int width, const char* format, ...);
 void					tooltipsv(int x, int y, int width, const char* format, const char* format_param);
