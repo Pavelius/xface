@@ -8,6 +8,10 @@ namespace clipboard {
 void					copy(const void* string, int lenght);
 char*					paste();
 }
+namespace metrics {
+namespace show {
+extern bool				left, right, top, bottom;
+}}
 namespace draw {
 enum column_size_s : unsigned char {
 	SizeDefault,
@@ -15,6 +19,11 @@ enum column_size_s : unsigned char {
 };
 enum select_mode_s : unsigned char {
 	SelectCell, SelectText, SelectRow,
+};
+enum dock_s : unsigned char {
+	DockLeft, DockLeftBottom,
+	DockRight, DockRightBottom,
+	DockBottom, DockWorkspace,
 };
 struct runable {
 	virtual int			getid() const = 0;
@@ -83,19 +92,30 @@ struct control {
 		const command*		find(const char* id) const;
 		const command*		find(unsigned key) const;
 	};
+	struct plugin {
+		control&			element;
+		plugin*				next;
+		static plugin*		first;
+		plugin(control& value);
+		static const plugin* find(const char* id);
+	};
 	bool					show_border;
 	bool					show_background;
+	dock_s					dock;
 	static const sprite*	standart_toolbar;
 	static const sprite*	standart_tree;
-	constexpr control() : show_border(true), show_background(true) {}
+	constexpr control() : show_border(true), show_background(true), dock(DockWorkspace) {}
 	virtual ~control() {}
 	command::builder*		createmenu();
 	void					execute(callback proc, int param = 0) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
+	virtual const char*		getid() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
+	virtual const char*		getlabel(char* result, const char* result_maximum) const { return 0; }
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
+	virtual bool			isdisabled() const { return false; }
 	virtual bool			isfocusable() const { return true; }
 	bool					isfocused() const;
 	bool					ishilited() const;
