@@ -39,6 +39,7 @@ struct menu_builder : control::command::builder {
 		auto result = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_NONOTIFY, pt.x, pt.y, hwnd, 0);
 		if(result)
 			result = get_menu_data(hMenu, result);
+		hot.pressed = false;
 		return (control::command*)result;
 	}
 
