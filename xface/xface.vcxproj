@@ -119,6 +119,7 @@
     <ClCompile Include="bsdata_serial_bin.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_tree.cpp" />
+    <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="requisit.cpp" />
     <ClCompile Include="bsdata.cpp" />
     <ClCompile Include="bsreq.cpp" />
@@ -173,6 +174,7 @@
   <ItemGroup>
     <ClInclude Include="archive.h" />
     <ClInclude Include="datetime.h" />
+    <ClInclude Include="io_plugin.h" />
     <ClInclude Include="requisit.h" />
     <ClInclude Include="bsdata.h" />
     <ClInclude Include="bsreq.h" />

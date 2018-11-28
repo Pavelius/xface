@@ -177,9 +177,6 @@
     <ClCompile Include="bsdata_serial_bin.cpp">
       <Filter>collections</Filter>
     </ClCompile>
-    <ClCompile Include="crt.cpp">
-      <Filter>strings</Filter>
-    </ClCompile>
     <ClCompile Include="sz2numf.cpp">
       <Filter>support</Filter>
     </ClCompile>
@@ -191,6 +188,12 @@
     </ClCompile>
     <ClCompile Include="win_datetime.cpp">
       <Filter>platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="io_plugin.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="crt.cpp">
+      <Filter>strings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -267,6 +270,9 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="datetime.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="io_plugin.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
