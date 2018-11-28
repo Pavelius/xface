@@ -3,9 +3,9 @@
 
 struct bsdata_archive : archive {
 	
-	arrayref					pointers[3];
-	adat<bsreq, 2048>			requisits;
-	amap<const bsreq*, const bsreq*>	types;
+	arrayref			pointers[3];
+	adat<bsreq, 2048>	requisits;
+	amap<const bsreq*, const bsreq*> types;
 
 	constexpr bsdata_archive(io::stream& e, bool writemode) : requisits(), types(),
 		pointers{requisits, number_type, text_type}, archive(e, writemode, pointers) {}

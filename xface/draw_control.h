@@ -102,6 +102,7 @@ struct control {
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
 	virtual void			mouseinput(unsigned id, point mouse); // Default behaivor set focus
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
+	virtual void			redraw() {}
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
 };
@@ -136,14 +137,14 @@ struct list : control {
 	bool					isopen(int index) const;
 	bool					keyinput(unsigned id) override;
 	void					mousehiliting(const rect& rc, point mouse);
-	void					redraw();
-	virtual void			select(int index, int column);
 	virtual void			mouseinput(unsigned id, point position) override;
 	virtual void			mouseselect(int id, bool pressed);
 	virtual void			mousewheel(unsigned id, point position, int step) override;
+	void					redraw() override;
 	virtual void			row(const rect& rc, int index);
 	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			rowhilite(const rect& rc, int index) const;
+	virtual void			select(int index, int column);
 	void					treemark(rect rc, int index, int level) const;
 	virtual bool			treemarking(bool run) { return true; }
 	void					view(const rect& rc) override;

@@ -56,6 +56,8 @@ void control::mouseinput(unsigned id, point position) {
 		break;
 	case MouseRight:
 		if(true) {
+			redraw();
+			updatewindow();
 			auto cm = getcommands();
 			if(cm) {
 				auto pm = createmenu();
