@@ -28,6 +28,9 @@
     <Filter Include="draw\controls">
       <UniqueIdentifier>{4e583cd2-c2b4-4c5b-9e23-e9e08fb827d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="draw\widgets">
+      <UniqueIdentifier>{08d7be51-ee03-4c85-bfe9-8dab638d2fe1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="collection.cpp">
@@ -198,8 +201,20 @@
     <ClCompile Include="draw_dockbar.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
-    <ClCompile Include="draw_control_plugin.cpp">
-      <Filter>draw\controls</Filter>
+    <ClCompile Include="widget_logging.cpp">
+      <Filter>draw\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widget_settings.cpp">
+      <Filter>draw\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="win_draw_dlg.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="win_draw_shell.cpp">
+      <Filter>platform\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -279,6 +294,9 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="io_plugin.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>

@@ -118,7 +118,6 @@
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="bsdata_serial_bin.cpp" />
     <ClCompile Include="datetime.cpp" />
-    <ClCompile Include="draw_control_plugin.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
@@ -155,6 +154,7 @@
     <ClCompile Include="resources.cpp" />
     <ClCompile Include="resource_dynamic.cpp" />
     <ClCompile Include="screenshoot.cpp" />
+    <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="draw_input.cpp" />
@@ -167,9 +167,15 @@
     <ClCompile Include="surface_serial.cpp" />
     <ClCompile Include="sz2numf.cpp" />
     <ClCompile Include="szdup.cpp" />
+    <ClCompile Include="widget_logging.cpp" />
+    <ClCompile Include="widget_settings.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="win_clipboard.cpp" />
     <ClCompile Include="win_datetime.cpp" />
     <ClCompile Include="win_draw.cpp" />
+    <ClCompile Include="win_draw_dlg.cpp" />
+    <ClCompile Include="win_draw_shell.cpp" />
     <ClCompile Include="win_io_file.cpp" />
     <ClCompile Include="win_menu.cpp" />
   </ItemGroup>
@@ -196,6 +202,7 @@
     <ClInclude Include="rect.h" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="screenshoot.h" />
+    <ClInclude Include="settings.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
     <ClInclude Include="strlib.h" />

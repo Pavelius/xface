@@ -10,6 +10,8 @@
 
 using namespace draw;
 
+void logmsg(const char* format, ...);
+
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
@@ -330,6 +332,9 @@ static const char* get_text(char* result, const char* result_maximum, void* obje
 
 static void disabled_button() {}
 
+static void test_application() {
+}
+
 static void test_drag_drop() {
 	auto x = 100, y = 200;
 	while(ismodal()) {
@@ -369,6 +374,7 @@ static void start_menu() {
 	{"Таблица ссылок", test_grid_ref},
 	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
+	{"Приложение", test_application},
 	{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);

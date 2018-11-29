@@ -11,6 +11,7 @@ char*					paste();
 namespace metrics {
 namespace show {
 extern bool				left, right, top, bottom;
+extern bool				padding, statusbar;
 }}
 namespace draw {
 enum column_size_s : unsigned char {
@@ -30,9 +31,11 @@ struct runable {
 	virtual void		execute() const = 0;
 };
 struct cmd : runable {
+	constexpr cmd() : id(0), param(0) {}
 	constexpr cmd(callback_proc id, int param = 0) : id(id), param(param) {}
 	virtual void		execute() const override { draw::execute(id, param); }
 	virtual int			getid() const override { return (int)id; }
+	void				set(callback_proc id, int param) { this->id; this->param = param; }
 private:
 	callback_proc		id;
 	int					param;
@@ -93,24 +96,25 @@ struct control {
 		const command*		find(unsigned key) const;
 	};
 	struct plugin {
+		const char*			id;
+		dock_s				dock;
 		control&			element;
 		plugin*				next;
 		static plugin*		first;
-		plugin(control& value);
+		plugin(const char* id, control& e, dock_s dock);
 		static const plugin* find(const char* id);
+		static struct bsreq	metadata[];
 	};
 	bool					show_border;
 	bool					show_background;
-	dock_s					dock;
 	static const sprite*	standart_toolbar;
 	static const sprite*	standart_tree;
-	constexpr control() : show_border(true), show_background(true), dock(DockWorkspace) {}
+	constexpr control() : show_border(true), show_background(true) {}
 	virtual ~control() {}
 	command::builder*		createmenu();
 	void					execute(callback proc, int param = 0) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
-	virtual const char*		getid() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
 	virtual const char*		getlabel(char* result, const char* result_maximum) const { return 0; }
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
