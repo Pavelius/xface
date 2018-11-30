@@ -111,6 +111,11 @@ settings& settings::set(bool(*fn)(settings& e)) {
 	return *this;
 }
 
+settings& settings::set(void(*fn)()) {
+	e_execute = fn;
+	return *this;
+}
+
 settings& settings::set(int value) {
 	switch(type) {
 	case Int:

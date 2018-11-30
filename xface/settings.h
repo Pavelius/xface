@@ -32,10 +32,10 @@ struct settings {
 	settings&		add(const char* name, draw::controls::control& value);
 	settings&		add(const char* name, void(*fn)());
 	settings*		child();
-	settings&		execute(void(*value)());
 	settings*		find(const char* identifier); // Find setting by identifier
 	settings&		gr(const char* name, int priority = 0); // Add new group
 	settings&		set(int value);
+	settings&		set(void(*fn)());
 	settings&		set(bool(*fn)(settings& e));
 	static settings	root;
 };

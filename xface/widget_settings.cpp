@@ -246,11 +246,14 @@ static struct widget_settings : controls::control {
 			bool increment(int step, bool run) const {
 				if(e.type != settings::Int)
 					return false;
+				if(run) {
+
+				}
 				return true;
 			}
-			void set(const rect& value) const { current_rect = value; }
-			int	getid() const { return (int)&e; }
-			void execute() const { draw::execute(callback_edit, (int)&e); }
+			void		execute() const { draw::execute(callback_edit, (int)&e); }
+			int			getid() const { return (int)&e; }
+			void		set(const rect& value) const { current_rect = value; }
 			constexpr cmdnm(settings& e) : e(e) {}
 		} ec(e);
 		return draw::field(x, y, width, flags, ec, header_label, tips, header_width);
