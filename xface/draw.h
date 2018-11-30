@@ -224,6 +224,13 @@ struct textplugin {
 	textplugin(const char* name, proc e);
 	static textplugin*	find(const char* name);
 };
+struct initplugin {
+	int					priority;
+	initplugin*			next;
+	static initplugin*	first;
+	initplugin(int priority = 10);
+	virtual void		initialize() {}
+};
 struct plugin {
 	int					priority;
 	plugin*				next;
@@ -231,7 +238,6 @@ struct plugin {
 	plugin(int priority = 10);
 	virtual void		after() {}
 	virtual void		before() {}
-	virtual void		initialize() {}
 	virtual bool		translate(int id) { return false; }
 };
 typedef int(*widgetproc)(int x, int y, int width, unsigned flags, const char* label, int value, void* data, const char* tips);

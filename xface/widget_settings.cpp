@@ -10,18 +10,18 @@
 using namespace	draw;
 
 bool						metrics::show::padding;
+bool						metrics::show::statusbar;
 static int					current_tab;
 static settings*			current_header;
 static controls::control*	active_workspace_tab;
+static rect					current_rect;
 
-void						dockbar(const rect& rc);
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
 static struct dock {
 	const char*	name;
 	const char*	id;
-} dock_data[DockWorkspace + 1] = {
-	{"Присоединить слева", "dock_left"},
+} dock_data[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
 {"Присоединить слева и снизу", "dock_left_bottom"},
 {"Присоединить справа", "dock_right"},
 {"Присоединить справа и снизу", "dock_right_bottom"},
@@ -131,7 +131,7 @@ static void callback_edit() {
 		break;
 	}
 	controls::textedit te(temp, sizeof(temp), true);
-	if(te.editing(hot.element)) {
+	if(te.editing(current_rect)) {
 		switch(p->type) {
 		case settings::TextPtr:
 		case settings::UrlFolderPtr:
@@ -167,6 +167,10 @@ static struct widget_settings_header : controls::list {
 
 	settings* getcurrent() {
 		return rows[current];
+	}
+
+	int getmaximum() const override {
+		return maximum;
 	}
 
 } setting_header;
@@ -224,36 +228,57 @@ static struct widget_settings : controls::control {
 
 	static int field(int x, int y, int width, unsigned flags, settings& e, const char* header_label, const char* tips, int header_width) {
 		struct cmdnm : cmdfd {
-			settings* element;
-			bool choose(bool run) const { return false; }
-			bool clear(bool run) const { return false; }
-			bool dropdown(const rect& rc, bool run) const { return false; }
-			const char*	get(char* result, const char* result_maximum, bool force_result) const { result[0] = 0; return result; }
-			bool increment(int step, bool run) const { return false; }
-			bool open(bool run) const { return false; }
-			void set(const rect& value) const {}
-			int	getid() const { return (int)element; }
-			void execute() const {}
-			constexpr cmdnm(settings* element) : element(element) {}
-		} ec(&e);
+			settings&	e;
+			bool choose(bool run) const {
+				if(e.type != settings::UrlFolderPtr)
+					return false;
+				return true;
+			}
+			const char*	get(char* result, const char* result_maximum, bool force_result) const {
+				result[0] = 0;
+				switch(e.type) {
+				case settings::Int:
+					szprint(result, result_maximum, "%1i", *((int*)e.data));
+					break;
+				}
+				return result;
+			}
+			bool increment(int step, bool run) const {
+				if(e.type != settings::Int)
+					return false;
+				return true;
+			}
+			void set(const rect& value) const { current_rect = value; }
+			int	getid() const { return (int)&e; }
+			void execute() const { draw::execute(callback_edit, (int)&e); }
+			constexpr cmdnm(settings& e) : e(e) {}
+		} ec(e);
 		return draw::field(x, y, width, flags, ec, header_label, tips, header_width);
 	}
 
 	static int element(int x, int y, int width, unsigned flags, settings& e) {
+		struct cmdv : runable {
+			settings*		pe;
+			callback_proc	p;
+			int	getid() const { return (int)pe; }
+			void execute() const { draw::execute(p, (int)pe); }
+			void set(callback_proc p, settings& e) { this->p = p; pe = &e; }
+		};
 		const auto title = 160;
 		settings* pc;
 		char temp[512]; temp[0] = 0;
 		if(e.e_visible && !e.e_visible(e))
 			return 0;
 		int y1 = y;
-		cmd ec;
+		cmdv ec;
 		switch(e.type) {
 		case settings::Radio:
-			ec.set(callback_radio, (int)&e);
+			ec.set(callback_radio, e);
 			y += radio(x, y, width, flags | ((*((int*)e.data) == e.value) ? Checked : 0), ec, getname(temp, e), 0);
 			break;
 		case settings::Bool:
-			ec.set(callback_bool, (int)&e);
+			ec.set(callback_bool, e);
+			y += metrics::padding;
 			y += checkbox(x, y, width, flags | (*((bool*)e.data) ? Checked : 0), ec, getname(temp, e), 0);
 			break;
 		case settings::Int:
@@ -263,25 +288,24 @@ static struct widget_settings : controls::control {
 				if(title + w < width)
 					width = title + w;
 			}
-			sznum(temp, *((int*)e.data));
 			//y += field(x, y, width, flags, e, temp, 0, e.name, title, callback_edit, 0, 0, callback_up, callback_down);
-			y += field(x, y, width, flags, e, e.name, title, 0);
+			y += field(x, y, width, flags, e, e.name, 0, title);
 			break;
 		case settings::Color:
 			titletext(x, y, width, flags, e.name, title);
 			y += buttonc(x, y, width, (int)&e, flags, *((color*)e.data), 0, callback_choose_color);
 			break;
 		case settings::Button:
-			ec.set(callback_button, (int)&e);
+			ec.set(callback_button, e);
 			y += button(x, y, width, flags, ec, getname(temp, e), 0);
 			break;
 		case settings::TextPtr:
 			//y += field(x, y, width, (int)&e, flags, *((const char**)e.data), 0, e.name, title, callback_edit);
-			y += field(x, y, width, flags, e, e.name, title, 0);
+			y += field(x, y, width, flags, e, e.name, 0, title);
 			break;
 		case settings::UrlFolderPtr:
 			//y += field(x, y, width, (int)&e, flags, *((const char**)e.data), 0, e.name, title, callback_edit, 0, callback_choose_folder);
-			y += field(x, y, width, flags, e, e.name, title, 0);
+			y += field(x, y, width, flags, e, e.name, 0, title);
 			break;
 		case settings::Control:
 			break;
@@ -290,16 +314,22 @@ static struct widget_settings : controls::control {
 			if(!pc)
 				return 0;
 			if(true) {
+				auto x1 = x;
+				auto w1 = width;
 				auto y2 = y;
 				auto height = draw::texth() + metrics::padding * 2;
 				y += height;
+				if(e.name) {
+					x1 += metrics::padding;
+					w1 -= metrics::padding * 2;
+				}
 				for(; pc; pc = pc->next)
-					y += element(x, y, width, flags, *pc);
+					y += element(x1, y, w1, flags, *pc);
 				if(e.name) {
 					color c1 = colors::border.mix(colors::window, 128);
 					color c2 = c1.darken();
 					gradv({x, y2, x + width, y2 + height}, c1, c2);
-					fore = colors::text.mix(c1, 96);
+					fore = colors::text.mix(c1, 196);
 					text(x + (width - textw(e.name)) / 2, y2 + metrics::padding, e.name);
 					rectb({x, y2, x + width, y + metrics::padding}, colors::border);
 				}
@@ -376,7 +406,7 @@ static const char* get_control_name(char* result, const char* result_maximum, vo
 
 static struct widget_application : draw::controls::control {
 
-	static command	commands[];
+	//static command	commands[];
 	control*		hotcontrols[48];
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
@@ -384,27 +414,6 @@ static struct widget_application : draw::controls::control {
 	}
 
 	const command* getcommands() const override {
-		return commands;
-	}
-
-	unsigned create(bool run) {
-		if(run) {
-
-		}
-		return Disabled;
-	}
-
-	unsigned load(bool run) {
-		if(run) {
-
-		}
-		return 0;
-	}
-
-	unsigned save(bool run) {
-		if(run) {
-
-		}
 		return 0;
 	}
 
@@ -522,14 +531,20 @@ static void setting_appearance_controls() {
 	settings& e1 = settings::root.gr("Расширения").add("Элементы", control_viewer);
 }
 
-static void initialize_settings() {
-	setting_appearance_general_metrics();
-	setting_appearance_forms();
-	setting_appearance_general_view();
-	setting_appearance_controls();
-	// Make header
-	setting_header.initialize();
-}
+static struct application_plugin : draw::initplugin {
+
+	void initialize() override {
+		setting_appearance_general_metrics();
+		setting_appearance_forms();
+		setting_appearance_general_view();
+		setting_appearance_controls();
+		// Make header
+		setting_header.initialize();
+	}
+
+	application_plugin() : initplugin(3) {}
+	
+} application_plugin_instance;
 
 static controls::control* layouts[] = {&widget_application_control, &widget_settings_control};
 
@@ -538,9 +553,7 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(temp, zendof(temp)));
 }
 
-static int paint_application(const char* title) {
-	if(title)
-		draw::setcaption(title);
+void draw::application() {
 	auto current_tab = 0;
 	while(ismodal()) {
 		auto pc = layouts[current_tab];
@@ -565,10 +578,10 @@ static int paint_application(const char* title) {
 			get_control_name,
 			{0, metrics::padding, 0, metrics::padding});
 		if(hilite_tab != -1)
-			get_control_status(layouts[0]);
+			get_control_status(layouts[hilite_tab]);
+		domodal();
 		if(reaction == 1 && hilite_tab != current_tab)
 			current_tab = hilite_tab;
-		domodal();
 		switch(hot.key) {
 		case F2: metrics::show::bottom = !metrics::show::bottom; break;
 		case Alt + F2: metrics::show::left = !metrics::show::left; break;

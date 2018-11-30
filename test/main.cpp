@@ -374,7 +374,7 @@ static void start_menu() {
 	{"Таблица ссылок", test_grid_ref},
 	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
-	{"Приложение", test_application},
+	{"Приложение", draw::application},
 	{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -450,6 +450,7 @@ static bool test_datetime() {
 }
 
 int main() {
+	logmsg("Test %1i", 12);
 	test_datetime();
 	test_requisit();
 	test_array();

@@ -239,7 +239,7 @@ bool textedit::editing(rect rc) {
 	rect rcv;
 	draw::screenshoot push;
 	updaterecords(false);
-	while(true) {
+	while(ismodal()) {
 		push.restore();
 		view(rc);
 		if(isshowrecords()) {

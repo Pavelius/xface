@@ -44,6 +44,7 @@ rect				sys_static_area;
 // Locale draw variables
 static draw::surface default_surface;
 draw::plugin*		draw::plugin::first;
+draw::initplugin*	draw::initplugin::first;
 draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
 // Drag
@@ -2120,6 +2121,18 @@ plugin::plugin(int priority) : next(0), priority(priority) {
 	}
 }
 
+initplugin::initplugin(int priority) : next(0), priority(priority) {
+	if(!first)
+		first = this;
+	else {
+		auto p = first;
+		while(p->next && p->next->priority < priority)
+			p = p->next;
+		this->next = p->next;
+		p->next = this;
+	}
+}
+
 void draw::breakmodal(int result) {
 	break_modal = true;
 	break_result = result;
@@ -2148,7 +2161,7 @@ bool draw::ismodal() {
 
 void draw::initialize() {
 	// Initilaize all plugins
-	for(auto p = plugin::first; p; p = p->next)
+	for(auto p = initplugin::first; p; p = p->next)
 		p->initialize();
 	// Set default window colors
 	draw::font = metrics::font;

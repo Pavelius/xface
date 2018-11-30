@@ -12,6 +12,13 @@ static struct dock_info {
 	bool		visible;
 } dock_data[DockWorkspace + 1];
 
+bool metrics::show::bottom;
+bool metrics::show::top;
+bool metrics::show::left;
+bool metrics::show::right;
+
+control::plugin* control::plugin::first;
+
 control::plugin::plugin(const char* id, control& e, dock_s dock) : id(id), element(e), dock(dock), next(0) {
 	seqlink(this);
 }
