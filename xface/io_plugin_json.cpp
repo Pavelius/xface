@@ -15,7 +15,8 @@
 #include "crt.h"
 #include "io_plugin.h"
 
-enum json_type_s {Text, Number, Array, Struct
+enum json_type_s {
+	Text, Number, Array, Struct
 };
 
 using namespace io;
