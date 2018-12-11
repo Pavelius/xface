@@ -130,7 +130,9 @@ static void callback_edit() {
 		sznum(temp, *((int*)p->data));
 		break;
 	}
+	auto push_focus = getfocus();
 	controls::textedit te(temp, sizeof(temp), true);
+	setfocus((int)&te, true);
 	if(te.editing(current_rect)) {
 		switch(p->type) {
 		case settings::TextPtr:
@@ -145,6 +147,7 @@ static void callback_edit() {
 			break;
 		}
 	}
+	setfocus(push_focus, true);
 }
 
 static struct widget_settings_header : controls::list {
@@ -409,7 +412,6 @@ static const char* get_control_name(char* result, const char* result_maximum, vo
 
 static struct widget_application : draw::controls::control {
 
-	//static command	commands[];
 	control*		hotcontrols[48];
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
@@ -444,7 +446,7 @@ static struct widget_application : draw::controls::control {
 			auto ec = active_workspace_tab;
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
-			auto result = draw::tabs(rct, true, false, (void**)p1, 0, c1.count,
+			auto result = draw::tabs(rct, false, false, (void**)p1, 0, c1.count,
 				current_select, &current_select,
 				get_control_name,
 				{2, 0, 2, 0});
