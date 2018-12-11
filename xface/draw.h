@@ -95,8 +95,8 @@ struct sprite : pma {
 	enum flagse { NoIndex = 1 };
 	enum encodes { Auto, RAW, RLE, ALC, RAW8, RLE8 };
 	struct frame {
-		short int		sx, sy;
-		short int		ox, oy;
+		short 			sx, sy;
+		short			ox, oy;
 		encodes			encode;
 		unsigned		pallette;
 		unsigned		offset;
@@ -106,10 +106,8 @@ struct sprite : pma {
 		short unsigned	start;
 		short unsigned	count;
 	};
-	short int			width; // common width of all frames (if applicable)
-	short int			height; // common height of all frames (if applicable)
-	short int			ascend;
-	short int			descend;
+	short int			width, height; // common size of all frames (if applicable)
+	short int			ascend, descend; // top or down ascend
 	short unsigned		flags; // must be zero
 	unsigned			cicles; // count of anim structure
 	unsigned			cicles_offset;
@@ -118,7 +116,7 @@ struct sprite : pma {
 	const unsigned char* edata() const { return (const unsigned char*)this + sizeof(sprite) + sizeof(frame)*(count - 1); }
 	int					ganim(int index, int tick);
 	const frame&		get(int id) const { return frames[(id >= count) ? 0 : id]; }
-	inline cicle*		gcicle(int index) { return (cicle*)ptr(cicles_offset) + index; }
+	cicle*				gcicle(int index) { return (cicle*)ptr(cicles_offset) + index; }
 	inline int			gindex(int index) const { return *((short unsigned*)((cicle*)ptr(cicles_offset) + cicles) + index); }
 	int					glyph(unsigned sym) const;
 	const unsigned char* ptr(unsigned o) const { return (unsigned char*)this + o; }
