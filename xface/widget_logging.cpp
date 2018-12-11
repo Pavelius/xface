@@ -3,9 +3,12 @@
 #include "collection.h"
 #include "datetime.h"
 #include "draw_control.h"
+#include "settings.h"
 
 using namespace	draw;
 using namespace	draw::controls;
+
+static bool save_log_file;
 
 struct log_message {
 	unsigned		stamp;
@@ -39,11 +42,16 @@ static struct widget_logging : table {
 		return result;
 	}
 
+	static void setting_common() {
+		settings& e1 = settings::root.gr("Логирование").gr("Общие");
+		e1.add("Сохранять файл сообщений после закрытия программы", save_log_file);
+	}
+
 	widget_logging() {
 		addcol("date", "Дата", "datetime");
 		addcol("text", "Сообщение", "text");
+		setting_common();
 	}
 
 } logging_control;
-
 static control::plugin plugin("logging", logging_control, DockBottom);

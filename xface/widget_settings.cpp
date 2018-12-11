@@ -586,7 +586,7 @@ void draw::application() {
 		if(hilite_tab != -1)
 			get_control_status(layouts[hilite_tab]);
 		domodal();
-		if(reaction == 1 && hilite_tab != current_tab)
+		if(reaction == 1)
 			current_tab = hilite_tab;
 		switch(hot.key) {
 		case F2: metrics::show::bottom = !metrics::show::bottom; break;
@@ -595,3 +595,142 @@ void draw::application() {
 		}
 	}
 }
+
+static const char* setting_file_name;
+
+static void exit_application() {
+	io::write(setting_file_name, "settings", 0);
+}
+
+void draw::application(const char* setting_file) {
+	if(setting_file) {
+		setting_file_name = szdup(setting_file);
+		atexit(exit_application);
+		io::read(setting_file_name, "settings", 0);
+	}
+	application();
+}
+
+static struct settings_settings_strategy : io::strategy {
+
+	void write(io::writer& file, settings& e) {
+		switch(e.type) {
+		case settings::Group:
+			file.open(e.name);
+			for(settings* p = (settings*)e.data; p; p = p->next)
+				write(file, *p);
+			file.close(e.name);
+			break;
+		case settings::Bool:
+			file.set(e.name, *((bool*)e.data));
+			break;
+		case settings::Int:
+		case settings::Color:
+			file.set(e.name, *((int*)e.data));
+			break;
+		case settings::Radio:
+			if(*((int*)e.data) == e.value)
+				file.set(e.name, 1);
+			break;
+		case settings::TextPtr:
+		case settings::UrlFolderPtr:
+			file.set(e.name, *((const char**)e.data));
+			break;
+		}
+	}
+
+	void write(io::writer& file, void* param) override {
+		write(file, settings::root);
+	}
+
+	settings* find(io::node& n) {
+		auto result = (settings*)settings::root.data;
+		if(n.parent && strcmp(n.parent->name, "Root") != 0) {
+			result = find(*n.parent);
+			if(!result)
+				return 0;
+			if(result->type != settings::Group)
+				return 0;
+			result = (settings*)result->data;
+		}
+		return result->find(szdup(n.name));
+	}
+
+	int getnum(const char* value) const {
+		return sz2num(value);
+	}
+
+	void set(io::node& n, const char* value) override {
+		auto e = find(n);
+		if(!e)
+			return;
+		switch(e->type) {
+		case settings::Int:
+		case settings::Color:
+			*((int*)e->data) = getnum(value);
+			break;
+		case settings::Bool:
+			*((bool*)e->data) = (getnum(value) ? true : false);
+			break;
+		case settings::Radio:
+			*((int*)e->data) = e->value;
+			break;
+		case settings::TextPtr:
+		case settings::UrlFolderPtr:
+			*((const char**)e->data) = szdup(value);
+			break;
+		}
+	}
+
+	settings_settings_strategy() : strategy("settings", "settings") {}
+
+} settings_settings_strategy_instance;
+
+static struct controls_settings_strategy : io::strategy {
+
+	void write(io::writer& file, void* param) override {
+		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
+			auto& e = pp->element;
+			auto id = pp->id;
+			if(!id || id[0] == 0)
+				continue;
+			file.open(id);
+			file.set("Docking", pp->dock);
+			file.close(id);
+		}
+	}
+
+	settings* find(io::node& n) {
+		settings* result = (settings*)settings::root.data;
+		if(n.parent && szcmpi(n.parent->name, "Root") != 0) {
+			result = find(*n.parent);
+			if(!result)
+				return 0;
+			if(result->type != settings::Group)
+				return 0;
+			result = (settings*)result->data;
+		}
+		return result->find(szdup(n.name));
+	}
+
+	bool istrue(const char* value) const {
+		return value[0] == 't'
+			&& value[1] == 'r'
+			&& value[2] == 'u'
+			&& value[3] == 'e'
+			&& value[4] == 0;
+	}
+
+	void set(io::node& n, const char* value) override {
+		if(!n.parent || !n.parent->parent)
+			return;
+		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));
+		if(!e)
+			return;
+		else if(szcmpi(n.name, "Docking") == 0)
+			e->dock = (dock_s)sz2num(value);
+	}
+
+	controls_settings_strategy() : strategy("controls", "settings") {}
+
+} controls_settings_strategy_instance;

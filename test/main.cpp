@@ -360,6 +360,10 @@ static void test_drag_drop() {
 	}
 }
 
+static void run_application() {
+	draw::application("settings.json");
+}
+
 static void start_menu() {
 	struct element {
 		const char*		name;
@@ -374,7 +378,7 @@ static void start_menu() {
 	{"Таблица ссылок", test_grid_ref},
 	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
-	{"Приложение", draw::application},
+	{"Приложение", run_application},
 	{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);

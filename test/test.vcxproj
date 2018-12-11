@@ -132,6 +132,10 @@
     <ClCompile Include="..\..\formats\convert\base64.cpp" />
     <ClCompile Include="..\..\formats\convert\rle.cpp" />
     <ClCompile Include="..\..\formats\convert\zip.cpp" />
+    <ClCompile Include="..\xface\io_plugin_json.cpp" />
+    <ClCompile Include="..\xface\io_plugin_xml.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="cultivated_lands.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

@@ -76,7 +76,7 @@ bool io::read(const char* url, io::reader& e) {
 }
 
 bool io::read(const char* url, const char* root_name, void* param) {
-	struct proxy : public io::reader {
+	struct proxy : io::reader {
 		const char*		root_name;
 		void*			param;
 		io::strategy*	st;
@@ -118,6 +118,9 @@ bool io::read(const char* url, const char* root_name, void* param) {
 				e.skip = true;
 			else
 				st->close(e);
+		}
+
+		proxy() : root_name(0), param(0), st(0) {
 		}
 
 	};

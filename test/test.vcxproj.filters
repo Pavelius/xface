@@ -28,6 +28,12 @@
     <ClCompile Include="cultivated_lands.cpp">
       <Filter>Логика</Filter>
     </ClCompile>
+    <ClCompile Include="..\xface\io_plugin_json.cpp">
+      <Filter>Плагины\Сериализаторы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xface\io_plugin_xml.cpp">
+      <Filter>Плагины\Сериализаторы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Плагины">
@@ -41,6 +47,9 @@
     </Filter>
     <Filter Include="Логика">
       <UniqueIdentifier>{2c36beed-c10b-4210-b306-73f5a5f37ccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Плагины\Сериализаторы">
+      <UniqueIdentifier>{677103a7-6313-4818-8a95-7d8cd70cb42c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
