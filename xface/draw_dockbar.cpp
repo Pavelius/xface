@@ -1,7 +1,8 @@
+#include "bsdata.h"
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
-#include "bsdata.h"
+#include "io_plugin.h"
 
 using namespace draw;
 using namespace draw::controls;
@@ -9,7 +10,6 @@ using namespace draw::controls;
 static struct dock_info {
 	int			current;
 	int			size;
-	bool		visible;
 } dock_data[DockWorkspace + 1];
 
 bool metrics::show::bottom;
@@ -134,3 +134,23 @@ void dockbar(const rect& rc) {
 		dock_paint(DockBottom, rc, getdocked(p1, DockBottom), {});
 }
 }
+
+static struct dockbar_settings_strategy : io::strategy {
+
+	void write(io::writer& file, void* param) override {
+		char temp[32];
+		for(auto i = DockLeft; i <= DockWorkspace; i = (dock_s)(i + 1)) {
+			szprint(temp, zendof(temp), "n%1i", i);
+			file.open(temp);
+			file.set("current", dock_data[i].current);
+			file.set("size", dock_data[i].size);
+			file.close(temp);
+		}
+	}
+
+	void set(io::node& n, const char* value) override {
+	}
+
+	dockbar_settings_strategy() : strategy("dockbar", "settings") {}
+
+} dockbar_settings_strategy_instance;
