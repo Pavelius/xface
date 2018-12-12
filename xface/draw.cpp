@@ -2160,13 +2160,14 @@ bool draw::ismodal() {
 }
 
 void draw::initialize() {
-	// Initilaize all plugins
 	for(auto p = initplugin::first; p; p = p->next)
 		p->initialize();
 	// Set default window colors
 	draw::font = metrics::font;
 	draw::fore = colors::text;
 	draw::fore_stroke = colors::blue;
+	for(auto p = initplugin::first; p; p = p->next)
+		p->after_initialize();
 }
 
 char* draw::key2str(char* result, int key) {

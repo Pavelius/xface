@@ -228,6 +228,7 @@ struct initplugin {
 	static initplugin*	first;
 	initplugin(int priority = 10);
 	virtual void		initialize() {}
+	virtual void		after_initialize() {}
 };
 struct plugin {
 	int					priority;

@@ -9,11 +9,18 @@
 
 using namespace	draw;
 
+struct application_window {
+	int						x, y, width, height;
+	int						header_width;
+};
+
 bool						metrics::show::padding;
 bool						metrics::show::statusbar;
 static int					current_tab;
 static settings*			current_header;
 static controls::control*	active_workspace_tab;
+static application_window	window = {0, 0, 0, 0, 160};
+static const char*			settings_file_name = "settings.json";
 static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
@@ -203,8 +210,6 @@ static struct widget_control_viewer : controls::gridref {
 
 static struct widget_settings : controls::control {
 
-	int header_width;
-
 	static const char* getname(char* temp, settings& e) {
 		zcpy(temp, e.name);
 		szupper(temp);
@@ -351,10 +356,10 @@ static struct widget_settings : controls::control {
 		draw::state push;
 		settings* tabs[128];
 		fore = colors::text;
-		splitv(rc.x1, rc.y1, header_width, rc.height(), 1, 6, 64, 282, false);
+		splitv(rc.x1, rc.y1, window.header_width, rc.height(), 1, 6, 64, 282, false);
 		setting_header.show_border = metrics::show::padding;
-		setting_header.view({rc.x1, rc.y1, rc.x1 + header_width, rc.y2});
-		rc.x1 += header_width + 6;
+		setting_header.view({rc.x1, rc.y1, rc.x1 + window.header_width, rc.y2});
+		rc.x1 += window.header_width + 6;
 		auto top = setting_header.getcurrent();
 		// При изменении текущего заголовка
 		if(top != current_header) {
@@ -399,7 +404,7 @@ static struct widget_settings : controls::control {
 		}
 	}
 
-	widget_settings() : header_width(160) {
+	widget_settings() {
 		show_background = false;
 		show_border = false;
 	}
@@ -547,8 +552,17 @@ static struct application_plugin : draw::initplugin {
 		setting_header.initialize();
 	}
 
+	static void exit_application() {
+		io::write(settings_file_name, "settings", 0);
+	}
+
+	void after_initialize() override {
+		atexit(exit_application);
+		io::read(settings_file_name, "settings", 0);
+	}
+
 	application_plugin() : initplugin(3) {}
-	
+
 } application_plugin_instance;
 
 static controls::control* layouts[] = {&widget_application_control, &widget_settings_control};
@@ -594,21 +608,6 @@ void draw::application() {
 		case Ctrl + F2: metrics::show::right = !metrics::show::right; break;
 		}
 	}
-}
-
-static const char* setting_file_name;
-
-static void exit_application() {
-	io::write(setting_file_name, "settings", 0);
-}
-
-void draw::application(const char* setting_file) {
-	if(setting_file) {
-		setting_file_name = szdup(setting_file);
-		atexit(exit_application);
-		io::read(setting_file_name, "settings", 0);
-	}
-	application();
 }
 
 static struct settings_settings_strategy : io::strategy {
@@ -685,6 +684,33 @@ static struct settings_settings_strategy : io::strategy {
 	settings_settings_strategy() : strategy("settings", "settings") {}
 
 } settings_settings_strategy_instance;
+
+static struct window_settings_strategy : io::strategy {
+
+	void write(io::writer& file, void* param) override {
+		file.set("x", window.x);
+		file.set("y", window.y);
+		file.set("width", window.width);
+		file.set("height", window.height);
+		file.set("header_width", window.header_width);
+	}
+
+	void set(io::node& n, const char* value) override {
+		if(n == "x")
+			window.x = sz2num(value);
+		else if(n=="y")
+			window.y = sz2num(value);
+		else if(n == "width")
+			window.width = sz2num(value);
+		else if(n == "height")
+			window.height = sz2num(value);
+		else if(n == "header_width")
+			window.header_width = sz2num(value);
+	}
+
+	window_settings_strategy() : strategy("window", "settings") {}
+
+} window_settings_strategy_instance;
 
 static struct controls_settings_strategy : io::strategy {
 
