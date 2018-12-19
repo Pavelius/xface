@@ -248,6 +248,17 @@ static const char* register_class(const char* class_name) {
 	return class_name;
 }
 
+void draw::getwindowpos(point& pos, point& size) {
+	RECT rc; WINDOWPLACEMENT wp;
+	GetWindowPlacement(hwnd, &wp);
+	GetWindowRect(hwnd, &rc);
+	size.x = (short)(rc.right - rc.left);
+	size.y = (short)(rc.bottom - rc.top);
+	GetWindowRect(hwnd, &rc);
+	pos.x = (short)rc.left;
+	pos.y = (short)rc.top;
+}
+
 void draw::updatewindow() {
 	if(!hwnd)
 		return;
@@ -283,8 +294,12 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 		dwStyle |= WS_MAXIMIZE;
 	RECT MinimumRect = {0, 0, width, height};
 	AdjustWindowRectEx(&MinimumRect, dwStyle, 0, 0);
-	minimum.x = (short)(MinimumRect.right - MinimumRect.left);
-	minimum.y = (short)(MinimumRect.bottom - MinimumRect.top);
+	minimum.x = 800;
+	if(minimum.x > width)
+		minimum.x = width;
+	minimum.y = 600;
+	if(minimum.y > height)
+		minimum.y = height;
 	if(x == -1)
 		x = (GetSystemMetrics(SM_CXFULLSCREEN) - minimum.x) / 2;
 	if(y == -1)

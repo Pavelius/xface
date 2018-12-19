@@ -277,6 +277,7 @@ int						getheight();
 int						getnext(int id, int key);
 int						getresult();
 int						getwidth();
+void					getwindowpos(point& pos, point& size);
 void					glyph(int x, int y, int sym, unsigned flags);
 void					gradv(rect rc, const color c1, const color c2, int skip = 0);
 void					gradh(rect rc, const color c1, const color c2, int skip = 0);

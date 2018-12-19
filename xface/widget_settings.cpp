@@ -553,6 +553,12 @@ static struct application_plugin : draw::initplugin {
 	}
 
 	static void exit_application() {
+		point pos, size;
+		getwindowpos(pos, size);
+		window.x = pos.x;
+		window.y = pos.y;
+		window.width = size.x;
+		window.height = size.y;
 		io::write(settings_file_name, "settings", 0);
 	}
 
@@ -608,6 +614,15 @@ void draw::application() {
 		case Ctrl + F2: metrics::show::right = !metrics::show::right; break;
 		}
 	}
+}
+
+void set_dark_theme();
+void set_light_theme();
+
+void draw::application_initialize() {
+	set_light_theme();
+	initialize();
+	create(window.x, window.y, window.width, window.height, WFResize | WFMinmax, 32);
 }
 
 static struct settings_settings_strategy : io::strategy {

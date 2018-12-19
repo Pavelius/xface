@@ -319,6 +319,7 @@ protected:
 };
 }
 void						application();
+void						application_initialize();
 int							button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);

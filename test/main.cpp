@@ -401,9 +401,6 @@ static void test_array() {
 	p1->value = 2;
 }
 
-void set_dark_theme();
-void set_light_theme();
-
 static void test_requisit() {
 	using namespace compiler;
 	manager man;
@@ -456,11 +453,8 @@ int main() {
 	test_array();
 	test_map();
 	test_binary_serial();
-	set_light_theme();
-	// Инициализация библиотеки
-	initialize();
+	application_initialize();
 	// Создание окна
-	create(-1, -1, 800, 600, WFResize | WFMinmax, 32);
 	setcaption("X-Face C++ library samples");
 	start_menu();
 	return 0;
