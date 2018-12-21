@@ -307,8 +307,8 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 	rect position;
 	position.x1 = x;
 	position.y1 = y;
-	position.x2 = position.x1 + minimum.x;
-	position.y2 = position.y1 + minimum.y;
+	position.x2 = position.x1 + width;
+	position.y2 = position.y1 + height;
 	// Update current surface
 	if(draw::canvas)
 		draw::canvas->resize(width, height, bpp, true);
