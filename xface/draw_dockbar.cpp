@@ -19,7 +19,7 @@ bool metrics::show::right;
 
 control::plugin* control::plugin::first;
 
-control::plugin::plugin(const char* id, control& e, dock_s dock) : id(id), element(e), dock(dock), next(0) {
+control::plugin::plugin(const char* id, dock_s dock) : id(id), dock(dock), next(0) {
 	seqlink(this);
 }
 
@@ -40,11 +40,11 @@ aref<control*> getdocked(aref<control*> result, dock_s type) {
 	auto ps = result.data;
 	auto pe = result.data + result.count;
 	for(auto p = control::plugin::first; p; p = p->next) {
-		if(p->element.isdisabled())
+		if(p->getcontrol().isdisabled())
 			continue;
 		if(p->dock == type) {
 			if(ps < pe)
-				*ps++ = &p->element;
+				*ps++ = &p->getcontrol();
 		}
 	}
 	result.count = ps - result.data;

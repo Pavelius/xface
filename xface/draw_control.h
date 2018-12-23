@@ -98,11 +98,12 @@ struct control {
 	struct plugin {
 		const char*			id;
 		dock_s				dock;
-		control&			element;
 		plugin*				next;
 		static plugin*		first;
-		plugin(const char* id, control& e, dock_s dock);
+		plugin(const char* id, dock_s dock);
+		virtual void		after_initialize() {}
 		static const plugin* find(const char* id);
+		virtual control&	getcontrol() = 0;
 		static struct bsreq	metadata[];
 	};
 	bool					show_border;

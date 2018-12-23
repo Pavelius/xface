@@ -199,7 +199,7 @@ static struct widget_control_viewer : controls::gridref {
 	const char*	getname(char* result, const char* result_maximum, int row, int column) const override {
 		auto p = (control::plugin*)get(row);
 		if(strcmp(columns[column].id, "name") == 0)
-			return p->element.getlabel(result, result_maximum);
+			return p->getcontrol().getlabel(result, result_maximum);
 		return gridref::getname(result, result_maximum, row, column);
 	}
 
@@ -622,6 +622,8 @@ void set_light_theme();
 void draw::application_initialize() {
 	set_light_theme();
 	initialize();
+	for(auto p = controls::control::plugin::first; p; p = p->next)
+		p->after_initialize();
 	create(window.x, window.y, window.width, window.height, WFResize | WFMinmax, 32);
 }
 
@@ -731,7 +733,7 @@ static struct controls_settings_strategy : io::strategy {
 
 	void write(io::writer& file, void* param) override {
 		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
-			auto& e = pp->element;
+			auto& e = pp->getcontrol();
 			auto id = pp->id;
 			if(!id || id[0] == 0)
 				continue;

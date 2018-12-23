@@ -2,7 +2,7 @@
 #include "crt.h"
 #include "collection.h"
 #include "datetime.h"
-#include "draw_control.h"
+#include "draw_grid.h"
 #include "settings.h"
 
 using namespace	draw;
@@ -26,15 +26,19 @@ void logmsgv(const char* format, const char* arguments) {
 	szprintvs(temp, zendof(temp), format, arguments);
 	e.stamp = datetime::now();
 	e.text = szdup(temp);
+	messages.add(e);
 }
 
-void logmsg(const char* format, ...) {
-	logmsgv(format, xva_start(format));
-}
+static struct widget_logging : control::plugin, grid {
 
-static struct widget_logging : table {
+	void after_initialize() override {
+		addcol("date", "Дата", "datetime");
+		addcol("text", "Сообщение", "text");
+		setting_common();
+	}
 
-	void initialize() {
+	control& getcontrol() override {
+		return *this;
 	}
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
@@ -47,11 +51,14 @@ static struct widget_logging : table {
 		e1.add("Сохранять файл сообщений после закрытия программы", save_log_file);
 	}
 
-	widget_logging() {
-		addcol("date", "Дата", "datetime");
-		addcol("text", "Сообщение", "text");
-		setting_common();
+	widget_logging() : plugin("logging", DockBottom), grid(log_message_type, messages.data, sizeof(messages.data[0]), 0, messages.count) {
+		no_change_count = true;
+		read_only = true;
+		select_mode = SelectRow;
 	}
 
 } logging_control;
-static control::plugin plugin("logging", logging_control, DockBottom);
+
+void logmsg(const char* format, ...) {
+	logmsgv(format, xva_start(format));
+}
