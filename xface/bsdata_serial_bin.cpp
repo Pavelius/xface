@@ -2,9 +2,8 @@
 #include "bsdata.h"
 
 struct bsdata_archive : archive {
-	
-	arrayref			pointers[3];
-	adat<bsreq, 2048>	requisits;
+	arrayref				pointers[3];
+	adat<bsreq, 2048>		requisits;
 	amap<const bsreq*, const bsreq*> types;
 
 	constexpr bsdata_archive(io::stream& e, bool writemode) : requisits(), types(),

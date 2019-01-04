@@ -15,6 +15,10 @@ static bool			keep_hot;
 static hotinfo		keep_hot_value;
 static focusable_element	elements[96];
 static focusable_element*	render_control;
+static bool			break_modal;
+static int			break_result;
+draw::plugin*		draw::plugin::first;
+draw::initplugin*	draw::initplugin::first;
 
 static void set_focus_callback() {
 	auto id = getnext(draw::getfocus(), hot.param);
@@ -167,6 +171,67 @@ void draw::execute(const hotinfo& value) {
 	keep_hot = true;
 	keep_hot_value = value;
 	hot.key = InputUpdate;
+}
+
+plugin::plugin(int priority) : next(0), priority(priority) {
+	if(!first)
+		first = this;
+	else {
+		auto p = first;
+		while(p->next && p->next->priority < priority)
+			p = p->next;
+		this->next = p->next;
+		p->next = this;
+	}
+}
+
+initplugin::initplugin(int priority) : next(0), priority(priority) {
+	if(!first)
+		first = this;
+	else {
+		auto p = first;
+		while(p->next && p->next->priority < priority)
+			p = p->next;
+		this->next = p->next;
+		p->next = this;
+	}
+}
+
+void draw::breakmodal(int result) {
+	break_modal = true;
+	break_result = result;
+}
+
+void draw::buttoncancel() {
+	breakmodal(0);
+}
+
+void draw::buttonok() {
+	breakmodal(1);
+}
+
+int draw::getresult() {
+	return break_result;
+}
+
+bool draw::ismodal() {
+	for(auto p = plugin::first; p; p = p->next)
+		p->before();
+	if(!break_modal)
+		return true;
+	break_modal = false;
+	return false;
+}
+
+void draw::initialize() {
+	for(auto p = initplugin::first; p; p = p->next)
+		p->initialize();
+	for(auto p = initplugin::first; p; p = p->next)
+		p->after_initialize();
+	// Set default window colors
+	draw::font = metrics::font;
+	draw::fore = colors::text;
+	draw::fore_stroke = colors::blue;
 }
 
 void draw::domodal() {

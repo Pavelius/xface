@@ -13,21 +13,21 @@ extern "C" void	free(void* pointer);
 using namespace draw;
 
 // Default theme colors
-color colors::active;
-color colors::button;
-color colors::form;
-color colors::window;
-color colors::text;
-color colors::border;
-color colors::edit;
-color colors::h1;
-color colors::h2;
-color colors::h3;
-color colors::special;
-color colors::tips::text;
-color colors::tips::back;
-color colors::tabs::text;
-color colors::tabs::back;
+color				colors::active;
+color				colors::button;
+color				colors::form;
+color				colors::window;
+color				colors::text;
+color				colors::border;
+color				colors::edit;
+color				colors::h1;
+color				colors::h2;
+color				colors::h3;
+color				colors::special;
+color				colors::tips::text;
+color				colors::tips::back;
+color				colors::tabs::text;
+color				colors::tabs::back;
 // Color context and font context
 color				draw::fore;
 color				draw::fore_stroke;
@@ -43,8 +43,6 @@ bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;
 // Locale draw variables
 static draw::surface default_surface;
-draw::plugin*		draw::plugin::first;
-draw::initplugin*	draw::initplugin::first;
 draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
 // Drag
@@ -60,8 +58,6 @@ sprite*				metrics::h2 = (sprite*)loadb("art/fonts/h2.pma");
 sprite*				metrics::h3 = (sprite*)loadb("art/fonts/h3.pma");
 int					metrics::scroll = 16;
 int					metrics::padding = 4;
-static bool			break_modal;
-static int			break_result;
 
 float sqrt(const float x) {
 	const float xhalf = 0.5f*x;
@@ -2107,67 +2103,6 @@ void surface::convert(int new_bpp, color* pallette) {
 		bits = new_bits;
 	}
 	bpp = iabs(new_bpp);
-}
-
-plugin::plugin(int priority) : next(0), priority(priority) {
-	if(!first)
-		first = this;
-	else {
-		auto p = first;
-		while(p->next && p->next->priority < priority)
-			p = p->next;
-		this->next = p->next;
-		p->next = this;
-	}
-}
-
-initplugin::initplugin(int priority) : next(0), priority(priority) {
-	if(!first)
-		first = this;
-	else {
-		auto p = first;
-		while(p->next && p->next->priority < priority)
-			p = p->next;
-		this->next = p->next;
-		p->next = this;
-	}
-}
-
-void draw::breakmodal(int result) {
-	break_modal = true;
-	break_result = result;
-}
-
-void draw::buttoncancel() {
-	breakmodal(0);
-}
-
-void draw::buttonok() {
-	breakmodal(1);
-}
-
-int draw::getresult() {
-	return break_result;
-}
-
-bool draw::ismodal() {
-	for(auto p = plugin::first; p; p = p->next)
-		p->before();
-	if(!break_modal)
-		return true;
-	break_modal = false;
-	return false;
-}
-
-void draw::initialize() {
-	for(auto p = initplugin::first; p; p = p->next)
-		p->initialize();
-	for(auto p = initplugin::first; p; p = p->next)
-		p->after_initialize();
-	// Set default window colors
-	draw::font = metrics::font;
-	draw::fore = colors::text;
-	draw::fore_stroke = colors::blue;
 }
 
 char* draw::key2str(char* result, int key) {
