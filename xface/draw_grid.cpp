@@ -106,9 +106,9 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 	if(!bv)
 		return "";
 	if(bv.type->type == number_type) {
-		stringcreator sc;
+		stringcreator sc(result, result_max);
 		auto value = getnumber(line, column);
-		sc.print(result, result_max, "%1i", value);
+		sc.add("%1i", value);
 		return result;
 	} else if(bv.type->type == text_type) {
 		auto p = (const char*)bv.get();

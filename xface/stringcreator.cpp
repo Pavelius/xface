@@ -1,49 +1,61 @@
-#include "crt.h"
 #include "stringcreator.h"
 
-void stringcreator::parseidentifier(char* result, const char* result_max, const char* identifier) {
-	auto len = zlen(identifier) + 3;
-	if((result_max - result) >= len) {
-		zcat(result, "[-");
-		zcat(result, identifier);
-		zcat(result, "]");
-	}
+#define xva_start(v) ((const char*)&v + sizeof(v))
+
+extern "C" void* memcpy(void* destination, const void* source, unsigned size);
+
+unsigned char stringcreator::upper(unsigned char u) {
+	if(u >= 0x61 && u <= 0x7A)
+		return u - 0x61 + 0x41;
+	else if(u >= 0xE0)
+		return u - 0xE0 + 0xC0;
+	return u;
 }
 
-void stringcreator::parsevariable(char* result, const char* result_max, const char** format) {
+unsigned char stringcreator::lower(unsigned char u) {
+	if(u >= 0x41 && u <= 0x5A)
+		return u - 0x41 + 0x61;
+	else if(u >= 0xC0 && u <= 0xDF)
+		return u - 0xC0 + 0xE0;
+	return u;
+}
+
+void stringcreator::addidentifier(const char* identifier) {
+	addv("[-", 0);
+	addv(identifier, 0);
+	addv("]", 0);
+}
+
+const char* stringcreator::readvariable(const char* p) {
 	char temp[260];
-	auto src = *format;
-	int s = 0;
-	if(*src == '(') {
-		*format += 1;
-		while(*src && *src != ')')
-			src++;
-		s = src - *format;
-		src++;
-	} else {
-		while(*src) {
-			const char* s1 = src;
-			unsigned ch = szget(&src);
-			if(!ischa(ch) && !isnum(ch) && ch != '_') {
-				src = s1;
-				break;
-			}
+	auto ps = temp;
+	auto pe = temp + sizeof(temp) - 1;
+	if(*p == '(') {
+		p++;
+		while(*p && *p != ')') {
+			if(ps < pe)
+				*ps++ = *p;
 		}
-		s = src - *format;
+		if(*p == ')')
+			p++;
+	} else {
+		while(*p || ischa(*p) || isnum(*p) || *p=='_') {
+			if(ps < pe)
+				*ps++ = *p;
+		}
 	}
-	temp[0] = 0;
-	if(s != 0 && s<int(sizeof(temp) - 1)) {
-		memcpy(temp, *format, s);
-		temp[s] = 0;
-	}
-	*format = src;
-	parseidentifier(result, result_max, temp);
+	*ps = 0;
+	addidentifier(temp);
+	return p;
 }
 
-char* stringcreator::parsenumber(char* dst, const char* result_max, unsigned value, int precision, const int radix) {
+char* stringcreator::adduint(char* dst, const char* result_max, unsigned value, int precision, const int radix) {
 	char temp[32]; int i = 0;
 	if(!value) {
-		zcpy(dst, "0");
+		if(dst<result_max)
+			*dst++ = '0';
+		if(dst<result_max)
+			*dst = 0;
 		return dst;
 	}
 	if(!result_max)
@@ -53,7 +65,7 @@ char* stringcreator::parsenumber(char* dst, const char* result_max, unsigned val
 		value /= radix;
 	}
 	while(precision-- > i) {
-		if(dst<result_max)
+		if(dst < result_max)
 			*dst++ = '0';
 	}
 	while(i) {
@@ -62,37 +74,35 @@ char* stringcreator::parsenumber(char* dst, const char* result_max, unsigned val
 			if(v < 10)
 				*dst++ = '0' + v;
 			else
-				*dst++ = 'A' + (v-10);
+				*dst++ = 'A' + (v - 10);
 		}
 	}
 	dst[0] = 0;
 	return dst;
 }
 
-char* stringcreator::parseint(char* dst, const char* result_max, int value, int precision, const int radix) {
+char* stringcreator::addint(char* dst, const char* result_max, int value, int precision, const int radix) {
 	if(value < 0) {
-		if(dst<result_max)
+		if(dst < result_max)
 			*dst++ = '-';
 		value = -value;
 	}
-	return parsenumber(dst, result_max, value, precision, radix);
+	return adduint(dst, result_max, value, precision, radix);
 }
 
-const char* stringcreator::parseformat(char* dst, const char* result_max, const char* src, const char* vl) {
+const char* stringcreator::readformat(const char* src, const char* vl) {
 	if(*src == '%') {
 		auto sym = *src++;
-		if(dst < result_max)
-			*dst++ = sym;
-		*dst = 0;
+		if(p < pe)
+			*p++ = sym;
+		*p = 0;
 		return src;
 	}
-	*dst = 0;
-	bool prefix_plus = false;
-	if(*src == '+') {
-		prefix_plus = true;
-		src++;
-	}
-	if(*src >= '1' && *src <= '9') {
+	*p = 0;
+	char prefix = 0;
+	if(*src == '+' || *src == '-')
+		prefix = *src++;
+	if(*src >= '0' && *src <= '9') {
 		// ≈сли число, просто подставим нужный параметр
 		int pn = 0, pnp = 0;
 		while(isnum(*src))
@@ -105,62 +115,94 @@ const char* stringcreator::parseformat(char* dst, const char* result_max, const 
 		if(*src == 'i') {
 			src++;
 			auto value = ((int*)vl)[pn - 1];
-			if(prefix_plus && value >= 0) {
-				if(dst<result_max)
-					*dst++ = '+';
+			if(prefix == '+' && value >= 0) {
+				if(p < pe)
+					*p++ = '+';
 			}
-			dst = parseint(dst, result_max, value, pnp, 10);
+			p = addint(p, pe, value, pnp, 10);
 		} else if(*src == 'h') {
 			src++;
-			dst = parsenumber(dst, result_max, (unsigned)(((int*)vl)[pn - 1]), pnp, 16);
+			p = adduint(p, pe, (unsigned)(((int*)vl)[pn - 1]), pnp, 16);
 		} else {
-			if(((char**)vl)[pn - 1])
-				zcpy(dst, ((char**)vl)[pn - 1], result_max - dst);
+			if(((char**)vl)[pn - 1]) {
+				auto p0 = p;
+				auto p1 = ((char**)vl)[pn - 1];
+				while(*p1 && p < pe)
+					*p++ = *p1++;
+				if(p < pe)
+					*p = 0;
+				switch(prefix) {
+				case '-': *p0 = lower(*p0); break;
+				case '+': *p0 = upper(*p0); break;
+				default: break;
+				}
+			}
 		}
 	} else
-		parsevariable(dst, result_max, &src);
+		src = readvariable(src);
 	return src;
 }
 
-void stringcreator::printv(char* result, const char* result_maximum, const char* src, const char* vl) {
-	if(!result)
+void stringcreator::addv(const char* src, const char* vl) {
+	if(!p)
 		return;
 	if(!src) {
-		result[0] = 0;
+		// Error: No source string
+		p[0] = 0;
 		return;
 	}
 	while(true) {
 		switch(*src) {
 		case 0:
-			*result = 0;
+			*p = 0;
 			return;
 		case '%':
-			src = parseformat(result, result_maximum, src + 1, vl);
-			result = zend(result);
-			if(result > result_maximum)
-				result = const_cast<char*>(result_maximum);
+			src = readformat(src + 1, vl);
 			break;
 		default:
-			if(result < result_maximum)
-				*result++ = *src;
+			if(p < pe)
+				*p++ = *src;
 			src++;
 			break;
 		}
 	}
 }
 
-void stringcreator::print(char* result, const char* result_maximum, const char* src, ...) {
-	printv(result, result_maximum, src, xva_start(src));
+void stringcreator::add(const char* src, ...) {
+	addv(src, xva_start(src));
+}
+
+void stringcreator::addx(const char* separator, const char* format, const char* format_param) {
+	if(p > pb)
+		addv(separator, 0);
+	addv(format, format_param);
+}
+
+void stringcreator::addn(const char* format, ...) {
+	addx("\n", format, xva_start(format));
+}
+
+void stringcreator::adds(const char* format, ...) {
+	if(p > pb)
+		addv(" ", 0);
+	addv(format, xva_start(format));
+}
+
+void stringcreator::addicon(const char* id, int value) {
+	if(value < 0)
+		adds(":%1:[-%2i]", id, -value);
+	else
+		adds(":%1:%2i", id, value);
 }
 
 char* szprintvs(char* result, const char* result_maximum, const char* src, const char* vl) {
-	stringcreator e;
-	e.printv(result, result_maximum, src, vl);
-	return result;
+	stringcreator e(result, result_maximum);
+	e.addv(src, vl);
+	return e;
 }
 
 char* szprint(char* result, const char* result_maximum, const char* src, ...) {
-	stringcreator e;
-	e.printv(result, result_maximum, src, xva_start(src));
-	return result;
+	stringcreator e(result, result_maximum);
+	e.addv(src, xva_start(src));
+	return e;
 }

@@ -13,7 +13,6 @@
 #define lenghtof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
 
-extern "C" void						abort();
 extern "C" int						atexit(void(*func)(void));
 extern "C" void*					bsearch(const void* key, const void *base, unsigned num, unsigned size, int(*compar)(const void *, const void *));
 extern "C" unsigned					clock(); // Returns the processor time consumed by the program.
@@ -24,10 +23,8 @@ extern "C" void*					memcpy(void* destination, const void* source, unsigned size
 extern "C" void*					memset(void* destination, int value, unsigned size);
 extern "C" void						qsort(void* base, unsigned num, unsigned size, int(*compar)(const void*, const void*));
 extern "C" int						rand(void); // Get next random value
-extern "C" void						sleep(unsigned seconds); // Suspend execution for an interval of time
 extern "C" void						srand(unsigned seed); // Set random seed
 extern "C" int						strcmp(const char* s1, const char* s2); // Compare two strings
-extern "C" int						system(const char* command); // Execute system command
 extern "C" long long				time(long long* seconds);
 
 enum codepages { CPNONE, CP1251, CPUTF8, CPU16BE, CPU16LE };
@@ -94,5 +91,3 @@ template<class T> inline int		zlen(T* p) { return zend(p) - p; }
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
 template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
 template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
-// Inline other function
-inline int							d100() { return rand() % 100; }
