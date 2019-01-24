@@ -125,6 +125,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\formats\util\sprite_store.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="win_util.cpp" />
     <ClCompile Include="xml.cpp" />

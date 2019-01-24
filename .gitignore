@@ -5,7 +5,6 @@
 *.userprefs
 
 # Build results
-xmlimg/**
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

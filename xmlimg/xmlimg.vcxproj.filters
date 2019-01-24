@@ -4,6 +4,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="xml.cpp" />
     <ClCompile Include="win_util.cpp" />
+    <ClCompile Include="..\..\formats\util\sprite_store.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xml.h" />
