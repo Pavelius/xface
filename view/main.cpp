@@ -67,7 +67,7 @@ int mainview(const char* url) {
 		wy = f1.sy;
 		setting::show::center = false;
 	}
-	window dc(-1, -1, wx, wy, WFResize | WFMinmax);
+	draw::create(-1, -1, wx, wy, WFResize | WFMinmax, 32);
 	draw::palt = (color*)load_pallette(url);
 	settimer(100);
 	setcaption(szfname(url));
@@ -75,8 +75,10 @@ int mainview(const char* url) {
 	int tick = 0;
 	char temp[128];
 	bool animated_sprite = pi->cicles != 0;
-	while(true) {
+	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
+		auto width = draw::getwidth();
+		auto height = draw::getheight();
 		int maximum = animated_sprite ? pi->cicles : pi->count;
 		if(current >= maximum)
 			current = maximum - 1;
@@ -86,13 +88,13 @@ int mainview(const char* url) {
 			const int grid_size = 10;
 			const color grid_color = colors::form.darken();
 			const color grid_bold = colors::form.darken().darken();
-			for(int x = 0; x < dc.width; x += grid_size)
-				line(x, 0, x, dc.height, (x % (grid_size * 10)) == 0 ? grid_bold : grid_color);
-			for(int y = 0; y < dc.height; y += grid_size)
-				line(0, y, dc.width, y, (y % (grid_size * 10)) == 0 ? grid_bold : grid_color);
+			for(int x = 0; x < width; x += grid_size)
+				line(x, 0, x, height, (x % (grid_size * 10)) == 0 ? grid_bold : grid_color);
+			for(int y = 0; y < height; y += grid_size)
+				line(0, y, width, y, (y % (grid_size * 10)) == 0 ? grid_bold : grid_color);
 		}
-		int x = dc.width / 2;
-		int y = dc.height / 2;
+		int x = width / 2;
+		int y = height / 2;
 		int current_frame = animated_sprite ? pi->ganim(current, tick) : current;
 		const sprite::frame& f = pi->get(current_frame);
 		int sx = f.ox;
@@ -117,10 +119,8 @@ int mainview(const char* url) {
 			text(4, draw::getheight() - draw::texth() - 4, temp);
 		else
 			text(4, 4, temp);
-		int id = input();
-		switch(id) {
-		case 0:
-			return 0;
+		domodal();
+		switch(hot.key) {
 		case KeyRight:
 			current++;
 			break;
@@ -184,16 +184,17 @@ static void correct_font() {
 
 int main(int argc, char *argv[]) {
 	correct_font();
-	set_light_theme();
+	//set_light_theme();
 	if(argc > 1 && argv[1][0])
 		return mainview(argv[1]);
-	else
-		dlgmsg("PMA view", "Show sprites in PMA format. Pass to command line path to file wich you want to see.");
+	else {
+		//dlgmsg("PMA view", "Show sprites in PMA format. Pass to command line path to file wich you want to see.")
+	}
 	return 0;
 }
 
 int _stdcall WinMain(void* ci, void* pi, char* cmd, int sw) {
 	int argc;
-	char** argv = szcmdargv(argc);
-	return main(argc, argv);
+	//char** argv = szcmdargv(argc);
+	return main(0, 0/*argc, argv*/);
 }
