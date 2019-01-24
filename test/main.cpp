@@ -360,6 +360,24 @@ static void test_drag_drop() {
 	}
 }
 
+static void test_edit_field() {
+	struct cmded : cmdfd {
+		int getid() const override { return 10; }
+		void execute() const override {}
+	};
+	setfocus(0, true);
+	cmded tec;
+	draw::controls::editfield te;
+	while(ismodal()) {
+		auto x = 20, y = 20;
+		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		auto h = draw::texth();
+		auto w = 300;
+		field(x, y, 300, 0, te, tec, "Тест", 0, 100);
+		domodal();
+	}
+}
+
 static void start_menu() {
 	struct element {
 		const char*		name;
@@ -374,6 +392,7 @@ static void start_menu() {
 	{"Таблица ссылок", test_grid_ref},
 	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
+	{"Поле ввода", test_edit_field},
 	{"Приложение", draw::application},
 	{0}};
 	while(ismodal()) {

@@ -238,9 +238,9 @@ static void raw32(unsigned char* d, int d_scan, unsigned char* s, int s_scan, in
 	if(width <= 0)
 		return;
 	while(height-- > 0) {
-		register unsigned char* sb = s;
-		register unsigned char* se = s + width * cbs;
-		register unsigned char* p1 = d;
+		unsigned char* sb = s;
+		unsigned char* se = s + width * cbs;
+		unsigned char* p1 = d;
 		while(sb < se) {
 			p1[0] = sb[0];
 			p1[1] = sb[1];
@@ -259,9 +259,9 @@ static void raw32m(unsigned char* d, int d_scan, unsigned char* s, int s_scan, i
 	if(width <= 0)
 		return;
 	while(height-- > 0) {
-		register unsigned char* sb = s;
-		register unsigned char* se = s + width * cbs;
-		register unsigned char* p1 = d;
+		unsigned char* sb = s;
+		unsigned char* se = s + width * cbs;
+		unsigned char* p1 = d;
 		while(sb < se) {
 			p1[0] = sb[0];
 			p1[1] = sb[1];

@@ -265,7 +265,7 @@ bool szmatch(const char* text, const char* name) {
 
 static bool szpmatch(const char* text, const char* s, const char* s2) {
 	while(true) {
-		register const char* d = text;
+		const char* d = text;
 		while(s < s2) {
 			if(*d == 0)
 				return false;

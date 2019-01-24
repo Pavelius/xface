@@ -177,12 +177,13 @@ void textedit::invalidate() {
 
 void textedit::redraw(rect rc) {
 	rc = rc + rctext;
+	rc.y1 -= origin.y;
 	cashing(rc);
 	if(isfocused()) {
 		auto ev = hot.key&CommandMask;
 		if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight) && draw::mouseinput && hot.pressed) {
-			int lenght = zlen(string);
-			int index = hittest(rc, hot.mouse, align);
+			auto lenght = zlen(string);
+			auto index = hittest(rc, hot.mouse, align);
 			if(index == -3)
 				index = lenght;
 			else if(index == -2)
@@ -203,9 +204,8 @@ void textedit::redraw(rect rc) {
 				}
 			}
 		}
-		rc.y1 -= origin.y;
-		texte(rc, string, align, p1, p2);
 	}
+	texte(rc, string, align, p1, p2);
 }
 
 int textedit::getrecordsheight() const {
@@ -420,6 +420,18 @@ unsigned textedit::paste(bool run) {
 		delete p;
 	}
 	return 0;
+}
+
+editfield::editfield() : textedit(buffer, sizeof(buffer) - 1, false), valid_focus(-1) {
+	show_border = false;
+	show_background = false;
+	buffer[0] = 0;
+}
+
+void editfield::setfocus(const cmdfd& ev) {
+	if(valid_focus == ev.getid())
+		return;
+	valid_focus = ev.getid();
 }
 
 //	case Ctrl + Alpha + 'X':
