@@ -4,13 +4,15 @@
 
 using namespace util;
 
-font::font(const char* name, int size) {
-	wchar_t name1[260];
-	wchar_t* d = name1;
-	const char* s = name;
+static void wcpy(wchar_t* d, const char* s) {
 	while(*s)
 		*d++ = *s++;
 	*d++ = 0;
+}
+
+font::font(const char* name, int size) {
+	wchar_t name1[260];
+	wcpy(name1, name);
 	void* hf = CreateFontW(size, 0, 0, 0, FW_NORMAL, 0, 0,
 		0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE,
 		name1);
