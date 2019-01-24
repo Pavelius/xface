@@ -51,14 +51,14 @@ unsigned char* load_pallette(const char* url) {
 	return (unsigned char*)result;
 }
 
-int mainview(const char* url) {
+void mainview(const char* url) {
 	unsigned char* pal = 0;
 	sprite* pi = (sprite*)loadb(url);
 	if(!pi) {
 		char temp[512];
 		szprint(temp, "File not found:\n\n%1", url);
 		//dlgmsg("X-view", temp);
-		return -1;
+		return;
 	}
 	int wx = 640;
 	int wy = 480;
@@ -70,6 +70,7 @@ int mainview(const char* url) {
 		setting::show::center = false;
 	}
 	draw::create(-1, -1, wx, wy, WFResize | WFMinmax, 32);
+	draw::initialize();
 	draw::palt = (color*)load_pallette(url);
 	settimer(100);
 	setcaption(szfname(url));
@@ -114,7 +115,7 @@ int mainview(const char* url) {
 			line(x, y, x - sx, y, colors::red);
 			line(x, y, x, y - sy, colors::red);
 		}
-		szprint(temp, "[%2i/%3i](%4i,%5i, size=%6ix%7i)", szfname(url), current, maximum, sx, sy, cx, cy);
+		szprint(temp, zendof(temp), "[%2i/%3i](%4i,%5i, size=%6ix%7i)", szfname(url), current, maximum, sx, sy, cx, cy);
 		if(setting::show::center)
 			zcat(temp, " center");
 		if(setting::show::text::bottom)
@@ -184,7 +185,14 @@ static void correct_font() {
 	metrics::font = (sprite*)loadb(szurl(furl, temp, "font", "pma"));
 }
 
+static void test_directory() {
+	char temp[260]; io::file::getdir(temp, sizeof(temp));
+	if(temp[0])
+		return;
+}
+
 int main(int argc, char *argv[]) {
+	//test_directory();
 	correct_font();
 	set_light_theme();
 	if(argc > 1 && argv[1][0])
