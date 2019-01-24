@@ -15,29 +15,24 @@
 #include "crt.h"
 #include "io_plugin.h"
 
-struct xml_writer : public io::writer
-{
+struct xml_writer : public io::writer {
 
 	int	level;
 	int	elc[64];
 
-	void write_attr(const char* name)
-	{
+	void write_attr(const char* name) {
 		e << " " << name << "=";
 	}
 
-	void write_value(const char* value)
-	{
+	void write_value(const char* value) {
 		e << "\"" << value << "\"";
 	}
 
-	void write_value(int value)
-	{
+	void write_value(int value) {
 		e << "\"" << value << "\"";
 	}
 
-	void write_cr()
-	{
+	void write_cr() {
 		if(level == -1)
 			return;
 		e << "\r\n";
@@ -45,8 +40,7 @@ struct xml_writer : public io::writer
 			e << "  ";
 	}
 
-	void open(const char* name, int type) override
-	{
+	void open(const char* name, int type) override {
 		if(level && elc[level] == 0)
 			e << ">";
 		write_cr();
@@ -54,28 +48,22 @@ struct xml_writer : public io::writer
 		elc[++level] = 0;
 	}
 
-	void set(const char* name, int value, int type) override
-	{
+	void set(const char* name, int value, int type) override {
 		write_attr(name);
 		write_value(value);
 	}
 
-	void set(const char* name, const char* value, int type) override
-	{
+	void set(const char* name, const char* value, int type) override {
 		write_attr(name);
 		write_value(value);
 	}
 
-	void close(const char* name, io::node_s type) override
-	{
-		if(!elc[level])
-		{
+	void close(const char* name, io::node_s type) override {
+		if(!elc[level]) {
 			e << "/>";
 			level--;
 			elc[level]++;
-		}
-		else
-		{
+		} else {
 			level--;
 			elc[level]++;
 			write_cr();
@@ -83,8 +71,7 @@ struct xml_writer : public io::writer
 		}
 	}
 
-	xml_writer(io::stream& e) : writer(e), level(0)
-	{
+	xml_writer(io::stream& e) : writer(e), level(0) {
 		memset(elc, 0, sizeof(elc));
 		const char* header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 		e.write(header, zlen(header));
@@ -92,16 +79,12 @@ struct xml_writer : public io::writer
 
 };
 
-static const char* next(const char* p)
-{
-	while(true)
-	{
+static const char* next(const char* p) {
+	while(true) {
 		// Skip comments
-		if(p[0] == '<' && p[1] == '!' && p[2] == '-' && p[3] == '-')
-		{
+		if(p[0] == '<' && p[1] == '!' && p[2] == '-' && p[3] == '-') {
 			p += 4;
-			while(!(p[0] == '-' && p[1] == '-' && p[2] == '>'))
-			{
+			while(!(p[0] == '-' && p[1] == '-' && p[2] == '>')) {
 				if(p[0] == 0)
 					return p;
 				p++;
@@ -110,11 +93,9 @@ static const char* next(const char* p)
 			continue;
 		}
 		// Skip handler instructions
-		if(p[0] == '<' && p[1] == '?')
-		{
+		if(p[0] == '<' && p[1] == '?') {
 			p += 2;
-			while(!(p[0] == '?' && p[1] == '>'))
-			{
+			while(!(p[0] == '?' && p[1] == '>')) {
 				if(p[0] == 0)
 					return p;
 				p++;
@@ -127,21 +108,17 @@ static const char* next(const char* p)
 	return zskipspcr(p);
 }
 
-static const char* read_name(const char* p, io::reader::node& n)
-{
+static const char* read_name(const char* p, io::reader::node& n) {
 	char temp[260];
 	auto r = temp; r[0] = 0;
 	auto re = temp + sizeof(temp) / sizeof(temp[0]) - 1;
-	while(*p)
-	{
-		if((*p >= '0' && *p <= '9') || *p == '_' || ischa(*p) || *p == '.' || *p == ':')
-		{
+	while(*p) {
+		if((*p >= '0' && *p <= '9') || *p == '_' || ischa(*p) || *p == '.' || *p == ':') {
 			if(r < re)
 				*r++ = *p++;
 			else
 				p++;
-		}
-		else
+		} else
 			break;
 	}
 	*r = 0;
@@ -149,16 +126,12 @@ static const char* read_name(const char* p, io::reader::node& n)
 	return next(p);
 }
 
-const char* read_symbol(const char* p, char& result)
-{
-	if(p[0] == '&')
-	{
+const char* read_symbol(const char* p, char& result) {
+	if(p[0] == '&') {
 		p++;
-		if(p[0] == '#')
-		{
+		if(p[0] == '#') {
 			unsigned char i = 0;
-			while(true)
-			{
+			while(true) {
 				if(p[0] == 0 || p[0] == ';')
 					break;
 				char a = p[0];
@@ -169,33 +142,23 @@ const char* read_symbol(const char* p, char& result)
 			p++;
 			result = i;
 			return p;
-		}
-		else if(szmatch(p, "amp;"))
-		{
+		} else if(szmatch(p, "amp;")) {
 			p += 4;
 			result = '&';
 			return p;
-		}
-		else if(szmatch(p, "lt;"))
-		{
+		} else if(szmatch(p, "lt;")) {
 			p += 3;
 			result = '<';
 			return p;
-		}
-		else if(szmatch(p, "gt;"))
-		{
+		} else if(szmatch(p, "gt;")) {
 			p += 3;
 			result = '>';
 			return p;
-		}
-		else if(szmatch(p, "apos;"))
-		{
+		} else if(szmatch(p, "apos;")) {
 			p += 5;
 			result = '\'';
 			return p;
-		}
-		else if(szmatch(p, "quot;"))
-		{
+		} else if(szmatch(p, "quot;")) {
 			p += 5;
 			result = '\"';
 			return p;
@@ -207,18 +170,13 @@ const char* read_symbol(const char* p, char& result)
 	return p;
 }
 
-static const char* read_value(const char* p, char* result, unsigned size)
-{
+static const char* read_value(const char* p, char* result, unsigned size) {
 	auto pe = result + size;
-	while(true)
-	{
-		if(p[0] == 0)
-		{
+	while(true) {
+		if(p[0] == 0) {
 			*result++ = 0;
 			return p;
-		}
-		else if(p[0] == '\"')
-		{
+		} else if(p[0] == '\"') {
 			*result++ = 0;
 			return next(p + 1);
 		}
@@ -229,52 +187,39 @@ static const char* read_value(const char* p, char* result, unsigned size)
 	}
 }
 
-static const char* read_object(const char* p, io::reader::node& n, io::reader& e)
-{
+static const char* read_object(const char* p, io::reader::node& n, io::reader& e) {
 	p = next(p);
-	if(p[0] == '<')
-	{
+	if(p[0] == '<') {
 		p = read_name(next(p + 1), n);
 		e.open(n);
 		// Read parameters
-		while(ischa(*p) || *p == '_' || *p == ':')
-		{
+		while(ischa(*p) || *p == '_' || *p == ':') {
 			char temp[1024];
 			io::reader::node at(n);
 			p = read_name(p, at);
-			if(p[0] == '=')
-			{
+			if(p[0] == '=') {
 				p = next(p + 1);
-				if(p[0] == '\"')
-				{
+				if(p[0] == '\"') {
 					p = read_value(p + 1, temp, sizeof(temp) / sizeof(temp[0]));
 					e.set(at, temp);
 				}
 			}
 		}
 		// If object is closed
-		if(p[0] == '/' && p[1] == '>')
-		{
+		if(p[0] == '/' && p[1] == '>') {
 			e.close(n);
 			return next(p + 2);
-		}
-		else if(p[0] == '>')
-		{
+		} else if(p[0] == '>') {
 			p = next(p + 1);
-			while(p[0] == '<')
-			{
-				if(p[0] == '<' && p[1] == '/')
-				{
+			while(p[0] == '<') {
+				if(p[0] == '<' && p[1] == '/') {
 					p = read_name(next(p + 2), n);
-					if(p[0] == '>')
-					{
+					if(p[0] == '>') {
 						p = next(p + 1);
 						e.close(n);
 					}
 					return p;
-				}
-				else
-				{
+				} else {
 					io::reader::node cn(n);
 					p = read_object(p, cn, e);
 				}
@@ -284,23 +229,19 @@ static const char* read_object(const char* p, io::reader::node& n, io::reader& e
 	return p;
 }
 
-static struct xml_reader_parser : public io::plugin
-{
+static struct xml_reader_parser : public io::plugin {
 
-	const char* read(const char* p, io::reader& e) override
-	{
+	const char* read(const char* p, io::reader& e) override {
 		io::reader::node root;
 		root.type = io::Struct;
 		return read_object(p, root, e);
 	}
 
-	io::writer* write(io::stream& e) override
-	{
+	io::writer* write(io::stream& e) override {
 		return new xml_writer(e);
 	}
 
-	xml_reader_parser()
-	{
+	xml_reader_parser() {
 		name = "xml";
 		fullname = "XML data object";
 		filter = "*.xml";
