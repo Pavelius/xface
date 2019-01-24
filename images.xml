@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<convert output="result" input="resources">
+  <library output="...\font">
+    <font input="Segoe UI" height="14"/>
+  </library>
+  <library output="...\h1">
+    <font input="Segoe UI" height="22"/>
+  </library>
+  <library output="...\h2">
+    <font input="Segoe UI" height="18"/>
+  </library>
+  <library output="...\h3">
+    <font input="Segoe UI" height="16"/>
+  </library>
+  <library output="...\flags" count="20">
+    <grd input="...\shields_rc3.png" height="60" width="51"/>
+  </library>
+  <library output="...\portraits" count="20">
+    <png input="...\2FBAR1_S"/>
+    <png input="...\2FELF1_S"/>
+  </library>
+</convert>

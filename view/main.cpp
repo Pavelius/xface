@@ -5,6 +5,8 @@
 
 using namespace draw;
 
+void set_light_theme();
+
 namespace setting {
 namespace show {
 bool		offset;
@@ -184,7 +186,7 @@ static void correct_font() {
 
 int main(int argc, char *argv[]) {
 	correct_font();
-	//set_light_theme();
+	set_light_theme();
 	if(argc > 1 && argv[1][0])
 		return mainview(argv[1]);
 	else {
@@ -193,8 +195,10 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
+char** szcmdargv(int& argc);
+
 int _stdcall WinMain(void* ci, void* pi, char* cmd, int sw) {
 	int argc;
-	//char** argv = szcmdargv(argc);
-	return main(0, 0/*argc, argv*/);
+	char** argv = szcmdargv(argc);
+	return main(argc, argv);
 }

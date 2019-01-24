@@ -216,6 +216,9 @@
     <ClCompile Include="win_draw_shell.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
+    <ClCompile Include="win_cmd.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">

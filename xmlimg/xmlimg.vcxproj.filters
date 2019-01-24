@@ -10,4 +10,7 @@
     <ClInclude Include="xml.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="images.xml" />
+  </ItemGroup>
 </Project>
