@@ -362,18 +362,23 @@ static void test_drag_drop() {
 
 static void test_edit_field() {
 	struct cmded : cmdfd {
-		int getid() const override { return 10; }
+		constexpr cmded(int id) : id(id) {}
+		int getid() const override { return id; }
 		void execute() const override {}
+	private:
+		int			id;
 	};
 	setfocus(0, true);
-	cmded tec;
-	draw::controls::editfield te;
+	draw::controls::editfield t1, t2, t3;
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto h = draw::texth();
 		auto w = 300;
-		field(x, y, 300, 0, te, tec, "Тест", 0, 100);
+		y += field(x, y, 300, 0, t1, "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
+		y += field(x, y, 300, 0, t2, "Еще тест", 0, 100);
+		y += field(x, y, 300, 0, t3, "Еще поле", 0, 100);
+		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
 	}
 }

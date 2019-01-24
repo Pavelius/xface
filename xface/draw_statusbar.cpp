@@ -1,5 +1,6 @@
 #include "crt.h"
 #include "draw.h"
+#include "stringcreator.h"
 
 using namespace draw;
 

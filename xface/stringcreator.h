@@ -1,14 +1,16 @@
 #pragma once
 
+#define xva_start(v) ((const char*)&v + sizeof(v))
+
 struct stringcreator {
 	constexpr stringcreator(char* pb, const char* pe) : pb(pb), p(pb), pe(pe) { pb[0] = 0; }
 	template<unsigned N> constexpr stringcreator(char(&result)[N]) : stringcreator(result, result + N) {}
 	constexpr operator char*() const { return pb; }
-	void				add(const char* format, ...);
+	void				add(const char* format, ...) { addv(format, xva_start(format)); }
 	void				addicon(const char* id, int value);
 	virtual void		addidentifier(const char* identifier);
 	static char*		addint(char* result, const char* result_maximum, int value, int precision, const int radix);
-	void				addn(const char* format, ...);
+	void				addn(const char* format, ...) { addx("\n", format, xva_start(format)); }
 	void				adds(const char* format, ...);
 	void				addsz() { if(p < pe) *p++ = 0; }
 	void				addv(const char* format, const char* format_param);

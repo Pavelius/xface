@@ -1,7 +1,5 @@
 #include "stringcreator.h"
 
-#define xva_start(v) ((const char*)&v + sizeof(v))
-
 extern "C" void* memcpy(void* destination, const void* source, unsigned size);
 
 unsigned char stringcreator::upper(unsigned char u) {
@@ -168,18 +166,10 @@ void stringcreator::addv(const char* src, const char* vl) {
 	}
 }
 
-void stringcreator::add(const char* src, ...) {
-	addv(src, xva_start(src));
-}
-
 void stringcreator::addx(const char* separator, const char* format, const char* format_param) {
 	if(p > pb)
 		addv(separator, 0);
 	addv(format, format_param);
-}
-
-void stringcreator::addn(const char* format, ...) {
-	addx("\n", format, xva_start(format));
 }
 
 void stringcreator::adds(const char* format, ...) {

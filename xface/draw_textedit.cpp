@@ -204,8 +204,9 @@ void textedit::redraw(rect rc) {
 				}
 			}
 		}
-	}
-	texte(rc, string, align, p1, p2);
+		texte(rc, string, align, p1, p2);
+	} else
+		text(rc, string, align);
 }
 
 int textedit::getrecordsheight() const {
@@ -422,16 +423,8 @@ unsigned textedit::paste(bool run) {
 	return 0;
 }
 
-editfield::editfield() : textedit(buffer, sizeof(buffer) - 1, false), valid_focus(-1) {
-	show_border = false;
-	show_background = false;
+editfield::editfield() : textedit(buffer, sizeof(buffer) - 1, false) {
 	buffer[0] = 0;
-}
-
-void editfield::setfocus(const cmdfd& ev) {
-	if(valid_focus == ev.getid())
-		return;
-	valid_focus = ev.getid();
 }
 
 //	case Ctrl + Alpha + 'X':

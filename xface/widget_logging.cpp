@@ -4,6 +4,7 @@
 #include "datetime.h"
 #include "draw_grid.h"
 #include "settings.h"
+#include "stringcreator.h"
 
 using namespace	draw;
 using namespace	draw::controls;

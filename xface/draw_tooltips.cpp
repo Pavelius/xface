@@ -1,5 +1,6 @@
 #include "crt.h"
 #include "draw.h"
+#include "stringcreator.h"
 
 rect tooltips_rect;
 char tooltips_text[4096];

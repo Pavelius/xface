@@ -133,15 +133,20 @@ void control::execute(control::callback proc, int param) const {
 	draw::execute(control_execute, param);
 }
 
+bool control::needfocus() const {
+	if(!isfocusable())
+		return false;
+	if(!getfocus())
+		setfocus((int)this, true);
+	return (control*)getfocus() == this;
+}
+
 void control::view(const rect& rc) {
-	if(isfocusable()) {
+	if(isfocusable())
 		addelement((int)this, rc);
-		if(!getfocus())
-			setfocus((int)this, true);
-	}
 	if(areb(rc))
 		current_hilite = this;
-	if((control*)getfocus() == this)
+	if(needfocus())
 		current_focus = this;
 	if(show_background)
 		rectf(rc, colors::window);

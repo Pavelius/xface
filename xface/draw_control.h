@@ -127,6 +127,7 @@ struct control {
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
 	virtual void			mouseinput(unsigned id, point mouse); // Default behaivor set focus
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
+	virtual bool			needfocus() const;
 	virtual void			redraw() {}
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
@@ -274,9 +275,6 @@ struct scrollable : control {
 	void					view(const rect& rc) override;
 };
 struct textedit : scrollable {
-	char*					string;
-	unsigned				maxlenght;
-	int						p1, p2;
 	rect					rctext, rcclient;
 	list*					records;
 	unsigned				align;
@@ -313,16 +311,17 @@ struct textedit : scrollable {
 	unsigned				select_all(bool run);
 	void					setrecordlist(const char* string);
 	void					updaterecords(bool setfilter);
-protected:
+private:
+	char*					string;
+	unsigned				maxlenght;
 	int						cashed_width;
 	int						cashed_string;
 	int						cashed_origin;
+	int						p1, p2;
 };
 struct editfield : textedit {
 	editfield();
-	void					setfocus(const cmdfd& e);
 private:
-	int						valid_focus;
 	char					buffer[4192];
 };
 }
@@ -335,6 +334,7 @@ void						dockbar(const rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, controls::editfield& edit, const cmdfd& cmd, const char* header_label, const char* tips, int header_width);
+int							field(int x, int y, int width, unsigned flags, controls::editfield& ev, const char* header_label, const char* tips, int header_width);
 int							radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							render(int x, int y, int width, const bsval& value, const widget* element);
 void						setposition(int& x, int& y, int& width, int padding = -1);

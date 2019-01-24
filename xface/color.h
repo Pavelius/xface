@@ -15,7 +15,6 @@ struct color {
 	color					darken() const;
 	int						find(const void* pallette, int count) const;
 	static void				flipv(unsigned char* bits, unsigned scanline, int height);
-	char*					getname(char* result, const char* result_maximum) const;
 	color					gray() const;
 	color					lighten() const;
 	color					mix(const color c1, unsigned char s = 128) const;
