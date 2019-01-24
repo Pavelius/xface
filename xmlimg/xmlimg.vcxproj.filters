@@ -11,6 +11,6 @@
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="images.xml" />
+    <Xml Include="..\images.xml" />
   </ItemGroup>
 </Project>

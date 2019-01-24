@@ -135,7 +135,7 @@
     <ClInclude Include="xml.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="images.xml" />
+    <Xml Include="..\images.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

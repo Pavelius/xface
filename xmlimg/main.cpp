@@ -10,7 +10,7 @@ void				printcnf(const char* text);
 sprite::frame&		sprite_add(sprite* p);
 void*				sprite_add(sprite* p, const void* data, int dsize);
 void				sprite_create(sprite* p, int count, int cicles, int additional_bytes);
-int					sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode, unsigned char shadow_index, color* original_pallette, int explicit_frame, unsigned char transparent_index);
+int					sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode, unsigned char shadow_index = 1, color* original_pallette = 0, int explicit_frame = -1, unsigned char transparent_index = 0xFF);
 void				sprite_write(const sprite* p, const char* url);
 static const char*	tempref[4096 * 2];
 
@@ -221,8 +221,7 @@ static void glyph(util::font& font, int g, struct sprite& sprite) {
 	if(!size)
 		return;
 	lcd_prepare_glyph(buf2, w2, buf1, w1, h1);
-	sprite_store(&sprite, buf2, w2, ((w1 + 5) / 3) * 3, h1, -(ox + 1) / 3, oy, sprite::ALC,
-		0, 0, 0, 0);
+	sprite_store(&sprite, buf2, w2, ((w1 + 5) / 3) * 3, h1, -(ox + 1) / 3, oy, sprite::ALC);
 	int id = sprite.glyph(g);
 	widths[id] = (dx + 2) / 3;
 }
@@ -284,8 +283,7 @@ static void image(const char* url, const content& e, struct sprite& sprite) {
 	sprite::frame& f = sprite_add(&sprite);
 	sprite_store(&sprite, (unsigned char*)et.ptr(e.x, e.y),
 		et.scanline,
-		width, height, ox, oy, e.mode,
-		0,0,0,0);
+		width, height, ox, oy, e.mode);
 	switch(f.encode) {
 	case sprite::RAW:
 		status_loading("raw", url);
@@ -382,8 +380,7 @@ static bool image_grd(xml::reader& doc, const content& parent, struct sprite& sp
 						for(int y = 0; y < e.max_y; y++) {
 							sprite_store(&sprite, (unsigned char*)et.ptr(e.x + x * e.step_x, e.y + y * e.step_y),
 								et.scanline,
-								e.width, e.height, ox, oy, sprite.RLE,
-								0, 0, 0, 0);
+								e.width, e.height, ox, oy, sprite.RLE);
 						}
 					}
 					break;
@@ -392,8 +389,7 @@ static bool image_grd(xml::reader& doc, const content& parent, struct sprite& sp
 						for(int x = 0; x < e.max_x; x++) {
 							sprite_store(&sprite, (unsigned char*)et.ptr(e.x + x * e.step_x, e.y + y * e.step_y),
 								et.scanline,
-								e.width, e.height, ox, oy, sprite.RLE,
-								0, 0, 0, 0);
+								e.width, e.height, ox, oy, sprite.RLE);
 						}
 					}
 					break;
@@ -425,8 +421,7 @@ static bool image_tbr(xml::reader& doc, const content& parent, struct sprite& sp
 			for(int i = 0; i < m; i++)
 				sprite_store(&sprite, (unsigned char*)et.ptr(e.x + i * et.height, e.y),
 					et.scanline,
-					et.height, et.height, ox, oy, sprite.RLE,
-					0, 0, 0, 0);
+					et.height, et.height, ox, oy, sprite.RLE);
 		} else
 			error_not_found(url);
 		doc.next();
