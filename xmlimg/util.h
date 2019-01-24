@@ -1,5 +1,6 @@
 #pragma once
 
+// Test
 namespace util {
 struct font {
 	font(const char* name, int size);
