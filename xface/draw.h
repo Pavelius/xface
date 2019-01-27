@@ -148,7 +148,7 @@ extern int				padding;
 extern int				scroll;
 }
 namespace draw {
-typedef void(*callback_proc)();
+typedef void(*userproc)();
 namespace dialog {
 bool					color(struct color& result, struct color* custom = 0);
 bool					folder(const char* title, char* path);
@@ -237,7 +237,6 @@ struct plugin {
 	plugin(int priority = 10);
 	virtual void		after() {}
 	virtual void		before() {}
-	virtual bool		translate(int id) { return false; }
 };
 typedef int(*widgetproc)(int x, int y, int width, unsigned flags, const char* label, int value, void* data, const char* tips);
 extern rect				clipping; // Clipping area
@@ -263,6 +262,7 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
+void					definput();
 void					domodal();
 void					execute(void(*callback)(), int value = 0);
 void					execute(const hotinfo& value);
@@ -316,6 +316,7 @@ void					setcaption(const char* string);
 void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
 void					setfocus(int id, bool instant = false);
+void					setinput(userproc proc);
 void					settimer(unsigned milleseconds);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);

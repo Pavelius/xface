@@ -270,10 +270,10 @@ static struct widget_settings : controls::control {
 	static int element(int x, int y, int width, unsigned flags, settings& e) {
 		struct cmdv : runable {
 			settings*		pe;
-			callback_proc	p;
+			userproc	p;
 			int	getid() const { return (int)pe; }
 			void execute() const { draw::execute(p, (int)pe); }
-			void set(callback_proc p, settings& e) { this->p = p; pe = &e; }
+			void set(userproc p, settings& e) { this->p = p; pe = &e; }
 		};
 		const auto title = 160;
 		settings* pc;

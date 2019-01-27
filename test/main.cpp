@@ -94,10 +94,10 @@ struct testinfo {
 
 struct cmd_value : runable {
 
-	callback_proc	id;
+	userproc	id;
 	void*			param;
 
-	constexpr cmd_value(callback_proc id, void* param) : id(id), param(param) {}
+	constexpr cmd_value(userproc id, void* param) : id(id), param(param) {}
 	constexpr cmd_value(bool& value) : cmd_value(execute_bool, &value) {}
 
 	void execute() const override {
@@ -386,7 +386,7 @@ static void test_edit_field() {
 static void start_menu() {
 	struct element {
 		const char*		name;
-		callback_proc	proc;
+		userproc	proc;
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},

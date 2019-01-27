@@ -17,8 +17,9 @@ static focusable_element	elements[96];
 static focusable_element*	render_control;
 static bool			break_modal;
 static int			break_result;
-draw::plugin*		draw::plugin::first;
-draw::initplugin*	draw::initplugin::first;
+static userproc		input_proc;
+plugin*				draw::plugin::first;
+initplugin*			draw::initplugin::first;
 
 static void set_focus_callback() {
 	auto id = getnext(draw::getfocus(), hot.param);
@@ -26,36 +27,39 @@ static void set_focus_callback() {
 		setfocus(id, true);
 }
 
-static struct input_plugin : draw::plugin {
-
-	void before() override {
-		hot.cursor = CursorArrow;
-		render_control = elements;
-		current_execute = 0;
-		if(hot.mouse.x < 0 || hot.mouse.y < 0)
-			sys_static_area.clear();
-		else
-			sys_static_area = {0, 0, draw::getwidth(), draw::getheight()};
+void draw::definput() {
+	int id;
+	switch(hot.key) {
+	case KeyTab:
+	case KeyTab | Shift:
+	case KeyTab | Ctrl:
+	case KeyTab | Ctrl | Shift:
+		id = getnext(draw::getfocus(), hot.key);
+		if(id)
+			setfocus(id, true);
+		break;
+	case 0:
+		exit(0);
+		break;
 	}
+}
 
-	bool translate(int id) override {
-		switch(id) {
-		case KeyTab:
-		case KeyTab | Shift:
-		case KeyTab | Ctrl:
-		case KeyTab | Ctrl | Shift:
-			id = getnext(draw::getfocus(), id);
-			if(id)
-				setfocus(id, true);
-			return true;
-		case 0:
-			exit(0);
-			return true;
-		}
-		return false;
-	}
+void draw::setinput(userproc proc) {
+	input_proc = proc;
+}
 
-} plugin_instance;
+static void input_before() {
+	hot.cursor = CursorArrow;
+	render_control = elements;
+	current_execute = 0;
+	input_proc = definput;
+	if(hot.mouse.x < 0 || hot.mouse.y < 0)
+		sys_static_area.clear();
+	else
+		sys_static_area = {0, 0, draw::getwidth(), draw::getheight()};
+	for(auto p = plugin::first; p; p = p->next)
+		p->before();
+}
 
 static void setfocus_callback() {
 	current_focus = hot.param;
@@ -215,8 +219,7 @@ int draw::getresult() {
 }
 
 bool draw::ismodal() {
-	for(auto p = plugin::first; p; p = p->next)
-		p->before();
+	input_before();
 	if(!break_modal)
 		return true;
 	break_modal = false;
@@ -237,11 +240,9 @@ void draw::initialize() {
 void draw::domodal() {
 	if(current_execute) {
 		auto proc = current_execute;
-		for(auto p = plugin::first; p; p = p->next)
-			p->before();
+		input_before();
 		proc();
-		for(auto p = plugin::first; p; p = p->next)
-			p->before();
+		input_before();
 		hot.key = InputUpdate;
 		return;
 	}
@@ -252,8 +253,6 @@ void draw::domodal() {
 		hot = keep_hot_value;
 	} else
 		hot.key = draw::rawinput();
-	for(auto p = plugin::first; p; p = p->next) {
-		if(p->translate(hot.key))
-			break;
-	}
+	if(input_proc)
+		input_proc();
 }

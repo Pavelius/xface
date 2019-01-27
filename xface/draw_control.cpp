@@ -11,32 +11,34 @@ static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 
+static void input_control() {
+	if(current_hilite) {
+		switch(hot.key & CommandMask) {
+		case MouseLeft:
+		case MouseRight:
+		case MouseLeftDBL:
+			current_hilite->mouseinput(hot.key, hot.mouse);
+			return;
+		case MouseWheelDown:
+			current_hilite->mousewheel(hot.key, hot.mouse, 1);
+			return;
+		case MouseWheelUp:
+			current_hilite->mousewheel(hot.key, hot.mouse, -1);
+			return;
+		}
+	}
+	if(current_focus) {
+		if(current_focus->keyinput(hot.key))
+			return;
+	}
+	definput();
+}
+
 static struct control_plugin : draw::plugin {
 
 	void before() override {
 		current_hilite = 0;
 		current_focus = 0;
-	}
-
-	bool translate(int id) override {
-		if(current_hilite) {
-			switch(id & CommandMask) {
-			case MouseLeft:
-			case MouseRight:
-			case MouseLeftDBL:
-				current_hilite->mouseinput(id, hot.mouse);
-				return true;
-			case MouseWheelDown:
-				current_hilite->mousewheel(id, hot.mouse, 1);
-				return true;
-			case MouseWheelUp:
-				current_hilite->mousewheel(id, hot.mouse, -1);
-				return true;
-			}
-		}
-		if(current_focus)
-			return current_focus->keyinput(id);
-		return false;
 	}
 
 } plugin_instance;
@@ -144,10 +146,14 @@ bool control::needfocus() const {
 void control::view(const rect& rc) {
 	if(isfocusable())
 		addelement((int)this, rc);
-	if(areb(rc))
+	if(areb(rc)) {
 		current_hilite = this;
-	if(needfocus())
+		setinput(input_control);
+	}
+	if(needfocus()) {
 		current_focus = this;
+		setinput(input_control);
+	}
 	if(show_background)
 		rectf(rc, colors::window);
 	if(show_border)

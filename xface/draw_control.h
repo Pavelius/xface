@@ -32,12 +32,12 @@ struct runable {
 };
 struct cmd : runable {
 	constexpr cmd() : id(0), param(0) {}
-	constexpr cmd(callback_proc id, int param = 0) : id(id), param(param) {}
+	constexpr cmd(userproc id, int param = 0) : id(id), param(param) {}
 	virtual void		execute() const override { draw::execute(id, param); }
 	virtual int			getid() const override { return (int)id; }
-	void				set(callback_proc id, int param) { this->id; this->param = param; }
+	void				set(userproc id, int param) { this->id; this->param = param; }
 private:
-	callback_proc		id;
+	userproc			id;
 	int					param;
 };
 struct cmdfd : runable {
@@ -333,7 +333,6 @@ int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 void						dockbar(const rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
-int							field(int x, int y, int width, unsigned flags, controls::editfield& edit, const cmdfd& cmd, const char* header_label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, controls::editfield& ev, const char* header_label, const char* tips, int header_width);
 int							radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							render(int x, int y, int width, const bsval& value, const widget* element);
