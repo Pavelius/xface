@@ -219,6 +219,9 @@
     <ClCompile Include="win_cmd.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
+    <ClCompile Include="storage.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
@@ -300,6 +303,9 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="settings.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="storage.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>

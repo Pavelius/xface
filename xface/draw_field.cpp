@@ -141,8 +141,8 @@ int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned v
 	rect rco = rc;
 	auto a = area(rc);
 	if(isfocused(flags)) {
-		edit.read(value, value_size);
-		edit.view(rc);
+		//edit.read(value, value_size);
+		//edit.view(rc);
 	} else
 		draw::texte(rc + metrics::edit, value, flags, -1, -1);
 	if(tips && a == AreaHilited)

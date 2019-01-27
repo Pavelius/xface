@@ -340,7 +340,7 @@ int						textw(sprite* font);
 void					updatewindow();
 void					write(const char* url, unsigned char* bits, int width, int height, int bpp, int scanline, color* pallette);
 }
-namespace draw {
+namespace draw	 {
 int						addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1, const char* t2, int k2, const char* tt2);
 bool					addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1);
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, int key, bool press, const char* tips = 0);

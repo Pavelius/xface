@@ -163,6 +163,7 @@
     <ClCompile Include="resource_dynamic.cpp" />
     <ClCompile Include="screenshoot.cpp" />
     <ClCompile Include="settings.cpp" />
+    <ClCompile Include="storage.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="draw_input.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="resources.h" />
     <ClInclude Include="screenshoot.h" />
     <ClInclude Include="settings.h" />
+    <ClInclude Include="storage.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
     <ClInclude Include="strlib.h" />
