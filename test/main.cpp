@@ -94,10 +94,10 @@ struct testinfo {
 
 struct cmd_value : runable {
 
-	userproc	id;
+	callback	id;
 	void*			param;
 
-	constexpr cmd_value(userproc id, void* param) : id(id), param(param) {}
+	constexpr cmd_value(callback id, void* param) : id(id), param(param) {}
 	constexpr cmd_value(bool& value) : cmd_value(execute_bool, &value) {}
 
 	void execute() const override {
@@ -361,23 +361,18 @@ static void test_drag_drop() {
 }
 
 static void test_edit_field() {
-	struct cmded : cmdfd {
-		constexpr cmded(int id) : id(id) {}
-		int getid() const override { return id; }
-		void execute() const override {}
-	private:
-		int			id;
-	};
 	setfocus(0, true);
-	draw::controls::editfield t1, t2, t3;
+	char name[260] = "Павел";
+	char surname[260] = "Чистяков";
+	char lastname[260] = "Валенинович";
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto h = draw::texth();
 		auto w = 300;
-		y += field(x, y, 300, 0, t1, "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
-		y += field(x, y, 300, 0, t2, "Еще тест", 0, 100);
-		y += field(x, y, 300, 0, t3, "Еще поле", 0, 100);
+		y += field(x, y, 300, 0, name, sizeof(name), "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
+		y += field(x, y, 300, 0, surname, sizeof(surname), "Еще тест", 0, 100);
+		y += field(x, y, 300, 0, lastname, sizeof(lastname), "Еще поле", 0, 100);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
 	}
@@ -386,7 +381,7 @@ static void test_edit_field() {
 static void start_menu() {
 	struct element {
 		const char*		name;
-		userproc	proc;
+		callback	proc;
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},

@@ -32,12 +32,12 @@ struct runable {
 };
 struct cmd : runable {
 	constexpr cmd() : id(0), param(0) {}
-	constexpr cmd(userproc id, int param = 0) : id(id), param(param) {}
+	constexpr cmd(callback id, int param = 0) : id(id), param(param) {}
 	virtual void		execute() const override { draw::execute(id, param); }
 	virtual int			getid() const override { return (int)id; }
-	void				set(userproc id, int param) { this->id; this->param = param; }
+	void				set(callback id, int param) { this->id; this->param = param; }
 private:
-	userproc			id;
+	callback			id;
 	int					param;
 };
 struct cmdfd : runable {
@@ -319,11 +319,6 @@ private:
 	int						cashed_origin;
 	int						p1, p2;
 };
-struct editfield : textedit {
-	editfield();
-private:
-	char					buffer[4192];
-};
 }
 void						application();
 void						application_initialize();
@@ -333,7 +328,7 @@ int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 void						dockbar(const rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
-int							field(int x, int y, int width, unsigned flags, controls::editfield& ev, const char* header_label, const char* tips, int header_width);
+int							field(int x, int y, int width, unsigned flags, char* value, unsigned text_maximum, const char* header_label, const char* tips, int header_width);
 int							radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							render(int x, int y, int width, const bsval& value, const widget* element);
 void						setposition(int& x, int& y, int& width, int padding = -1);

@@ -87,15 +87,64 @@ int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const
 	return rc.height() + metrics::padding * 2;
 }
 
-int	draw::field(int x, int y, int width, unsigned flags, controls::editfield& ev, const char* header_label, const char* tips, int header_width) {
+namespace {
+
+static struct editfield : controls::textedit {
+	char		buffer[4192];
+	void*		value;
+	unsigned	value_size;
+
+	editfield() : textedit(buffer, sizeof(buffer) - 1, false), value(0), value_size(0) {
+		buffer[0] = 0;
+		show_border = false;
+		show_background = false;
+	}
+
+	bool needfocus() const override {
+		if(!getfocus())
+			setfocus((int)value, true);
+		return (void*)getfocus() == value;
+	}
+
+	void write(char* value, unsigned value_size) {
+		if(!value)
+			return;
+	}
+
+	void read(char* value, unsigned value_size) {
+		if(this->value == value)
+			return;
+		write(value, value_size);
+		this->value = value;
+		this->value_size = value_size;
+		if(value_size > sizeof(buffer) - 1)
+			value_size = sizeof(buffer) - 1;
+		zcpy(buffer, value, value_size);
+		select_all(true);
+	}
+
+} edit;
+}
+
+int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned value_size, const char* header_label, const char* tips, int header_width) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
 	if(header_label && header_label[0])
 		titletext(x, y, width, flags, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	if(!isdisabled(flags))
+		draw::rectf(rc, colors::window);
+	focusing((int)value, flags, rc);
+	bool focused = isfocused(flags);
+	draw::rectb(rc, colors::border);
+	rect rco = rc;
 	auto a = area(rc);
-	ev.view(rc);
+	if(isfocused(flags)) {
+		edit.read(value, value_size);
+		edit.view(rc);
+	} else
+		draw::texte(rc + metrics::edit, value, flags, -1, -1);
 	if(tips && a == AreaHilited)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;

@@ -256,7 +256,7 @@ struct dlgform : bsval {
 		auto flags = getflags(e);
 		if(po.type->type->issimple()) {
 			reqfield ev(po, e);
-			return draw::field(x, y, width, flags, ev, e.label, e.tips, e.title);
+			return draw::field(x, y, width, flags, static_cast<cmdfd&>(ev), e.label, e.tips, e.title);
 		}
 		return draw::combobox(x, y, width, flags, po, e.label, e.tips, e.title);
 	}

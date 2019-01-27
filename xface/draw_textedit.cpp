@@ -423,10 +423,6 @@ unsigned textedit::paste(bool run) {
 	return 0;
 }
 
-editfield::editfield() : textedit(buffer, sizeof(buffer) - 1, false) {
-	buffer[0] = 0;
-}
-
 //	case Ctrl + Alpha + 'X':
 //		if(p2 != -1 && p1 != p2)
 //		{

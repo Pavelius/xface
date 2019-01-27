@@ -148,7 +148,7 @@ extern int				padding;
 extern int				scroll;
 }
 namespace draw {
-typedef void(*userproc)();
+typedef void(*callback)();
 namespace dialog {
 bool					color(struct color& result, struct color* custom = 0);
 bool					folder(const char* title, char* path);
@@ -316,7 +316,7 @@ void					setcaption(const char* string);
 void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
 void					setfocus(int id, bool instant = false);
-void					setinput(userproc proc);
+void					setinput(callback proc);
 void					settimer(unsigned milleseconds);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);

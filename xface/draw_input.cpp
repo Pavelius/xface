@@ -13,11 +13,11 @@ static void(*current_execute)();
 extern rect			sys_static_area;
 static bool			keep_hot;
 static hotinfo		keep_hot_value;
-static focusable_element	elements[96];
-static focusable_element*	render_control;
+static focusable_element elements[96];
+static focusable_element* render_control;
 static bool			break_modal;
 static int			break_result;
-static userproc		input_proc;
+static callback		input_proc;
 plugin*				draw::plugin::first;
 initplugin*			draw::initplugin::first;
 
@@ -44,7 +44,7 @@ void draw::definput() {
 	}
 }
 
-void draw::setinput(userproc proc) {
+void draw::setinput(callback proc) {
 	input_proc = proc;
 }
 
