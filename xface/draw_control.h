@@ -122,13 +122,13 @@ struct control {
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool			isdisabled() const { return false; }
 	virtual bool			isfocusable() const { return true; }
-	bool					isfocused() const;
+	virtual bool			isfocused() const;
 	bool					ishilited() const;
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
 	virtual void			mouseinput(unsigned id, point mouse); // Default behaivor set focus
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
-	virtual bool			needfocus() const;
 	virtual void			redraw() {}
+	virtual void			setfocus(bool instant);
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
 };

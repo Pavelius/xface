@@ -90,6 +90,9 @@ int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const
 namespace {
 
 static struct editfield : controls::textedit {
+
+	enum type_s : unsigned char { Text, TextPtr, Number };
+
 	char		buffer[4192];
 	void*		value;
 	unsigned	value_size;
@@ -100,10 +103,16 @@ static struct editfield : controls::textedit {
 		show_background = false;
 	}
 
-	bool needfocus() const override {
-		if(!getfocus())
-			setfocus((int)value, true);
+	bool isfocused() const override {
 		return (void*)getfocus() == value;
+	}
+
+	bool isfocusable() const override {
+		return false;
+	}
+
+	void setfocus(bool instant) {
+		draw::setfocus((int)value, instant);
 	}
 
 	void write(char* value, unsigned value_size) {
@@ -111,7 +120,7 @@ static struct editfield : controls::textedit {
 			return;
 	}
 
-	void read(char* value, unsigned value_size) {
+	void read(type_s type, char* value, unsigned value_size) {
 		if(this->value == value)
 			return;
 		write(value, value_size);
@@ -121,6 +130,7 @@ static struct editfield : controls::textedit {
 			value_size = sizeof(buffer) - 1;
 		zcpy(buffer, value, value_size);
 		select_all(true);
+		invalidate();
 	}
 
 } edit;
@@ -138,11 +148,11 @@ int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned v
 	focusing((int)value, flags, rc);
 	bool focused = isfocused(flags);
 	draw::rectb(rc, colors::border);
-	rect rco = rc;
+	//rect rco = rc;
 	auto a = area(rc);
 	if(isfocused(flags)) {
-		//edit.read(value, value_size);
-		//edit.view(rc);
+		edit.read(edit.Text, value, value_size);
+		edit.view(rc);
 	} else
 		draw::texte(rc + metrics::edit, value, flags, -1, -1);
 	if(tips && a == AreaHilited)

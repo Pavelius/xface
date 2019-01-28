@@ -48,13 +48,17 @@ bool control::ishilited() const {
 }
 
 bool control::isfocused() const {
-	return current_focus == this;
+	return (control*)getfocus() == this;
+}
+
+void control::setfocus(bool instant) {
+	draw::setfocus((int)this, instant);
 }
 
 void control::mouseinput(unsigned id, point position) {
 	switch(id) {
 	case MouseLeft:
-		setfocus((int)this, true);
+		setfocus(true);
 		break;
 	case MouseRight:
 		if(true) {
@@ -135,23 +139,18 @@ void control::execute(control::callback proc, int param) const {
 	draw::execute(control_execute, param);
 }
 
-bool control::needfocus() const {
-	if(!isfocusable())
-		return false;
-	if(!getfocus())
-		setfocus((int)this, true);
-	return (control*)getfocus() == this;
-}
-
 void control::view(const rect& rc) {
-	if(isfocusable())
+	if(isfocusable()) {
 		addelement((int)this, rc);
-	if(areb(rc)) {
-		current_hilite = this;
+		if(!getfocus())
+			setfocus(true);
+	}
+	if(isfocused()) {
+		current_focus = this;
 		setinput(input_control);
 	}
-	if(needfocus()) {
-		current_focus = this;
+	if(areb(rc)) {
+		current_hilite = this;
 		setinput(input_control);
 	}
 	if(show_background)
