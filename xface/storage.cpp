@@ -1,3 +1,4 @@
+#include "crt.h"
 #include "stringcreator.h"
 #include "storage.h"
 
@@ -10,16 +11,35 @@ int	storage::get() const {
 	}
 }
 
-const char* storage::get(char* result, const char* result_end, bool force_to_result) const {
+void storage::set(const char* result) const {
 	switch(type) {
 	case Text:
-		if(!force_to_result)
-			return (const char*)data;
-		else {
-			stringcreator sc(result, result_end);
-			sc.add((const char*)data);
-		}
+		zcpy((char*)data, result, size);
 		break;
+	case TextPtr:
+		*((const char**)data) = szdup(result);
+		break;
+	}
+}
+
+void storage::getf(char* result, const char* result_end) const {
+	auto p = get(result, result_end);
+	if(p != result) {
+		stringcreator sc(result, result_end);
+		sc.add(p);
+	}
+}
+
+const char* storage::get(char* result, const char* result_end) const {
+	const char* text;
+	switch(type) {
+	case Text:
+		return (const char*)data;
+	case TextPtr:
+		text = *((const char**)data);
+		if(!text)
+			return "";
+		return text;
 	case Number:
 	case Bool:
 		if(true) {

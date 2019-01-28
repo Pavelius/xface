@@ -1,6 +1,7 @@
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
+#include "storage.h"
 
 using namespace draw;
 
@@ -94,17 +95,17 @@ static struct editfield : controls::textedit {
 	enum type_s : unsigned char { Text, TextPtr, Number };
 
 	char		buffer[4192];
-	void*		value;
+	storage		value;
 	unsigned	value_size;
 
-	editfield() : textedit(buffer, sizeof(buffer) - 1, false), value(0), value_size(0) {
+	editfield() : textedit(buffer, sizeof(buffer) - 1, false) {
 		buffer[0] = 0;
 		show_border = false;
 		show_background = false;
 	}
 
 	bool isfocused() const override {
-		return (void*)getfocus() == value;
+		return (void*)getfocus() == value.data;
 	}
 
 	bool isfocusable() const override {
@@ -112,23 +113,20 @@ static struct editfield : controls::textedit {
 	}
 
 	void setfocus(bool instant) {
-		draw::setfocus((int)value, instant);
+		draw::setfocus((int)value.data, instant);
 	}
 
-	void write(char* value, unsigned value_size) {
-		if(!value)
-			return;
+	void write(const storage& e) {
+		if(value)
+			e.set(buffer);
 	}
 
-	void read(type_s type, char* value, unsigned value_size) {
-		if(this->value == value)
+	void read(const storage& e) {
+		if(value==e)
 			return;
-		write(value, value_size);
-		this->value = value;
-		this->value_size = value_size;
-		if(value_size > sizeof(buffer) - 1)
-			value_size = sizeof(buffer) - 1;
-		zcpy(buffer, value, value_size);
+		write(value);
+		value = e;
+		e.getf(buffer, zendof(buffer));
 		select_all(true);
 		invalidate();
 	}
@@ -136,7 +134,7 @@ static struct editfield : controls::textedit {
 } edit;
 }
 
-int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned value_size, const char* header_label, const char* tips, int header_width) {
+static int field_common(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
@@ -145,17 +143,42 @@ int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned v
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(!isdisabled(flags))
 		draw::rectf(rc, colors::window);
-	focusing((int)value, flags, rc);
+	focusing((int)ev.data, flags, rc);
 	bool focused = isfocused(flags);
 	draw::rectb(rc, colors::border);
 	//rect rco = rc;
 	auto a = area(rc);
 	if(isfocused(flags)) {
-		edit.read(edit.Text, value, value_size);
+		edit.read(ev);
 		edit.view(rc);
-	} else
-		draw::texte(rc + metrics::edit, value, flags, -1, -1);
+	} else {
+		char temp[260];
+		auto p = ev.get(temp, zendof(temp));
+		draw::texte(rc + metrics::edit, p, flags, -1, -1);
+	}
 	if(tips && a == AreaHilited)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
+}
+
+int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned value_size, const char* header_label, const char* tips, int header_width) {
+	return field_common(x, y, width, flags,
+		storage(storage::Text, value, value_size),
+		header_label, tips, header_width);
+}
+
+int	draw::field(int x, int y, int width, unsigned flags, const char** value, const char* header_label, const char* tips, int header_width) {
+	return field_common(x, y, width, flags,
+		storage(storage::TextPtr, value, 4),
+		header_label, tips, header_width);
+}
+
+int	draw::field(int x, int y, int width, unsigned flags, int& number, const char* header_label, const char* tips, int header_width) {
+	return field_common(x, y, width, flags, storage(number),
+		header_label, tips, header_width);
+}
+
+int	draw::field(int x, int y, int width, unsigned flags, short& number, const char* header_label, const char* tips, int header_width) {
+	return field_common(x, y, width, flags, storage(number),
+		header_label, tips, header_width);
 }

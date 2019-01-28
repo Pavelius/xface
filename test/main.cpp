@@ -365,6 +365,8 @@ static void test_edit_field() {
 	char name[260] = "Павел";
 	char surname[260] = "Чистяков";
 	char lastname[260] = "Валенинович";
+	const char* anystr = "Любая строка";
+	int number = 10;
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -373,6 +375,8 @@ static void test_edit_field() {
 		y += field(x, y, 300, 0, name, sizeof(name), "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
 		y += field(x, y, 300, 0, surname, sizeof(surname), "Еще тест", 0, 100);
 		y += field(x, y, 300, 0, lastname, sizeof(lastname), "Еще поле", 0, 100);
+		y += field(x, y, 300, 0, &anystr, "Просто строка", 0, 100);
+		y += field(x, y, 300, 0, number, "Скорость", 0, 100);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
 	}
