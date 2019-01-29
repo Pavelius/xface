@@ -9,9 +9,6 @@ struct focusable_element {
 	operator bool() const { return id != 0; }
 };
 static int				current_focus;
-static callback			current_keyboard;
-static callback			current_mouse;
-static void(*current_execute)();
 extern rect				sys_static_area;
 static bool				keep_hot;
 static hotinfo			keep_hot_value;
@@ -20,6 +17,7 @@ static focusable_element* render_control;
 static bool				break_modal;
 static int				break_result;
 static callback			input_proc;
+callback				draw::domodal;
 plugin*					draw::plugin::first;
 initplugin*				draw::initplugin::first;
 
@@ -48,19 +46,6 @@ void draw::definput() {
 
 void draw::setinput(callback proc) {
 	input_proc = proc;
-}
-
-static void input_before() {
-	hot.cursor = CursorArrow;
-	render_control = elements;
-	current_execute = 0;
-	input_proc = definput;
-	if(hot.mouse.x < 0 || hot.mouse.y < 0)
-		sys_static_area.clear();
-	else
-		sys_static_area = {0, 0, draw::getwidth(), draw::getheight()};
-	for(auto p = plugin::first; p; p = p->next)
-		p->before();
 }
 
 static void setfocus_callback() {
@@ -167,16 +152,19 @@ int draw::getfocus() {
 	return current_focus;
 }
 
-void draw::execute(void(*proc)(), int param) {
-	current_execute = proc;
+void draw::execute(callback proc, int param) {
+	domodal = proc;
 	hot.key = 0;
 	hot.param = param;
 }
 
+static void execute_hot() {
+	hot = keep_hot_value;
+}
+
 void draw::execute(const hotinfo& value) {
-	keep_hot = true;
 	keep_hot_value = value;
-	hot.key = InputUpdate;
+	execute(execute_hot);
 }
 
 plugin::plugin(int priority) : next(0), priority(priority) {
@@ -220,8 +208,25 @@ int draw::getresult() {
 	return break_result;
 }
 
+static void standart_domodal() {
+	for(auto p = plugin::first; p; p = p->next)
+		p->after();
+	hot.key = draw::rawinput();
+	if(input_proc)
+		input_proc();
+}
+
 bool draw::ismodal() {
-	input_before();
+	hot.cursor = CursorArrow;
+	render_control = elements;
+	input_proc = definput;
+	if(hot.mouse.x < 0 || hot.mouse.y < 0)
+		sys_static_area.clear();
+	else
+		sys_static_area = {0, 0, draw::getwidth(), draw::getheight()};
+	domodal = standart_domodal;
+	for(auto p = plugin::first; p; p = p->next)
+		p->before();
 	if(!break_modal)
 		return true;
 	break_modal = false;
@@ -237,24 +242,4 @@ void draw::initialize() {
 	draw::font = metrics::font;
 	draw::fore = colors::text;
 	draw::fore_stroke = colors::blue;
-}
-
-void draw::domodal() {
-	if(current_execute) {
-		auto proc = current_execute;
-		input_before();
-		proc();
-		input_before();
-		hot.key = InputUpdate;
-		return;
-	}
-	for(auto p = plugin::first; p; p = p->next)
-		p->after();
-	if(hot.key == InputUpdate && keep_hot) {
-		keep_hot = false;
-		hot = keep_hot_value;
-	} else
-		hot.key = draw::rawinput();
-	if(input_proc)
-		input_proc();
 }

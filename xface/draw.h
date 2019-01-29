@@ -263,8 +263,8 @@ void					circlef(int x, int y, int radius, const color c1, unsigned char alpha =
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 void					definput();
-void					domodal();
-void					execute(void(*callback)(), int value = 0);
+extern callback			domodal;
+void					execute(callback proc, int value = 0);
 void					execute(const hotinfo& value);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
