@@ -4,22 +4,24 @@
 using namespace draw;
 
 struct focusable_element {
-	int				id;
-	rect			rc;
+	int					id;
+	rect				rc;
 	operator bool() const { return id != 0; }
 };
-static int			current_focus;
+static int				current_focus;
+static callback			current_keyboard;
+static callback			current_mouse;
 static void(*current_execute)();
-extern rect			sys_static_area;
-static bool			keep_hot;
-static hotinfo		keep_hot_value;
+extern rect				sys_static_area;
+static bool				keep_hot;
+static hotinfo			keep_hot_value;
 static focusable_element elements[96];
 static focusable_element* render_control;
-static bool			break_modal;
-static int			break_result;
-static callback		input_proc;
-plugin*				draw::plugin::first;
-initplugin*			draw::initplugin::first;
+static bool				break_modal;
+static int				break_result;
+static callback			input_proc;
+plugin*					draw::plugin::first;
+initplugin*				draw::initplugin::first;
 
 static void set_focus_callback() {
 	auto id = getnext(draw::getfocus(), hot.param);

@@ -47,6 +47,20 @@ const char* stringcreator::readvariable(const char* p) {
 	return p;
 }
 
+//int	stringcreator::readint(const char* format, const char** format_result = 0) {
+//	int result = 0;
+//	bool sign = false;
+//	if(format[0] == '-') {
+//		sign = true;
+//		format++;
+//	}
+//	while(isnum(*format))
+//		result = result * 10 + (*format++) - '0';
+//	if(sign)
+//		result = -result;
+//	return result;
+//}
+
 char* stringcreator::adduint(char* dst, const char* result_max, unsigned value, int precision, const int radix) {
 	char temp[32]; int i = 0;
 	if(!value) {

@@ -19,4 +19,5 @@ struct storage {
 	const char*		get(char* result, const char* result_end) const;
 	void			getf(char* result, const char* result_end) const;
 	void			set(const char* result) const;
+	void			set(int value) const;
 };

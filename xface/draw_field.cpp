@@ -1,7 +1,6 @@
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
-#include "storage.h"
 
 using namespace draw;
 
@@ -89,7 +88,6 @@ int	draw::field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const
 }
 
 namespace {
-
 static struct editfield : controls::textedit {
 
 	enum type_s : unsigned char { Text, TextPtr, Number };
@@ -134,7 +132,20 @@ static struct editfield : controls::textedit {
 } edit;
 }
 
-static int field_common(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width) {
+static storage edit_value;
+
+static void field_up() {
+}
+
+static void field_down() {
+}
+
+static void execute(callback proc, const storage& ev) {
+	edit_value = ev;
+	draw::execute(proc);
+}
+
+int draw::field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
@@ -146,7 +157,16 @@ static int field_common(int x, int y, int width, unsigned flags, const storage& 
 	focusing((int)ev.data, flags, rc);
 	bool focused = isfocused(flags);
 	draw::rectb(rc, colors::border);
-	//rect rco = rc;
+	rect rco = rc;
+	if(ev.type==storage::Number) {
+		auto result = addbutton(rc, focused,
+			"+", KeyUp, "Увеличить",
+			"-", KeyDown, "Уменьшить");
+		switch(result) {
+		case 1: execute(field_up, ev);  break;
+		case 2: execute(field_down, ev); break;
+		}
+	}
 	auto a = area(rc);
 	if(isfocused(flags)) {
 		edit.read(ev);
@@ -162,23 +182,13 @@ static int field_common(int x, int y, int width, unsigned flags, const storage& 
 }
 
 int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned value_size, const char* header_label, const char* tips, int header_width) {
-	return field_common(x, y, width, flags,
+	return field(x, y, width, flags,
 		storage(storage::Text, value, value_size),
 		header_label, tips, header_width);
 }
 
 int	draw::field(int x, int y, int width, unsigned flags, const char** value, const char* header_label, const char* tips, int header_width) {
-	return field_common(x, y, width, flags,
+	return field(x, y, width, flags,
 		storage(storage::TextPtr, value, 4),
-		header_label, tips, header_width);
-}
-
-int	draw::field(int x, int y, int width, unsigned flags, int& number, const char* header_label, const char* tips, int header_width) {
-	return field_common(x, y, width, flags, storage(number),
-		header_label, tips, header_width);
-}
-
-int	draw::field(int x, int y, int width, unsigned flags, short& number, const char* header_label, const char* tips, int header_width) {
-	return field_common(x, y, width, flags, storage(number),
 		header_label, tips, header_width);
 }

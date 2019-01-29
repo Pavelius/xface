@@ -181,7 +181,8 @@ void textedit::redraw(rect rc) {
 	cashing(rc);
 	if(isfocused()) {
 		auto ev = hot.key&CommandMask;
-		if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight) && draw::mouseinput && hot.pressed) {
+		if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight)
+			&& draw::mouseinput && hot.pressed) {
 			auto lenght = zlen(string);
 			auto index = hittest(rc, hot.mouse, align);
 			if(index == -3)

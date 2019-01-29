@@ -1,6 +1,7 @@
 #include "bsdata.h"
 #include "draw.h"
 #include "pointl.h"
+#include "storage.h"
 
 #pragma once
 
@@ -328,10 +329,9 @@ int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 void						dockbar(const rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
+int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, char* value, unsigned text_maximum, const char* header_label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, const char** value, const char* header_label, const char* tips, int header_width);
-int							field(int x, int y, int width, unsigned flags, int& value, const char* header_label, const char* tips, int header_width);
-int							field(int x, int y, int width, unsigned flags, short& value, const char* header_label, const char* tips, int header_width);
 int							radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							render(int x, int y, int width, const bsval& value, const widget* element);
 void						setposition(int& x, int& y, int& width, int padding = -1);

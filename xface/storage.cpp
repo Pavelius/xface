@@ -4,20 +4,32 @@
 
 int	storage::get() const {
 	switch(size) {
-	case sizeof(int) : return *((int*)data);
-	case sizeof(short) : return *((short*)data);
-	case sizeof(char) : return *((char*)data);
+	case 4: return *((int*)data);
+	case 2: return *((short*)data);
+	case 1: return *((char*)data);
 	default: return 0;
 	}
 }
 
+void storage::set(int value) const {
+	switch(size) {
+	case 4: *((int*)data) = value; break;
+	case 2: *((short*)data) = value; break;
+	case 1: *((char*)data) = value; break;
+	}
+}
+
 void storage::set(const char* result) const {
+	int number;
 	switch(type) {
 	case Text:
 		zcpy((char*)data, result, size);
 		break;
 	case TextPtr:
 		*((const char**)data) = szdup(result);
+		break;
+	case Number:
+		number = sz2num(result);
 		break;
 	}
 }
