@@ -58,10 +58,11 @@ void control::setfocus(bool instant) {
 void control::mouseinput(unsigned id, point position) {
 	switch(id) {
 	case MouseLeft:
-		setfocus(true);
+		if(hot.pressed)
+			setfocus(true);
 		break;
 	case MouseRight:
-		if(true) {
+		if(hot.pressed) {
 			redraw();
 			updatewindow();
 			auto cm = getcommands();

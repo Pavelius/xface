@@ -30,6 +30,7 @@ void storage::set(const char* result) const {
 		break;
 	case Number:
 		number = sz2num(result);
+		set(number);
 		break;
 	}
 }

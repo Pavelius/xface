@@ -19,12 +19,6 @@ plugin*					draw::plugin::first;
 initplugin*				draw::initplugin::first;
 callback				draw::domodal;
 
-static void set_focus_callback() {
-	auto id = getnext(draw::getfocus(), hot.param);
-	if(id)
-		setfocus(id, true);
-}
-
 static void default_input() {
 	int id;
 	switch(hot.key) {
@@ -43,7 +37,7 @@ static void default_input() {
 }
 
 static void setfocus_callback() {
-	current_focus = hot.param;
+	setfocus(hot.param, true);
 }
 
 static focusable_element* getby(int id) {
@@ -139,8 +133,8 @@ void draw::setfocus(int id, bool instant) {
 	if(id == current_focus)
 		return;
 	if(instant) {
-		current_focus = id;
 		storefocus();
+		current_focus = id;
 	} else
 		execute(setfocus_callback, id);
 }
