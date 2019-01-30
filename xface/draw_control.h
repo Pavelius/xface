@@ -41,6 +41,7 @@ private:
 	callback			id;
 	int					param;
 };
+typedef int(*widgetproc)(int x, int y, int width, unsigned flags, const char* label, int value, void* data, const char* tips);
 struct cmdfd : runable {
 	virtual bool		choose(bool run) const { return false; }
 	virtual bool		clear(bool run) const { return false; }

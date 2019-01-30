@@ -10,16 +10,14 @@ struct focusable_element {
 };
 static int				current_focus;
 extern rect				sys_static_area;
-static bool				keep_hot;
 static hotinfo			keep_hot_value;
 static focusable_element elements[96];
 static focusable_element* render_control;
 static bool				break_modal;
 static int				break_result;
-static callback			input_proc;
-callback				draw::domodal;
 plugin*					draw::plugin::first;
 initplugin*				draw::initplugin::first;
+callback				draw::domodal;
 
 static void set_focus_callback() {
 	auto id = getnext(draw::getfocus(), hot.param);
@@ -27,7 +25,7 @@ static void set_focus_callback() {
 		setfocus(id, true);
 }
 
-void draw::definput() {
+static void default_input() {
 	int id;
 	switch(hot.key) {
 	case KeyTab:
@@ -42,10 +40,6 @@ void draw::definput() {
 		exit(0);
 		break;
 	}
-}
-
-void draw::setinput(callback proc) {
-	input_proc = proc;
 }
 
 static void setfocus_callback() {
@@ -142,9 +136,12 @@ int draw::getnext(int id, int key) {
 }
 
 void draw::setfocus(int id, bool instant) {
-	if(instant)
+	if(id == current_focus)
+		return;
+	if(instant) {
 		current_focus = id;
-	else if(current_focus != id)
+		storefocus();
+	} else
 		execute(setfocus_callback, id);
 }
 
@@ -208,18 +205,20 @@ int draw::getresult() {
 	return break_result;
 }
 
+bool control_input();
+
 static void standart_domodal() {
 	for(auto p = plugin::first; p; p = p->next)
 		p->after();
 	hot.key = draw::rawinput();
-	if(input_proc)
-		input_proc();
+	if(control_input())
+		return;
+	default_input();
 }
 
 bool draw::ismodal() {
 	hot.cursor = CursorArrow;
 	render_control = elements;
-	input_proc = definput;
 	if(hot.mouse.x < 0 || hot.mouse.y < 0)
 		sys_static_area.clear();
 	else
@@ -238,7 +237,6 @@ void draw::initialize() {
 		p->initialize();
 	for(auto p = initplugin::first; p; p = p->next)
 		p->after_initialize();
-	// Set default window colors
 	draw::font = metrics::font;
 	draw::fore = colors::text;
 	draw::fore_stroke = colors::blue;

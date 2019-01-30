@@ -11,27 +11,27 @@ static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 
-static void input_control() {
+bool control_input() {
 	if(current_hilite) {
 		switch(hot.key & CommandMask) {
 		case MouseLeft:
 		case MouseRight:
 		case MouseLeftDBL:
 			current_hilite->mouseinput(hot.key, hot.mouse);
-			return;
+			return true;
 		case MouseWheelDown:
 			current_hilite->mousewheel(hot.key, hot.mouse, 1);
-			return;
+			return true;
 		case MouseWheelUp:
 			current_hilite->mousewheel(hot.key, hot.mouse, -1);
-			return;
+			return true;
 		}
 	}
 	if(current_focus) {
 		if(current_focus->keyinput(hot.key))
-			return;
+			return true;
 	}
-	definput();
+	return false;
 }
 
 static struct control_plugin : draw::plugin {
@@ -145,14 +145,10 @@ void control::view(const rect& rc) {
 		if(!getfocus())
 			setfocus(true);
 	}
-	if(isfocused()) {
+	if(isfocused())
 		current_focus = this;
-		setinput(input_control);
-	}
-	if(areb(rc)) {
+	if(areb(rc))
 		current_hilite = this;
-		setinput(input_control);
-	}
 	if(show_background)
 		rectf(rc, colors::window);
 	if(show_border)

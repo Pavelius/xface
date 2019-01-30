@@ -238,7 +238,6 @@ struct plugin {
 	virtual void		after() {}
 	virtual void		before() {}
 };
-typedef int(*widgetproc)(int x, int y, int width, unsigned flags, const char* label, int value, void* data, const char* tips);
 extern rect				clipping; // Clipping area
 extern color			fore; // Foreground color (curently selected color)
 extern color			fore_stroke; // foreground stroke color
@@ -262,7 +261,6 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
-void					definput();
 extern callback			domodal;
 void					execute(callback proc, int value = 0);
 void					execute(const hotinfo& value);
@@ -316,10 +314,10 @@ void					setcaption(const char* string);
 void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
 void					setfocus(int id, bool instant = false);
-void					setinput(callback proc);
 void					settimer(unsigned milleseconds);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);
+void					storefocus();
 void					stroke(int x, int y, const sprite* e, int id, int flags, unsigned char thin = 1, unsigned char* koeff = 0);
 void					syscursor(bool enable);
 void					sysredraw();

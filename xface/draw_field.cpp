@@ -114,15 +114,15 @@ static struct editfield : controls::textedit {
 		draw::setfocus((int)value.data, instant);
 	}
 
-	void write(const storage& e) {
+	void write() {
 		if(value)
-			e.set(buffer);
+			value.set(buffer);
 	}
 
 	void read(const storage& e) {
 		if(value==e)
 			return;
-		write(value);
+		write();
 		value = e;
 		e.getf(buffer, zendof(buffer));
 		select_all(true);
@@ -130,6 +130,11 @@ static struct editfield : controls::textedit {
 	}
 
 } edit;
+}
+
+void draw::storefocus() {
+	if(edit.isfocused())
+		edit.write();
 }
 
 static storage edit_value;
