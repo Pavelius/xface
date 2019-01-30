@@ -263,7 +263,6 @@ void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 extern callback			domodal;
 void					execute(callback proc, int value = 0);
-void					execute(const hotinfo& value);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
 int						getbpp();

@@ -10,7 +10,6 @@ struct focusable_element {
 };
 static int		current_focus;
 extern rect		sys_static_area;
-static hotinfo	keep_hot_value;
 static focusable_element elements[96];
 static focusable_element* render_control;
 static bool		break_modal;
@@ -147,15 +146,6 @@ void draw::execute(callback proc, int param) {
 	domodal = proc;
 	hot.key = 0;
 	hot.param = param;
-}
-
-static void execute_hot() {
-	hot = keep_hot_value;
-}
-
-void draw::execute(const hotinfo& value) {
-	keep_hot_value = value;
-	execute(execute_hot);
 }
 
 plugin::plugin(int priority) : next(0), priority(priority) {

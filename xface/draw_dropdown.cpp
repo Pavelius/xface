@@ -17,7 +17,6 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 		case KeyTab:
 		case KeyTab | Shift:
 			breakmodal(0);
-			execute(hot);
 			break;
 		case MouseLeft:
 		case MouseLeft + Ctrl:
@@ -26,10 +25,8 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 		case MouseLeftDBL + Ctrl:
 		case MouseLeftDBL + Shift:
 			if(hot.pressed) {
-				if(!areb(rc)) {
+				if(!areb(rc))
 					breakmodal(0);
-					execute(hot);
-				}
 			}
 			break;
 		}

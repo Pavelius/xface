@@ -68,15 +68,12 @@ static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
 		case KeyTab:
 		case KeyTab | Shift:
 			breakmodal(0);
-			execute(hot);
 			break;
 		case MouseLeft:
 		case MouseLeftDBL:
 			if(hot.pressed) {
-				if(!areb(rc)) {
+				if(!areb(rc))
 					breakmodal(0);
-					execute(hot);
-				}
 			}
 			break;
 		}

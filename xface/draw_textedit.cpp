@@ -260,21 +260,17 @@ bool textedit::editing(rect rc) {
 				show_records = false;
 				break;
 			}
-			if(post_escape)
-				draw::execute(hot);
-			else {
+			if(!post_escape) {
 				hot.key = InputUpdate;
 				hot.param = 0;
 			}
 			return false;
 		case KeyTab:
 		case KeyTab | Shift:
-			draw::execute(hot);
 			return true;
 		case KeyDown:
 		case KeyUp:
 		case F4:
-			draw::execute(hot);
 			return true;
 		case KeyEnter:
 			if(records && isshowrecords()) {
@@ -301,10 +297,8 @@ bool textedit::editing(rect rc) {
 				records->keyinput(hot.key);
 				break;
 			}
-			if(!areb(rc) && hot.pressed) {
-				//draw::execute(hot);
+			if(!areb(rc) && hot.pressed)
 				return true;
-			}
 			break;
 		default:
 			if(hot.key == InputSymbol) {
