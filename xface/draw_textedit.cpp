@@ -376,6 +376,7 @@ bool textedit::keyinput(unsigned id) {
 		if(hot.param >= 0x20 && !readonly) {
 			char temp[8];
 			paste(szput(temp, hot.param));
+			invalidate();
 		}
 		break;
 	case KeyHome:

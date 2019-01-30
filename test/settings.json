@@ -45,9 +45,9 @@
     }
   },
   "window":{
-    "x":104,
-    "y":90,
-    "width":970,
+    "x":160,
+    "y":65,
+    "width":1071,
     "height":600,
     "header_width":160
   },

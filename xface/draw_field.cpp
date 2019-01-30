@@ -119,14 +119,18 @@ static struct editfield : controls::textedit {
 			value.set(buffer);
 	}
 
-	void read(const storage& e) {
+	void read() {
+		value.getf(buffer, zendof(buffer));
+		select_all(true);
+		invalidate();
+	}
+
+	void set(const storage& e) {
 		if(value==e)
 			return;
 		write();
 		value = e;
-		e.getf(buffer, zendof(buffer));
-		select_all(true);
-		invalidate();
+		read();
 	}
 
 } edit;
@@ -137,17 +141,41 @@ void draw::storefocus() {
 		edit.write();
 }
 
+typedef bool(*editproc)(const storage& e);
 static storage edit_value;
+static editproc edit_proc;
 
 static void field_up() {
+	edit.write();
+	if(edit_value.type == storage::Number) {
+		auto value = edit_value.get();
+		edit_value.set(value + 1);
+		edit.read();
+	}
 }
 
 static void field_down() {
+	edit.write();
+	if(edit_value.type == storage::Number) {
+		auto value = edit_value.get();
+		edit_value.set(value - 1);
+		edit.read();
+	}
 }
 
 static void execute(callback proc, const storage& ev) {
 	edit_value = ev;
 	draw::execute(proc);
+}
+
+static void run_edit_proc() {
+	edit_proc(edit_value);
+}
+
+static void execute(editproc proc, const storage& ev) {
+	edit_value = ev;
+	edit_proc = proc;
+	draw::execute(run_edit_proc);
 }
 
 int draw::field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width) {
@@ -174,7 +202,7 @@ int draw::field(int x, int y, int width, unsigned flags, const storage& ev, cons
 	}
 	auto a = area(rc);
 	if(isfocused(flags)) {
-		edit.read(ev);
+		edit.set(ev);
 		edit.view(rc);
 	} else {
 		char temp[260];
