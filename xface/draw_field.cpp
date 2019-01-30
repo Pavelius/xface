@@ -4,7 +4,6 @@
 
 using namespace draw;
 
-typedef bool(*editproc)(const storage& e);
 static storage	edit_value;
 static editproc edit_proc;
 
@@ -57,13 +56,17 @@ void draw::updatefocus() {
 		edit.write();
 }
 
+static void loadfocus() {
+	if(edit.isfocused())
+		edit.read();
+}
+
 static void field_up() {
 	edit.write();
 	if(edit_value.type == storage::Number) {
 		auto value = edit_value.get();
 		edit_value.set(value + 1);
-		if(edit.isfocused())
-			edit.read();
+		loadfocus();
 	}
 }
 
@@ -72,8 +75,7 @@ static void field_down() {
 	if(edit_value.type == storage::Number) {
 		auto value = edit_value.get();
 		edit_value.set(value - 1);
-		if(edit.isfocused())
-			edit.read();
+		loadfocus();
 	}
 }
 
@@ -84,6 +86,7 @@ static void execute(callback proc, const storage& ev) {
 
 static void run_edit_proc() {
 	edit_proc(edit_value);
+	loadfocus();
 }
 
 static void execute(editproc proc, const storage& ev) {
@@ -92,7 +95,7 @@ static void execute(editproc proc, const storage& ev) {
 	draw::execute(run_edit_proc);
 }
 
-int draw::field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width) {
+int draw::field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width, editproc choose) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
@@ -114,6 +117,10 @@ int draw::field(int x, int y, int width, unsigned flags, const storage& ev, cons
 		case 2: execute(field_down, ev); break;
 		}
 	}
+	if(choose) {
+		if(addbutton(rc, focused, "...", F4, "Выбрать"))
+			execute(choose, ev);
+	}
 	auto a = area(rc);
 	if(isfocused(flags)) {
 		edit.set(ev);
@@ -126,16 +133,4 @@ int draw::field(int x, int y, int width, unsigned flags, const storage& ev, cons
 	if(tips && a == AreaHilited)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
-}
-
-int	draw::field(int x, int y, int width, unsigned flags, char* value, unsigned value_size, const char* header_label, const char* tips, int header_width) {
-	return field(x, y, width, flags,
-		storage(storage::Text, value, value_size),
-		header_label, tips, header_width);
-}
-
-int	draw::field(int x, int y, int width, unsigned flags, const char** value, const char* header_label, const char* tips, int header_width) {
-	return field(x, y, width, flags,
-		storage(storage::TextPtr, value, 4),
-		header_label, tips, header_width);
 }

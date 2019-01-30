@@ -27,6 +27,7 @@ enum dock_s : unsigned char {
 	DockRight, DockRightBottom,
 	DockBottom, DockWorkspace,
 };
+typedef void(*editproc)(const storage& e);
 struct runable {
 	virtual int			getid() const = 0;
 	virtual void		execute() const = 0;
@@ -319,9 +320,7 @@ int							checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
 void						dockbar(const rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width);
-int							field(int x, int y, int width, unsigned flags, char* value, unsigned text_maximum, const char* header_label, const char* tips, int header_width);
-int							field(int x, int y, int width, unsigned flags, const char** value, const char* header_label, const char* tips, int header_width);
+int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width, editproc choose = 0);
 int							radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							render(int x, int y, int width, const bsval& value, const widget* element);
 void						setposition(int& x, int& y, int& width, int padding = -1);

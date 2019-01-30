@@ -360,6 +360,13 @@ static void test_drag_drop() {
 	}
 }
 
+static void choose_folder(const storage& ev) {
+	char temp[260] = {};
+	if(!dialog::folder("Выбирайте папку", temp))
+		return;
+	ev.set(temp);
+}
+
 static void test_edit_field() {
 	setfocus(0, true);
 	char name[260] = "Павел";
@@ -372,10 +379,10 @@ static void test_edit_field() {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto h = draw::texth();
 		auto w = 300;
-		y += field(x, y, 300, 0, name, sizeof(name), "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
-		y += field(x, y, 300, 0, surname, sizeof(surname), "Еще тест", 0, 100);
-		y += field(x, y, 300, 0, lastname, sizeof(lastname), "Еще поле", 0, 100);
-		y += field(x, y, 300, 0, &anystr, "Просто строка", 0, 100);
+		y += field(x, y, 300, 0, name, "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
+		y += field(x, y, 300, 0, surname, "Еще тест", 0, 100);
+		y += field(x, y, 300, 0, lastname, "Еще поле", 0, 100);
+		y += field(x, y, 300, 0, anystr, "Путь к папке", 0, 100, choose_folder);
 		y += field(x, y, 300, 0, number, "Скорость", 0, 100);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();

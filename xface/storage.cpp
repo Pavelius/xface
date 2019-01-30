@@ -26,7 +26,8 @@ void storage::set(const char* result) const {
 		zcpy((char*)data, result, size);
 		break;
 	case TextPtr:
-		*((const char**)data) = szdup(result);
+		number = (int)szdup(result);
+		set(number);
 		break;
 	case Number:
 		number = sz2num(result);
