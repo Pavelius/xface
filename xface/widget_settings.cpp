@@ -235,36 +235,37 @@ static struct widget_settings : controls::control {
 	}
 
 	static int field(int x, int y, int width, unsigned flags, settings& e, const char* header_label, const char* tips, int header_width) {
-		struct cmdnm : cmdfd {
-			settings&	e;
-			bool choose(bool run) const {
-				if(e.type != settings::UrlFolderPtr)
-					return false;
-				return true;
-			}
-			const char*	get(char* result, const char* result_maximum, bool force_result) const {
-				result[0] = 0;
-				switch(e.type) {
-				case settings::Int:
-					szprint(result, result_maximum, "%1i", *((int*)e.data));
-					break;
-				}
-				return result;
-			}
-			bool increment(int step, bool run) const {
-				if(e.type != settings::Int)
-					return false;
-				if(run) {
+		//struct cmdnm : cmdfd {
+		//	settings&	e;
+		//	bool choose(bool run) const {
+		//		if(e.type != settings::UrlFolderPtr)
+		//			return false;
+		//		return true;
+		//	}
+		//	const char*	get(char* result, const char* result_maximum, bool force_result) const {
+		//		result[0] = 0;
+		//		switch(e.type) {
+		//		case settings::Int:
+		//			szprint(result, result_maximum, "%1i", *((int*)e.data));
+		//			break;
+		//		}
+		//		return result;
+		//	}
+		//	bool increment(int step, bool run) const {
+		//		if(e.type != settings::Int)
+		//			return false;
+		//		if(run) {
 
-				}
-				return true;
-			}
-			void		execute() const { draw::execute(callback_edit, (int)&e); }
-			int			getid() const { return (int)&e; }
-			void		set(const rect& value) const { current_rect = value; }
-			constexpr cmdnm(settings& e) : e(e) {}
-		} ec(e);
-		return draw::field(x, y, width, flags, ec, header_label, tips, header_width);
+		//		}
+		//		return true;
+		//	}
+		//	void		execute() const { draw::execute(callback_edit, (int)&e); }
+		//	int			getid() const { return (int)&e; }
+		//	void		set(const rect& value) const { current_rect = value; }
+		//	constexpr cmdnm(settings& e) : e(e) {}
+		//} ec(e);
+		//return draw::field(x, y, width, flags, ec, header_label, tips, header_width);
+		return 0;
 	}
 
 	static int element(int x, int y, int width, unsigned flags, settings& e) {

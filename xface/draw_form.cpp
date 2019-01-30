@@ -44,132 +44,6 @@ struct dlgform : bsval {
 		const widget*	pw;
 	};
 
-	struct reqfield : bsval, cmdfd {
-
-		reqfield() = default;
-		constexpr reqfield(bsval v, const widget& e) : bsval(v), pw(&e), dropdown() {}
-
-		static void callback() {
-			auto focus = getfocus();
-			char temp[4096]; current.get(temp, temp + sizeof(temp) - 1, true);
-			controls::textedit test(temp, sizeof(temp) - 1, true);
-			setfocus((int)&test, true);
-			test.editing(current_rect);
-			current.set(temp);
-			setfocus(focus, true);
-		}
-
-		static void callback_increment() {
-			current.setnumber(current.getnumber() + hot.param);
-		}
-
-		static void callback_dropdown() {
-		}
-
-		int getid() const override {
-			return (int)pw;
-		}
-
-		bool choose(bool run) const override {
-			if(!dropdown)
-				return false;
-			if(run) {
-				current = *this;
-				draw::execute(callback_dropdown);
-			}
-			return true;
-		}
-
-		bool increment(int step, bool run) const override {
-			if(type->type != number_type)
-				return false;
-			if(run) {
-				current = *this;
-				draw::execute(callback_increment, step);
-			}
-			return true;
-		}
-
-		void execute() const override {
-			current = *this;
-			draw::execute(callback);
-		}
-
-		int getnumber() const {
-			return bsval::get();
-		}
-
-		void setnumber(int value) {
-			bsval::set(value);
-		}
-
-		const char* getstring(const bsval& source, char* result, const char* result_maximum, bool force_result) const {
-			if(type->reference) {
-				auto p = (const char*)source.get();
-				if(!p && !force_result)
-					return "";
-				if(!force_result)
-					return p;
-				szprint(result, result_maximum, p);
-			} else {
-				auto p = (const char*)source.type->ptr(source.data);
-				if(!force_result)
-					return p;
-				auto maximum = type->size;
-				unsigned maximum_count = result_maximum - result;
-				if(maximum < maximum_count)
-					maximum_count = maximum;
-				zcpy(result, p, maximum_count);
-			}
-			return result;
-		}
-
-		const char* get(char* result, const char* result_maximum, bool force_result) const override {
-			if(type->type == number_type)
-				szprint(result, result_maximum, "%1i", getnumber());
-			else if(type->type == text_type)
-				return getstring(*this, result, result_maximum, force_result);
-			else {
-				auto pv = (void*)bsval::get();
-				if(!pv)
-					return "";
-				return getstring({pv, type->type->getkey()}, result, result_maximum, force_result);
-			}
-			return result;
-		}
-
-		void set(const rect& value) const override {
-			current_rect = value;
-		}
-
-		void set(const char* value) const {
-			if(type->type == text_type) {
-				auto p = (const char*)type->ptr(data);
-				if(!type->reference)
-					zcpy((char*)p, value, type->size);
-				else {
-					if(value[0])
-						value = szdup(value);
-					else
-						value = 0;
-					*((const char**)p) = value;
-				}
-			} else if(type->type == number_type)
-				((reqfield*)this)->setnumber(sz2num(value));
-			else {
-
-			}
-		}
-
-	private:
-
-		const widget*	pw;
-		controls::list* dropdown;
-		static rect		current_rect;
-		static reqfield	current;
-
-	};
-
 	unsigned getflags(const widget& e) const {
 		return e.flags;
 	}
@@ -255,8 +129,13 @@ struct dlgform : bsval {
 			return 0;
 		auto flags = getflags(e);
 		if(po.type->type->issimple()) {
-			reqfield ev(po, e);
-			return draw::field(x, y, width, flags, static_cast<cmdfd&>(ev), e.label, e.tips, e.title);
+			storage ev;
+			ev.data = (void*)po.type->ptr(po.data);
+			ev.size = po.type->size;
+			ev.type = storage::Number;
+			if(po.type->type == text_type)
+				ev.type = storage::TextPtr;
+			return draw::field(x, y, width, flags, ev, e.label, e.tips, e.title);
 		}
 		return draw::combobox(x, y, width, flags, po, e.label, e.tips, e.title);
 	}
@@ -372,10 +251,8 @@ struct dlgform : bsval {
 
 };
 
-dlgform::reqcheck	dlgform::reqcheck::current;
-dlgform::reqradio	dlgform::reqradio::current;
-dlgform::reqfield	dlgform::reqfield::current;
-rect				dlgform::reqfield::current_rect;
+dlgform::reqcheck dlgform::reqcheck::current;
+dlgform::reqradio dlgform::reqradio::current;
 
 int draw::render(int x, int y, int width, const bsval& value, const widget* elements) {
 	dlgform e(value);

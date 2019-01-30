@@ -4,20 +4,20 @@
 using namespace draw;
 
 struct focusable_element {
-	int					id;
-	rect				rc;
+	int			id;
+	rect		rc;
 	operator bool() const { return id != 0; }
 };
-static int				current_focus;
-extern rect				sys_static_area;
-static hotinfo			keep_hot_value;
+static int		current_focus;
+extern rect		sys_static_area;
+static hotinfo	keep_hot_value;
 static focusable_element elements[96];
 static focusable_element* render_control;
-static bool				break_modal;
-static int				break_result;
-plugin*					draw::plugin::first;
-initplugin*				draw::initplugin::first;
-callback				draw::domodal;
+static bool		break_modal;
+static int		break_result;
+plugin*			draw::plugin::first;
+initplugin*		draw::initplugin::first;
+callback		draw::domodal;
 
 static void default_input() {
 	int id;
@@ -133,7 +133,7 @@ void draw::setfocus(int id, bool instant) {
 	if(id == current_focus)
 		return;
 	if(instant) {
-		storefocus();
+		updatefocus();
 		current_focus = id;
 	} else
 		execute(setfocus_callback, id);

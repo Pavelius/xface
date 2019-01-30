@@ -41,16 +41,6 @@ private:
 	callback			id;
 	int					param;
 };
-typedef int(*widgetproc)(int x, int y, int width, unsigned flags, const char* label, int value, void* data, const char* tips);
-struct cmdfd : runable {
-	virtual bool		choose(bool run) const { return false; }
-	virtual bool		clear(bool run) const { return false; }
-	virtual bool		dropdown(const rect& rc, bool run) const { return false; }
-	virtual const char*	get(char* result, const char* result_maximum, bool force_result) const { result[0] = 0; return result; }
-	virtual bool		increment(int step, bool run) const { return false; }
-	virtual bool		open(bool run) const { return false; }
-	virtual void		set(const rect& value) const {}
-};
 struct widget {
 	unsigned			flags;
 	const char*			id;
@@ -106,7 +96,7 @@ struct control {
 		virtual void		after_initialize() {}
 		static const plugin* find(const char* id);
 		virtual control&	getcontrol() = 0;
-		static struct bsreq	metadata[];
+		static bsreq		metadata[];
 	};
 	bool					show_border;
 	bool					show_background;
@@ -329,7 +319,6 @@ int							checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
 void						dockbar(const rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-int							field(int x, int y, int width, unsigned flags, const cmdfd& cmd, const char* label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, char* value, unsigned text_maximum, const char* header_label, const char* tips, int header_width);
 int							field(int x, int y, int width, unsigned flags, const char** value, const char* header_label, const char* tips, int header_width);
