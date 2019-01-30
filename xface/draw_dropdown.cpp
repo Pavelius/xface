@@ -11,8 +11,8 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 		domodal();
 		switch(hot.key) {
 		case KeyEscape:
-		case InputUpdate:
 			breakmodal(0);
+			hot.zero();
 			break;
 		case KeyTab:
 		case KeyTab | Shift:
@@ -27,6 +27,10 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 			if(hot.pressed) {
 				if(!areb(rc))
 					breakmodal(0);
+				else {
+					// Уже обработали команду
+					hot.key = InputUpdate;
+				}
 			}
 			break;
 		}

@@ -169,6 +169,7 @@ struct hotinfo {
 	bool				pressed; // flag if any of mouse keys is pressed
 	int					param; // command context or parameters
 	explicit operator bool() const { return key != 0; }
+	void				zero() { key = InputUpdate; }
 };
 extern hotinfo			hot;
 struct surface {
