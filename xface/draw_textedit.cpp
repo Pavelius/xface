@@ -302,7 +302,7 @@ bool textedit::editing(rect rc) {
 				break;
 			}
 			if(!areb(rc) && hot.pressed) {
-				draw::execute(hot);
+				//draw::execute(hot);
 				return true;
 			}
 			break;

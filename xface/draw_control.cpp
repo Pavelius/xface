@@ -116,7 +116,7 @@ const control::command* control::command::find(const char* id) const {
 }
 
 const control::command* control::command::find(unsigned key) const {
-	if(!this)
+	if(!this || !key)
 		return 0;
 	for(auto p = this; *p; p++) {
 		if(p->id[0] == '*') {
