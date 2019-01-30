@@ -198,6 +198,12 @@ static void show_drop_down() {
 	}
 }
 
+void draw::combobox(const rect& rc, const bsval& cmd) {
+	combo_value = cmd;
+	combo_rect = rc;
+	show_drop_down();
+}
+
 int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* header_label, const char* tips, int header_width) {
 	draw::state push;
 	setposition(x, y, width);

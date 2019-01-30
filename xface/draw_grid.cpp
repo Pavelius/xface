@@ -53,35 +53,6 @@ static void table_sort_column() {
 	current_element->sort(hot.param, current_order);
 }
 
-static bool change_simple(const rect& rc, const bsval& bv, const char* tips) {
-	draw::screenshoot screen;
-	auto push_focus = getfocus();
-	while(ismodal()) {
-		screen.restore();
-		draw::combobox(rc.x1, rc.y1, rc.width(), Focused, bv, 0, tips, 0);
-		domodal();
-		switch(hot.key & CommandMask) {
-		case KeyEscape:
-		case InputUpdate:
-			breakmodal(0);
-			break;
-		case KeyTab:
-		case KeyTab | Shift:
-			breakmodal(0);
-			break;
-		case MouseLeft:
-		case MouseLeftDBL:
-			if(hot.pressed) {
-				if(!areb(rc))
-					breakmodal(0);
-			}
-			break;
-		}
-	}
-	setfocus(push_focus, true);
-	return getresult() != 0;
-}
-
 void grid::clickcolumn(int column) const {
 	current_element = const_cast<grid*>(this);
 	draw::execute(table_sort_column, column);
@@ -117,7 +88,7 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 }
 
 void grid::changeref(const rect& rc, int line, int column) {
-	change_simple({rc.x1 - 4, rc.y1 - 4, rc.x2 + 4, rc.y2 + 3}, getvalue(line, column), 0);
+	draw::combobox({rc.x1-1, rc.y1, rc.x2, rc.y2}, getvalue(line, column));
 }
 
 bool grid::changing(int line, int column, const char* name) {
