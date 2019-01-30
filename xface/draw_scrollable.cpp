@@ -77,7 +77,7 @@ void scrollable::view(const rect& rcc) {
 	// vertical scroll
 	if(scrollv) {
 		int current = origin.y;
-		draw::scrollv((int)this, scrollv, current, rcheight, maximum.y, isfocused());
+		draw::scrollv((char*)this + 1, scrollv, current, rcheight, maximum.y, isfocused());
 		if(current != origin.y) {
 			origin.y = current;
 			invalidate();
@@ -86,7 +86,7 @@ void scrollable::view(const rect& rcc) {
 	// horizontal scroll
 	if(scrollh) {
 		int current = origin.x;
-		draw::scrollh((int)this, scrollh, current, rcwidth, maximum.x, isfocused());
+		draw::scrollh((char*)this + 2, scrollh, current, rcwidth, maximum.x, isfocused());
 		if(current != origin.x) {
 			origin.x = current;
 			invalidate();

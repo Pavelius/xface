@@ -80,9 +80,6 @@ enum image_flag_s {
 	AlignWidth = 0xE000,
 	AlignMask = 0xF000,
 };
-enum drag_part_s : unsigned char {
-	DragControl, DragScrollV, DragScrollH, DragSplitV, DragSplitH, DragColumn,
-};
 struct pma {
 	char				name[4]; // Identifier of current block
 	int					size; // Size of all block
@@ -154,13 +151,6 @@ bool					color(struct color& result, struct color* custom = 0);
 bool					folder(const char* title, char* path);
 bool					open(const char* title, char* path, const char* filter, int filter_index = 0, const char* ext = 0);
 bool					save(const char* title, char* path, const char* filter, int filter_index = 0);
-}
-namespace drag {
-bool					active(int id, drag_part_s part = DragControl);
-bool					active();
-void					begin(int id, drag_part_s part = DragControl);
-extern point			mouse;
-extern int				value;
 }
 struct hotinfo {
 	cursors				cursor; // set this mouse cursor
@@ -263,6 +253,10 @@ void					circlef(int x, int y, int radius, const color c1, unsigned char alpha =
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 extern callback			domodal;
+bool					dragactive(const void* p);
+bool					dragactive();
+void					dragbegin(const void* p);
+extern point			dragmouse;
 void					execute(callback proc, int value = 0);
 void					focusing(int id, unsigned& flags, rect rc);
 rect					getarea();
@@ -345,11 +339,11 @@ bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false, const char* tips = 0);
 bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false);
 int						clipart(int x, int y, int width, unsigned flags, const char* string);
-void					scrollh(int id, const struct rect& scroll, int& origin, int count, int maximum, bool focused);
-void					scrollv(int id, const rect& scroll, int& origin, int count, int maximum, bool focused);
+void					scrollh(const void* object, const struct rect& scroll, int& origin, int count, int maximum, bool focused);
+void					scrollv(const void* object, const rect& scroll, int& origin, int count, int maximum, bool focused);
 int						sheetline(rect rc, bool background);
-void					splitv(int x, int y, int& value, int height, int id, int size, int minimum, int maximum, bool right_align);
-void					splith(int x, int y, int width, int& value, int id, int size, int minimum, int maximum, bool down_align);
+void					splitv(int x, int y, int& value, int height, const void* object, int size, int minimum, int maximum, bool right_align);
+void					splith(int x, int y, int width, int& value, const void* object, int size, int minimum, int maximum, bool down_align);
 void					statusbar(const char* format, ...);
 void					statusbarv(const char* format, const char* format_param);
 int						statusbardw();

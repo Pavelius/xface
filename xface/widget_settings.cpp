@@ -357,7 +357,7 @@ static struct widget_settings : controls::control {
 		draw::state push;
 		settings* tabs[128];
 		fore = colors::text;
-		splitv(rc.x1, rc.y1, window.header_width, rc.height(), 1, 6, 64, 282, false);
+		splitv(rc.x1, rc.y1, window.header_width, rc.height(), this, 6, 64, 282, false);
 		setting_header.show_border = metrics::show::padding;
 		setting_header.view({rc.x1, rc.y1, rc.x1 + window.header_width, rc.y2});
 		rc.x1 += window.header_width + 6;

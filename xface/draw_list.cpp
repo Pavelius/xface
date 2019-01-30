@@ -167,10 +167,10 @@ void list::view(const rect& rcorigin) {
 		}
 	}
 	if(enable_scrollv)
-		draw::scrollv((int)this, {rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
+		draw::scrollv((char*)this + 1, {rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
 			origin, lines_per_page, maximum, isfocused());
 	if(enable_scrollh)
-		draw::scrollh((int)this, {rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
+		draw::scrollh((char*)this + 2, {rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
 			origin_width, pixels_per_width, maximum_width, isfocused());
 }
 

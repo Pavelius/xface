@@ -340,19 +340,23 @@ static void test_drag_drop() {
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		rect rc = {x, y, x + 50, y + 25};
-		if(drag::active(1)) {
+		if(dragactive(test_drag_drop)) {
 			auto sx = rc.width();
 			auto sy = rc.height();
-			rc.x1 = x + (hot.mouse.x - drag::mouse.x);
-			rc.y1 = y + (hot.mouse.y - drag::mouse.y);
+			rc.x1 = x + (hot.mouse.x - dragmouse.x);
+			rc.y1 = y + (hot.mouse.y - dragmouse.y);
 			rc.x2 = rc.x1 + sx;
 			rc.y2 = rc.y1 + sy;
 			char temp[260];
 			text(10, 42, szprint(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
 		} else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
-			drag::begin(1);
-		if(drag::active(1))
-			line(rc.x1, rc.y1, drag::mouse.x, drag::mouse.y, colors::red);
+			dragbegin(test_drag_drop);
+		if(dragactive(test_drag_drop)) {
+			line(rc.x1, rc.y1, dragmouse.x, dragmouse.y, colors::red);
+			line(rc.x2, rc.y1, dragmouse.x, dragmouse.y, colors::blue);
+			line(rc.x1, rc.y2, dragmouse.x, dragmouse.y, colors::green);
+			line(rc.x2, rc.y2, dragmouse.x, dragmouse.y, colors::yellow);
+		}
 		rectf(rc, colors::form);
 		rectb(rc, colors::border);
 		button(10, 10, 100, 0, cmd(buttoncancel), "Отмена", 0, KeyEscape);

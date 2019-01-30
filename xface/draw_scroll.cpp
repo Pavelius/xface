@@ -1,6 +1,8 @@
 #include "draw.h"
 
-void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maximum, bool focused) {
+static int drag_value;
+
+void draw::scrollv(const void* object, const rect& scroll, int& origin, int count, int maximum, bool focused) {
 	// count - elements per page
 	// maximum - maximum elements
 	if(!maximum || maximum == count)
@@ -12,9 +14,9 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	int p = (origin*ds) / dr + scroll.y1;
 	auto a = area(scroll);
 	auto need_correct = false;
-	if(drag::active(id, DragScrollV)) {
+	if(dragactive(object)) {
 		a = AreaHilitedPressed;
-		p1 = hot.mouse.y - drag::value;
+		p1 = hot.mouse.y - drag_value;
 		origin = ((p1 - scroll.y1)*dr) / ds;
 		need_correct = true;
 	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
@@ -23,8 +25,8 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 		else if(hot.mouse.y > p + ss)
 			origin += count;
 		else {
-			drag::begin(id, DragScrollV);
-			drag::value = hot.mouse.y - p;
+			dragbegin(object);
+			drag_value = hot.mouse.y - p;
 		}
 		need_correct = true;
 	}
@@ -51,7 +53,7 @@ void draw::scrollv(int id, const rect& scroll, int& origin, int count, int maxim
 	}
 }
 
-void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int maximum, bool focused) {
+void draw::scrollh(const void* object, const rect& scroll, int& origin, int per_page, int maximum, bool focused) {
 	if(!maximum)
 		return;
 	int p1;
@@ -63,9 +65,9 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int ma
 	int p = (origin*ds) / dr + scroll.x1;
 	areas a = area(scroll);
 	auto need_correct = false;
-	if(drag::active(id, DragScrollH)) {
+	if(dragactive(object)) {
 		a = AreaHilitedPressed;
-		p1 = hot.mouse.x - drag::value;
+		p1 = hot.mouse.x - drag_value;
 		origin = ((p1 - scroll.x1)*dr) / ds;
 		need_correct = true;
 	} else if(a == AreaHilitedPressed && hot.key == MouseLeft) {
@@ -74,8 +76,8 @@ void draw::scrollh(int id, const rect& scroll, int& origin, int per_page, int ma
 		else if(hot.mouse.x > p + ss)
 			origin += per_page;
 		else {
-			drag::begin(id, DragScrollH);
-			drag::value = hot.mouse.x - p;
+			dragbegin(object);
+			drag_value = hot.mouse.x - p;
 		}
 		need_correct = true;
 	} else if(a == AreaHilited || a == AreaHilitedPressed) {

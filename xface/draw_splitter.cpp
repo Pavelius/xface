@@ -1,10 +1,12 @@
 #include "draw.h"
 
-void draw::splitv(int x, int y, int& value, int height, int id, int size, int minimum, int maximum, bool right_align) {
+static int split_value;
+
+void draw::splitv(int x, int y, int& value, int height, const void* object, int size, int minimum, int maximum, bool right_align) {
 	rect rc;
 	auto mode = AreaNormal;
-	if(drag::active(id, DragSplitV)) {
-		value = drag::value - (right_align ? (hot.mouse.x - drag::mouse.x) : (drag::mouse.x - hot.mouse.x));
+	if(dragactive(object)) {
+		value = split_value - (right_align ? (hot.mouse.x - dragmouse.x) : (dragmouse.x - hot.mouse.x));
 		mode = AreaHilitedPressed;
 		if(value < minimum)
 			value = minimum;
@@ -21,9 +23,8 @@ void draw::splitv(int x, int y, int& value, int height, int id, int size, int mi
 	if(mode != AreaHilitedPressed)
 		mode = area(rc);
 	if(mode == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
-		drag::begin(id, DragSplitV);
-		drag::mouse = hot.mouse;
-		drag::value = value;
+		dragbegin(object);
+		split_value = value;
 	}
 	switch(mode) {
 	case AreaHilited:
@@ -39,11 +40,11 @@ void draw::splitv(int x, int y, int& value, int height, int id, int size, int mi
 	}
 }
 
-void draw::splith(int x, int y, int width, int& value, int id, int size, int minimum, int maximum, bool down_align) {
+void draw::splith(int x, int y, int width, int& value, const void* object, int size, int minimum, int maximum, bool down_align) {
 	struct rect rc;
 	areas mode = AreaNormal;
-	if(drag::active(id, DragSplitH)) {
-		value = drag::value - (down_align ? (hot.mouse.y - drag::mouse.y) : (drag::mouse.y - hot.mouse.y));
+	if(dragactive(object)) {
+		value = split_value - (down_align ? (hot.mouse.y - dragmouse.y) : (dragmouse.y - hot.mouse.y));
 		mode = AreaHilitedPressed;
 		if(value < minimum)
 			value = minimum;
@@ -60,9 +61,8 @@ void draw::splith(int x, int y, int width, int& value, int id, int size, int min
 	if(mode != AreaHilitedPressed)
 		mode = area(rc);
 	if(mode == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
-		drag::begin(id, DragSplitH);
-		drag::mouse = hot.mouse;
-		drag::value = value;
+		dragbegin(object);
+		split_value = value;
 	}
 	switch(mode) {
 	case AreaHilited:

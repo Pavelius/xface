@@ -46,10 +46,8 @@ static draw::surface default_surface;
 draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
 // Drag
-static int			drag_id;
-static drag_part_s	drag_part;
-point				draw::drag::mouse;
-int					draw::drag::value;
+static const void*	drag_object;
+point				draw::dragmouse;
 // Metrics
 rect				metrics::edit = {4, 4, -4, -4};
 sprite*				metrics::font = (sprite*)loadb("art/fonts/font.pma");
@@ -876,21 +874,20 @@ rect draw::getarea() {
 	return sys_static_area;
 }
 
-void draw::drag::begin(int id, drag_part_s part) {
-	drag_id = id;
-	drag_part = part;
-	mouse = hot.mouse;
+void draw::dragbegin(const void* p) {
+	drag_object = p;
+	dragmouse = hot.mouse;
 }
 
-bool draw::drag::active() {
-	return drag_id != 0;
+bool draw::dragactive() {
+	return drag_object != 0;
 }
 
-bool draw::drag::active(int id, drag_part_s part) {
-	if(drag_id == id && drag_part == part) {
+bool draw::dragactive(const void* p) {
+	if(drag_object == p) {
 		if(!hot.pressed || hot.key == KeyEscape) {
-			drag_id = 0;
-			hot.key = 0;
+			drag_object = 0;
+			hot.zero();
 			hot.cursor = CursorArrow;
 			return false;
 		}
@@ -1351,7 +1348,7 @@ static void intersect_rect(rect& r1, const rect& r2) {
 areas draw::area(rect rc) {
 	if(sys_optimize_mouse_move)
 		intersect_rect(sys_static_area, rc);
-	if(drag::active())
+	if(dragactive())
 		return AreaNormal;
 	if(!hot.mouse.in(clipping))
 		return AreaNormal;

@@ -74,6 +74,7 @@ void table::mouseselect(int id, bool pressed) {
 }
 
 int table::rowheader(const rect& rc) const {
+	static int drag_column;
 	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
@@ -127,9 +128,9 @@ int table::rowheader(const rect& rc) const {
 		if(a == AreaHilited || a == AreaHilitedPressed) {
 			hot.cursor = CursorLeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
-				drag::begin((int)this, DragColumn);
-				drag::mouse.x = hot.mouse.x - r1.x1;
-				drag::value = i;
+				dragbegin(this);
+				dragmouse.x = hot.mouse.x - r1.x1;
+				drag_column = i;
 			}
 		}
 		r1.x1 = r1.x2;
