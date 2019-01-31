@@ -59,11 +59,11 @@
   "dockbar":{
     "n0":{
       "current":0,
-      "size":0
+      "size":200
     },
     "n1":{
       "current":0,
-      "size":0
+      "size":200
     },
     "n2":{
       "current":0,

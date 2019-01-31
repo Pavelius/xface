@@ -120,8 +120,8 @@ static void callback_choose_folder() {
 }
 
 static void callback_choose_color() {
-	auto p = (settings*)hot.param;
-	draw::dialog::color(*((color*)p->data));
+	auto p = (color*)hot.param;
+	draw::dialog::color(*p);
 }
 
 static void callback_edit() {
@@ -219,28 +219,14 @@ int field(int x, int y, int width, unsigned flags, color& value, const char* hea
 	if(!isdisabled(flags))
 		draw::rectf(rc, colors::window);
 	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
-	focusing((int)&value, flags, rc);
-	bool focused = isfocused(flags);
-	draw::rectb(rc, colors::border);
-	rect rco = rc;
-	//if(addbutton(rc, focused, "...", F4, "Выбрать"))
-	//	execute(choose, ev);
-	auto a = area(rc);
-	char temp[260];
-	auto p = ev.get(temp, zendof(temp));
-	draw::texte(rc + metrics::edit, p, flags, -1, -1);
-	if(tips && a == AreaHilited)
-		tooltips(tips);
+	if(buttonh({x, y, x + width, rc.y2},
+		ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
+		temp, KeyEnter, false, tips))
+		execute(callback_choose_color, (int)&value);
 	return rc.height() + metrics::padding * 2;
 	//setposition(x, y, width);
 	//struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
 	//draw::focusing(id, flags, rc);
-	//if(buttonh({x, y, x + width, rc.y2},
-	//	ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
-	//	temp, KeyEnter, false, tips)) {
-	//	draw::execute(callback);
-	//	hot.param = id;
-	//}
 	//return rc.height() + metrics::padding * 2;
 }
 }
@@ -327,8 +313,7 @@ static struct widget_settings : controls::control {
 			y += field(x, y, width, flags, e, e.name, 0, title);
 			break;
 		case settings::Color:
-			titletext(x, y, width, flags, e.name, title);
-			y += buttonc(x, y, width, (int)&e, flags, *((color*)e.data), 0, callback_choose_color);
+			y += draw::field(x, y, width, flags, *((color*)e.data), e.name, 0, title);
 			break;
 		case settings::Button:
 			ec.set(callback_button, e);
