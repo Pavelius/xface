@@ -371,6 +371,36 @@ static void choose_folder(const storage& ev) {
 	ev.set(temp);
 }
 
+static int point_input(int x, int y, point& result, int width, int title, const char* t1, const char* t2) {
+	auto y0 = y;
+	y += field(x, y, width, 0, result.x, t1, 0, title);
+	y += field(x, y, width, 0, result.y, t2, 0, title);
+	return y - y0;
+}
+
+static void test_tile_manager() {
+	setfocus(0, true);
+	char filename[260] = {};
+	point tile = {};
+	point origin = {};
+	color transparent;
+	auto use_transparent = false;
+	while(ismodal()) {
+		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		auto x = 20, y = 20;
+		auto h = draw::texth();
+		y += field(x, y, 380, 0, filename, "Файл тайлов", 0, 100, choose_folder);
+		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
+		if(use_transparent)
+			y += field(x, y, 380, 0, transparent, "Цвет", 0, 100, choose_folder);
+		auto y0 = y;
+		y += point_input(x, y, tile, 180, 100, "Ширина (точек)", "Высота (точек)");
+		point_input(x + 200, y0, origin, 180, 100, "Смещение", "Отступ");
+		y += button(x, y, 300, buttonok, "Принять");
+		domodal();
+	}
+}
+
 static void test_edit_field() {
 	setfocus(0, true);
 	char name[260] = "Павел";
@@ -408,6 +438,7 @@ static void start_menu() {
 	{"Дерево", test_tree},
 	{"Виджеты", test_widget},
 	{"Поле ввода", test_edit_field},
+	{"Тайлы", test_tile_manager},
 	{"Приложение", draw::application},
 	{0}};
 	while(ismodal()) {

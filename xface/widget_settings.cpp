@@ -208,6 +208,43 @@ static struct widget_control_viewer : controls::gridref {
 
 } control_viewer;
 
+namespace draw {
+int field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width) {
+	draw::state push;
+	setposition(x, y, width);
+	decortext(flags);
+	if(header_label && header_label[0])
+		titletext(x, y, width, flags, header_label, header_width);
+	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	if(!isdisabled(flags))
+		draw::rectf(rc, colors::window);
+	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
+	focusing((int)&value, flags, rc);
+	bool focused = isfocused(flags);
+	draw::rectb(rc, colors::border);
+	rect rco = rc;
+	//if(addbutton(rc, focused, "...", F4, "Выбрать"))
+	//	execute(choose, ev);
+	auto a = area(rc);
+	char temp[260];
+	auto p = ev.get(temp, zendof(temp));
+	draw::texte(rc + metrics::edit, p, flags, -1, -1);
+	if(tips && a == AreaHilited)
+		tooltips(tips);
+	return rc.height() + metrics::padding * 2;
+	//setposition(x, y, width);
+	//struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
+	//draw::focusing(id, flags, rc);
+	//if(buttonh({x, y, x + width, rc.y2},
+	//	ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
+	//	temp, KeyEnter, false, tips)) {
+	//	draw::execute(callback);
+	//	hot.param = id;
+	//}
+	//return rc.height() + metrics::padding * 2;
+}
+}
+
 static struct widget_settings : controls::control {
 
 	static const char* getname(char* temp, settings& e) {
@@ -218,20 +255,6 @@ static struct widget_settings : controls::control {
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return szprint(result, result_maximum, "Настройки");
-	}
-
-	static int buttonc(int x, int y, int width, int id, unsigned flags, color value, const char* tips, void(*callback)()) {
-		char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
-		setposition(x, y, width);
-		struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
-		draw::focusing(id, flags, rc);
-		if(buttonh({x, y, x + width, rc.y2},
-			ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
-			temp, KeyEnter, false, tips)) {
-			draw::execute(callback);
-			hot.param = id;
-		}
-		return rc.height() + metrics::padding * 2;
 	}
 
 	static int field(int x, int y, int width, unsigned flags, settings& e, const char* header_label, const char* tips, int header_width) {
@@ -357,7 +380,7 @@ static struct widget_settings : controls::control {
 		draw::state push;
 		settings* tabs[128];
 		fore = colors::text;
-		splitv(rc.x1, rc.y1, window.header_width, rc.height(), this, 6, 64, 282, false);
+		splitv(rc.x1, rc.y1, window.header_width, rc.height(), 6, 64, 282, false);
 		setting_header.show_border = metrics::show::padding;
 		setting_header.view({rc.x1, rc.y1, rc.x1 + window.header_width, rc.y2});
 		rc.x1 += window.header_width + 6;

@@ -7,7 +7,7 @@ bool draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char*
 	rc.x2 -= width;
 	auto result = draw::buttonh({rc.x2, rc.y1, rc.x2 + width, rc.y2},
 		false, focused, false, false,
-		t1, k1, true, tt1);
+		t1, k1, false, tt1);
 	draw::line(rc.x2, rc.y1, rc.x2, rc.y2, colors::border);
 	return result;
 }

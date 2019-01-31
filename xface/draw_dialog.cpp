@@ -113,3 +113,13 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 		tooltips(tips);
 	return rc1.height() + 2;
 }
+
+static void change_checkbox() {
+	auto pv = (bool*)hot.param;
+	*pv = !*pv;
+}
+
+int	draw::checkbox(int x, int y, int width, bool& value, const char* label, const char* tips) {
+	unsigned flags = value ? Checked : 0;
+	return checkbox(x, y, width, flags, cmd(change_checkbox, (int)&value), label, tips);
+}

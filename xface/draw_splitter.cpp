@@ -2,10 +2,10 @@
 
 static int split_value;
 
-void draw::splitv(int x, int y, int& value, int height, const void* object, int size, int minimum, int maximum, bool right_align) {
+void draw::splitv(int x, int y, int& value, int height, int size, int minimum, int maximum, bool right_align) {
 	rect rc;
 	auto mode = AreaNormal;
-	if(dragactive(object)) {
+	if(dragactive(&value)) {
 		value = split_value - (right_align ? (hot.mouse.x - dragmouse.x) : (dragmouse.x - hot.mouse.x));
 		mode = AreaHilitedPressed;
 		if(value < minimum)
@@ -23,7 +23,7 @@ void draw::splitv(int x, int y, int& value, int height, const void* object, int 
 	if(mode != AreaHilitedPressed)
 		mode = area(rc);
 	if(mode == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
-		dragbegin(object);
+		dragbegin(&value);
 		split_value = value;
 	}
 	switch(mode) {
@@ -40,10 +40,10 @@ void draw::splitv(int x, int y, int& value, int height, const void* object, int 
 	}
 }
 
-void draw::splith(int x, int y, int width, int& value, const void* object, int size, int minimum, int maximum, bool down_align) {
+void draw::splith(int x, int y, int width, int& value, int size, int minimum, int maximum, bool down_align) {
 	struct rect rc;
 	areas mode = AreaNormal;
-	if(dragactive(object)) {
+	if(dragactive(&value)) {
 		value = split_value - (down_align ? (hot.mouse.y - dragmouse.y) : (dragmouse.y - hot.mouse.y));
 		mode = AreaHilitedPressed;
 		if(value < minimum)
@@ -61,7 +61,7 @@ void draw::splith(int x, int y, int width, int& value, const void* object, int s
 	if(mode != AreaHilitedPressed)
 		mode = area(rc);
 	if(mode == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
-		dragbegin(object);
+		dragbegin(&value);
 		split_value = value;
 	}
 	switch(mode) {
