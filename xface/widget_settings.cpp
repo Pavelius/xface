@@ -14,6 +14,7 @@ struct application_window {
 	int						header_width;
 };
 
+extern bool					sys_optimize_mouse_move;
 bool						metrics::show::padding;
 bool						metrics::show::statusbar;
 static int					current_tab;
@@ -105,18 +106,11 @@ static void callback_down() {
 	(*((int*)p->data))++;
 }
 
-static void callback_choose_folder() {
-	char temp[260]; temp[0] = 0;
-	auto p = (settings*)hot.param;
-	auto v = *((const char**)p->data);
-	if(v)
-		zcpy(temp, v);
-	if(draw::dialog::folder("Укажите папку", temp)) {
-		if(temp[0])
-			*((const char**)p->data) = szdup(temp);
-		else
-			*((const char**)p->data) = 0;
-	}
+static void callback_choose_folder(const storage& ev) {
+	char temp[260];
+	ev.getf(temp, zendof(temp));
+	if(draw::dialog::folder("Укажите папку", temp))
+		ev.set(temp);
 }
 
 static void callback_choose_color() {
@@ -208,27 +202,20 @@ static struct widget_control_viewer : controls::gridref {
 
 } control_viewer;
 
-namespace draw {
-int field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width) {
+int draw::field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(flags);
 	if(header_label && header_label[0])
 		titletext(x, y, width, flags, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
-	if(!isdisabled(flags))
-		draw::rectf(rc, colors::window);
 	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
-	if(buttonh({x, y, x + width, rc.y2},
+	focusing((int)&value, flags, rc);
+	if(buttonh(rc,
 		ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
 		temp, KeyEnter, false, tips))
 		execute(callback_choose_color, (int)&value);
 	return rc.height() + metrics::padding * 2;
-	//setposition(x, y, width);
-	//struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
-	//draw::focusing(id, flags, rc);
-	//return rc.height() + metrics::padding * 2;
-}
 }
 
 static struct widget_settings : controls::control {
@@ -241,40 +228,6 @@ static struct widget_settings : controls::control {
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return szprint(result, result_maximum, "Настройки");
-	}
-
-	static int field(int x, int y, int width, unsigned flags, settings& e, const char* header_label, const char* tips, int header_width) {
-		//struct cmdnm : cmdfd {
-		//	settings&	e;
-		//	bool choose(bool run) const {
-		//		if(e.type != settings::UrlFolderPtr)
-		//			return false;
-		//		return true;
-		//	}
-		//	const char*	get(char* result, const char* result_maximum, bool force_result) const {
-		//		result[0] = 0;
-		//		switch(e.type) {
-		//		case settings::Int:
-		//			szprint(result, result_maximum, "%1i", *((int*)e.data));
-		//			break;
-		//		}
-		//		return result;
-		//	}
-		//	bool increment(int step, bool run) const {
-		//		if(e.type != settings::Int)
-		//			return false;
-		//		if(run) {
-
-		//		}
-		//		return true;
-		//	}
-		//	void		execute() const { draw::execute(callback_edit, (int)&e); }
-		//	int			getid() const { return (int)&e; }
-		//	void		set(const rect& value) const { current_rect = value; }
-		//	constexpr cmdnm(settings& e) : e(e) {}
-		//} ec(e);
-		//return draw::field(x, y, width, flags, ec, header_label, tips, header_width);
-		return 0;
 	}
 
 	static int element(int x, int y, int width, unsigned flags, settings& e) {
@@ -309,23 +262,20 @@ static struct widget_settings : controls::control {
 				if(title + w < width)
 					width = title + w;
 			}
-			//y += field(x, y, width, flags, e, temp, 0, e.name, title, callback_edit, 0, 0, callback_up, callback_down);
-			y += field(x, y, width, flags, e, e.name, 0, title);
+			y += field(x, y, width, flags, *((int*)e.data), e.name, 0, title);
 			break;
 		case settings::Color:
-			y += draw::field(x, y, width, flags, *((color*)e.data), e.name, 0, title);
+			y += field(x, y, width, flags, *((color*)e.data), e.name, 0, title);
 			break;
 		case settings::Button:
 			ec.set(callback_button, e);
 			y += button(x, y, width, flags, ec, getname(temp, e), 0);
 			break;
 		case settings::TextPtr:
-			//y += field(x, y, width, (int)&e, flags, *((const char**)e.data), 0, e.name, title, callback_edit);
-			y += field(x, y, width, flags, e, e.name, 0, title);
+			y += field(x, y, width, flags, *((const char**)e.data), e.name, 0, title);
 			break;
 		case settings::UrlFolderPtr:
-			//y += field(x, y, width, (int)&e, flags, *((const char**)e.data), 0, e.name, title, callback_edit, 0, callback_choose_folder);
-			y += field(x, y, width, flags, e, e.name, 0, title);
+			y += field(x, y, width, flags, *((const char**)e.data), e.name, 0, title, callback_choose_folder);
 			break;
 		case settings::Control:
 			break;
@@ -540,7 +490,7 @@ static void setting_appearance_general_view() {
 	e1.add("Показывать правую панель элементов", metrics::show::right);
 	e1.add("Показывать нижнюю панель элементов", metrics::show::bottom);
 	e1.add("Отступы на главном окне", metrics::show::padding);
-	//e1.add("Использовать оптимизацию при движении мишки", sys_optimize_mouse_move);
+	e1.add("Использовать оптимизацию при движении мишки", sys_optimize_mouse_move);
 }
 
 static void setting_appearance_controls() {

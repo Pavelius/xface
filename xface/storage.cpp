@@ -37,6 +37,7 @@ void storage::set(const char* result) const {
 }
 
 void storage::getf(char* result, const char* result_end) const {
+	result[0] = 0;
 	auto p = get(result, result_end);
 	if(p != result) {
 		stringcreator sc(result, result_end);

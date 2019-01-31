@@ -383,7 +383,7 @@ static void test_tile_manager() {
 	char filename[260] = {};
 	point tile = {};
 	point origin = {};
-	color transparent;
+	color transparent = {160, 160, 0};
 	auto use_transparent = false;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -392,7 +392,7 @@ static void test_tile_manager() {
 		y += field(x, y, 380, 0, filename, "Файл тайлов", 0, 100, choose_folder);
 		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
 		if(use_transparent)
-			y += field(x, y, 380, 0, transparent, "Цвет", 0, 100, choose_folder);
+			y += field(x, y, 380, 0, transparent, "Цвет", 0, 100);
 		auto y0 = y;
 		y += point_input(x, y, tile, 180, 100, "Ширина (точек)", "Высота (точек)");
 		point_input(x + 200, y0, origin, 180, 100, "Смещение", "Отступ");
