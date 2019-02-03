@@ -47,7 +47,7 @@ const char* stringcreator::readvariable(const char* p) {
 	return p;
 }
 
-//int	stringcreator::readint(const char* format, const char** format_result = 0) {
+//int stringcreator::readint(const char* format, const char** format_result = 0) {
 //	int result = 0;
 //	bool sign = false;
 //	if(format[0] == '-') {
@@ -104,9 +104,9 @@ char* stringcreator::addint(char* dst, const char* result_max, int value, int pr
 
 const char* stringcreator::readformat(const char* src, const char* vl) {
 	if(*src == '%') {
-		auto sym = *src++;
+		src++;
 		if(p < pe)
-			*p++ = sym;
+			*p++ = '%';
 		*p = 0;
 		return src;
 	}
@@ -158,19 +158,13 @@ const char* stringcreator::readformat(const char* src, const char* vl) {
 void stringcreator::addv(const char* src, const char* vl) {
 	if(!p)
 		return;
-	if(!src) {
-		// Error: No source string
-		p[0] = 0;
+	p[0] = 0;
+	if(!src)
 		return;
-	}
 	while(true) {
 		switch(*src) {
-		case 0:
-			*p = 0;
-			return;
-		case '%':
-			src = readformat(src + 1, vl);
-			break;
+		case 0: *p = 0; return;
+		case '%': src = readformat(src + 1, vl); break;
 		default:
 			if(p < pe)
 				*p++ = *src;
@@ -180,16 +174,19 @@ void stringcreator::addv(const char* src, const char* vl) {
 	}
 }
 
-void stringcreator::addx(const char* separator, const char* format, const char* format_param) {
-	if(p > pb)
-		addv(separator, 0);
+void stringcreator::addx(char separator, const char* format, const char* format_param) {
+	if(!format || format[0] == 0)
+		return;
+	if(p > pb) {
+		auto allow = (p[-1] != separator);
+		if(allow && separator == ' ' && (p[-1] == '\n' || p[-1] == '\t'))
+			allow = false;
+		if(allow) {
+			char temp[2] = {separator, 0};
+			addv(temp, 0);
+		}
+	}
 	addv(format, format_param);
-}
-
-void stringcreator::adds(const char* format, ...) {
-	if(p > pb)
-		addv(" ", 0);
-	addv(format, xva_start(format));
 }
 
 void stringcreator::addicon(const char* id, int value) {
