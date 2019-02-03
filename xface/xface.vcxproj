@@ -127,6 +127,7 @@
     <ClCompile Include="bsdata_serial_bin.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
+    <ClCompile Include="widget_properties.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="requisit.cpp" />

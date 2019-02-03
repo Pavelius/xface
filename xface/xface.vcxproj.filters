@@ -222,6 +222,9 @@
     <ClCompile Include="storage.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="widget_properties.cpp">
+      <Filter>draw\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">

@@ -33,7 +33,10 @@ const control::plugin* control::plugin::find(const char* id) {
 
 static const char* get_control_name(char* result, const char* result_maximum, void* p) {
 	result[0] = 0;
-	return ((control*)p)->getlabel(result, result_maximum);
+	auto pr = ((control*)p)->getlabel(result, result_maximum);
+	if(!pr)
+		pr = result;
+	return pr;
 }
 
 aref<control*> getdocked(aref<control*> result, dock_s type) {

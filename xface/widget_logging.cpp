@@ -43,8 +43,7 @@ static struct widget_logging : control::plugin, grid {
 	}
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
-		zcpy(result, "Список сообщений");
-		return result;
+		return "Список сообщений";
 	}
 
 	static void setting_common() {

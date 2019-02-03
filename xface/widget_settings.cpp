@@ -371,7 +371,10 @@ static struct widget_settings : controls::control {
 } widget_settings_control;
 
 static const char* get_control_name(char* result, const char* result_maximum, void* object) {
-	return ((controls::control*)object)->getlabel(result, result_maximum);
+	auto p = ((controls::control*)object)->getlabel(result, result_maximum);
+	if(!p)
+		return "No label";
+	return p;
 }
 
 static struct widget_application : draw::controls::control {

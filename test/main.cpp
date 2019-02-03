@@ -11,6 +11,8 @@
 using namespace draw;
 
 void logmsg(const char* format, ...);
+void propset(const bsval& value);
+void propclear();
 
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
@@ -518,6 +520,8 @@ static bool test_datetime() {
 }
 
 int main() {
+	propclear();
+	//propset(bsval(alignment_data + 1, alignment_type));
 	logmsg("Test %1i", 12);
 	test_datetime();
 	test_requisit();
