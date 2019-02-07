@@ -35,21 +35,33 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 
 	point m2s(const rect& rc, const point pt) const {
 		point result;
-		result.x = pt.x * element.x + rc.x1;
-		result.y = pt.y * element.y + rc.y1;
+		result.x = pt.x * element.x + element.x / 2 + rc.x1;
+		result.y = pt.y * element.y + element.y / 2 + rc.y1;
 		return result;
 	}
 
 	void render_grid(const rect& rc) const {
 		auto push_fore = fore;
+		auto p0 = m2s(rc, {0, 0});
+		auto p1 = m2s(rc, {(short)size.x-1, (short)size.y-1});
+		auto x0 = p0.x - element.x / 2;
+		auto y0 = p0.y - element.y / 2;
+		auto x1 = p1.x + element.x / 2;
+		auto y1 = p1.y + element.y / 2;
+		auto sx = element.x / 2;
+		auto sy = element.y / 2;
 		fore = colors::gray.mix(colors::window);
 		for(auto y = 0; y < size.y; y++) {
 			for(auto x = 0; x < size.x; x++) {
 				auto pt = m2s(rc, {(short)x, (short)y});
-				line(pt.x, rc.y1, pt.x, rc.y2);
-				line(rc.x1, pt.y, rc.x2, pt.y);
+				pt.x -= sx;
+				pt.y -= sy;
+				line(pt.x, y0, pt.x, y1);
+				line(x0, pt.y, x1, pt.y);
 			}
 		}
+		line(x1, y0, x1, y1);
+		line(x0, y1, x1, y1);
 		fore = push_fore;
 	}
 

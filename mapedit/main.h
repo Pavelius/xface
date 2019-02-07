@@ -4,7 +4,6 @@
 #include "xface/collection.h"
 #include "xface/crt.h"
 #include "xface/stringcreator.h"
-#include "xface/widget.h"
 
 #pragma once
 
