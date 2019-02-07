@@ -2,6 +2,7 @@
 #include "crt.h"
 #include "bsreq.h"
 #include "draw_control.h"
+#include "widget.h"
 
 using namespace draw;
 using namespace draw::controls;

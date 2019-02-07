@@ -311,5 +311,8 @@
     <ClInclude Include="storage.h">
       <Filter>support</Filter>
     </ClInclude>
+    <ClInclude Include="widget.h">
+      <Filter>draw\simple</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

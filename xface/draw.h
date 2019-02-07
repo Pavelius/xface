@@ -1,5 +1,6 @@
 #include "point.h"
 #include "color.h"
+#include "widget.h"
 
 #pragma once
 
@@ -9,11 +10,6 @@ static int control_name(int x, int y, int width, const char* id, int value, cons
 extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 
 enum draw_event_s {
-	// common controls
-	NoField,
-	Label, Field, Check, Radio, Button, Image,
-	Tabs, Group,
-	ControlMask = 0xF,
 	// input events
 	InputSymbol = 0xED00, InputTimer, InputIdle, InputUpdate, InputNoUpdate, InputExecute,
 	// Keyboard and mouse input (can be overrided by flags)

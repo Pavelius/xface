@@ -7,6 +7,7 @@
 #include "xface/draw_grid.h"
 #include "xface/requisit.h"
 #include "xface/stringcreator.h"
+#include "xface/widget.h"
 
 using namespace draw;
 

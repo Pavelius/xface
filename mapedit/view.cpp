@@ -1,5 +1,6 @@
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
+#include "xface/widget.h"
 #include "main.h"
 
 static bool		show_grid;
@@ -10,6 +11,13 @@ using namespace draw;
 void logmsg(const char* format, ...);
 void propset(const bsval& value);
 void propclear();
+
+void tileset::import() {
+	const int d = metrics::padding * 2;
+	while(ismodal()) {
+		domodal();
+	}
+}
 
 struct map_control_type : controls::scrollable, map_info, controls::control::plugin {
 
@@ -55,6 +63,8 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 		element.y = 32;
 		size.x = 16;
 		size.y = 16;
+		maximum.x = size.x * element.x;
+		maximum.y = size.y * element.y;
 	}
 
 };

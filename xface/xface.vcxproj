@@ -218,6 +218,7 @@
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
     <ClInclude Include="strlib.h" />
+    <ClInclude Include="widget.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
