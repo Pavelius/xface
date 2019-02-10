@@ -64,7 +64,7 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 		line(x0, y1, x1, y1);
 		fore = push_fore;
 	}
-
+	
 	void redraw(rect rc) override {
 		render_grid(rc);
 	}
