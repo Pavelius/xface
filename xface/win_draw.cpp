@@ -248,7 +248,7 @@ static const char* register_class(const char* class_name) {
 	return class_name;
 }
 
-void draw::getwindowpos(point& pos, point& size) {
+void draw::getwindowpos(point& pos, point& size, unsigned* flags) {
 	RECT rc; WINDOWPLACEMENT wp;
 	GetWindowPlacement(hwnd, &wp);
 	GetWindowRect(hwnd, &rc);
@@ -257,6 +257,16 @@ void draw::getwindowpos(point& pos, point& size) {
 	GetWindowRect(hwnd, &rc);
 	pos.x = (short)rc.left;
 	pos.y = (short)rc.top;
+	if(flags) {
+		*flags = 0;
+		auto wf = GetWindowLongA(hwnd, GWL_STYLE);
+		if(wp.showCmd==SW_SHOWMAXIMIZED)
+			*flags |= WFMaximized;
+		if(wf&WS_THICKFRAME)
+			*flags |= WFResize;
+		if(wf&WS_MINIMIZEBOX)
+			*flags |= WFMinmax;
+	}
 }
 
 void draw::updatewindow() {
@@ -280,7 +290,7 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 	if(!height)
 		height = (GetSystemMetrics(SM_CYFULLSCREEN) / 3) * 2;
 	// custom
-	unsigned dwStyle = WS_CAPTION | WS_VISIBLE | WS_SYSMENU; // Windows Style;
+	unsigned dwStyle = WS_CAPTION | WS_SYSMENU; // Windows Style;
 	if(flags&WFResize)
 		dwStyle |= WS_THICKFRAME;
 	else
@@ -290,8 +300,6 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 		if(flags&WFResize)
 			dwStyle |= WS_MAXIMIZEBOX;
 	}
-	if(flags&WFMaximized)
-		dwStyle |= WS_MAXIMIZE;
 	RECT MinimumRect = {0, 0, width, height};
 	AdjustWindowRectEx(&MinimumRect, dwStyle, 0, 0);
 	minimum.x = 800;
@@ -320,6 +328,10 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 		0, 0, GetModuleHandleA(0), 0);
 	if(!hwnd)
 		return;
+	int cmdShow = SW_SHOWNORMAL;
+	if(flags&WFMaximized)
+		cmdShow = SW_SHOWMAXIMIZED;
+	ShowWindow(hwnd, cmdShow);
 	// Update mouse coordinates
 	POINT pt; GetCursorPos(&pt);
 	ScreenToClient(hwnd, &pt);

@@ -74,16 +74,15 @@ static int paint_control(rect rc, aref<control*> elements, int& current, bool sh
 		}
 		rc.y1 += dy;
 	}
-	if(show_toolbar)
+	if(show_toolbar && ec.show_toolbar)
 		rc.y1 += ec.toolbar(rc.x1, rc.y1, rc.width());
 	ec.view(rc);
 	return rc.y1 - y1;
 }
 
-static bool dock_paint(dock_s id, const rect& rcorigin, aref<control*> p1, aref<control*> p2) {
+static bool dock_paint(dock_s id, rect& client, aref<control*> p1, aref<control*> p2) {
 	bool show_toolbar = true;
-	rect client = rcorigin;
-	rect rc = rcorigin;
+	rect rc = client;
 	dock_info& e1 = dock_data[id - DockLeft];
 	dock_info& e2 = dock_data[id - DockLeft + 1];
 	if(!p1 && !p2)
@@ -125,7 +124,7 @@ static bool dock_paint(dock_s id, const rect& rcorigin, aref<control*> p1, aref<
 }
 
 namespace draw {
-void dockbar(const rect& rc) {
+void dockbar(rect& rc) {
 	const unsigned max_controls = 65;
 	control* p1[max_controls + 1];
 	control* p2[max_controls + 1];

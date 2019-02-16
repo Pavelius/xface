@@ -4,8 +4,8 @@ void set_dark_theme() {
 	colors::active = color::create(172, 128, 0);
 	colors::border = color::create(73, 73, 80);
 	colors::button = color::create(0, 122, 204);
-	colors::form = color::create(32, 32, 32);
-	colors::window = color::create(64, 64, 64);
+	colors::form = color::create(64, 64, 64);
+	colors::window = color::create(32, 32, 32);
 	colors::text = color::create(255, 255, 255);
 	colors::edit = color::create(38, 79, 120);
 	colors::h1 = colors::text.mix(colors::edit, 64);

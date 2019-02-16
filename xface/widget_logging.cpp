@@ -34,7 +34,7 @@ static struct widget_logging : control::plugin, grid {
 
 	void after_initialize() override {
 		addcol("date", "Дата", "datetime");
-		addcol("text", "Сообщение", "text");
+		//addcol("text", "Сообщение", "text");
 		setting_common();
 	}
 
@@ -55,6 +55,7 @@ static struct widget_logging : control::plugin, grid {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;
+		show_toolbar = false;
 	}
 
 } logging_control;

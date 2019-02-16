@@ -7,8 +7,8 @@ metadata int_meta[] = {"i32"};
 metadata sint_meta[] = {"i16"};
 metadata usint_meta[] = {"u16"};
 
-static adat<requisit, 256 * 16>	requisits;
-static adat<metadata, 256 * 4>	types;
+adat<requisit, 256 * 16>		requisits;
+adat<metadata, 256 * 4>			types;
 static adat<metadata, 256 * 8>	pointers;
 
 metadata* findpointer(metadata* m) {
@@ -53,6 +53,7 @@ metadata* metadata::dereference() {
 }
 
 requisit* metadata::add(const char* id, metadata* type) {
+	id = szdup(id);
 	auto p = find(id);
 	if(!p)
 		p = requisits.add();

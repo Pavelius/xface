@@ -39,6 +39,8 @@ static struct control_plugin : draw::plugin {
 	void before() override {
 		current_hilite = 0;
 		current_focus = 0;
+		for(auto p = controls::control::plugin::first; p; p = p->next)
+			p->before_render();
 	}
 
 } plugin_instance;

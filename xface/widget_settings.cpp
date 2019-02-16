@@ -12,6 +12,7 @@ using namespace	draw;
 struct application_window {
 	int						x, y, width, height;
 	int						header_width;
+	unsigned				flags;
 };
 
 extern bool					sys_optimize_mouse_move;
@@ -20,7 +21,7 @@ bool						metrics::show::statusbar;
 static int					current_tab;
 static settings*			current_header;
 static controls::control*	active_workspace_tab;
-static application_window	window = {0, 0, 0, 0, 160};
+static application_window	window = {0, 0, 0, 0, 160, WFMinmax|WFResize};
 static const char*			settings_file_name = "settings.json";
 static rect					current_rect;
 
@@ -380,6 +381,7 @@ static const char* get_control_name(char* result, const char* result_maximum, vo
 static struct widget_application : draw::controls::control {
 
 	control*		hotcontrols[48];
+	bool			allow_multiply_window;
 
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return szprint(result, result_maximum, "Главный");
@@ -447,13 +449,15 @@ static struct widget_application : draw::controls::control {
 	}
 
 	void view(const rect& rc) override {
-		dockbar(rc);
-		workspace(rc, true);
+		auto rct = rc;
+		dockbar(rct);
+		workspace(rct, allow_multiply_window);
 	}
 
 	widget_application() {
 		show_background = false;
 		show_border = false;
+		allow_multiply_window = true;
 		memset(hotcontrols, 0, sizeof(hotcontrols));
 	}
 
@@ -516,11 +520,13 @@ static struct application_plugin : draw::initplugin {
 
 	static void exit_application() {
 		point pos, size;
-		getwindowpos(pos, size);
-		window.x = pos.x;
-		window.y = pos.y;
-		window.width = size.x;
-		window.height = size.y;
+		getwindowpos(pos, size, &window.flags);
+		if((window.flags&WFMaximized) == 0) {
+			window.x = pos.x;
+			window.y = pos.y;
+			window.width = size.x;
+			window.height = size.y;
+		}
 		io::write(settings_file_name, "settings", 0);
 	}
 
@@ -540,7 +546,8 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(temp, zendof(temp)));
 }
 
-void draw::application() {
+void draw::application(bool allow_multiply_window) {
+	widget_application_control.allow_multiply_window = allow_multiply_window;
 	auto current_tab = 0;
 	while(ismodal()) {
 		auto pc = layouts[current_tab];
@@ -586,7 +593,13 @@ void draw::application_initialize() {
 	initialize();
 	for(auto p = controls::control::plugin::first; p; p = p->next)
 		p->after_initialize();
-	create(window.x, window.y, window.width, window.height, WFResize | WFMinmax, 32);
+	create(window.x, window.y, window.width, window.height, window.flags, 32);
+}
+
+void draw::application(const char* name, bool allow_multiply_window) {
+	application_initialize();
+	setcaption(name);
+	application(allow_multiply_window);
 }
 
 static struct settings_settings_strategy : io::strategy {
@@ -672,6 +685,7 @@ static struct window_settings_strategy : io::strategy {
 		file.set("width", window.width);
 		file.set("height", window.height);
 		file.set("header_width", window.header_width);
+		file.set("flags", window.flags);
 	}
 
 	void set(io::node& n, const char* value) override {
@@ -685,6 +699,8 @@ static struct window_settings_strategy : io::strategy {
 			window.height = sz2num(value);
 		else if(n == "header_width")
 			window.header_width = sz2num(value);
+		else if(n == "flags")
+			window.flags = sz2num(value);
 	}
 
 	window_settings_strategy() : strategy("window", "settings") {}

@@ -3,6 +3,8 @@
 using namespace draw;
 using namespace draw::controls;
 
+static bsval(*autoset)();
+
 class draw_control_properties : control, control::plugin {
 
 	int			title, spacing;
@@ -35,6 +37,11 @@ class draw_control_properties : control, control::plugin {
 	}
 
 	void view(const rect& rc) override {
+		if(autoset) {
+			auto v = autoset();
+			if(v)
+				value = v;
+		}
 		control::view(rc);
 		if(!value) {
 			auto push_fore = fore;
@@ -73,7 +80,9 @@ public:
 		value.type = 0;
 	}
 
-	draw_control_properties() : plugin("properties", DockLeft), title(80), spacing(0) {}
+	draw_control_properties() : plugin("properties", DockRight), title(80), spacing(0) {
+		show_background = false;
+	}
 
 };
 static draw_control_properties properties_control;
@@ -84,4 +93,8 @@ void propset(const bsval& value) {
 
 void propclear() {
 	properties_control.clear();
+}
+
+void propset(bsval proc()) {
+	autoset = proc;
 }

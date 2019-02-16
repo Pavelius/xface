@@ -38,3 +38,16 @@ struct requisit {
 	constexpr unsigned getsize() const { return type ? type->size : 0; }
 	constexpr unsigned getsizeof() const { return getsize() * count; }
 };
+struct method {
+	const char*			id;
+	metadata*			parent;
+	metadata*			type;
+	unsigned			offset;
+	constexpr operator bool() const { return id != 0; }
+};
+void					choose_metadata(metadata* v);
+void					logmsg(const char* format, ...);
+void					run_main();
+extern adat<requisit, 256 * 16>	requisits;
+extern adat<requisit, 256 * 16>	methods;
+extern adat<metadata, 256 * 4>	types;

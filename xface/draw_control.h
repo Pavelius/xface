@@ -81,15 +81,17 @@ struct control {
 		static plugin*		first;
 		plugin(const char* id, dock_s dock);
 		virtual void		after_initialize() {}
+		virtual void		before_render() {}
 		static const plugin* find(const char* id);
 		virtual control&	getcontrol() = 0;
 		static bsreq		metadata[];
 	};
 	bool					show_border;
 	bool					show_background;
+	bool					show_toolbar;
 	static const sprite*	standart_toolbar;
 	static const sprite*	standart_tree;
-	constexpr control() : show_border(true), show_background(true) {}
+	constexpr control() : show_border(true), show_background(true), show_toolbar(true) {}
 	virtual ~control() {}
 	command::builder*		createmenu();
 	void					execute(callback proc, int param = 0) const;
@@ -299,14 +301,15 @@ private:
 	int						p1, p2;
 };
 }
-void						application();
+void						application(bool allow_multiply_windows);
+void						application(const char* name, bool allow_multiply_windows);
 void						application_initialize();
 int							button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
 void						combobox(const rect& rc, const bsval& cmd);
 int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
-void						dockbar(const rect& rc);
+void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width, editproc choose = 0);
 int							field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width);

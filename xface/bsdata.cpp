@@ -57,6 +57,8 @@ const char* bsval::getname() const {
 		return "";
 	auto f = type->find("name", text_type);
 	if(!f)
+		f = type->find("id", text_type);
+	if(!f)
 		return "";
 	auto p = (const char*)f->get(f->ptr(data));
 	if(!p)
@@ -100,6 +102,9 @@ bsval& bsval::dereference() {
 				data = b->get(get());
 				type = b->fields;
 			}
+		} else if(!type->type->issimple() && type->reference>0) {
+			data = (void*)type->get(type->ptr(data));
+			type = type->type;
 		}
 	}
 	return *this;
