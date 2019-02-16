@@ -42,7 +42,6 @@ struct agrw {
 	T*						begin() { return data; }
 	const T*				begin() const { return data; }
 	void					clear() { auto p = this; while(p) { p->count = 0; p = p->next; } }
-	T*						end() { return data + count; }
 	const T*				end() const { return data + count; }
 };
 // Reference to array with dymanic size
