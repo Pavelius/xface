@@ -8,12 +8,12 @@ int main() {
 	auto p2 = addtype("FileName");
 	auto p3 = addtype("Character");
 	auto p4 = addtype("Item");
-	p->add("x1", int_meta);
+	auto r1 = p->add("x1", int_meta);
 	p->add("y1", int_meta);
-	p->add("x2", int_meta);
+	auto r2 = p->add("x2", int_meta);
 	p->add("y2", int_meta);
 	p->add("Points", p1->reference());
-	p->add("Width", int_meta);
+	p->add("Width", int_meta)->set(new expression(expression::Return, new expression(expression::Sub, new expression(r1), new expression(r2))));
 	p->add("Height", int_meta);
 	p1->add("x", sint_meta);
 	p1->add("y", sint_meta);
