@@ -1,3 +1,4 @@
+#include "xface/crt.h"
 #include "xface/draw_grid.h"
 #include "main.h"
 
@@ -53,6 +54,30 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 static struct requisit_control : controls::gridref, controls::control::plugin {
 	
 	struct metadata* current_parent;
+
+	const char* getname(char* result, const char* result_max, struct metadata* type) const {
+		if(type->ispointer()) {
+			getname(result, result_max, type->dereference());
+			szprint(zend(result), result_max, "*");
+		} else
+			szprint(result, result_max, type->id);
+		return result;
+	}
+
+	const char* getname(char* result, const char* result_max, int line, int column) const override {
+		if(strcmp(columns[column].id, "type")==0) {
+			auto bv = getvalue(line, column);
+			if(!bv)
+				return "";
+			result[0] = 0;
+			auto rq = (requisit*)get(line);
+			getname(result, result_max, (struct metadata*)bv.get());
+			if(rq->count > 1)
+				szprint(zend(result), result_max, "[%1i]", rq->count);
+			return result;
+		} else
+			return gridref::getname(result, result_max, line, column);
+	}
 
 	control& getcontrol() override {
 		return *this;

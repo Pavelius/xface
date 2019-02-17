@@ -11,7 +11,7 @@ struct datetime {
 	datetime				dayend() const { return datetime(year(), month(), day(), 23, 59); }
 	int						hour() const { return (d / 60) % 24; }
 	bool					isleap() const;
-	int						minute() { return (d % 60); }
+	int						minute() const { return (d % 60); }
 	int						month() const;
 	datetime				monthbegin() const { return datetime(year(), month(), 1, 0, 0); }
 	static datetime			now();

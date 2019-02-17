@@ -9,6 +9,7 @@ extern metadata void_meta[];
 extern metadata int_meta[];
 extern metadata sint_meta[];
 extern metadata usint_meta[];
+extern metadata char_meta[];
 extern metadata text_meta[];
 extern metadata proc_meta[];
 extern metadata section_meta[];

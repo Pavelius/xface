@@ -63,7 +63,7 @@ bool io::file::create(const char* url, unsigned flags) {
 		(flags&StreamWrite) ? GENERIC_WRITE : GENERIC_READ,
 		0,
 		0,
-		(flags&StreamWrite) ? CREATE_ALWAYS : OPEN_EXISTING,
+		(flags&StreamRead) ? ((flags&StreamWrite) ? OPEN_ALWAYS : OPEN_EXISTING) : CREATE_ALWAYS,
 		FILE_ATTRIBUTE_NORMAL,
 		0);
 	if(handle == -1)

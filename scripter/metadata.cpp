@@ -3,9 +3,10 @@
 
 const unsigned pointer_size = 4;
 
-metadata int_meta[] = {"i32"};
-metadata sint_meta[] = {"i16"};
-metadata usint_meta[] = {"u16"};
+metadata int_meta[] = {"int"};
+metadata sint_meta[] = {"short int"};
+metadata usint_meta[] = {"short unsigned"};
+metadata char_meta[] = {"char"};
 
 adat<requisit, 256 * 16>		requisits;
 adat<metadata, 256 * 4>			types;

@@ -236,8 +236,8 @@ void grid::celldatetime(const rect& rc, int line, int column) {
 
 const visual* grid::getvisuals() const {
 	static visual elements[] = {{table::getvisuals()},
-	{"date", "Дата", 8, textw("0") * 10 + 4, SizeResized, &grid::celldate},
-	{"datetime", "Дата и время", 8, textw("0") * 15 + 4, SizeResized, &grid::celldatetime},
+	{"date", "Дата", 8, 10*10 + 4, SizeResized, &grid::celldate},
+	{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, &grid::celldatetime},
 	{"ref", "Ссылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
 	{}};
 	return elements;
