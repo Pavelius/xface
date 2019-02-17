@@ -66,11 +66,16 @@ void table::select(int index, int column) {
 	list::select(index, column);
 }
 
+static void proc_mouseselect() {
+	auto p = (table*)draw::hot.param;
+	p->select(p->current_hilite, p->getvalid(p->current_hilite_column));
+}
+
 void table::mouseselect(int id, bool pressed) {
 	if(current_hilite == -1 || current_hilite_column == -1)
 		return;
 	if(pressed)
-		select(current_hilite, getvalid(current_hilite_column));
+		draw::execute(proc_mouseselect, (int)this);
 }
 
 int table::rowheader(const rect& rc) const {
@@ -301,6 +306,7 @@ column* table::addcol(const char* id, const char* name, const char* type, draw::
 	p->title = szdup(name);
 	p->tips = 0;
 	p->size = size;
+	p->flags = 0;
 	if(p->size == SizeDefault)
 		p->size = p->method->size;
 	p->width = width;
@@ -355,6 +361,8 @@ bool table::change(bool run) {
 	if(current >= getmaximum())
 		return false;
 	if(zchr(columns[current_column].id, '.'))
+		return false;
+	if(columns[current_column].isreadonly())
 		return false;
 	auto pv = columns[current_column].method;
 	if(!pv)

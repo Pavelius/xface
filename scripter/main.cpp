@@ -4,18 +4,24 @@ int main() {
 	auto p = addtype("Rect");
 	auto p1 = addtype("Point");
 	auto p2 = addtype("FileName");
+	auto p3 = addtype("Character");
+	auto p4 = addtype("Item");
 	p->add("x1", int_meta);
 	p->add("y1", int_meta);
 	p->add("x2", int_meta);
 	p->add("y2", int_meta);
-	p->add("points", p1->reference());
-	p->add("width", int_meta);
-	p->add("height", int_meta);
+	p->add("Points", p1->reference());
+	p->add("Width", int_meta);
+	p->add("Height", int_meta);
 	p1->add("x", sint_meta);
 	p1->add("y", sint_meta);
-	p2->add("name", char_meta)->count = 260;
-	logmsg("Размер метаданных %1i", sizeof(metadata));
-	logmsg("Размер реквизита %1i", sizeof(requisit));
+	p2->add("Name", char_meta)->setcount(260);
+	p3->add("Ability", char_meta)->setcount(6);
+	p3->add("Wears", p4)->setcount(8);
+	p4->add("Id", text_meta);
+	p4->add("Name", text_meta);
+	//logmsg("Размер метаданных %1i", sizeof(metadata));
+	//logmsg("Размер реквизита %1i", sizeof(requisit));
 	run_main();
 }
 

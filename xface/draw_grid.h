@@ -41,7 +41,7 @@ struct gridref : grid {
 	constexpr gridref(const bsreq* type, unsigned size=sizeof(void*)) : grid(type, size) {}
 	void					add(void* object);
 	void*					get(int index) const override;
-	void*					getcurrent() const { return get(current); }
+	void*					getcurrent() const { return getcount() ? get(current) : 0; }
 };
 struct tree : grid {
 	struct element {

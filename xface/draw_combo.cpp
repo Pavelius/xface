@@ -49,13 +49,7 @@ static void set_value(const bsval& e1, void* value) {
 static const char* get_name(const bsreq* type, const void* object) {
 	if(!object || !type)
 		return "";
-	auto pf = type->type->find("name");
-	if(pf) {
-		auto name = (const char*)pf->get(pf->ptr(object));
-		if(name)
-			return name;
-	}
-	return "";
+	return bsval((void*)object, type->type).getname();
 }
 
 static int compare_objects(const void* p1, const void* p2) {
@@ -127,7 +121,11 @@ struct combo_list : controls::list, adat<void*, 64> {
 	const bsreq*		field;
 	const bsdata&		metadata;
 
-	combo_list(const bsdata& metadata) : metadata(metadata), field(metadata.fields->find("name")) {}
+	combo_list(const bsdata& metadata) : metadata(metadata) {
+		field = metadata.fields->find("name");
+		if(!field)
+			field = metadata.fields->find("id");
+	}
 
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
 		auto p = (const char*)field->get(field->ptr(data[line]));

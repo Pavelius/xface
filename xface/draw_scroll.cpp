@@ -2,7 +2,7 @@
 
 static int drag_value;
 
-void draw::scrollv(const void* object, const rect& scroll, int& origin, int count, int maximum, bool focused) {
+void draw::scrollv(const rect& scroll, int& origin, int count, int maximum, bool focused) {
 	// count - elements per page
 	// maximum - maximum elements
 	if(!maximum || maximum == count)
@@ -14,7 +14,7 @@ void draw::scrollv(const void* object, const rect& scroll, int& origin, int coun
 	int p = (origin*ds) / dr + scroll.y1;
 	auto a = area(scroll);
 	auto need_correct = false;
-	if(dragactive(object)) {
+	if(dragactive(&origin)) {
 		a = AreaHilitedPressed;
 		p1 = hot.mouse.y - drag_value;
 		origin = ((p1 - scroll.y1)*dr) / ds;
@@ -25,7 +25,7 @@ void draw::scrollv(const void* object, const rect& scroll, int& origin, int coun
 		else if(hot.mouse.y > p + ss)
 			origin += count;
 		else {
-			dragbegin(object);
+			dragbegin(&origin);
 			drag_value = hot.mouse.y - p;
 		}
 		need_correct = true;
@@ -53,7 +53,7 @@ void draw::scrollv(const void* object, const rect& scroll, int& origin, int coun
 	}
 }
 
-void draw::scrollh(const void* object, const rect& scroll, int& origin, int per_page, int maximum, bool focused) {
+void draw::scrollh(const rect& scroll, int& origin, int per_page, int maximum, bool focused) {
 	if(!maximum)
 		return;
 	int p1;
@@ -65,7 +65,7 @@ void draw::scrollh(const void* object, const rect& scroll, int& origin, int per_
 	int p = (origin*ds) / dr + scroll.x1;
 	areas a = area(scroll);
 	auto need_correct = false;
-	if(dragactive(object)) {
+	if(dragactive(&origin)) {
 		a = AreaHilitedPressed;
 		p1 = hot.mouse.x - drag_value;
 		origin = ((p1 - scroll.x1)*dr) / ds;
@@ -76,7 +76,7 @@ void draw::scrollh(const void* object, const rect& scroll, int& origin, int per_
 		else if(hot.mouse.x > p + ss)
 			origin += per_page;
 		else {
-			dragbegin(object);
+			dragbegin(&origin);
 			drag_value = hot.mouse.x - p;
 		}
 		need_correct = true;

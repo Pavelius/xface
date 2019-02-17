@@ -335,8 +335,8 @@ bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false, const char* tips = 0);
 bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false);
 int						clipart(int x, int y, int width, unsigned flags, const char* string);
-void					scrollh(const void* object, const struct rect& scroll, int& origin, int count, int maximum, bool focused);
-void					scrollv(const void* object, const rect& scroll, int& origin, int count, int maximum, bool focused);
+void					scrollh(const struct rect& scroll, int& origin, int count, int maximum, bool focused);
+void					scrollv(const rect& scroll, int& origin, int count, int maximum, bool focused);
 int						sheetline(rect rc, bool background);
 void					splitv(int x, int y, int& value, int height, int size, int minimum, int maximum, bool right_align);
 void					splith(int x, int y, int width, int& value, int size, int minimum, int maximum, bool down_align);

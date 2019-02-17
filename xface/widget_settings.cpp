@@ -185,7 +185,7 @@ static struct widget_control_viewer : controls::gridref {
 	void initialize() {
 		no_change_order = true;
 		no_change_count = true;
-		addcol("name", "Наименование", "text");
+		addcol("name", "Наименование", "text")->setreadonly();
 		addcol("dock", "Расположение", "ref");
 		for(auto p = plugin::first; p; p = p->next)
 			add(p);

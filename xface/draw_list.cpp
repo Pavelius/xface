@@ -81,11 +81,18 @@ void list::mousehiliting(const rect& screen, point mouse) {
 	current_hilite = origin + (mouse.y - screen.y1) / pixels_per_line;
 }
 
+static void list_mouse_select() {
+	auto p = (list*)draw::hot.param;
+	p->select(p->current_hilite, p->getcolumn());
+}
+
 void list::mouseselect(int id, bool pressed) {
 	if(current_hilite < 0)
 		return;
-	if(pressed)
-		select(current_hilite, getcolumn());
+	if(pressed) {
+		draw::execute(list_mouse_select, (int)this);
+		//select(current_hilite, getcolumn());
+	}
 }
 
 bool list::isopen(int index) const {
@@ -167,10 +174,10 @@ void list::view(const rect& rcorigin) {
 		}
 	}
 	if(enable_scrollv)
-		draw::scrollv((char*)this + 1, {rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
+		draw::scrollv({rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
 			origin, lines_per_page, maximum, isfocused());
 	if(enable_scrollh)
-		draw::scrollh((char*)this + 2, {rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
+		draw::scrollh({rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
 			origin_width, pixels_per_width, maximum_width, isfocused());
 }
 

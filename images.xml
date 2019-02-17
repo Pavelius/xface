@@ -12,6 +12,9 @@
   <library output="...\h3">
     <font input="Segoe UI" height="16"/>
   </library>
+  <library output="...\code">
+    <font input="Consolas" height="16"/>
+  </library>
   <library output="...\flags" count="20">
     <grd input="...\shields_rc3.png" height="60" width="51"/>
   </library>

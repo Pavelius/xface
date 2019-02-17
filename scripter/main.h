@@ -36,8 +36,9 @@ struct requisit {
 	unsigned			offset;
 	unsigned			count;
 	constexpr operator bool() const { return id != 0; }
-	constexpr unsigned getsize() const { return type ? type->size : 0; }
-	constexpr unsigned getsizeof() const { return getsize() * count; }
+	constexpr unsigned	getsize() const { return type ? type->size : 0; }
+	constexpr unsigned	getsizeof() const { return getsize() * count; }
+	requisit*			setcount(int v) { if(this) count = v; return this; }
 };
 struct method {
 	const char*			id;
@@ -49,6 +50,6 @@ struct method {
 void					choose_metadata(metadata* v);
 void					logmsg(const char* format, ...);
 void					run_main();
-extern adat<requisit, 256 * 16>	requisits;
+extern adat<requisit, 256 * 16>	requisit_data;
+extern adat<metadata, 256 * 4>	metadata_data;
 extern adat<requisit, 256 * 16>	methods;
-extern adat<metadata, 256 * 4>	types;

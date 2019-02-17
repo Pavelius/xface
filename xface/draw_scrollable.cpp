@@ -70,27 +70,25 @@ void scrollable::view(const rect& rcc) {
 		int x1 = rc.x1;
 		int y1 = rc.y1;
 		setclip({x1, y1, rc.x1 + rcwidth, rc.y1 + rcheight});
+		auto push_mouseinput = draw::mouseinput;
 		if(hot.mouse.in(scrollh) || hot.mouse.in(scrollv))
 			draw::mouseinput = false;
 		redraw({x1, y1, rc.x1 + rcwidth, rc.y1 + rcheight});
+		draw::mouseinput = push_mouseinput;
 	}
 	// vertical scroll
 	if(scrollv) {
 		int current = origin.y;
-		draw::scrollv((char*)this + 1, scrollv, current, rcheight, maximum.y, isfocused());
-		if(current != origin.y) {
-			origin.y = current;
+		draw::scrollv(scrollv, origin.y, rcheight, maximum.y, isfocused());
+		if(current != origin.y)
 			invalidate();
-		}
 	}
 	// horizontal scroll
 	if(scrollh) {
 		int current = origin.x;
-		draw::scrollh((char*)this + 2, scrollh, current, rcwidth, maximum.x, isfocused());
-		if(current != origin.x) {
-			origin.x = current;
+		draw::scrollh(scrollh, origin.x, rcwidth, maximum.x, isfocused());
+		if(current != origin.x)
 			invalidate();
-		}
 	}
 }
 

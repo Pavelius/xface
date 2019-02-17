@@ -13,6 +13,7 @@ bsreq metadata_type[] = {
 	BSREQ(metadata, type, metadata_type),
 	BSREQ(metadata, size, number_type),
 {}};
+BSMETA(metadata);
 bsreq requisit_type[] = {
 	BSREQ(requisit, id, text_type),
 	BSREQ(requisit, type, metadata_type),
@@ -20,12 +21,13 @@ bsreq requisit_type[] = {
 	BSREQ(requisit, count, number_type),
 	BSREQ(requisit, offset, number_type),
 {}};
+BSMETA(requisit);
 
 static struct metadata_control : controls::gridref, controls::control::plugin {
 	void before_render() {
-		if(metadata_instance.getcount()!=types.getcount()) {
+		if(metadata_instance.getcount()!=metadata_data.getcount()) {
 			clear();
-			for(auto& e : types) {
+			for(auto& e : metadata_data) {
 				if(!e)
 					continue;
 				add(&e);
@@ -88,7 +90,7 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	void before_render() {
 		clear();
 		if(current_parent) {
-			for(auto& e : requisits) {
+			for(auto& e : requisit_data) {
 				if(e.parent == current_parent)
 					add(&e);
 			}
@@ -106,14 +108,17 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	}
 } requisit_instance;
 
-static struct code_control : controls::control, controls::control::plugin {
+static struct code_control : controls::scrollable, controls::control::plugin {
 	control& getcontrol() override {
 		return *this;
 	}
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return "Скрипт";
 	}
-	code_control() : plugin("code", DockWorkspace) {}
+	code_control() : plugin("code", DockWorkspace) {
+		maximum.y = 1000;
+		maximum.x = 100;
+	}
 
 } code_instance;
 

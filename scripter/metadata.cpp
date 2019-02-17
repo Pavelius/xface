@@ -3,13 +3,16 @@
 
 const unsigned pointer_size = 4;
 
-metadata int_meta[] = {"int"};
-metadata sint_meta[] = {"short int"};
-metadata usint_meta[] = {"short unsigned"};
-metadata char_meta[] = {"char"};
+metadata text_meta[] = {"Text"};
+metadata int_meta[] = {"Integer"};
+metadata uint_meta[] = {"Unsigned"};
+metadata sint_meta[] = {"Short"};
+metadata usint_meta[] = {"Short Unsigned"};
+metadata char_meta[] = {"Char"};
+metadata uchar_meta[] = {"Byte"};
 
-adat<requisit, 256 * 16>		requisits;
-adat<metadata, 256 * 4>			types;
+adat<requisit, 256 * 16>		requisit_data;
+adat<metadata, 256 * 4>			metadata_data;
 static adat<metadata, 256 * 8>	pointers;
 
 metadata* findpointer(metadata* m) {
@@ -21,7 +24,7 @@ metadata* findpointer(metadata* m) {
 }
 
 metadata* findtype(const char* id) {
-	for(auto& e : types) {
+	for(auto& e : metadata_data) {
 		if(strcmp(e.id, id) == 0)
 			return &e;
 	}
@@ -31,7 +34,7 @@ metadata* findtype(const char* id) {
 metadata* addtype(const char* id) {
 	auto p = findtype(id);
 	if(!p)
-		p = types.add();
+		p = metadata_data.add();
 	p->id = id;
 	p->size = 0;
 	p->type = 0;
@@ -57,7 +60,7 @@ requisit* metadata::add(const char* id, metadata* type) {
 	id = szdup(id);
 	auto p = find(id);
 	if(!p)
-		p = requisits.add();
+		p = requisit_data.add();
 	p->id = id;
 	p->parent = this;
 	p->type = type;
@@ -66,8 +69,8 @@ requisit* metadata::add(const char* id, metadata* type) {
 }
 
 requisit* metadata::find(const char* id) const {
-	for(auto& e : requisits) {
-		if(strcmp(e.id, id) == 0)
+	for(auto& e : requisit_data) {
+		if(e.parent==this && strcmp(e.id, id) == 0)
 			return &e;
 	}
 	return 0;

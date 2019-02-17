@@ -164,9 +164,12 @@ struct column {
 	int						width;
 	const char*				tips;
 	column_size_s			size;
+	unsigned				flags;
 	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
 	explicit operator bool() const { return method != 0; }
 	bool					isvisible() const { return true; }
+	bool					isreadonly() const { return (flags & Disabled)!=0; }
+	column*					setreadonly() { if(!this) return 0; flags |= Disabled; return this; }
 };
 struct table : list {
 	arem<column>			columns;
@@ -303,6 +306,7 @@ private:
 }
 void						application(bool allow_multiply_windows);
 void						application(const char* name, bool allow_multiply_windows);
+inline void					application() { application(true); }
 void						application_initialize();
 int							button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);

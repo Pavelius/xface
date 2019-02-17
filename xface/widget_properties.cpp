@@ -3,9 +3,12 @@
 using namespace draw;
 using namespace draw::controls;
 
-static bsval(*autoset)();
+static bsval(*callback_autoset)();
+static unsigned(*callback_getflags)(const bsval& ev);
 
-class draw_control_properties : control, control::plugin {
+namespace draw::controls {
+
+struct properties : control, control::plugin {
 
 	int			title, spacing;
 	bsval		value;
@@ -24,12 +27,17 @@ class draw_control_properties : control, control::plugin {
 		st.data = (void*)ev.type->ptr(ev.data);
 		st.size = ev.type->size;
 		int h = 0;
+		unsigned flags = 0;
+		if(callback_getflags)
+			flags = callback_getflags(ev);
 		if(ev.type->type == number_type) {
 			st.type = st.Number;
-			h = field(x, y, width, 0, st, ev.type->id, 0, title);
+			h = field(x, y, width, flags, st, ev.type->id, 0, title);
 		} else if(ev.type->type == text_type) {
 			st.type = st.TextPtr;
-			h = field(x, y, width, 0, st, ev.type->id, 0, title);
+			h = field(x, y, width, flags, st, ev.type->id, 0, title);
+		} else if(ev.type->reference>0) {
+			h = combobox(x, y, width, flags, ev, ev.type->id, 0, title);
 		}
 		if(!h)
 			return 0;
@@ -37,8 +45,8 @@ class draw_control_properties : control, control::plugin {
 	}
 
 	void view(const rect& rc) override {
-		if(autoset) {
-			auto v = autoset();
+		if(callback_autoset) {
+			auto v = callback_autoset();
 			if(v)
 				value = v;
 		}
@@ -80,12 +88,14 @@ public:
 		value.type = 0;
 	}
 
-	draw_control_properties() : plugin("properties", DockRight), title(80), spacing(0) {
+	properties() : plugin("properties", DockRight), title(80), spacing(0) {
 		show_background = false;
 	}
 
 };
-static draw_control_properties properties_control;
+}
+
+static properties properties_control;
 
 void propset(const bsval& value) {
 	properties_control.set(value);
@@ -96,5 +106,9 @@ void propclear() {
 }
 
 void propset(bsval proc()) {
-	autoset = proc;
+	callback_autoset = proc;
+}
+
+void propset(unsigned(*proc)(const bsval& ev)) {
+	callback_getflags = proc;
 }
