@@ -450,6 +450,8 @@ static struct widget_application : draw::controls::control {
 
 	void view(const rect& rc) override {
 		auto rct = rc;
+		for(auto p = control::plugin::first; p; p = p->next)
+			p->getcontrol().show_border = metrics::show::padding;
 		dockbar(rct);
 		workspace(rct, allow_multiply_window);
 	}

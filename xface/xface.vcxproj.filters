@@ -222,8 +222,8 @@
     <ClCompile Include="storage.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="widget_properties.cpp">
-      <Filter>draw\widgets</Filter>
+    <ClCompile Include="draw_properties.cpp">
+      <Filter>draw\controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="widget.h">
       <Filter>draw\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_properties.h">
+      <Filter>draw\controls</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 #include "main.h"
 
+using namespace code;
+
 int main() {
 	auto p = addtype("Rect");
 	auto p1 = addtype("Point");
@@ -20,6 +22,8 @@ int main() {
 	p3->add("Wears", p4)->setcount(8);
 	p4->add("Id", text_meta);
 	p4->add("Name", text_meta);
+	auto r = p4->add("Add", void_meta);
+	r->set(new expression(expression::Add, new expression(10), new expression(12)));
 	//logmsg("Размер метаданных %1i", sizeof(metadata));
 	//logmsg("Размер реквизита %1i", sizeof(requisit));
 	run_main();

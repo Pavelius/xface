@@ -2,8 +2,12 @@
 
 #pragma once
 
+namespace code {
+
 struct metadata;
 struct requisit;
+struct expression;
+struct statement;
 
 extern metadata void_meta[];
 extern metadata int_meta[];
@@ -17,12 +21,44 @@ extern metadata section_meta[];
 metadata*				addtype(const char* id);
 metadata*				findtype(const char* id);
 
+struct expression {
+	enum type_s {
+		End,
+		Number, Text, Requisit, Metadata,
+		Add, Sub, Mul, Div, Mod,
+		And, Or,
+		Equal, NotEqual, Lesser, LesserEqual, Greater, GreaterEqual,
+		Coma,
+		Var, List, While, If, For, Return,
+	};
+	type_s					type;
+	union {
+		struct {
+			expression*	op1;
+			expression*	op2;
+		};
+		int					value;
+		const char*			text;
+		requisit*			req;
+		metadata*			met;
+	};
+	constexpr expression() : type(End), op1(0), op2(0) {}
+	constexpr expression(type_s type) : type(type), op1(0), op2(0) {}
+	constexpr expression(int v) : type(Number), value(v) {}
+	constexpr expression(const char* v) : type(Text), text(v) {}
+	constexpr expression(requisit* v) : type(Requisit), req(v) {}
+	constexpr expression(metadata* v) : type(Metadata), met(v) {}
+	constexpr expression(type_s type, expression* e1) : type(type), op1(e1), op2(0) {}
+	constexpr expression(type_s type, expression* e1, expression* e2) : type(type), op1(e1), op2(e2) {}
+	constexpr bool isbinary() const { return op2 != 0; }
+	void* operator			new(unsigned size);
+	void operator			delete(void* p, unsigned size);
+};
 struct metadata {
 	const char*			id;
 	metadata*			type;
 	unsigned			size;
 	constexpr operator bool() const { return id != 0; }
-	static metadata*	add(const char* id);
 	requisit*			add(const char* id, metadata* type);
 	metadata*			dereference();
 	bool				ispointer() const { return id[0] == '*' && id[1] == 0; }
@@ -35,21 +71,16 @@ struct requisit {
 	metadata*			type;
 	unsigned			offset;
 	unsigned			count;
+	expression*			code;
 	constexpr operator bool() const { return id != 0; }
 	constexpr unsigned	getsize() const { return type ? type->size : 0; }
 	constexpr unsigned	getsizeof() const { return getsize() * count; }
 	requisit*			setcount(int v) { if(this) count = v; return this; }
+	requisit*			set(expression* v) { if(this) code = v; return this; }
 };
-struct method {
-	const char*			id;
-	metadata*			parent;
-	metadata*			type;
-	unsigned			offset;
-	constexpr operator bool() const { return id != 0; }
-};
-void					choose_metadata(metadata* v);
 void					logmsg(const char* format, ...);
-void					run_main();
 extern adat<requisit, 256 * 16>	requisit_data;
 extern adat<metadata, 256 * 4>	metadata_data;
-extern adat<requisit, 256 * 16>	methods;
+}
+void					choose_metadata(code::metadata* v);
+void					run_main();

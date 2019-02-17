@@ -127,7 +127,7 @@
     <ClCompile Include="bsdata_serial_bin.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
-    <ClCompile Include="widget_properties.cpp" />
+    <ClCompile Include="draw_properties.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="requisit.cpp" />
@@ -193,6 +193,7 @@
   <ItemGroup>
     <ClInclude Include="archive.h" />
     <ClInclude Include="datetime.h" />
+    <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
     <ClInclude Include="requisit.h" />
     <ClInclude Include="bsdata.h" />

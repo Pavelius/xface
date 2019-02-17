@@ -1,19 +1,28 @@
 #include "xface/crt.h"
 #include "main.h"
 
+using namespace code;
+
 const unsigned pointer_size = 4;
 
-metadata text_meta[] = {"Text"};
-metadata int_meta[] = {"Integer"};
-metadata uint_meta[] = {"Unsigned"};
-metadata sint_meta[] = {"Short"};
-metadata usint_meta[] = {"Short Unsigned"};
-metadata char_meta[] = {"Char"};
-metadata uchar_meta[] = {"Byte"};
+metadata code::void_meta[] = {""};
+metadata code::text_meta[] = {"Text"};
+metadata code::int_meta[] = {"Integer"};
+metadata code::sint_meta[] = {"Short"};
+metadata code::usint_meta[] = {"Short Unsigned"};
+metadata code::char_meta[] = {"Char"};
 
-adat<requisit, 256 * 16>		requisit_data;
-adat<metadata, 256 * 4>			metadata_data;
+adat<requisit, 256 * 16>		code::requisit_data;
+adat<metadata, 256 * 4>			code::metadata_data;
+static agrw<expression, 256 * 4 * 16> expression_base;
 static adat<metadata, 256 * 8>	pointers;
+
+void* expression::operator new(unsigned size) {
+	return expression_base.add();
+}
+
+void expression::operator delete(void* p, unsigned size) {
+}
 
 metadata* findpointer(metadata* m) {
 	for(auto& e : pointers) {
@@ -23,7 +32,7 @@ metadata* findpointer(metadata* m) {
 	return 0;
 }
 
-metadata* findtype(const char* id) {
+metadata* code::findtype(const char* id) {
 	for(auto& e : metadata_data) {
 		if(strcmp(e.id, id) == 0)
 			return &e;
@@ -31,7 +40,7 @@ metadata* findtype(const char* id) {
 	return 0;
 }
 
-metadata* addtype(const char* id) {
+metadata* code::addtype(const char* id) {
 	auto p = findtype(id);
 	if(!p)
 		p = metadata_data.add();

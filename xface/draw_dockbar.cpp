@@ -139,10 +139,21 @@ void dockbar(rect& rc) {
 
 static struct dockbar_settings_strategy : io::strategy {
 
+	int getindex(const io::node& n, const char* name) const {
+		if(!n.parent)
+			return -1;
+		auto text = n.parent->name;
+		while(*name) {
+			if(*name++ != *text++)
+				return -1;
+		}
+		return sz2num(text);
+	}
+
 	void write(io::writer& file, void* param) override {
 		char temp[32];
 		for(auto i = DockLeft; i <= DockWorkspace; i = (dock_s)(i + 1)) {
-			szprint(temp, zendof(temp), "n%1i", i);
+			szprint(temp, zendof(temp), "Dock%1i", i);
 			file.open(temp);
 			file.set("current", dock_data[i].current);
 			file.set("size", dock_data[i].size);
@@ -151,6 +162,13 @@ static struct dockbar_settings_strategy : io::strategy {
 	}
 
 	void set(io::node& n, const char* value) override {
+		auto i = getindex(n, "Dock");
+		if(i == -1 || i >= sizeof(dock_data) / sizeof(dock_data[0]))
+			return;
+		if(n == "current")
+			dock_data[i].current = sz2num(value);
+		else if(n=="size")
+			dock_data[i].size = sz2num(value);
 	}
 
 	dockbar_settings_strategy() : strategy("dockbar", "settings") {}
