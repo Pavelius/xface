@@ -6,6 +6,8 @@
 using namespace code;
 using namespace draw;
 
+static auto code_font = (sprite*)loadb("art/fonts/code.pma");
+
 bsreq metadata_type[] = {
 	BSREQ(metadata, id, text_type),
 	BSREQ(metadata, type, metadata_type),
