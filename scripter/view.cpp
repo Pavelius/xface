@@ -124,18 +124,56 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	}
 } requisit_instance;
 
-static struct code_control : controls::scrollable, controls::control::plugin {
+struct expression_info {
+	const char*			name;
+	int					operands;
+};
+
+expression_info expression_data[] = {{""},
+{"%1i"},
+{"\"%1\""},
+{"Requisit"},
+{"Metadata"},
+{"+"},
+{"-"},
+{"*"},
+{"/"},
+{"%"},
+{"&&"},
+{"||"},
+{"=="},
+{"!="},
+{"<"},
+{"<="},
+{">"},
+{">="},
+{","},
+{"Var"},
+{"List"},
+{"While"},
+{"If"},
+{"For"},
+{"Return"},
+};
+
+static struct code_control : controls::control, controls::control::plugin {
+	expression* source;
 	control& getcontrol() override {
 		return *this;
 	}
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return "Скрипт";
 	}
-	code_control() : plugin("code", DockWorkspace) {
-		maximum.y = 1000;
-		maximum.x = 100;
+	code_control() : plugin("code", DockWorkspace), source(0) {
 	}
-
+	void view(const rect& rc) {
+		control::view(rc);
+		auto push_font = code_font;
+		if(source) {
+			auto p = source;
+		}
+		font = push_font;
+	}
 } code_instance;
 
 void choose_metadata(metadata* v) {
@@ -190,4 +228,8 @@ void run_main() {
 	requisit_instance.addcol("type", "Тип", "ref", SizeFixed, 100);
 	metadata_instance.addcol("id", "Наименование", "text", SizeAuto);
 	draw::application("Scripter", false);
+}
+
+void setcode(requisit* v) {
+
 }

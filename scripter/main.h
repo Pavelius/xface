@@ -21,17 +21,17 @@ extern metadata section_meta[];
 metadata*				addtype(const char* id);
 metadata*				findtype(const char* id);
 
+enum expression_s {
+	End,
+	Number, Text, Requisit, Metadata,
+	Add, Sub, Mul, Div, Mod,
+	And, Or,
+	Equal, NotEqual, Lesser, LesserEqual, Greater, GreaterEqual,
+	Coma,
+	Var, List, While, If, For, Return,
+};
 struct expression {
-	enum type_s {
-		End,
-		Number, Text, Requisit, Metadata,
-		Add, Sub, Mul, Div, Mod,
-		And, Or,
-		Equal, NotEqual, Lesser, LesserEqual, Greater, GreaterEqual,
-		Coma,
-		Var, List, While, If, For, Return,
-	};
-	type_s					type;
+	expression_s		type;
 	union {
 		struct {
 			expression*	op1;
@@ -43,13 +43,13 @@ struct expression {
 		metadata*			met;
 	};
 	constexpr expression() : type(End), op1(0), op2(0) {}
-	constexpr expression(type_s type) : type(type), op1(0), op2(0) {}
+	constexpr expression(expression_s type) : type(type), op1(0), op2(0) {}
 	constexpr expression(int v) : type(Number), value(v) {}
 	constexpr expression(const char* v) : type(Text), text(v) {}
 	constexpr expression(requisit* v) : type(Requisit), req(v) {}
 	constexpr expression(metadata* v) : type(Metadata), met(v) {}
-	constexpr expression(type_s type, expression* e1) : type(type), op1(e1), op2(0) {}
-	constexpr expression(type_s type, expression* e1, expression* e2) : type(type), op1(e1), op2(e2) {}
+	constexpr expression(expression_s type, expression* e1) : type(type), op1(e1), op2(0) {}
+	constexpr expression(expression_s type, expression* e1, expression* e2) : type(type), op1(e1), op2(e2) {}
 	constexpr bool isbinary() const { return op2 != 0; }
 	void* operator			new(unsigned size);
 	void operator			delete(void* p, unsigned size);

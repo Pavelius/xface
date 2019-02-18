@@ -13,7 +13,7 @@ int main() {
 	auto r2 = p->add("x2", int_meta);
 	p->add("y2", int_meta);
 	p->add("Points", p1->reference());
-	p->add("Width", int_meta)->set(new expression(expression::Return, new expression(expression::Sub, new expression(r1), new expression(r2))));
+	p->add("Width", int_meta)->set(new expression(Return, new expression(Sub, new expression(r1), new expression(r2))));
 	p->add("Height", int_meta);
 	p1->add("x", sint_meta);
 	p1->add("y", sint_meta);
@@ -23,7 +23,7 @@ int main() {
 	p4->add("Id", text_meta);
 	p4->add("Name", text_meta);
 	auto r = p4->add("Add", void_meta);
-	r->set(new expression(expression::Add, new expression(10), new expression(12)));
+	r->set(new expression(Add, new expression(10), new expression(12)));
 	//logmsg("Размер метаданных %1i", sizeof(metadata));
 	//logmsg("Размер реквизита %1i", sizeof(requisit));
 	run_main();
