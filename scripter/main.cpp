@@ -2,6 +2,8 @@
 
 using namespace code;
 
+void setcode(requisit* v);
+
 int main() {
 	auto p = addtype("Rect");
 	auto p1 = addtype("Point");
@@ -26,6 +28,7 @@ int main() {
 	r->set(new expression(Add, new expression(10), new expression(12)));
 	//logmsg("Размер метаданных %1i", sizeof(metadata));
 	//logmsg("Размер реквизита %1i", sizeof(requisit));
+	setcode(p->find("Width"));
 	run_main();
 }
 

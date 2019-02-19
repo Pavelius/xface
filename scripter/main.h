@@ -1,4 +1,5 @@
 #include "xface/collection.h"
+#include "xface/stringcreator.h"
 
 #pragma once
 
@@ -50,9 +51,10 @@ struct expression {
 	constexpr expression(metadata* v) : type(Metadata), met(v) {}
 	constexpr expression(expression_s type, expression* e1) : type(type), op1(e1), op2(0) {}
 	constexpr expression(expression_s type, expression* e1, expression* e2) : type(type), op1(e1), op2(e2) {}
-	constexpr bool isbinary() const { return op2 != 0; }
 	void* operator			new(unsigned size);
 	void operator			delete(void* p, unsigned size);
+	void					add(stringcreator& sc);
+	constexpr bool			isbinary() const { return op2 != 0; }
 };
 struct metadata {
 	const char*			id;

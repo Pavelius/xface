@@ -124,38 +124,6 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	}
 } requisit_instance;
 
-struct expression_info {
-	const char*			name;
-	int					operands;
-};
-
-expression_info expression_data[] = {{""},
-{"%1i"},
-{"\"%1\""},
-{"Requisit"},
-{"Metadata"},
-{"+"},
-{"-"},
-{"*"},
-{"/"},
-{"%"},
-{"&&"},
-{"||"},
-{"=="},
-{"!="},
-{"<"},
-{"<="},
-{">"},
-{">="},
-{","},
-{"Var"},
-{"List"},
-{"While"},
-{"If"},
-{"For"},
-{"Return"},
-};
-
 static struct code_control : controls::control, controls::control::plugin {
 	expression* source;
 	control& getcontrol() override {
@@ -168,10 +136,14 @@ static struct code_control : controls::control, controls::control::plugin {
 	}
 	void view(const rect& rc) {
 		control::view(rc);
-		auto push_font = code_font;
+		auto push_font = font;
+		font = code_font;
 		if(source) {
-			auto p = source;
+			char temp[4096]; stringcreator sc(temp);
+			source->add(sc);
+			text(rc.x1, rc.y1, temp);
 		}
+			
 		font = push_font;
 	}
 } code_instance;
@@ -231,5 +203,5 @@ void run_main() {
 }
 
 void setcode(requisit* v) {
-
+	code_instance.source = v->code;
 }
