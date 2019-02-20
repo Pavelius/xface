@@ -69,31 +69,47 @@ void expression::add(expression* v) {
 	}
 }
 
-void expression::add(stringcreator& sc) {
+void expression::builder::add(const expression* context, int v) {
+	char temp[32]; stringcreator sc(temp);
+	sc.add("%1i", v);
+	add(NumberToken, context, temp);
+}
+
+void expression::add(expression::builder& b) {
 	switch(expression_data[type].operands) {
 	case Determinal:
 		switch(type) {
 		case End: break;
-		case Number: sc.add("%1i", value); break;
-		case Text: sc.add("\"%1\"", text); break;
-		case Requisit: sc.add(req->id); break;
-		case Metadata: sc.add(met->id); break;
+		case Number:
+			b.add(this, value);
+			break;
+		case Text:
+			b.add(OpenTag, this, "\"");
+			b.add(TextToken, this, text);
+			b.add(CloseTag, this, "\"");
+			break;
+		case Requisit:
+			b.add(RequisitToken, this, req->id);
+			break;
+		case Metadata:
+			b.add(MetadataToken, this, met->id);
+			break;
 		}
 		break;
 	case Binary:
-		op1->add(sc);
-		sc.add(expression_data[type].name);
-		op2->add(sc);
+		op1->add(b);
+		b.add(Keyword, this, expression_data[type].name);
+		op2->add(b);
 		break;
 	default:
-		sc.add(expression_data[type].name);
+		b.add(Keyword, this, expression_data[type].name);
 		if(expression_data[type].operands==Statement)
-			sc.add(" ");
+			b.add(Whitespace, this, " ");
 		if(op1) {
 			if(expression_data[type].extended) {
 
 			} else
-				op1->add(sc);
+				op1->add(b);
 		}
 		break;
 	}

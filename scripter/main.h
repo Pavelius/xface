@@ -39,7 +39,7 @@ enum expression_s {
 };
 enum token_s {
 	NoToken,
-	Whitespace, Keyword,
+	Whitespace, Keyword, OpenTag, CloseTag,
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
 struct statement {
@@ -76,8 +76,12 @@ struct expression {
 	constexpr expression(expression_s type, expression* e1, expression* e2) : type(type), op1(e1), op2(e2) {}
 	void* operator			new(unsigned size);
 	void operator			delete(void* p, unsigned size);
-	void					add(stringcreator& sc);
+	struct builder {
+		virtual void		add(token_s id, const expression* context, const char* v) = 0;
+		void				add(const expression* context, int v);
+	};
 	void					add(expression* v);
+	void					add(builder& b);
 	expression*				getnext() const;
 	operator_s				getoperands() const;
 };
