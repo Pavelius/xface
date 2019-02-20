@@ -137,8 +137,10 @@ struct combo_list : controls::list, adat<void*, 64> {
 	}
 
 	void mouseselect(int id, bool pressed) override {
-		list::mouseselect(id, true);
-		draw::execute(buttonok);
+		if(pressed)
+			list::mouseselect(id, pressed);
+		else
+			draw::execute(buttonok);
 	}
 
 	bool keyinput(unsigned id) override {

@@ -29,7 +29,7 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 					breakmodal(0);
 				else {
 					// Уже обработали команду
-					hot.key = InputUpdate;
+					//hot.key = InputUpdate;
 				}
 			}
 			break;

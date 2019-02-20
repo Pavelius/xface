@@ -89,10 +89,8 @@ static void list_mouse_select() {
 void list::mouseselect(int id, bool pressed) {
 	if(current_hilite < 0)
 		return;
-	if(pressed) {
+	if(pressed)
 		draw::execute(list_mouse_select, (int)this);
-		//select(current_hilite, getcolumn());
-	}
 }
 
 bool list::isopen(int index) const {
