@@ -83,8 +83,8 @@ struct expression {
 	};
 	void					add(expression* v);
 	void					add(builder& b) const;
-	expression*				getnext() const;
 	operator_s				getoperands() const;
+	void					zero();
 private:
 	void					addsingle(expression::builder& b) const;
 };

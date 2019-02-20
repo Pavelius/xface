@@ -208,6 +208,21 @@ static struct code_control : controls::control, controls::control::plugin {
 			if(pe)
 				current = pe;
 			break;
+		case Alpha + '0':
+		case Alpha + '1':
+		case Alpha + '2':
+		case Alpha + '3':
+		case Alpha + '4':
+		case Alpha + '5':
+		case Alpha + '6':
+		case Alpha + '7':
+		case Alpha + '8':
+		case Alpha + '9':
+			break;
+		case KeyDelete:
+			if(current)
+				const_cast<expression*>(current)->zero();
+			break;
 		default:
 			return control::keyinput(id);
 		}

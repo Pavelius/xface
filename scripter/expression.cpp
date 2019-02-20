@@ -55,12 +55,6 @@ operator_s expression::getoperands() const {
 	return expression_data[type].operands;
 }
 
-expression* expression::getnext() const {
-	if(expression_data[type].operands==Statement)
-		return next;
-	return 0;
-}
-
 void expression::add(expression* v) {
 	if(v->getoperands()==Statement && getoperands() == Statement) {
 		auto push = next;
@@ -121,10 +115,17 @@ void expression::addsingle(expression::builder& b) const {
 
 void expression::add(expression::builder& b) const {
 	if(expression_data[type].operands == Statement) {
-		for(auto p = this; p; p = p->getnext()) {
+		for(auto p = this; p; p = p->next) {
 			p->addsingle(b);
 			b.addline();
 		}
 	} else
 		addsingle(b);
+}
+
+void expression::zero() {
+	switch(type) {
+	case Number: value = 0; break;
+	case Text: text = szdup(""); break;
+	}
 }
