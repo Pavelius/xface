@@ -78,12 +78,15 @@ struct expression {
 	void operator			delete(void* p, unsigned size);
 	struct builder {
 		virtual void		add(token_s id, const expression* context, const char* v) = 0;
+		virtual void		addline() = 0;
 		void				add(const expression* context, int v);
 	};
 	void					add(expression* v);
-	void					add(builder& b);
+	void					add(builder& b) const;
 	expression*				getnext() const;
 	operator_s				getoperands() const;
+private:
+	void					addsingle(expression::builder& b) const;
 };
 struct metadata {
 	const char*				id;

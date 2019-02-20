@@ -6,8 +6,6 @@
 using namespace code;
 using namespace draw;
 
-static auto code_font = (sprite*)loadb("art/fonts/code.pma");
-
 bsreq metadata_type[] = {
 	BSREQ(metadata, id, text_type),
 	BSREQ(metadata, type, metadata_type),
@@ -40,7 +38,7 @@ static translate translate_data[] = {{"count", "Количество"},
 
 static struct metadata_control : controls::gridref, controls::control::plugin {
 	void before_render() {
-		if(metadata_instance.getcount()!=metadata_data.getcount()) {
+		if(metadata_instance.getcount() != metadata_data.getcount()) {
 			clear();
 			for(auto& e : metadata_data) {
 				if(!e)
@@ -69,107 +67,8 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 	}
 } metadata_instance;
 
-static color code_colors[] = {{0, 0, 0}, {255, 255, 255}, {100, 100, 255},
-{100, 100, 100}, {100, 100, 100},
-{150, 150, 150}, {200, 150, 150}, {200, 200, 100}, {200, 200, 100},
-};
-
-struct expression_navigator : expression::builder {
-	int					x, y;
-	const expression*	hilite;
-	const expression*	current;
-	constexpr expression_navigator() : x(0), y(0),
-		hilite(), current(0) {}
-	void newline() {
-		x = 0;
-		y++;
-	}
-	void add(token_s id, const expression* context, const char* v) override {
-		x += zlen(v);
-	}
-};
-
-struct expression_render : expression::builder {
-	const rect&			rc;
-	int					x, y;
-	const expression*	hilite;
-	const expression*	current;
-	constexpr expression_render(const rect& rc) : rc(rc),
-		x(rc.x1 + metrics::padding),
-		y(rc.y1 + metrics::padding),
-		hilite(), current(0) {}
-	void newline() {
-		x = rc.x1 + metrics::padding;
-		y = y + texth();
-	}
-	void add(token_s id, const expression* context, const char* v) override {
-		auto selected = (current == context);
-		auto push_fore = fore;
-		auto w = textw(v);
-		rect rc = {x, y, x + w, y + texth()};
-		auto a = area(rc);
-		if(a == AreaHilited || a == AreaHilitedPressed)
-			hilite = context;
-		if(selected)
-			rectf(rc, colors::edit);
-		fore = code_colors[id];
-		text(x, y, v);
-		x += w;
-		fore = push_fore;
-	}
-};
-
-static struct code_control : controls::control, controls::control::plugin {
-	requisit*			source;
-	const expression*	current;
-	const expression*	current_hilite;
-	control& getcontrol() override {
-		return *this;
-	}
-	const char* getlabel(char* result, const char* result_maximum) const override {
-		return "Скрипт";
-	}
-	static void select_mouse() {
-		auto p = (code_control*)hot.param;
-		p->current = p->current_hilite;
-	}
-	void navigate_key(unsigned key) {
-		if(!source)
-			return;
-		expression_navigator b;
-		b.current = current;
-		for(auto p = source->code; p; p = p->getnext()) {
-			p->add(b);
-			b.newline();
-		}
-	}
-	code_control() : plugin("code", DockWorkspace), source(0) {}
-	void view(const rect& rc) {
-		control::view(rc);
-		auto push_font = font;
-		font = code_font;
-		current_hilite = 0;
-		if(source) {
-			expression_render b(rc);
-			b.current = current;
-			for(auto p = source->code; p; p = p->getnext()) {
-				p->add(b);
-				b.newline();
-			}
-			current_hilite = b.hilite;
-		}
-		if(hot.key == MouseLeft && hot.pressed && current_hilite)
-			draw::execute(select_mouse, (int)this);
-		font = push_font;
-	}
-} code_instance;
-
-void setcode(requisit* v) {
-	code_instance.source = v;
-}
-
 static struct requisit_control : controls::gridref, controls::control::plugin {
-	
+
 	struct metadata* current_parent;
 
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {
@@ -182,7 +81,7 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	}
 
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		if(strcmp(columns[column].id, "type")==0) {
+		if(strcmp(columns[column].id, "type") == 0) {
 			auto bv = getvalue(line, column);
 			if(!bv)
 				return "";

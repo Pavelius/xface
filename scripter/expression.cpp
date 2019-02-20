@@ -75,7 +75,7 @@ void expression::builder::add(const expression* context, int v) {
 	add(NumberToken, context, temp);
 }
 
-void expression::add(expression::builder& b) {
+void expression::addsingle(expression::builder& b) const {
 	switch(expression_data[type].operands) {
 	case Determinal:
 		switch(type) {
@@ -101,10 +101,14 @@ void expression::add(expression::builder& b) {
 		b.add(Keyword, this, expression_data[type].name);
 		op2->add(b);
 		break;
-	default:
+	case Unary:
 		b.add(Keyword, this, expression_data[type].name);
-		if(expression_data[type].operands==Statement)
-			b.add(Whitespace, this, " ");
+		if(op1)
+			op1->add(b);
+		break;
+	case Statement:
+		b.add(Keyword, this, expression_data[type].name);
+		b.add(Whitespace, this, " ");
 		if(op1) {
 			if(expression_data[type].extended) {
 
@@ -113,4 +117,14 @@ void expression::add(expression::builder& b) {
 		}
 		break;
 	}
+}
+
+void expression::add(expression::builder& b) const {
+	if(expression_data[type].operands == Statement) {
+		for(auto p = this; p; p = p->getnext()) {
+			p->addsingle(b);
+			b.addline();
+		}
+	} else
+		addsingle(b);
 }

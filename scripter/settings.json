@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":362
+      "size":262
     },
     "Dock3":{
       "current":0,
@@ -67,19 +67,19 @@
     }
   },
   "window":{
-    "x":40,
-    "y":41,
+    "x":47,
+    "y":38,
     "width":1095,
     "height":688,
     "header_width":113,
-    "flags":112
+    "flags":48
   },
   "controls":{
-    "metadata":{
-      "Docking":0
-    },
     "code":{
       "Docking":5
+    },
+    "metadata":{
+      "Docking":0
     },
     "requisit":{
       "Docking":1
