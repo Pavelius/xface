@@ -15,7 +15,7 @@ int main() {
 	auto r2 = p->add("x2", int_meta);
 	p->add("y2", int_meta);
 	p->add("Points", p1->reference());
-	p->add("Width", int_meta)->set(new expression(Return, new expression(Sub, new expression(r1), new expression(r2))));
+	p->add("Width", int_meta);
 	p->add("Height", int_meta);
 	p1->add("x", sint_meta);
 	p1->add("y", sint_meta);
@@ -28,7 +28,12 @@ int main() {
 	r->set(new expression(Add, new expression(10), new expression(12)));
 	//logmsg("Размер метаданных %1i", sizeof(metadata));
 	//logmsg("Размер реквизита %1i", sizeof(requisit));
-	setcode(p->find("Width"));
+	auto c1 = new expression(Return, new expression(Sub, new expression(r1), new expression(r2)));
+	auto c2 = new expression(Return, new expression(szdup("Test string")));
+	c1->add(c2);
+	auto rt = p->find("Width");
+	rt->set(c1);
+	setcode(rt);
 	run_main();
 }
 

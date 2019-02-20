@@ -69,6 +69,38 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 	}
 } metadata_instance;
 
+static struct code_control : controls::control, controls::control::plugin {
+	requisit*	source;
+	control& getcontrol() override {
+		return *this;
+	}
+	const char* getlabel(char* result, const char* result_maximum) const override {
+		return "Скрипт";
+	}
+	code_control() : plugin("code", DockWorkspace), source(0) {}
+	void view(const rect& rc) {
+		control::view(rc);
+		auto push_font = font;
+		font = code_font;
+		if(source) {
+			char temp[4096]; stringcreator sc(temp);
+			auto y = rc.y1 + metrics::padding;
+			auto x = rc.x1 + metrics::padding;
+			for(auto p = source->code; p; p = p->getnext()) {
+				sc.clear(); p->add(sc);
+				textc(x, y, rc.x2 - x, temp);
+				y += texth();
+			}
+		}
+
+		font = push_font;
+	}
+} code_instance;
+
+void setcode(requisit* v) {
+	code_instance.source = v;
+}
+
 static struct requisit_control : controls::gridref, controls::control::plugin {
 	
 	struct metadata* current_parent;
@@ -111,6 +143,8 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 					add(&e);
 			}
 		}
+		//if((unsigned)current < getcount())
+		//	setcode(((requisit**)data)[current]);
 	}
 	command* getcommands() const override {
 		return 0;
@@ -123,30 +157,6 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 		select_mode = SelectRow;
 	}
 } requisit_instance;
-
-static struct code_control : controls::control, controls::control::plugin {
-	expression* source;
-	control& getcontrol() override {
-		return *this;
-	}
-	const char* getlabel(char* result, const char* result_maximum) const override {
-		return "Скрипт";
-	}
-	code_control() : plugin("code", DockWorkspace), source(0) {
-	}
-	void view(const rect& rc) {
-		control::view(rc);
-		auto push_font = font;
-		font = code_font;
-		if(source) {
-			char temp[4096]; stringcreator sc(temp);
-			source->add(sc);
-			text(rc.x1, rc.y1, temp);
-		}
-			
-		font = push_font;
-	}
-} code_instance;
 
 void choose_metadata(metadata* v) {
 	requisit_instance.current_parent = v;
@@ -200,8 +210,4 @@ void run_main() {
 	requisit_instance.addcol("type", "Тип", "ref", SizeFixed, 100);
 	metadata_instance.addcol("id", "Наименование", "text", SizeAuto);
 	draw::application("Scripter", false);
-}
-
-void setcode(requisit* v) {
-	code_instance.source = v->code;
 }

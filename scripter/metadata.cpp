@@ -14,15 +14,7 @@ metadata code::char_meta[] = {"Char"};
 
 adat<requisit, 256 * 16>		code::requisit_data;
 adat<metadata, 256 * 4>			code::metadata_data;
-static agrw<expression, 256 * 4 * 16> expression_base;
 static adat<metadata, 256 * 8>	pointers;
-
-void* expression::operator new(unsigned size) {
-	return expression_base.add();
-}
-
-void expression::operator delete(void* p, unsigned size) {
-}
 
 metadata* findpointer(metadata* m) {
 	for(auto& e : pointers) {

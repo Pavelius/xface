@@ -2,15 +2,15 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":202
+      "size":173
     },
     "Dock1":{
       "current":0,
-      "size":262
+      "size":198
     },
     "Dock2":{
       "current":0,
-      "size":312
+      "size":256
     },
     "Dock3":{
       "current":0,
@@ -67,10 +67,10 @@
     }
   },
   "window":{
-    "x":99,
-    "y":29,
-    "width":1188,
-    "height":673,
+    "x":115,
+    "y":23,
+    "width":1095,
+    "height":688,
     "header_width":113,
     "flags":48
   },
@@ -78,11 +78,11 @@
     "metadata":{
       "Docking":0
     },
-    "requisit":{
-      "Docking":1
-    },
     "code":{
       "Docking":5
+    },
+    "requisit":{
+      "Docking":1
     },
     "properties":{
       "Docking":2
