@@ -28,7 +28,7 @@ enum operator_s : unsigned char {
 	Determinal,
 	Unary, Binary, Statement,
 };
-enum expression_s {
+enum expression_s : unsigned char {
 	End,
 	Number, Text, Requisit, Metadata,
 	Add, Sub, Mul, Div, Mod,
@@ -37,7 +37,7 @@ enum expression_s {
 	Coma, Call,
 	Var, List, While, If, For, Return,
 };
-enum token_s {
+enum token_s : unsigned char {
 	NoToken,
 	Whitespace, Keyword, OpenTag, CloseTag,
 	NumberToken, TextToken, RequisitToken, MetadataToken,

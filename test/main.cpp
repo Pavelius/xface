@@ -8,6 +8,7 @@
 #include "xface/draw_properties.h"
 #include "xface/requisit.h"
 #include "xface/stringcreator.h"
+#include "xface/valuelist.h"
 #include "xface/widget.h"
 
 using namespace draw;
@@ -17,6 +18,7 @@ void logmsg(const char* format, ...);
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
+listelement* choose(int x, int y, int width, valuelist& vs);
 extern bsdata cultivated_land_manager;
 
 static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phone", "Smartphone", "Pencil",
@@ -409,6 +411,16 @@ static void test_tile_manager() {
 	}
 }
 
+static void test_autocomplite() {
+	valuelist e;
+	e.add("Kiew");
+	e.add("Moskow");
+	e.add("Lviv");
+	e.add("Kherson");
+	e.add("Mikolaev");
+	auto p = choose(10, 10, 200, e);
+}
+
 static void test_edit_field() {
 	setfocus(0, true);
 	char name[260] = "Павел";
@@ -448,6 +460,7 @@ static void start_menu() {
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
 	{"Приложение", draw::application},
+	{"Автосписок", test_autocomplite},
 	{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);

@@ -126,6 +126,7 @@
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="bsdata_serial_bin.cpp" />
     <ClCompile Include="datetime.cpp" />
+    <ClCompile Include="draw_autocomplete.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
     <ClCompile Include="draw_properties.cpp" />
     <ClCompile Include="draw_tree.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="surface_serial.cpp" />
     <ClCompile Include="sz2numf.cpp" />
     <ClCompile Include="szdup.cpp" />
+    <ClCompile Include="valuelist.cpp" />
     <ClCompile Include="widget_logging.cpp" />
     <ClCompile Include="widget_settings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -195,6 +197,7 @@
     <ClInclude Include="datetime.h" />
     <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
+    <ClInclude Include="valuelist.h" />
     <ClInclude Include="requisit.h" />
     <ClInclude Include="bsdata.h" />
     <ClInclude Include="bsreq.h" />
