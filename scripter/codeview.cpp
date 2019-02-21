@@ -91,11 +91,14 @@ struct renderer : expression::builder {
 	const rect&			rc;
 	int					x, y;
 	const expression*	hilite;
+	rect				hilite_rect;
 	const expression*	current;
+	rect				current_rect;
 	constexpr renderer(const rect& rc) : rc(rc),
 		x(rc.x1 + metrics::padding),
 		y(rc.y1 + metrics::padding),
-		hilite(), current(0) {}
+		hilite(), hilite_rect(),
+		current(0), current_rect() {}
 	void addline() override {
 		x = rc.x1 + metrics::padding;
 		y = y + texth();
@@ -106,10 +109,14 @@ struct renderer : expression::builder {
 		auto w = textw(v);
 		rect rc = {x, y, x + w, y + texth()};
 		auto a = area(rc);
-		if(a == AreaHilited || a == AreaHilitedPressed)
+		if(a == AreaHilited || a == AreaHilitedPressed) {
 			hilite = context;
-		if(selected)
+			hilite_rect = rc;
+		}
+		if(selected) {
 			rectf(rc, colors::edit);
+			current_rect = rc;
+		}
 		fore = code_colors[id];
 		text(x, y, v);
 		x += w;
@@ -121,7 +128,9 @@ struct renderer : expression::builder {
 static struct code_control : controls::control, controls::control::plugin {
 	requisit*			source;
 	const expression*	current;
+	rect				current_rect;
 	const expression*	current_hilite;
+	rect				current_hilite_rect;
 
 	control& getcontrol() override {
 		return *this;
@@ -132,6 +141,7 @@ static struct code_control : controls::control, controls::control::plugin {
 	static void select_mouse() {
 		auto p = (code_control*)hot.param;
 		p->current = p->current_hilite;
+		p->current_rect = p->current_hilite_rect;
 	}
 	const expression* navigate_key(const expression* current, unsigned key) {
 		if(!source)
@@ -190,10 +200,23 @@ static struct code_control : controls::control, controls::control::plugin {
 			b.current = current;
 			source->code->add(b);
 			current_hilite = b.hilite;
+			current_hilite_rect = b.hilite_rect;
+			current_rect = b.current_rect;
 		}
 		if(hot.key == MouseLeft && hot.pressed && current_hilite)
 			draw::execute(select_mouse, (int)this);
 		font = push_font;
+	}
+	void dropdown(char start_symbol = 0) {
+		if(current) {
+			char filter[] = {start_symbol, 0};
+			valuelist e;
+			current->select(e);
+			auto w = current_rect.width();
+			if(w < 100)
+				w = 100;
+			choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
+		}
 	}
 	bool keyinput(unsigned id) {
 		const expression* pe;
@@ -222,6 +245,13 @@ static struct code_control : controls::control, controls::control::plugin {
 		case KeyDelete:
 			if(current)
 				const_cast<expression*>(current)->zero();
+			break;
+		case KeyEnter:
+			//dropdown();
+			break;
+		case InputSymbol:
+			if(hot.param > 32)
+				dropdown(hot.param);
 			break;
 		default:
 			return control::keyinput(id);

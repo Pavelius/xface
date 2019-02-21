@@ -8,7 +8,7 @@ struct expression_info {
 	bool				extended;
 };
 
-expression_info expression_data[] = {{""},
+expression_info expression_data[] = {{"Do Nothing", Statement},
 {"Number"},
 {"Text"},
 {"Requisit"},
@@ -127,5 +127,28 @@ void expression::zero() {
 	switch(type) {
 	case Number: value = 0; break;
 	case Text: text = szdup(""); break;
+	}
+}
+
+void expression::select(valuelist& v) const {
+	auto t = getoperands();
+	switch(t) {
+	case Determinal:
+		if(type == Requisit) {
+			auto parent = req->parent;
+			for(auto& e : requisit_data) {
+				if(e.parent != parent)
+					continue;
+				v.add(e.id, (int)&e, Requisit, 0);
+			}
+		}
+		break;
+	default:
+		for(auto& e : expression_data) {
+			if(e.operands != t)
+				continue;
+			v.add(e.name, &e - expression_data, t, 1);
+		}
+		break;
 	}
 }

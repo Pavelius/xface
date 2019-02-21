@@ -1,5 +1,6 @@
 #include "xface/collection.h"
 #include "xface/stringcreator.h"
+#include "xface/valuelist.h"
 
 const char*				szdup(const char *text);
 
@@ -84,6 +85,7 @@ struct expression {
 	void					add(expression* v);
 	void					add(builder& b) const;
 	operator_s				getoperands() const;
+	void					select(valuelist& v) const;
 	void					zero();
 private:
 	void					addsingle(expression::builder& b) const;
@@ -116,5 +118,6 @@ void					logmsg(const char* format, ...);
 extern adat<requisit, 256 * 16>	requisit_data;
 extern adat<metadata, 256 * 4>	metadata_data;
 }
+listelement*				choose(int x, int y, int width, valuelist& vs, const char* start_filter = 0, const struct sprite* images = 0);
 void						choose_metadata(code::metadata* v);
 void						run_main();

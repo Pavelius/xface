@@ -10,7 +10,7 @@ namespace {
 struct autocomplete : draw::controls::list {
 	arem<listelement*>	source;
 	bool				show_images;
-	sprite*				images;
+	const sprite*		images;
 	constexpr autocomplete() : source(), show_images(false), images() {}
 	const char*	getname(char* result, const char* result_max, int line, int column) const override {
 		switch(column) {
@@ -35,7 +35,7 @@ struct autocomplete : draw::controls::list {
 		auto rt = rc;
 		if(show_images) {
 			image(rt.x1 + rt.height() / 2, rt.y1 + rt.height() / 2, images, getimage(index), 0);
-			rt.x1 += rt.height();
+			rt.x1 += rt.height() - 4;
 		}
 		auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
 		if(p)
@@ -80,15 +80,24 @@ struct autocomplete : draw::controls::list {
 };
 }
 
-listelement* choose(int x, int y, int width, valuelist& vs) {
+listelement* choose(int x, int y, int width, valuelist& vs, const char* start_filter, const struct sprite* images) {
 	char filter[32] = {};
+	if(start_filter)
+		zcpy(filter, start_filter, sizeof(filter)-1);
 	rect rc = {x, y, x + width, y + 100};
 	autocomplete e;
 	screenshoot screen;
 	auto push_focus = getfocus();
 	setfocus((int)&e, true);
+	e.images = images;
+	if(e.images)
+		e.show_images = true;
 	e.update(filter, vs, rc);
 	while(ismodal()) {
+		if(!e.getmaximum()) {
+			breakmodal(0);
+			continue;
+		}
 		screen.restore();
 		if(rc.y1<rc.y2)
 			e.view(rc);
