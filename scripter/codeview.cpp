@@ -189,6 +189,9 @@ static struct code_control : controls::control, controls::control::plugin {
 		}
 		return 0;
 	}
+	const expression* get_statement(const expression* current) {
+		return navigate_key(current, KeyHome);
+	}
 	code_control() : plugin("code", DockWorkspace), source(0) {}
 	void view(const rect& rc) {
 		control::view(rc);
@@ -218,20 +221,33 @@ static struct code_control : controls::control, controls::control::plugin {
 			choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
 		}
 	}
-	void addnothing(expression* p) {
+	void editstring(expression* p) {
 		if(!p)
 			return;
+		if(p->type != Text)
+			return;
+	}
+	const expression* addnothing(expression* p) {
+		if(!p)
+			return 0;
 		if(p->type == DoNothing)
-			return;
+			return 0;
 		if(p->getoperands() != Statement)
-			return;
+			return 0;
 		if(p->next) {
 			if(p->next->getoperands() != Statement)
-				return;
+				return 0;
 			if(p->next->type == DoNothing)
-				return;
+				return 0;
 		}
-		p->add(new expression(DoNothing));
+		auto result = new expression(DoNothing);
+		p->add(result);
+		return result;
+	}
+	void select(const expression* pe) {
+		if(!pe)
+			return;
+		current = pe;
 	}
 	bool keyinput(unsigned id) {
 		const expression* pe;
@@ -242,9 +258,7 @@ static struct code_control : controls::control, controls::control::plugin {
 		case KeyUp:
 		case KeyHome:
 		case KeyEnd:
-			pe = navigate_key(current, id);
-			if(pe)
-				current = pe;
+			select(navigate_key(current, id));
 			break;
 		case Alpha + '0':
 		case Alpha + '1':
@@ -265,7 +279,8 @@ static struct code_control : controls::control, controls::control::plugin {
 			dropdown();
 			break;
 		case KeyEnter:
-			addnothing(const_cast<expression*>(current));
+			pe = addnothing(const_cast<expression*>(get_statement(current)));
+			select(pe);
 			break;
 		case InputSymbol:
 			if(hot.param > 32)
