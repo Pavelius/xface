@@ -216,16 +216,24 @@ static struct code_control : controls::control, controls::control::plugin {
 	}
 	void dropdown(char start_symbol = 0) {
 		if(current) {
-			if(current->type == Text)
-				editstring(const_cast<expression*>(current));
-			else {
-				char filter[] = {start_symbol, 0};
-				valuelist e;
-				current->select(e);
-				auto w = current_rect.width();
-				if(w < 100)
-					w = 100;
-				choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
+			auto result = const_cast<expression*>(current);
+			char filter[] = {start_symbol, 0};
+			valuelist e;
+			current->select(e);
+			auto w = current_rect.width();
+			if(w < 100)
+				w = 100;
+			auto pe = choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
+			if(pe) {
+				result->type = (expression_s)pe->type;
+				switch(result->type) {
+				case Requisit:
+					result->req = (requisit*)pe->value;
+					break;
+				case Metadata:
+					result->met = (struct metadata*)pe->value;
+					break;
+				}
 			}
 		}
 	}
