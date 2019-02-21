@@ -90,11 +90,12 @@ struct navigator : expression::builder {
 struct renderer : expression::builder {
 	const rect&			rc;
 	int					x, y;
+	bool				focused;
 	const expression*	hilite;
 	rect				hilite_rect;
 	const expression*	current;
 	rect				current_rect;
-	constexpr renderer(const rect& rc) : rc(rc),
+	constexpr renderer(const rect& rc, bool focused) : rc(rc), focused(focused),
 		x(rc.x1 + metrics::padding),
 		y(rc.y1 + metrics::padding),
 		hilite(), hilite_rect(),
@@ -114,7 +115,10 @@ struct renderer : expression::builder {
 			hilite_rect = rc;
 		}
 		if(selected) {
-			rectf(rc, colors::edit);
+			if(focused)
+				rectf(rc, colors::edit);
+			else
+				rectf(rc, colors::edit.mix(colors::window));
 			current_rect = rc;
 		}
 		fore = code_colors[id];
@@ -199,7 +203,7 @@ static struct code_control : controls::control, controls::control::plugin {
 		font = code_font;
 		current_hilite = 0;
 		if(source) {
-			renderer b(rc);
+			renderer b(rc, isfocused());
 			b.current = current;
 			source->code->add(b);
 			current_hilite = b.hilite;
@@ -212,20 +216,32 @@ static struct code_control : controls::control, controls::control::plugin {
 	}
 	void dropdown(char start_symbol = 0) {
 		if(current) {
-			char filter[] = {start_symbol, 0};
-			valuelist e;
-			current->select(e);
-			auto w = current_rect.width();
-			if(w < 100)
-				w = 100;
-			choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
+			if(current->type == Text)
+				editstring(const_cast<expression*>(current));
+			else {
+				char filter[] = {start_symbol, 0};
+				valuelist e;
+				current->select(e);
+				auto w = current_rect.width();
+				if(w < 100)
+					w = 100;
+				choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
+			}
 		}
 	}
-	void editstring(expression* p) {
+	void editstring(const expression* p) {
 		if(!p)
 			return;
 		if(p->type != Text)
 			return;
+		char temp[256*4*8];
+		textedit te(temp, sizeof(temp), true);
+		auto w = current_rect.width();
+		if(w < 100)
+			w = 100;
+		zcpy(temp, p->text, sizeof(temp));
+		rect rc = {current_rect.x1, current_rect.y1, current_rect.x1 + w, current_rect.y1 + texth() * 2+ 8};
+		te.editing(rc);
 	}
 	const expression* addnothing(expression* p) {
 		if(!p)
@@ -295,4 +311,6 @@ static struct code_control : controls::control, controls::control::plugin {
 
 void setcode(requisit* v) {
 	code_instance.source = v;
+	if(!code_instance.current && v)
+		code_instance.current = v->code;
 }

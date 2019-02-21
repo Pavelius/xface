@@ -86,6 +86,7 @@ struct expression {
 	void					add(builder& b) const;
 	operator_s				getoperands() const;
 	void					select(valuelist& v) const;
+	void					select(valuelist& v, expression_s t) const;
 	void					zero();
 private:
 	void					addsingle(expression::builder& b) const;

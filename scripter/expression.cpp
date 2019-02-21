@@ -130,25 +130,39 @@ void expression::zero() {
 	}
 }
 
+void expression::select(valuelist& v, expression_s t) const {
+	switch(t) {
+	case Requisit:
+		for(auto& e : requisit_data) {
+			if(e.parent != req->parent)
+				continue;
+			v.add(e.id, (int)&e, Requisit, 0);
+		}
+		break;
+	case Metadata:
+		for(auto& e : metadata_data)
+			v.add(e.id, (int)&e, Metadata, 2);
+		break;
+	case While:
+		for(auto& e : expression_data) {
+			if(e.operands != Statement)
+				continue;
+			v.add(e.name, t, t, 5);
+		}
+		break;
+	}
+}
+
 void expression::select(valuelist& v) const {
 	auto t = getoperands();
 	switch(t) {
 	case Determinal:
-		if(type == Requisit) {
-			auto parent = req->parent;
-			for(auto& e : requisit_data) {
-				if(e.parent != parent)
-					continue;
-				v.add(e.id, (int)&e, Requisit, 0);
-			}
-		}
+		select(v, Requisit);
+		select(v, Metadata);
 		break;
 	default:
-		for(auto& e : expression_data) {
-			if(e.operands != t)
-				continue;
-			v.add(e.name, &e - expression_data, t, 1);
-		}
+		select(v, Metadata);
+		select(v, While);
 		break;
 	}
 }

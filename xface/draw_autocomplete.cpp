@@ -79,9 +79,9 @@ struct autocomplete : draw::controls::list {
 	}
 };
 struct fillable {
-	virtual void update(const char* filter, rect& rc) = 0;
-	virtual int getcurrent() const = 0;
-	virtual bool isready() const = 0;
+	virtual int			getcurrent() const = 0;
+	virtual bool		isready() const = 0;
+	virtual void		update(const char* filter, rect& rc) = 0;
 };
 }
 
