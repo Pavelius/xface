@@ -73,7 +73,7 @@ void expression::addsingle(expression::builder& b) const {
 	switch(expression_data[type].operands) {
 	case Determinal:
 		switch(type) {
-		case End: break;
+		case DoNothing: break;
 		case Number:
 			b.add(this, value);
 			break;

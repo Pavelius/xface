@@ -30,7 +30,7 @@ enum operator_s : unsigned char {
 	Unary, Binary, Statement,
 };
 enum expression_s : unsigned char {
-	End,
+	DoNothing,
 	Number, Text, Requisit, Metadata,
 	Add, Sub, Mul, Div, Mod,
 	And, Or,
@@ -67,7 +67,7 @@ struct expression {
 		requisit*			req;
 		metadata*			met;
 	};
-	constexpr expression() : type(End), op1(0), op2(0) {}
+	constexpr expression() : type(DoNothing), op1(0), op2(0) {}
 	constexpr expression(expression_s type) : type(type), op1(0), op2(0) {}
 	constexpr expression(int v) : type(Number), value(v) {}
 	constexpr expression(const char* v) : type(Text), text(v) {}

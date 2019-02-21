@@ -127,7 +127,7 @@ listelement* choose(int x, int y, int width, valuelist& vs, const char* start_fi
 			}
 			break;
 		case InputSymbol:
-			if(hot.param >= 32) {
+			if(hot.param > 32) {
 				szput(zend(filter), hot.param);
 				e.update(filter, vs, rc);
 			}

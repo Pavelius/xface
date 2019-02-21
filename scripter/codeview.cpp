@@ -19,7 +19,7 @@ struct navigator : expression::builder {
 		token_s				id;
 		point				pos, size;
 		const expression*	context;
-		constexpr explicit operator bool() const { return id != End; }
+		constexpr explicit operator bool() const { return id != DoNothing; }
 		int					getcenter() const { return pos.x + size.x / 2; }
 	};
 	int						x, y;
@@ -218,6 +218,21 @@ static struct code_control : controls::control, controls::control::plugin {
 			choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
 		}
 	}
+	void addnothing(expression* p) {
+		if(!p)
+			return;
+		if(p->type == DoNothing)
+			return;
+		if(p->getoperands() != Statement)
+			return;
+		if(p->next) {
+			if(p->next->getoperands() != Statement)
+				return;
+			if(p->next->type == DoNothing)
+				return;
+		}
+		p->add(new expression(DoNothing));
+	}
 	bool keyinput(unsigned id) {
 		const expression* pe;
 		switch(id&0xFFFF) {
@@ -246,8 +261,11 @@ static struct code_control : controls::control, controls::control::plugin {
 			if(current)
 				const_cast<expression*>(current)->zero();
 			break;
+		case KeySpace:
+			dropdown();
+			break;
 		case KeyEnter:
-			//dropdown();
+			addnothing(const_cast<expression*>(current));
 			break;
 		case InputSymbol:
 			if(hot.param > 32)
