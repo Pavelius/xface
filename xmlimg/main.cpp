@@ -28,11 +28,11 @@ static void printcf(const char* format, ...) {
 }
 
 static void status_loading(const char* type, const char* url) {
-	printcf("loading %1 \'%2\'", type, url);
+	printcf("loading %1 \'%2\'\n", type, url);
 }
 
 static void status_saving(const char* url) {
-	printcf("%1\n", url);
+	printcf("writing %1\n", url);
 }
 
 static void error_not_found(const char* url) {

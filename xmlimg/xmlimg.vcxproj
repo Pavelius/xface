@@ -144,6 +144,7 @@
     <ClInclude Include="xml.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\ti\ti\images.xml" />
     <Xml Include="..\images.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

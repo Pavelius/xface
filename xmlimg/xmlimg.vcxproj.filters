@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\images.xml" />
+    <Xml Include="..\..\ti\ti\images.xml" />
   </ItemGroup>
 </Project>
