@@ -83,7 +83,5 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 static map_control_type map_control;
 
 void run_main() {
-	application_initialize();
-	setcaption("X-Map editor");
-	application();
+	draw::application("X-Map editor", false);
 }
