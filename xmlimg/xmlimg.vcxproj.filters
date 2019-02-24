@@ -5,6 +5,10 @@
     <ClCompile Include="xml.cpp" />
     <ClCompile Include="win_util.cpp" />
     <ClCompile Include="..\..\formats\util\sprite_store.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\pcx.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\png.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\tga.cpp" />
+    <ClCompile Include="..\..\formats\convert\zip.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xml.h" />

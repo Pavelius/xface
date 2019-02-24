@@ -312,19 +312,15 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 		x = (GetSystemMetrics(SM_CXFULLSCREEN) - minimum.x) / 2;
 	if(y == -1)
 		y = (GetSystemMetrics(SM_CYFULLSCREEN) - minimum.y) / 2;
-	rect position;
-	position.x1 = x;
-	position.y1 = y;
-	position.x2 = position.x1 + width;
-	position.y2 = position.y1 + height;
 	// Update current surface
 	if(draw::canvas)
 		draw::canvas->resize(width, height, bpp, true);
 	setclip();
 	// Create The Window
 	hwnd = CreateWindowExA(0, register_class("CFaceWindow"), 0, dwStyle,
-		position.x1, position.y1,
-		position.width(), position.height(),
+		x, y,
+		MinimumRect.right - MinimumRect.left,
+		MinimumRect.bottom - MinimumRect.top,
 		0, 0, GetModuleHandleA(0), 0);
 	if(!hwnd)
 		return;
