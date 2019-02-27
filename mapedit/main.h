@@ -8,7 +8,7 @@
 #pragma once
 
 enum map_s : unsigned char {
-	Rectangle
+	Rectangle, IsometricRectangle,
 };
 
 struct answer : stringcreator {
