@@ -43,14 +43,6 @@ enum token_s : unsigned char {
 	Whitespace, Keyword, OpenTag, CloseTag,
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
-struct statement {
-	expression*				condition;
-	expression*				body;
-	constexpr statement() : condition(), body() {}
-	void* operator			new(unsigned size);
-	void operator			delete(void* p, unsigned size);
-	void					add(stringcreator& sc);
-};
 struct expression {
 	expression_s			type;
 	union {
@@ -81,6 +73,8 @@ struct expression {
 		virtual void		add(token_s id, const expression* context, const char* v) = 0;
 		virtual void		addline() = 0;
 		void				add(const expression* context, int v);
+		virtual void		begin() = 0;
+		virtual void		end() = 0;
 	};
 	void					add(expression* v);
 	void					add(builder& b) const;
@@ -90,6 +84,13 @@ struct expression {
 	void					zero();
 private:
 	void					addsingle(expression::builder& b) const;
+};
+struct statement {
+	expression				condition;
+	expression*				body;
+	constexpr statement() : condition(), body() {}
+	void* operator			new(unsigned size);
+	void operator			delete(void* p, unsigned size);
 };
 struct metadata {
 	const char*				id;

@@ -2,7 +2,7 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":217
+      "size":187
     },
     "Dock1":{
       "current":0,
@@ -67,10 +67,10 @@
     }
   },
   "window":{
-    "x":129,
-    "y":75,
-    "width":1141,
-    "height":600,
+    "x":78,
+    "y":38,
+    "width":1131,
+    "height":694,
     "header_width":113,
     "flags":48
   },

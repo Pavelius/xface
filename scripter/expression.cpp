@@ -70,6 +70,8 @@ void expression::builder::add(const expression* context, int v) {
 }
 
 void expression::addsingle(expression::builder& b) const {
+	if(!this)
+		return;
 	switch(expression_data[type].operands) {
 	case Determinal:
 		switch(type) {
@@ -105,7 +107,9 @@ void expression::addsingle(expression::builder& b) const {
 		b.add(Whitespace, this, " ");
 		if(op1) {
 			if(expression_data[type].extended) {
-
+				b.begin();
+				//extended->body->add(b);
+				b.end();
 			} else
 				op1->add(b);
 		}
@@ -114,6 +118,8 @@ void expression::addsingle(expression::builder& b) const {
 }
 
 void expression::add(expression::builder& b) const {
+	if(!this)
+		return;
 	if(expression_data[type].operands == Statement) {
 		for(auto p = this; p; p = p->next) {
 			p->addsingle(b);

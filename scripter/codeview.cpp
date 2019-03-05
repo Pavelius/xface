@@ -30,6 +30,10 @@ struct navigator : expression::builder {
 		x = 0;
 		y++;
 	}
+	void begin() override {
+	}
+	void end() override {
+	}
 	void add(token_s id, const expression* context, const char* v) override {
 		if(id == OpenTag || id == CloseTag || id == Whitespace)
 			return;
@@ -95,14 +99,21 @@ struct renderer : expression::builder {
 	rect				hilite_rect;
 	const expression*	current;
 	rect				current_rect;
+	int					level;
 	constexpr renderer(const rect& rc, bool focused) : rc(rc), focused(focused),
 		x(rc.x1 + metrics::padding),
 		y(rc.y1 + metrics::padding),
 		hilite(), hilite_rect(),
-		current(0), current_rect() {}
+		current(0), current_rect(), level(0) {}
 	void addline() override {
 		x = rc.x1 + metrics::padding;
 		y = y + texth();
+	}
+	void begin() override {
+		level++;
+	}
+	void end() override {
+		level--;
 	}
 	void add(token_s id, const expression* context, const char* v) override {
 		auto selected = (current == context && id != Whitespace);
