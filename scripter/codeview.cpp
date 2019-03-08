@@ -106,7 +106,7 @@ struct renderer : expression::builder {
 		hilite(), hilite_rect(),
 		current(0), current_rect(), level(0) {}
 	void addline() override {
-		x = rc.x1 + metrics::padding;
+		x = rc.x1 + metrics::padding + level*textw("A");
 		y = y + texth();
 	}
 	void begin() override {
@@ -236,7 +236,7 @@ static struct code_control : controls::control, controls::control::plugin {
 				w = 100;
 			auto pe = choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
 			if(pe) {
-				result->type = (expression_s)pe->type;
+				result->set((expression_s)pe->type);
 				switch(result->type) {
 				case Requisit:
 					result->req = (requisit*)pe->value;

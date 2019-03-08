@@ -78,17 +78,19 @@ struct expression {
 	};
 	void					add(expression* v);
 	void					add(builder& b) const;
+	void					clear();
 	operator_s				getoperands() const;
 	void					select(valuelist& v) const;
 	void					select(valuelist& v, expression_s t) const;
+	void					set(expression_s v);
 	void					zero();
 private:
 	void					addsingle(expression::builder& b) const;
 };
 struct statement {
 	expression				condition;
-	expression*				body;
-	constexpr statement() : condition(), body() {}
+	expression				body;
+	constexpr statement() : condition(1), body() {}
 	void* operator			new(unsigned size);
 	void operator			delete(void* p, unsigned size);
 };

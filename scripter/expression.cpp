@@ -107,9 +107,13 @@ void expression::addsingle(expression::builder& b) const {
 		b.add(Whitespace, this, " ");
 		if(op1) {
 			if(expression_data[type].extended) {
-				b.begin();
-				//extended->body->add(b);
-				b.end();
+				if(extended) {
+					extended->condition.add(b);
+					b.begin();
+					b.addline();
+					extended->body.add(b);
+					b.end();
+				}
 			} else
 				op1->add(b);
 		}
@@ -134,6 +138,47 @@ void expression::zero() {
 	case Number: value = 0; break;
 	case Text: text = szdup(""); break;
 	}
+}
+
+void expression::clear() {
+	switch(expression_data[type].operands) {
+	case Unary:
+	case Binary:
+		if(op1) {
+			delete op1;
+			op1 = 0;
+		}
+		if(op2) {
+			delete op2;
+			op2 = 0;
+		}
+		break;
+	case Statement:
+		if(expression_data[type].extended) {
+			if(extended) {
+				delete extended;
+				extended = 0;
+			}
+		} else {
+			if(op1) {
+				delete op1;
+				op1 = 0;
+			}
+		}
+		break;
+	default:
+		value = 0;
+		break;
+	}
+}
+
+void expression::set(expression_s v) {
+	if(expression_data[type].operands != expression_data[v].operands
+		|| expression_data[type].extended != expression_data[v].extended)
+		clear();
+	type = v;
+	if(expression_data[type].extended)
+		extended = new statement;
 }
 
 void expression::select(valuelist& v, expression_s t) const {
