@@ -2,6 +2,7 @@
 
 #pragma once
 
+struct sprite;
 struct listelement {
 	unsigned char		type;
 	unsigned char		image;
@@ -19,3 +20,4 @@ struct valuelist : arem<listelement> {
 	}
 	int					findvalue(int value) const;
 };
+listelement*			choose(int x, int y, int width, valuelist& vs, const char* start_filter = 0, const sprite* images = 0);

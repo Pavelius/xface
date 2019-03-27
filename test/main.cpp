@@ -18,7 +18,6 @@ void logmsg(const char* format, ...);
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
-listelement* choose(int x, int y, int width, valuelist& vs);
 extern bsdata cultivated_land_manager;
 
 static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phone", "Smartphone", "Pencil",
@@ -418,7 +417,7 @@ static void test_autocomplite() {
 	e.add("Lviv");
 	e.add("Kherson");
 	e.add("Mikolaev");
-	auto p = choose(10, 10, 200, e);
+	auto p = choose(10, 10, 200, e, "M");
 }
 
 static void test_edit_field() {
