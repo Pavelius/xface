@@ -5,6 +5,7 @@ struct datetime {
 	constexpr datetime(unsigned m_d) : d(m_d) {}
 	constexpr operator unsigned() const { return d; }
 	explicit constexpr operator bool() const { return d!=0; }
+	constexpr bool operator==(const datetime& e) const { return d == e.d; }
 	datetime(int year, int month, int day, int hour, int minute);
 	int						day() const;
 	datetime				daybegin() const { return datetime(year(), month(), day(), 0, 0); }

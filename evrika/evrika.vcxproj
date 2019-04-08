@@ -126,6 +126,8 @@
   <ItemGroup>
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="..\xface\widget_logging.cpp" />
+    <ClCompile Include="timestamp.cpp" />
+    <ClCompile Include="user.cpp" />
     <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>
