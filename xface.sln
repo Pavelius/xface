@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mapedit", "mapedit\mapedit.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scripter", "scripter\scripter.vcxproj", "{96E53BF4-C3F3-4264-B4D8-C61EE62710E0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "evrika", "evrika\evrika.vcxproj", "{7591EF23-4F3D-4D5D-8675-807480C3763A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +73,14 @@ Global
 		{96E53BF4-C3F3-4264-B4D8-C61EE62710E0}.Release|x64.Build.0 = Release|x64
 		{96E53BF4-C3F3-4264-B4D8-C61EE62710E0}.Release|x86.ActiveCfg = Release|Win32
 		{96E53BF4-C3F3-4264-B4D8-C61EE62710E0}.Release|x86.Build.0 = Release|Win32
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Debug|x64.ActiveCfg = Debug|x64
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Debug|x64.Build.0 = Debug|x64
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Debug|x86.ActiveCfg = Debug|Win32
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Debug|x86.Build.0 = Debug|Win32
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Release|x64.ActiveCfg = Release|x64
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Release|x64.Build.0 = Release|x64
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Release|x86.ActiveCfg = Release|Win32
+		{7591EF23-4F3D-4D5D-8675-807480C3763A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
