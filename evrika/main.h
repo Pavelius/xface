@@ -20,9 +20,31 @@ enum object_s : unsigned char {
 enum user_s : unsigned char {
 	Administrator,
 };
+struct database {
+	constexpr database() : data(0), size(0), count_maximum(0), count(0), next(0) {}
+	~database();
+	void*					add();
+	void*					add(const void* element);
+	void					clear();
+	void*					get(int index) const;
+	unsigned				getmaxcount() const;
+	unsigned				getcount() const;
+	unsigned				getsize() const { return size; }
+	int						indexof(const void* element) const;
+	void*					insert(int index, const void* element);
+	void					remove(int index, int elements_count);
+	void					setup(unsigned size);
+private:
+	database*				next;
+	void*					data;
+	unsigned				size;
+	unsigned				count;
+	unsigned				count_maximum;
+	database*				last();
+};
 struct timestamp {
-	datetime			create_date;
-	void				generate();
+	datetime				create_date;
+	void					generate();
 	constexpr bool operator==(const timestamp& e) const {
 		return counter == e.counter
 			&& create_date == e.create_date
