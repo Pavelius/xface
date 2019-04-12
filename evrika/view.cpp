@@ -4,8 +4,10 @@
 static void test_database() {
 	database db;
 	db.size = sizeof(document);
-	auto p = (document*)db.add();
-	memset(p, 0, sizeof(document));
+	for(auto i = 0; i < 70; i++) {
+		auto p = (document*)db.add();
+		memset(p, 0, sizeof(document));
+	}
 }
 
 int main() {

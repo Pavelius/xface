@@ -25,24 +25,24 @@ struct nameable {
 	const char*				name;
 	const char*				text;
 };
-struct database : nameable {
-	struct element {
-		void*				data;
-		unsigned			count;
-		unsigned			count_maximum;
-		element*			next;
-		constexpr element() : data(0), count(0), count_maximum(0), next(0) {}
-		~element() { if(data) delete data; }
-		element*			last();
-	};
+struct datastore {
+	void*					data;
+	unsigned				count;
+	unsigned				count_maximum;
+	datastore*				next;
+	constexpr datastore() : data(0), count(0), count_maximum(0), next(0) {}
+	~datastore() { if(data) delete data; data = 0; }
+	datastore*				last();
+	unsigned				getmaxcount() const;
+	unsigned				getcount() const;
+};
+struct database : nameable, datastore {
+	const bsreq*			type;
 	unsigned				size;
-	element					first;
-	constexpr database() : size(0), first() {}
+	constexpr database() : type(0), size(0) {}
 	~database();
 	void*					add();
 	void*					get(int index) const;
-	unsigned				getmaxcount() const;
-	unsigned				getcount() const;
 	unsigned				getsize() const { return size; }
 	int						indexof(const void* element) const;
 };
@@ -57,38 +57,38 @@ struct timestamp {
 			&& type == e.type;
 	}
 private:
-	object_s			type;
-	unsigned char		cluster;
-	short unsigned		user_id;
-	unsigned			counter;
+	object_s				type;
+	unsigned char			cluster;
+	short unsigned			user_id;
+	unsigned				counter;
 };
 struct coreobject {
-	unsigned			flags;
-	coreobject*			parent;
-	datetime			change_date;
-	userinfo*			change_user;
+	unsigned				flags;
+	coreobject*				parent;
+	datetime				change_date;
+	userinfo*				change_user;
 private:
-	timestamp			stamp;
+	timestamp				stamp;
 };
 struct reference : coreobject {
-	const char*			name;
-	const char*			text;
+	const char*				name;
+	const char*				text;
 };
 struct document : coreobject {
-	datetime			date;
-	unsigned			number;
-	const char*			text;
+	datetime				date;
+	unsigned				number;
+	const char*				text;
 };
 struct enumerator : reference {
-	const char*			id;
+	const char*				id;
 };
 struct headerinfo : reference {
 };
 struct userinfo : reference {
-	const char*			first_name;
-	const char*			last_name;
-	const char*			third_name;
-	const char*			password;
+	const char*				first_name;
+	const char*				last_name;
+	const char*				third_name;
+	const char*				password;
 };
-extern userinfo*		current_user;
+extern userinfo*			current_user;
 extern adat<userinfo, 2048>	user_data;
