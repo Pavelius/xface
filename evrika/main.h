@@ -20,27 +20,31 @@ enum object_s : unsigned char {
 enum user_s : unsigned char {
 	Administrator,
 };
-struct database {
-	constexpr database() : data(0), size(0), count_maximum(0), count(0), next(0) {}
+struct nameable {
+	const char*				id;
+	const char*				name;
+	const char*				text;
+};
+struct database : nameable {
+	struct element {
+		void*				data;
+		unsigned			count;
+		unsigned			count_maximum;
+		element*			next;
+		constexpr element() : data(0), count(0), count_maximum(0), next(0) {}
+		~element() { if(data) delete data; }
+		element*			last();
+	};
+	unsigned				size;
+	element					first;
+	constexpr database() : size(0), first() {}
 	~database();
 	void*					add();
-	void*					add(const void* element);
-	void					clear();
 	void*					get(int index) const;
 	unsigned				getmaxcount() const;
 	unsigned				getcount() const;
 	unsigned				getsize() const { return size; }
 	int						indexof(const void* element) const;
-	void*					insert(int index, const void* element);
-	void					remove(int index, int elements_count);
-	void					setup(unsigned size);
-private:
-	database*				next;
-	void*					data;
-	unsigned				size;
-	unsigned				count;
-	unsigned				count_maximum;
-	database*				last();
 };
 struct timestamp {
 	datetime				create_date;

@@ -1,7 +1,15 @@
 #include "xface/draw_control.h"
 #include "main.h"
 
+static void test_database() {
+	database db;
+	db.size = sizeof(document);
+	auto p = (document*)db.add();
+	memset(p, 0, sizeof(document));
+}
+
 int main() {
+	test_database();
 	draw::application("Evrika", true);
 }
 

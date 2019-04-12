@@ -72,11 +72,11 @@
     }
   },
   "window":{
-    "x":72,
-    "y":25,
-    "width":863,
-    "height":678,
-    "header_width":160,
+    "x":151,
+    "y":42,
+    "width":987,
+    "height":639,
+    "header_width":131,
     "flags":48
   },
   "controls":{
