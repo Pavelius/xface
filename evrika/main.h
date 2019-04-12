@@ -15,7 +15,7 @@ struct headerinfo;
 
 enum object_s : unsigned char {
 	NoType,
-	Enumerator, Reference, Document, Header, User,
+	Reference, Document, Header, User,
 };
 enum user_s : unsigned char {
 	Administrator,
@@ -25,21 +25,19 @@ struct nameable {
 	const char*				name;
 	const char*				text;
 };
-struct datastore {
-	void*					data;
+struct arrayseq {
 	unsigned				count;
 	unsigned				count_maximum;
-	datastore*				next;
-	constexpr datastore() : data(0), count(0), count_maximum(0), next(0) {}
-	~datastore() { if(data) delete data; data = 0; }
-	datastore*				last();
-	unsigned				getmaxcount() const;
+	arrayseq*				next;
+	constexpr arrayseq(unsigned count_maximum) : count(0), count_maximum(count_maximum), next(0) {}
 	unsigned				getcount() const;
+	arrayseq*				last();
 };
-struct database : nameable, datastore {
+struct database : nameable {
 	const bsreq*			type;
 	unsigned				size;
-	constexpr database() : type(0), size(0) {}
+	arrayseq*				elements;
+	constexpr database() : type(0), size(0), elements(0) {}
 	~database();
 	void*					add();
 	void*					get(int index) const;
@@ -70,17 +68,12 @@ struct coreobject {
 private:
 	timestamp				stamp;
 };
-struct reference : coreobject {
-	const char*				name;
-	const char*				text;
+struct reference : coreobject, nameable {
 };
 struct document : coreobject {
 	datetime				date;
 	unsigned				number;
 	const char*				text;
-};
-struct enumerator : reference {
-	const char*				id;
 };
 struct headerinfo : reference {
 };
