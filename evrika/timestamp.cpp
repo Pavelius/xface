@@ -10,3 +10,7 @@ void timestamp::write() {
 	counter = ++global_counter;
 	session = current_session;
 }
+
+void timestamp::setsession(unsigned char v) {
+	current_session = v;
+}

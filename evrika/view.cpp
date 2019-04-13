@@ -21,10 +21,15 @@ static bool test_database() {
 	return db_count == real_db_count;
 }
 
+static bool test_write() {
+	return database::writefile("test.edb");
+}
+
 int main() {
 	initialize_databases();
 	if(!test_database())
 		return 0;
+	test_write();
 	draw::application("Evrika", true);
 }
 
