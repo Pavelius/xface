@@ -1,5 +1,7 @@
 #include "main.h"
 
+database databases[256];
+
 void* database::get(int index) const {
 	auto p = elements;
 	if(!p)
@@ -30,9 +32,8 @@ void* database::add() {
 	if(!p) {
 		p = (arrayseq*)(new char[sizeof(arrayseq) + count_maximum * size]);
 		elements = p;
-	}
-	else {
-		p->next = (arrayseq*)(new char[sizeof(arrayseq) + count_maximum*size]);
+	} else {
+		p->next = (arrayseq*)(new char[sizeof(arrayseq) + count_maximum * size]);
 		p = p->next;
 	}
 	p->count_maximum = count_maximum;
@@ -61,4 +62,15 @@ database::~database() {
 		p = m;
 	}
 	elements = 0;
+}
+
+void* database::find(unsigned offset, const void* object, unsigned count) const {
+	for(auto p = elements; p; p = p->next) {
+		auto pe = p->begin() + offset + size * p->count;
+		for(auto pp = p->begin() + offset; pp < pe; pp += size) {
+			if(memcmp(pp, object, count) == 0)
+				return p->begin() + ((p->begin() - pp) / size)*size;
+		}
+	}
+	return 0;
 }

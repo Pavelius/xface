@@ -26,36 +26,43 @@ struct arrayseq {
 	unsigned				count;
 	unsigned				count_maximum;
 	arrayseq*				next;
+	char*					begin() const { return (char*)this + sizeof(arrayseq); }
 	unsigned				getcount() const;
 	arrayseq*				last();
 };
 struct database : nameable {
-	const bsreq*			type;
 	unsigned				size;
 	arrayseq*				elements;
-	constexpr database() : type(0), size(0), elements(0) {}
+	constexpr database() : size(0), elements(0) {}
+	explicit operator bool() const { return elements != 0; }
 	~database();
 	void*					add();
+	void*					find(unsigned offset, const void* object, unsigned size) const;
 	void*					get(int index) const;
 	unsigned				getcount() const { return elements->getcount(); }
 	unsigned				getsize() const { return size; }
 	int						indexof(const void* element) const;
 	static bool				readfile(const char* file);
+	static bool				writefile(const char* file);
 };
+extern database				databases[256];
 struct timestamp {
-	unsigned				counter;
-	datetime				create_date;
-	unsigned char			cluster;
 	object_s				type;
-	short unsigned			user_id;
-	void					generate();
+	unsigned char			session;
+	short unsigned			counter;
+	datetime				create_date;
+	constexpr timestamp() : type(Reference), session(0), counter(0), create_date(0) {}
+	constexpr timestamp(object_s type) : type(type), session(0), counter(0), create_date(0) {}
+	timestamp*				getreference() const { return (timestamp*)databases[type].find(0, this, sizeof(*this)); }
+	void					write();
 };
-struct coreobject {
-	timestamp				stamp;
+struct coreobject : timestamp {
 	unsigned				flags;
 	datetime				change_date;
 	userinfo*				change_user;
 	coreobject*				parent;
+	constexpr coreobject(object_s type) : timestamp(type), flags(0), change_date(0), change_user(0), parent(0) {}
+	coreobject*				write(); // Store element to database and get valid reference
 };
 struct reference : coreobject, nameable {
 };
@@ -63,6 +70,7 @@ struct document : coreobject {
 	datetime				date;
 	unsigned				number;
 	const char*				text;
+	constexpr document() : coreobject(Document), date(0), number(0), text(0) {}
 };
 struct headerinfo : reference {
 };
@@ -73,4 +81,3 @@ struct userinfo : reference {
 	const char*				password;
 };
 extern userinfo*			current_user;
-extern adat<userinfo, 2048>	user_data;

@@ -1,9 +1,12 @@
 #include "main.h"
 
-static unsigned			global_counter;
-static short unsigned	global_cluster;
+static short unsigned	global_counter;
+static unsigned	char	current_session;
 
-void timestamp::generate() {
+void timestamp::write() {
+	if(create_date)
+		return;
 	create_date = datetime::now();
-	counter = global_counter++;
+	counter = ++global_counter;
+	session = current_session;
 }

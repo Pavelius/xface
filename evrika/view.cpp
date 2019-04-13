@@ -1,21 +1,28 @@
 #include "xface/draw_control.h"
 #include "main.h"
 
+static void initialize_databases() {
+	databases[Reference].size = sizeof(reference);
+	databases[Document].size = sizeof(document);
+}
+
 static bool test_database() {
 	const unsigned real_db_count = 72;
-	unsigned db_count;
-	database db;
-	db_count = db.getcount();
-	db.size = sizeof(document);
 	for(auto i = 0; i < real_db_count; i++) {
-		auto p = (document*)db.add();
-		memset(p, 0, sizeof(document));
+		document e;
+		e.date = datetime::now().daybegin();
+		e.text = "Произвольный комментарий";
+		e.write();
+		auto pd = e.getreference();
+		if(!pd)
+			return false;
 	}
-	db_count = db.getcount();
+	auto db_count = databases[Document].getcount();
 	return db_count == real_db_count;
 }
 
 int main() {
+	initialize_databases();
 	if(!test_database())
 		return 0;
 	draw::application("Evrika", true);
