@@ -8,6 +8,7 @@
     <ClCompile Include="user.cpp" />
     <ClCompile Include="database.cpp" />
     <ClCompile Include="arrayseq.cpp" />
+    <ClCompile Include="database_serial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

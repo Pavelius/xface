@@ -20,17 +20,24 @@ void* database::add() {
 		if(p->count < p->count_maximum)
 			return (char*)p + sizeof(arrayseq) + (p->count++)*size;
 	}
-	auto count_maximum = p->count_maximum*2;
+	auto count_maximum = 0;
+	if(p)
+		count_maximum = p->count_maximum * 2;
 	if(!count_maximum)
 		count_maximum = 64;
 	if(count_maximum > 256 * 256)
 		count_maximum = 256 * 256;
-	if(p) {
+	if(!p) {
+		p = (arrayseq*)(new char[sizeof(arrayseq) + count_maximum * size]);
+		elements = p;
+	}
+	else {
 		p->next = (arrayseq*)(new char[sizeof(arrayseq) + count_maximum*size]);
 		p = p->next;
 	}
 	p->count_maximum = count_maximum;
 	p->count = 1;
+	p->next = 0;
 	return (char*)p + sizeof(arrayseq);
 }
 
@@ -45,13 +52,13 @@ void* database::add() {
 //	}
 //	return -1;
 //}
-//
-//database::~database() {
-//	auto p = next;
-//	while(p) {
-//		auto m = p->next;
-//		if(p)
-//			delete p;
-//		p = m;
-//	}
-//}
+
+database::~database() {
+	auto p = elements;
+	while(p) {
+		auto m = p->next;
+		delete p;
+		p = m;
+	}
+	elements = 0;
+}

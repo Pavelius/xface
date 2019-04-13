@@ -14,22 +14,18 @@ struct userinfo;
 struct headerinfo;
 
 enum object_s : unsigned char {
-	NoType,
 	Reference, Document, Header, User,
-};
-enum user_s : unsigned char {
-	Administrator,
 };
 struct nameable {
 	const char*				id;
 	const char*				name;
 	const char*				text;
+	constexpr nameable() : id(0), name(0), text(0) {}
 };
 struct arrayseq {
 	unsigned				count;
 	unsigned				count_maximum;
 	arrayseq*				next;
-	constexpr arrayseq(unsigned count_maximum) : count(0), count_maximum(count_maximum), next(0) {}
 	unsigned				getcount() const;
 	arrayseq*				last();
 };
@@ -41,32 +37,25 @@ struct database : nameable {
 	~database();
 	void*					add();
 	void*					get(int index) const;
+	unsigned				getcount() const { return elements->getcount(); }
 	unsigned				getsize() const { return size; }
 	int						indexof(const void* element) const;
+	static bool				readfile(const char* file);
 };
 struct timestamp {
-	datetime				create_date;
-	void					generate();
-	constexpr bool operator==(const timestamp& e) const {
-		return counter == e.counter
-			&& create_date == e.create_date
-			&& user_id == e.user_id
-			&& cluster == e.cluster
-			&& type == e.type;
-	}
-private:
-	object_s				type;
-	unsigned char			cluster;
-	short unsigned			user_id;
 	unsigned				counter;
+	datetime				create_date;
+	unsigned char			cluster;
+	object_s				type;
+	short unsigned			user_id;
+	void					generate();
 };
 struct coreobject {
+	timestamp				stamp;
 	unsigned				flags;
-	coreobject*				parent;
 	datetime				change_date;
 	userinfo*				change_user;
-private:
-	timestamp				stamp;
+	coreobject*				parent;
 };
 struct reference : coreobject, nameable {
 };
