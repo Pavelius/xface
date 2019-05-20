@@ -16,7 +16,6 @@ struct archive {
 	virtual void		setstring(const char** value);
 	bool				signature(const char* id);
 	bool				version(short major, short minor);
-
 	// Any pointer class
 	template<class T> void set(T*& value) {
 		setpointer((void**)&value);

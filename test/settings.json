@@ -46,9 +46,9 @@
     }
   },
   "window":{
-    "x":144,
-    "y":59,
-    "width":800,
+    "x":161,
+    "y":17,
+    "width":848,
     "height":600,
     "header_width":123,
     "flags":48
