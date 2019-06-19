@@ -67,10 +67,10 @@
     }
   },
   "window":{
-    "x":120,
-    "y":51,
-    "width":1110,
-    "height":714,
+    "x":32,
+    "y":42,
+    "width":1158,
+    "height":678,
     "header_width":113,
     "flags":48
   },
