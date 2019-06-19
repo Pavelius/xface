@@ -18,23 +18,6 @@ plugin*			draw::plugin::first;
 initplugin*		draw::initplugin::first;
 callback		draw::domodal;
 
-static void default_input() {
-	int id;
-	switch(hot.key) {
-	case KeyTab:
-	case KeyTab | Shift:
-	case KeyTab | Ctrl:
-	case KeyTab | Ctrl | Shift:
-		id = getnext(draw::getfocus(), hot.key);
-		if(id)
-			setfocus(id, true);
-		break;
-	case 0:
-		exit(0);
-		break;
-	}
-}
-
 static void setfocus_callback() {
 	setfocus(hot.param, true);
 }
@@ -197,7 +180,20 @@ static void standart_domodal() {
 	hot.key = draw::rawinput();
 	if(control_input())
 		return;
-	default_input();
+	int id;
+	switch(hot.key) {
+	case KeyTab:
+	case KeyTab | Shift:
+	case KeyTab | Ctrl:
+	case KeyTab | Ctrl | Shift:
+		id = getnext(draw::getfocus(), hot.key);
+		if(id)
+			setfocus(id, true);
+		break;
+	case 0:
+		exit(0);
+		break;
+	}
 }
 
 bool draw::ismodal() {
