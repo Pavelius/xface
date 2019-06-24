@@ -7,5 +7,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="weapon.cpp" />
     <ClCompile Include="armor.cpp" />
+    <ClCompile Include="unit.cpp" />
   </ItemGroup>
 </Project>
