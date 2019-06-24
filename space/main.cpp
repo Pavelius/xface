@@ -5,6 +5,7 @@ static combati heavy_weapon = {10, 20, 20, 50};
 static combati light_armor = {10, 30};
 
 int main() {
+	uniti u1 = Soldiers;
 	wound_s w1[16];
 	wound_s w2[16];
 	for(auto& e : w1)

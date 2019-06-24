@@ -33,14 +33,15 @@ struct armori {
 	const char*			name;
 	combati				combat;
 };
-struct uniti { // One unit have 10 people
+struct uniti : combati { // One unit have 10 people
 	unit_s				type;
-	combati				squad;
+	constexpr uniti(unit_s v) : type(v), combati{10, 0, 0, 0} {}
 	void				apply(wound_s w);
+	//void				create(unit_s v);
 	int					getalive() const;
-	int					getlight() const { return squad.light; }
+	int					getlight() const { return light; }
 	int					getready() const;
-	constexpr explicit operator bool() const { return type != NoUnit; }
+	constexpr explicit operator bool() const { return fatal >= miss; }
 };
 struct vehicle {
 	vehicle_s			type;

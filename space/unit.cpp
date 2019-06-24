@@ -1,9 +1,9 @@
 #include "main.h"
 
 int uniti::getalive() const {
-	return squad.miss - squad.fatal;
+	return miss - fatal;
 }
 
 int uniti::getready() const {
-	return getalive() - squad.heavy;
+	return getalive() - heavy;
 }
