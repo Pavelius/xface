@@ -126,7 +126,6 @@
     <ClCompile Include="armor.cpp" />
     <ClCompile Include="combat.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="unit.cpp" />
     <ClCompile Include="weapon.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

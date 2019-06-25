@@ -18,10 +18,7 @@ template<typename T> struct bsmeta {
 	static T			elements[];
 };
 struct combati {
-	char				miss;
-	char				light;
-	char				heavy;
-	char				fatal;
+	char				miss, light, heavy, fatal;
 	wound_s				shoot(char bonus = 0) const;
 	wound_s				suffer(wound_s w) const;
 };
@@ -38,9 +35,9 @@ struct uniti : combati { // One unit have 10 people
 	constexpr uniti(unit_s v) : type(v), combati{10, 0, 0, 0} {}
 	void				apply(wound_s w);
 	//void				create(unit_s v);
-	int					getalive() const;
-	int					getlight() const { return light; }
-	int					getready() const;
+	constexpr int		getalive() const { return miss - fatal; }
+	constexpr int		getlight() const { return light; }
+	constexpr int		getready() const { return getalive() - heavy; }
 	constexpr explicit operator bool() const { return fatal >= miss; }
 };
 struct vehicle {
