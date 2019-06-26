@@ -34,3 +34,23 @@ wound_s combati::suffer(wound_s w) const {
 	}
 	return w;
 }
+
+void uniti::apply(wound_s w) {
+	auto r = rand() % 100;
+	if(heavy > 0 && r < 20) {
+		heavy--;
+		fatal++;
+	} else if(light > 0 && r < 35) {
+		light--;
+		if(w > LightWound)
+			fatal++;
+		else
+			heavy++;
+	} else {
+		switch(w) {
+		case HeavyWound: heavy++; break;
+		case FatalWound: fatal++; break;
+		default: light++; break;
+		}
+	}
+}
