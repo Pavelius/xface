@@ -12,6 +12,8 @@ int main() {
 		e = heavy_weapon.shoot(light_armor.miss);
 	for(unsigned i = 0; i<sizeof(w2)/ sizeof(w2[0]); i++)
 		w2[i] = light_armor.suffer(w1[i]);
+	u1.apply(light_weapon.shoot(light_armor.miss));
+	u1.apply(light_weapon.shoot(light_armor.miss));
 }
 
 int __stdcall WinMain(void* ci, void* pi, char* cmd, int sw) {

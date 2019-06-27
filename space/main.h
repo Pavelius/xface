@@ -38,7 +38,7 @@ struct uniti : combati { // One unit have 10 people
 	constexpr int		getalive() const { return miss - fatal; }
 	constexpr int		getlight() const { return light; }
 	constexpr int		getready() const { return getalive() - heavy; }
-	constexpr explicit operator bool() const { return fatal >= miss; }
+	constexpr explicit operator bool() const { return fatal < miss; }
 };
 struct vehicle {
 	vehicle_s			type;
