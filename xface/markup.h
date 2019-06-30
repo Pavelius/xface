@@ -9,9 +9,9 @@ struct markup {
 	typedef void(*command_type)(void* object);
 	typedef void(*change_type)(void* object, const void* previous_object);
 	struct element {
-		const char*		id; // Field identificator (0 for group)
-		int				index; // Array index
-		const markup*	child; // Group or next field
+		const char*		id;			// Field identificator (0 for group)
+		int				index;		// Array index
+		const markup*	child;		// Group or next field
 	};
 	struct cmdi {
 		command_type	execute;
@@ -21,8 +21,8 @@ struct markup {
 		template<class T> constexpr cmdi(void(*v)(T*, const T*)) : execute(0), change((change_type)v) {}
 	};
 	struct proci {
-		allow_type		isallow; // Is allow special element or command
-		allow_type		isvisible; // Is element visible
+		allow_type		isallow;	// Is allow special element or command
+		allow_type		isvisible;	// Is element visible
 		custom_type		custom;
 	};
 	struct propi {
