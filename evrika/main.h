@@ -13,6 +13,10 @@ struct document;
 struct userinfo;
 struct headerinfo;
 
+enum type_s : unsigned char {
+	Number, Text, Date, DateTime,
+	RefObject, Table,
+};
 enum object_s : unsigned char {
 	Reference, Document, Header, Requisit,
 	User,
@@ -84,7 +88,9 @@ struct headerinfo : reference {
 	constexpr headerinfo() : reference(Header) {}
 };
 struct requisit : reference {
-	constexpr requisit() : reference(Requisit) {}
+	type_s					type;
+	headerinfo*				type_folder;
+	constexpr requisit() : reference(Requisit), type(Number), type_folder() {}
 };
 struct userinfo : reference {
 	const char*				first_name;

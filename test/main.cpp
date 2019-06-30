@@ -6,6 +6,7 @@
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
 #include "xface/draw_properties.h"
+#include "xface/markup.h"
 #include "xface/requisit.h"
 #include "xface/stringcreator.h"
 #include "xface/valuelist.h"

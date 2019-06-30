@@ -231,6 +231,9 @@
     <ClCompile Include="valuelist.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="markup.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
@@ -325,6 +328,9 @@
     </ClInclude>
     <ClInclude Include="valuelist.h">
       <Filter>collections</Filter>
+    </ClInclude>
+    <ClInclude Include="markup.h">
+      <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
