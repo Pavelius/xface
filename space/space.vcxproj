@@ -20,23 +20,23 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{D9030A7D-F1DD-4B02-8064-BFDCB7CF5C5C}</ProjectGuid>
-    <RootNamespace>xface</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <ProjectGuid>{8C64A0B1-2513-46C7-AD19-EB701F3A5A04}</ProjectGuid>
+    <RootNamespace>space</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -69,8 +69,8 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,8 +78,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -97,11 +99,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>false</ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -123,114 +120,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="anyval.cpp" />
-    <ClCompile Include="archive.cpp" />
-    <ClCompile Include="bsdata_serial_bin.cpp" />
-    <ClCompile Include="datetime.cpp" />
-    <ClCompile Include="draw_autocomplete.cpp" />
-    <ClCompile Include="draw_dockbar.cpp" />
-    <ClCompile Include="draw_markup.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="draw_properties.cpp" />
-    <ClCompile Include="draw_tree.cpp" />
-    <ClCompile Include="io_plugin.cpp" />
-    <ClCompile Include="markup.cpp" />
-    <ClCompile Include="requisit.cpp" />
-    <ClCompile Include="bsdata.cpp" />
-    <ClCompile Include="bsreq.cpp" />
-    <ClCompile Include="bstream.cpp" />
-    <ClCompile Include="collection.cpp" />
-    <ClCompile Include="color.cpp" />
-    <ClCompile Include="converter.cpp" />
-    <ClCompile Include="crt.cpp" />
-    <ClCompile Include="draw_button.cpp" />
-    <ClCompile Include="draw_clipart.cpp" />
-    <ClCompile Include="draw_combo.cpp" />
-    <ClCompile Include="draw_control.cpp" />
-    <ClCompile Include="draw_dialog.cpp" />
-    <ClCompile Include="draw_field.cpp" />
-    <ClCompile Include="draw_form.cpp" />
-    <ClCompile Include="draw_grid.cpp" />
-    <ClCompile Include="draw_list.cpp" />
-    <ClCompile Include="draw_scroll.cpp" />
-    <ClCompile Include="draw_scrollable.cpp" />
-    <ClCompile Include="draw_splitter.cpp" />
-    <ClCompile Include="draw_statusbar.cpp" />
-    <ClCompile Include="draw_table.cpp" />
-    <ClCompile Include="draw_tabs.cpp" />
-    <ClCompile Include="draw_textedit.cpp" />
-    <ClCompile Include="draw_theme.cpp" />
-    <ClCompile Include="draw_tool.cpp" />
-    <ClCompile Include="draw_toolbar.cpp" />
-    <ClCompile Include="draw_tooltips.cpp" />
-    <ClCompile Include="draw_dropdown.cpp" />
-    <ClCompile Include="grammar.cpp" />
-    <ClCompile Include="resources.cpp" />
-    <ClCompile Include="resource_dynamic.cpp" />
-    <ClCompile Include="screenshoot.cpp" />
-    <ClCompile Include="settings.cpp" />
-    <ClCompile Include="storage.cpp" />
-    <ClCompile Include="string_value.cpp" />
-    <ClCompile Include="draw.cpp" />
-    <ClCompile Include="draw_input.cpp" />
-    <ClCompile Include="draw_text.cpp" />
-    <ClCompile Include="draw_textf.cpp" />
-    <ClCompile Include="io.cpp" />
-    <ClCompile Include="point.cpp" />
-    <ClCompile Include="stringcreator.cpp" />
-    <ClCompile Include="strlib.cpp" />
-    <ClCompile Include="surface_serial.cpp" />
-    <ClCompile Include="sz2numf.cpp" />
-    <ClCompile Include="szdup.cpp" />
-    <ClCompile Include="valuelist.cpp" />
-    <ClCompile Include="widget_logging.cpp" />
-    <ClCompile Include="widget_settings.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="win_clipboard.cpp" />
-    <ClCompile Include="win_cmd.cpp" />
-    <ClCompile Include="win_datetime.cpp" />
-    <ClCompile Include="win_draw.cpp" />
-    <ClCompile Include="win_draw_dlg.cpp" />
-    <ClCompile Include="win_draw_shell.cpp" />
-    <ClCompile Include="win_io_file.cpp" />
-    <ClCompile Include="win_menu.cpp" />
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="anyval.h" />
-    <ClInclude Include="archive.h" />
-    <ClInclude Include="datetime.h" />
-    <ClInclude Include="draw_properties.h" />
-    <ClInclude Include="io_plugin.h" />
-    <ClInclude Include="markup.h" />
-    <ClInclude Include="valuelist.h" />
-    <ClInclude Include="requisit.h" />
-    <ClInclude Include="bsdata.h" />
-    <ClInclude Include="bsreq.h" />
-    <ClInclude Include="bstream.h" />
-    <ClInclude Include="collection.h" />
-    <ClInclude Include="color.h" />
-    <ClInclude Include="converter.h" />
-    <ClInclude Include="crt.h" />
-    <ClInclude Include="draw.h" />
-    <ClInclude Include="draw_control.h" />
-    <ClInclude Include="draw_grid.h" />
-    <ClInclude Include="grammar.h" />
-    <ClInclude Include="initializer_list.h" />
-    <ClInclude Include="io.h" />
-    <ClInclude Include="point.h" />
-    <ClInclude Include="pointl.h" />
-    <ClInclude Include="rect.h" />
-    <ClInclude Include="resources.h" />
-    <ClInclude Include="screenshoot.h" />
-    <ClInclude Include="settings.h" />
-    <ClInclude Include="storage.h" />
-    <ClInclude Include="string.h" />
-    <ClInclude Include="stringcreator.h" />
-    <ClInclude Include="strlib.h" />
-    <ClInclude Include="widget.h" />
-    <ClInclude Include="win.h" />
+    <ClCompile Include="armor.cpp" />
+    <ClCompile Include="combat.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="weapon.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

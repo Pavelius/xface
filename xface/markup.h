@@ -3,14 +3,15 @@
 // Standart markup
 struct markup {
 	typedef const char* (*text_type)(const void* object, char* result, const char* result_maximum);
+	typedef int(*num_type)(const void* object);
 	typedef bool(*allow_type)(const void* object, int index);
 	typedef int(*custom_type)(int x, int y, int width, const void* object); // Custom draw
 	typedef void(*command_type)(void* object);
 	typedef void(*change_type)(void* object, const void* previous_object);
 	struct element {
-		const char*		id;		// Field identificator (0 for group)
-		int				index;	// Array index
-		const markup*	child;	// Group or next field
+		const char*		id; // Field identificator (0 for group)
+		int				index; // Array index
+		const markup*	child; // Group or next field
 	};
 	struct cmdi {
 		command_type	execute;
@@ -20,16 +21,18 @@ struct markup {
 		template<class T> constexpr cmdi(void(*v)(T*, const T*)) : execute(0), change((change_type)v) {}
 	};
 	struct proci {
-		allow_type		isallow;	// Is allow special element or command
-		allow_type		isvisible;	// Is element visible
+		allow_type		isallow; // Is allow special element or command
+		allow_type		isvisible; // Is element visible
 		custom_type		custom;
 	};
 	struct propi {
 		text_type		getname;
-		constexpr propi() : getname(0) {}
-		template<class T> constexpr propi(const char* (*v)(const T*, char*, const char*)) : getname((text_type)v) {}
+		num_type		getvalue;
+		constexpr propi() : getname(0), getvalue(0) {}
+		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((text_type)v), getvalue(0) {}
+		template<class T> constexpr propi(int(*v)(const T*)) : getname(0), getvalue((num_type)v) {}
 	};
-	constexpr explicit operator bool() const { return title || value.id || value.child || cmd.execute; }
+	constexpr explicit operator bool() const { return title || value.id || value.child; }
 	int					width;
 	const char*			title;
 	element				value;

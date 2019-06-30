@@ -234,6 +234,12 @@
     <ClCompile Include="markup.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="draw_markup.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="anyval.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
@@ -330,6 +336,9 @@
       <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="markup.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="anyval.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
