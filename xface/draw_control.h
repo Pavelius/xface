@@ -185,6 +185,7 @@ struct table : list {
 		select_mode(SelectCell) {
 	}
 	virtual column*			addcol(const char* id, const char* name, const char* type, column_size_s size = SizeDefault, int width = 0);
+	void					cell(const rect& rc, int line, int column) const;
 	void					cellbox(const rect& rc, int line, int column);
 	void					cellimage(const rect& rc, int line, int column);
 	void					cellhilite(const rect& rc, int line, int columen, const char* text, image_flag_s aling) const;

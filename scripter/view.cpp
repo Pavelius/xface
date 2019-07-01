@@ -6,20 +6,18 @@
 using namespace code;
 using namespace draw;
 
-bsreq metadata_type[] = {
-	BSREQ(metadata, id, text_type),
-	BSREQ(metadata, type, metadata_type),
-	BSREQ(metadata, size, number_type),
+const bsreq bsmeta<metadata>::meta[] = {
+	BSREQ(id),
+	BSREQ(type),
+	BSREQ(size),
 {}};
-BSMETA(metadata);
-bsreq requisit_type[] = {
-	BSREQ(requisit, id, text_type),
-	BSREQ(requisit, type, metadata_type),
-	BSREQ(requisit, parent, metadata_type),
-	BSREQ(requisit, count, number_type),
-	BSREQ(requisit, offset, number_type),
+const bsreq bsmeta<requisit>::meta[] = {
+	BSREQ(id),
+	BSREQ(type),
+	BSREQ(parent),
+	BSREQ(count),
+	BSREQ(offset),
 {}};
-BSMETA(requisit);
 
 struct translate {
 	const char*			id;
@@ -58,7 +56,7 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
-	metadata_control() : gridref(metadata_type), plugin("metadata", DockLeft) {
+	metadata_control() : gridref(bsmeta<metadata>::meta), plugin("metadata", DockLeft) {
 		show_header = false;
 		read_only = true;
 		no_change_count = true;
@@ -115,7 +113,7 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
-	requisit_control() : gridref(requisit_type), plugin("requisit", DockLeftBottom) {
+	requisit_control() : gridref(bsmeta<requisit>::meta), plugin("requisit", DockLeftBottom) {
 		show_header = false;
 		read_only = true;
 		no_change_count = true;
@@ -135,10 +133,10 @@ static struct properties_control : controls::properties, controls::control::plug
 		bsval v;
 		if(focus == &requisit_instance) {
 			v.data = requisit_instance.getcurrent();
-			v.type = requisit_type;
+			v.type = bsmeta<requisit>::meta;
 		} else if(focus == &metadata_instance) {
 			v.data = metadata_instance.getcurrent();
-			v.type = metadata_type;
+			v.type = bsmeta<metadata>::meta;
 		}
 		if(v)
 			set(v);

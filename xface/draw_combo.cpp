@@ -298,7 +298,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 		rectx(rco, colors::black);
 	rco.offset(2, 2);
 	auto name = get_name(cmd.type, get_value(cmd));
-	if(name[0])
+	if(name && name[0])
 		textc(rco.x1, rco.y1, rco.width(), name);
 	if(tips && a == AreaHilited)
 		tooltips(tips);

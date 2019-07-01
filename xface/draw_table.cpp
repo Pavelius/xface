@@ -183,8 +183,22 @@ void table::rowtotal(const rect& rc) const {
 	}
 }
 
-void table::row(const rect& rc, int index) {
+void table::cell(const rect& rc, int line, int column) const {
 	char temp[260];
+	if(true) {
+		auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, line, column);
+		if(p) {
+			cellhilite(rc, line, column, p, AlignLeft);
+			draw::text(rc, p, AlignLeft);
+		}
+	} else {
+		szprint(temp, zendof(temp), "%1i", getnumber(line, column));
+		cellhilite(rc, line, column, temp, AlignRight);
+		draw::text(rc, temp, AlignLeft);
+	}
+}
+
+void table::row(const rect& rc, int index) {
 	area(rc);
 	if(select_mode == SelectRow)
 		rowhilite(rc, index);
@@ -219,7 +233,6 @@ void table::row(const rect& rc, int index) {
 		if(show_grid_lines && columns[i].size != SizeInner)
 			draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
 		area(rt);
-		temp[0] = 0;
 		(this->*pc->method->render)(rt, index, i);
 		x1 += rt.width() + 8;
 	}
