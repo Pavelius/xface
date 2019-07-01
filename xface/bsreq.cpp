@@ -231,6 +231,8 @@ const char* bsreq::get(const void* p, char* result, const char* result_max) cons
 
 bsval bsval::ptr(const char* url) const {
 	bsval r(data, type->find(url));
+	if(!r.type)
+		r.data = 0;
 	return r;
 }
 
