@@ -83,7 +83,7 @@ struct control {
 		virtual void		after_initialize() {}
 		virtual void		before_render() {}
 		static const plugin* find(const char* id);
-		virtual control&	getcontrol() { return *((control*)0); }
+		virtual control&	getcontrol() = 0;
 	};
 	bool					show_border;
 	bool					show_background;
@@ -320,3 +320,7 @@ int							radio(int x, int y, int width, unsigned flags, const runable& cmd, con
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title);
 }
+template<> struct bsmeta<draw::controls::control::plugin> {
+	typedef draw::controls::control::plugin	data_type;
+	static const bsreq		meta[];
+};
