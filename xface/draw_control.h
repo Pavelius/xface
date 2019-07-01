@@ -15,6 +15,9 @@ extern bool				left, right, top, bottom;
 extern bool				padding, statusbar;
 }}
 namespace draw {
+enum show_s : unsigned char {
+	NoView, ViewIcon, ViewText, ViewIconAndText
+};
 enum column_size_s : unsigned char {
 	SizeDefault,
 	SizeResized, SizeFixed, SizeInner, SizeAuto,
@@ -44,7 +47,6 @@ private:
 };
 namespace controls {
 struct control {
-	enum show_s : unsigned char { NoView, ViewIcon, ViewText, ViewIconAndText };
 	typedef bool			(control::*callback)(bool run);
 	struct command {
 		struct builder {

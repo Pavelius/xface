@@ -18,9 +18,9 @@ struct toolbar_builder : control::command::builder {
 
 	void add(const control::command& cmd) override {
 		auto width = 0;
-		if(cmd.view == control::ViewIcon || cmd.view == control::ViewIconAndText)
+		if(cmd.view == ViewIcon || cmd.view == ViewIconAndText)
 			width += size.x;
-		if(cmd.view == control::ViewIconAndText || cmd.view == control::ViewText) {
+		if(cmd.view == ViewIconAndText || cmd.view == ViewText) {
 			auto w = draw::textw(cmd.name);
 			width += metrics::padding * 2 + w;
 		}
@@ -39,9 +39,9 @@ struct toolbar_builder : control::command::builder {
 		}
 		if(draw::tool(rc, disabled, false, true))
 			source->execute(cmd.proc);
-		if(cmd.view == control::ViewIcon || cmd.view == control::ViewIconAndText)
+		if(cmd.view == ViewIcon || cmd.view == ViewIconAndText)
 			source->icon(x + size.x / 2, y + size.y / 2, disabled, cmd);
-		if(cmd.view == control::ViewText || cmd.view == control::ViewIconAndText)
+		if(cmd.view == ViewText || cmd.view == ViewIconAndText)
 			draw::textc(x, y + (size.y - draw::texth()) / 2, rc.x2 - x, cmd.name);
 		x += width;
 	}
@@ -54,7 +54,7 @@ void control::command::builder::render(const control::command* commands, bool& s
 	for(auto p = commands; *p; p++) {
 		if(!*p || !p->proc)
 			continue;
-		if(p->view == control::NoView)
+		if(p->view == NoView)
 			continue;
 		if(p->id[0] == '*') {
 			if(count)
