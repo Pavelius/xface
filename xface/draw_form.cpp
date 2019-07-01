@@ -134,7 +134,7 @@ struct dlgform : bsval {
 			ev.data = (void*)po.type->ptr(po.data);
 			ev.size = po.type->size;
 			ev.type = storage::Number;
-			if(po.type->type == text_type)
+			if(po.type->is(KindText))
 				ev.type = storage::TextPtr;
 			return draw::field(x, y, width, flags, ev, e.label, e.tips, e.title);
 		}

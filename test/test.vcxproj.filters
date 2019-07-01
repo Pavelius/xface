@@ -52,4 +52,9 @@
       <UniqueIdentifier>{677103a7-6313-4818-8a95-7d8cd70cb42c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>Логика</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

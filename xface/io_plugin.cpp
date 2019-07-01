@@ -52,11 +52,29 @@ io::strategy* io::strategy::find(const char* name) {
 	return 0;
 }
 
-bool io::node::operator==(const char* name) const {
+bool io::reader::node::operator==(const char* name) const {
 	return strcmp(this->name, name) == 0;
 }
 
-int io::node::getlevel() const {
+int io::reader::node::get(int n) const {
+	if(n >= sizeof(params) / sizeof(params[0]))
+		return 0;
+	auto p = this;
+	while(p->parent) {
+		if(p->params[n])
+			return p->params[n];
+		p = p->parent;
+	}
+	return 0;
+}
+
+void io::reader::node::set(int n, int v) {
+	if(n >= sizeof(params) / sizeof(params[0]))
+		return;
+	params[n] = v;
+}
+
+int io::reader::node::getlevel() const {
 	int result = 0;
 	for(auto p = parent; p; p = p->parent)
 		result++;
@@ -98,12 +116,6 @@ bool io::read(const char* url, const char* root_name, void* param) {
 					st->open(e);
 				break;
 			}
-		}
-		void set(node& e, int value) {
-			if(!st)
-				e.skip = true;
-			else
-				st->set(e, value);
 		}
 
 		void set(node& e, const char* value) {
@@ -152,9 +164,10 @@ bool io::write(const char* url, const char* root_name, void* param) {
 	return true;
 }
 
-io::node::node(int type) : parent(0), name(""), type(type), index(0), skip(false) {
+io::reader::node::node(io::type_s type) : parent(0), name(""), type(type), index(0), skip(false) {
+	memset(params, 0, sizeof(params));
 }
 
-io::node::node(node& parent, const char* name, int type) : parent(&parent), name(name), type(type), index(0), skip(parent.skip) {
+io::reader::node::node(io::reader::node& parent, const char* name, io::type_s type) : parent(&parent), name(name), type(type), index(0), skip(parent.skip) {
 	memset(params, 0, sizeof(params));
 }

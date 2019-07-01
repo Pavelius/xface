@@ -59,12 +59,12 @@ void grid::clickcolumn(int column) const {
 }
 
 bsval grid::getvalue(int row, int column) const {
-	return bsval(get(row), type).get(columns[column].id);
+	return bsval(get(row), type).ptr(columns[column].id);
 }
 
 int grid::getnumber(int line, int column) const {
 	auto bv = getvalue(line, column);
-	if(bv && bv.type->type == number_type)
+	if(bv && bv.type->is(KindNumber))
 		return bv.get();
 	return 0;
 }
@@ -73,12 +73,12 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 	auto bv = getvalue(line, column);
 	if(!bv)
 		return "";
-	if(bv.type->type == number_type) {
+	if(bv.type->is(KindNumber)) {
 		stringcreator sc(result, result_max);
 		auto value = getnumber(line, column);
 		sc.add("%1i", value);
 		return result;
-	} else if(bv.type->type == text_type) {
+	} else if(bv.type->is(KindText)) {
 		auto p = (const char*)bv.get();
 		if(p)
 			return p;
@@ -95,9 +95,9 @@ bool grid::changing(int line, int column, const char* name) {
 	auto bv = getvalue(line, column);
 	if(!bv)
 		return false;
-	if(bv.type->type == number_type)
+	if(bv.type->is(KindNumber))
 		bv.set(sz2num(name));
-	else if(bv.type->type == text_type)
+	else if(bv.type->is(KindText))
 		bv.set((int)szdup(name));
 	else
 		return false;
@@ -261,7 +261,7 @@ const control::command* grid::getcommands() const {
 	return elements;
 }
 
-void gridref::add(void* object) {
+void gridref::add(const void* object) {
 	array::add(&object);
 }
 

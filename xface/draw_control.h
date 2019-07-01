@@ -1,4 +1,4 @@
-#include "bsdata.h"
+#include "bsreq.h"
 #include "draw.h"
 #include "pointl.h"
 #include "storage.h"
@@ -83,8 +83,7 @@ struct control {
 		virtual void		after_initialize() {}
 		virtual void		before_render() {}
 		static const plugin* find(const char* id);
-		virtual control&	getcontrol() = 0;
-		static bsreq		metadata[];
+		virtual control&	getcontrol() { return *((control*)0); }
 	};
 	bool					show_border;
 	bool					show_background;

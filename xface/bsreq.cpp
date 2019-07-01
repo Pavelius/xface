@@ -1,31 +1,24 @@
+#include "crt.h"
 #include "bsreq.h"
 
 extern "C" int strcmp(const char* s1, const char* s2);
+extern "C" int memcmp(const void* s1, const void* s2, unsigned size);
 
-bsreq number_type[2] = {{"number"}};
-bsreq text_type[2] = {{"text"}};
-bsreq bsreq_type[] = {
-	BSREQ(bsreq, id, text_type),
-	BSREQ(bsreq, offset, number_type),
-	BSREQ(bsreq, size, number_type),
-	BSREQ(bsreq, lenght, number_type),
-	BSREQ(bsreq, count, number_type),
-	BSREQ(bsreq, reference, number_type),
-	BSREQ(bsreq, type, bsreq_type),
-{0}
-};
-
-const bsreq* bsreq::getkey() const {
-	auto f = find("id", text_type);
-	if(!f)
-		f = find("name", text_type);
-	if(!f)
-		f = find("text", text_type);
-	return f;
-}
+bsdata*	bsdata::first;
+bsdata*	bsdata::firstenum;
+const bsreq bsmeta<int>::meta[] = {{"number"}, {}};
+const bsreq bsmeta<const char*>::meta[] = {{"text"}, {}};
+const bsreq bsmeta<bsreq>::meta[] = {
+	BSREQ(id),
+	BSREQ(offset),
+	BSREQ(size),
+	BSREQ(lenght),
+	BSREQ(count),
+	BSREQ(type),
+{}};
 
 const bsreq* bsreq::find(const char* name) const {
-	if(!this)
+	if(!this || !name || name[0]==0)
 		return 0;
 	for(auto p = this; p->id; p++) {
 		if(strcmp(p->id, name) == 0)
@@ -83,11 +76,174 @@ void bsreq::set(const void* p, int value) const {
 
 bool bsreq::match(const void* p, const char* name) const {
 	auto value = (const char*)get(p);
-	if(!value || type != text_type)
+	if(!value || type != bsmeta<const char*>::meta)
 		return false;
 	for(int i = 0; name[i]; i++) {
 		if(value[i] != name[i])
 			return false;
 	}
 	return true;
+}
+
+bsdata::bsdata(const char* id, const bsreq* meta,
+	void* data, unsigned size, unsigned count, unsigned maximum,
+	bstype_s subtype) :
+	id(id), meta(meta), next(0),
+	data(data), count(count), maximum(maximum), size(size),
+	subtype(subtype) {
+	auto pf = &first;
+	if(subtype == KindEnum)
+		pf = &firstenum;
+	while(*pf)
+		pf = &((*pf)->next);
+	*pf = this;
+}
+
+void* bsdata::add() {
+	if(count < maximum)
+		return (char*)data + (count++)*size;
+	return data;
+}
+
+bsdata* bsdata::find(const char* v, bsdata* first) {
+	if(!v || !v[0])
+		return 0;
+	for(auto p = first; p; p = p->next) {
+		if(strcmp(p->id, v) == 0)
+			return p;
+	}
+	return 0;
+}
+
+bsdata* bsdata::find(const bsreq* v, bsdata* first) {
+	if(!v)
+		return 0;
+	for(auto p = first; p; p = p->next) {
+		if(p->meta == v)
+			return p;
+	}
+	return 0;
+}
+
+bsdata* bsdata::findbyptr(const void* object, bsdata* first) {
+	if(!object)
+		return 0;
+	for(auto p = first; p; p = p->next)
+		if(p->has(object))
+			return p;
+	return 0;
+}
+
+int	bsdata::indexof(const void* object) const {
+	if(!has(object))
+		return -1;
+	return ((char*)object - (char*)data) / size;
+}
+
+const void* bsdata::find(const bsreq* id, const char* value) const {
+	if(!id || id->type != bsmeta<const char*>::meta)
+		return 0;
+	if(!value)
+		return find(id, &value, sizeof(value));
+	auto ps = (char*)id->ptr(data);
+	auto pe = ps + size*count;
+	for(; ps < pe; ps += size) {
+		auto ps_value = (const char*)id->get(ps);
+		if(!ps_value)
+			continue;
+		if(strcmp(ps_value, value) == 0) {
+			auto i = indexof(ps);
+			if(i == -1)
+				return 0;
+			return get(i);
+		}
+	}
+	return 0;
+}
+
+const void* bsdata::find(const bsreq* id, const void* value, unsigned size) const {
+	if(!id)
+		return 0;
+	auto ps = (char*)id->ptr(data);
+	auto pe = ps + size * count;
+	for(; ps < pe; ps += size) {
+		if(memcmp(ps, value, size) == 0) {
+			auto i = indexof(ps);
+			if(i == -1)
+				return 0;
+			return get(i);
+		}
+	}
+	return 0;
+}
+
+const char*	bsdata::getstring(const void* object, const bsreq* type, const char* id) {
+	auto pf = type->find(id);
+	if(!pf)
+		return "";
+	auto ps = (const char*)pf->get(pf->ptr(object));
+	if(!ps)
+		ps = "";
+	return ps;
+}
+
+const bsreq* bsreq::getname() const {
+	auto p = find("name", bsmeta<const char*>::meta);
+	if(!p)
+		p = find("id", bsmeta<const char*>::meta);
+	if(!p)
+		p = find("text", bsmeta<const char*>::meta);
+	return p;
+}
+
+const char* bsreq::get(const void* p, char* result, const char* result_max) const {
+	if(is(KindNumber)) {
+		auto v = get(p);
+		szprint(result, result_max, "%1i", v);
+	} else if(is(KindText)) {
+		auto v = (const char*)get(p);
+		if(!v)
+			return "";
+		return v;
+	} else if(is(KindReference)) {
+		auto pf = type->getname();
+		if(!pf)
+			return "";
+		auto v = (void*)get(p);
+		if(!v)
+			return "";
+		return pf->get(pf->ptr(v), result, result_max);
+	} else if(is(KindEnum)) {
+		auto pb = bsdata::find(type, bsdata::firstenum);
+		if(!pb)
+			pb = bsdata::find(type, bsdata::first);
+		if(!pb)
+			return "";
+		auto pf = pb->meta->getname();
+		if(!pf)
+			return "";
+		auto vi = get(p);
+		auto v = (void*)pb->get(vi);
+		return pf->get(pf->ptr(v), result, result_max);
+	}
+	return result;
+}
+
+bsval bsval::ptr(const char* url) const {
+	bsval r(data, type->find(url));
+	return r;
+}
+
+bsval bsval::dereference() const {
+	return *this;
+}
+
+const char*	bsval::getname() const {
+	auto pf = type->find("name");
+	if(!pf)
+		return "";
+	auto pv = (const char*)pf->get(pf->ptr(data));
+	if(!pv)
+		return "";
+	return pv;
 }

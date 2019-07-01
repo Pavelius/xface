@@ -21,13 +21,13 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 	st.size = ev.type->size;
 	int h = 0;
 	char temp[260];
-	if(ev.type->type == number_type) {
+	if(ev.type->is(KindNumber)) {
 		st.type = st.Number;
 		h = field(x, y, width, 0, st, gettitle(temp, zendof(temp), ev), 0, title);
-	} else if(ev.type->type == text_type) {
+	} else if(ev.type->is(KindText)) {
 		st.type = st.TextPtr;
 		h = field(x, y, width, 0, st, gettitle(temp, zendof(temp), ev), 0, title);
-	} else if(ev.type->reference > 0)
+	} else if(ev.type->is(KindReference))
 		h = combobox(x, y, width, 0, ev, gettitle(temp, zendof(temp), ev), 0, title);
 	if(!h)
 		return 0;

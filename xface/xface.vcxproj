@@ -125,7 +125,8 @@
   <ItemGroup>
     <ClCompile Include="anyval.cpp" />
     <ClCompile Include="archive.cpp" />
-    <ClCompile Include="bsdata_serial_bin.cpp" />
+    <ClCompile Include="bsreq_bin.cpp" />
+    <ClCompile Include="bsreq_txt.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_autocomplete.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
@@ -137,7 +138,6 @@
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="markup.cpp" />
     <ClCompile Include="requisit.cpp" />
-    <ClCompile Include="bsdata.cpp" />
     <ClCompile Include="bsreq.cpp" />
     <ClCompile Include="bstream.cpp" />
     <ClCompile Include="collection.cpp" />
@@ -206,7 +206,6 @@
     <ClInclude Include="markup.h" />
     <ClInclude Include="valuelist.h" />
     <ClInclude Include="requisit.h" />
-    <ClInclude Include="bsdata.h" />
     <ClInclude Include="bsreq.h" />
     <ClInclude Include="bstream.h" />
     <ClInclude Include="collection.h" />

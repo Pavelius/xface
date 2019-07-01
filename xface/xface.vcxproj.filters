@@ -144,9 +144,6 @@
     <ClCompile Include="bstream.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="bsdata.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="draw_combo.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
@@ -175,9 +172,6 @@
       <Filter>platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="strlib.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
-    <ClCompile Include="bsdata_serial_bin.cpp">
       <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="sz2numf.cpp">
@@ -240,6 +234,12 @@
     <ClCompile Include="anyval.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="bsreq_bin.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
+    <ClCompile Include="bsreq_txt.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
@@ -292,9 +292,6 @@
     </ClInclude>
     <ClInclude Include="bstream.h">
       <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="bsdata.h">
-      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="draw_grid.h">
       <Filter>draw\controls</Filter>

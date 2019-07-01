@@ -1,4 +1,4 @@
-#include "bsdata.h"
+#include "bsreq.h"
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
@@ -23,24 +23,28 @@ static int compare_name_ds(const char* n1, const char* n2) {
 
 static void* get_value(const bsval& e) {
 	auto type = e.type;
-	if(type->subtype==bsreq::Enum) {
-		auto b = bsdata::find(type->type);
+	if(type->is(KindEnum)) {
+		auto b = bsdata::find(type->type, bsdata::firstenum);
+		if(!b)
+			b = bsdata::find(type->type, bsdata::first);
 		if(!b)
 			return 0;
 		auto index = type->get(type->ptr(e.data));
-		return b->get(index);
+		return (void*)b->get(index);
 	} else
 		return (void*)type->get(type->ptr(e.data));
 }
 
 static void set_value(const bsval& e1, void* value) {
-	auto ps = bsdata::find(e1.type->type);
+	auto ps = bsdata::find(e1.type->type, bsdata::firstenum);
+	if(!ps)
+		ps = bsdata::find(e1.type->type, bsdata::first);
 	if(!ps)
 		return;
 	auto index = ps->indexof(value);
 	if(index == -1)
 		return;
-	if(e1.type->subtype==bsreq::Enum)
+	if(e1.type->is(KindEnum))
 		e1.set(index);
 	else if(e1.type->size == sizeof(void*))
 		e1.set((int)value);
@@ -49,7 +53,13 @@ static void set_value(const bsval& e1, void* value) {
 static const char* get_name(const bsreq* type, const void* object) {
 	if(!object || !type)
 		return "";
-	return bsval((void*)object, type->type).getname();
+	auto pf = type->find("name");
+	if(!pf)
+		return 0;
+	auto pn = pf->get(pf->ptr(object));
+	if(!pn)
+		return "";
+	return (const char*)pn;
 }
 
 static int compare_objects(const void* p1, const void* p2) {
@@ -59,17 +69,19 @@ static int compare_objects(const void* p1, const void* p2) {
 }
 
 static void* find_next(const bsval& e1, comparer c1) {
-	auto ps = bsdata::find(e1.type->type);
+	auto ps = bsdata::find(e1.type->type, bsdata::firstenum);
+	if(!ps)
+		ps = bsdata::find(e1.type->type, bsdata::first);
 	if(!ps)
 		return 0;
-	auto pf = ps->fields->find("name");
+	auto pf = ps->meta->find("name");
 	if(!pf)
 		return 0;
 	auto n1 = get_name(e1.type, get_value(e1));
 	auto n2 = "";
-	void* e2 = 0;
+	const char* e2 = 0;
 	auto pe = ps->end();
-	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->getsize()) {
+	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
 		auto nx = (const char*)pf->get(pf->ptr(ex));
 		if(!nx)
 			nx = "";
@@ -78,23 +90,23 @@ static void* find_next(const bsval& e1, comparer c1) {
 			e2 = ex;
 		}
 	}
-	return e2;
+	return (void*)e2;
 }
 
 static void* find_name(const bsreq* type, const char* name) {
-	auto ps = bsdata::find(type);
+	auto ps = bsdata::find(type, bsdata::firstenum);
 	if(!ps)
-		return 0;
-	auto pf = ps->fields->find("name");
+		ps = bsdata::find(type, bsdata::first);
+	auto pf = ps->meta->find("name");
 	if(!pf)
 		return 0;
 	auto pe = ps->end();
-	for(void* ex = ps->begin(); ex < pe; ex = (char*)ex + ps->getsize()) {
+	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
 		auto nx = (const char*)pf->get(pf->ptr(ex));
 		if(!nx || nx[0] == 0)
 			continue;
 		if(matchuc(nx, name))
-			return ex;
+			return (void*)ex;
 	}
 	return 0;
 }
@@ -122,9 +134,9 @@ struct combo_list : controls::list, adat<void*, 64> {
 	const bsdata&		metadata;
 
 	combo_list(const bsdata& metadata) : metadata(metadata) {
-		field = metadata.fields->find("name");
+		field = metadata.meta->find("name");
 		if(!field)
-			field = metadata.fields->find("id");
+			field = metadata.meta->find("id");
 	}
 
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
@@ -165,7 +177,9 @@ struct combo_list : controls::list, adat<void*, 64> {
 };
 
 static void show_drop_down() {
-	auto ps = bsdata::find(combo_value.type->type);
+	auto ps = bsdata::find(combo_value.type->type, bsdata::firstenum);
+	if(!ps)
+		ps = bsdata::find(combo_value.type->type, bsdata::first);
 	if(!ps)
 		return;
 	combo_list list(*ps);
@@ -174,8 +188,8 @@ static void show_drop_down() {
 		return;
 	auto pe = ps->end();
 	auto value = get_value(combo_value);
-	for(auto p = ps->begin(); p < pe; p += ps->getsize())
-		list.add(p);
+	for(auto p = ps->begin(); p < pe; p += ps->size)
+		list.add((void*)p);
 	qsort(list.data, list.getcount(), sizeof(list.data[0]), compare_objects);
 	list.pixels_per_line = list.getrowheight();
 	list.lines_per_page = imin(list.getcount(), 7);

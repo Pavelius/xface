@@ -1,8 +1,3 @@
-#include "xface/bsdata.h"
-#include "xface/bsreq.h"
-#include "xface/collection.h"
-#include "xface/crt.h"
-#include "xface/datetime.h"
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
 #include "xface/draw_properties.h"
@@ -11,6 +6,7 @@
 #include "xface/stringcreator.h"
 #include "xface/valuelist.h"
 #include "xface/widget.h"
+#include "main.h"
 
 using namespace draw;
 
@@ -19,8 +15,6 @@ void logmsg(const char* format, ...);
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
 
-extern bsdata cultivated_land_manager;
-
 static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phone", "Smartphone", "Pencil",
 "Keyboard", "Mouse", "Headphones",
 "Car", "Bus", "Flashmemory",
@@ -28,30 +22,13 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 "Soldier", "Heavy Soldier", "Sniper", "Commando"
 };
 
-enum alignment_s : unsigned char {
-	LawfulGood, NeutralGood, ChaoticGood,
-	LawfulNeutral, TrueNeutral, ChaoticNeutral,
-	LawfulEvil, NeutralEvil, ChaoticEvil,
-};
-enum gender_s : unsigned char {
-	NoGender, Male, Female,
-};
-
-static struct gender_info {
-	const char*		name;
-} gender_data[] = {{"Неизвестен"},
+gender_info bsmeta<gender_info>::elements[] = {{"Неизвестен"},
 {"Мужчина"},
 {"Женщина"},
 };
-static bsreq gender_type[] = {
-	BSREQ(gender_info, name, text_type),
-{}};
-BSMETA(gender);
+assert_enum(gender, Female);
 
-static struct alignment_info {
-	const char*		id;
-	const char*		name;
-} alignment_data[] = {{"Neutral", "Нейтральный"},
+alignment_info bsmeta<alignment_info>::elements[] = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
 {"Neutral Good", "Нейтрально добрый"},
 {"Chaotic Good", "Хаотично добрый"},
@@ -62,12 +39,6 @@ static struct alignment_info {
 {"Chaotic Evil", "Хаотично злой"},
 };
 assert_enum(alignment, ChaoticEvil);
-getstr_enum(alignment);
-static bsreq alignment_type[] = {
-	BSREQ(alignment_info, id, text_type),
-	BSREQ(alignment_info, name, text_type),
-{}};
-BSMETA(alignment);
 
 static struct element {
 	const char*		surname;
@@ -81,14 +52,14 @@ static struct element {
 {"Petrov", "Peter", 0, 0, 25, Male, ChaoticNeutral},
 {"Ludina", "Iren", 0, 0, 25, Female, LawfulGood},
 };
-static bsreq element_type[] = {
-	BSREQ(element, mark, number_type),
-	BSREQ(element, radio, number_type),
-	BSREQ(element, name, text_type),
-	BSREQ(element, surname, text_type),
-	BSREQ(element, age, number_type),
-	BSREQ(element, gender, gender_type),
-	BSREQ(element, alignment, alignment_type),
+const bsreq bsmeta<element>::meta[] = {
+	BSREQ(mark),
+	BSREQ(radio),
+	BSREQ(name),
+	BSREQ(surname),
+	BSREQ(age),
+	BSREQ(gender),
+	BSREQ(alignment),
 {}};
 
 struct testinfo {
@@ -210,27 +181,28 @@ static void many_lines() {
 	}
 }
 
+struct grid_element {
+	const char*		name;
+	gender_s		gender;
+	alignment_s		alignment;
+	char			image;
+	datetime		date;
+};
+const bsreq bsmeta<grid_element>::meta[] = {
+	BSREQ(name),
+	BSREQ(gender),
+	BSREQ(alignment),
+	BSREQ(date),
+	BSREQ(image),
+{}};
+
 static void test_grid() {
-	struct element {
-		const char*		name;
-		gender_s		gender;
-		alignment_s		alignment;
-		char			image;
-		datetime		date;
-	};
-	static bsreq element_type[] = {
-		BSREQ(element, name, text_type),
-		BSREQ(element, gender, gender_type),
-		BSREQ(element, alignment, alignment_type),
-		BSREQ(element, date, number_type),
-		BSREQ(element, image, number_type),
-	{}};
-	adat<element, 32> elements;
+	adat<grid_element, 32> elements;
 	elements.add({"Pavel", Male, ChaoticEvil, 2, datetime::now()});
 	elements.add({"Olga", Female, ChaoticGood, 0, datetime::now() - 5*24*60});
 	elements.add({"Valentin", Male, NeutralGood, 1, datetime::now() - 3 * 24 * 60});
 	elements.add({"Jorgun", Male, LawfulGood, 0, datetime::now() - 4 * 24 * 60});
-	controls::grid test(element_type, elements);
+	controls::grid test(bsmeta<grid_element>::meta, elements);
 	test.addcol("image", 0, "image");
 	test.addcol("name", "Наименование", "text");
 	test.addcol("gender", "Пол", "ref");
@@ -245,13 +217,13 @@ static void test_grid() {
 }
 
 static void test_grid_ref() {
-	controls::gridref test(cultivated_land_manager.fields);
+	controls::gridref test(bsmeta<cultivated_land>::meta);
 	test.addcol("name", "Наименование", "text", SizeAuto);
 	test.addcol("cult_land", "Обрабатывается", "number");
 	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-	test.add(cultivated_land_manager.get(0));
-	test.add(cultivated_land_manager.get(1));
-	test.add(cultivated_land_manager.get(1));
+	test.add(bsmeta<cultivated_land>::data.get(0));
+	test.add(bsmeta<cultivated_land>::data.get(1));
+	test.add(bsmeta<cultivated_land>::data.get(1));
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;
@@ -262,11 +234,11 @@ static void test_grid_ref() {
 static void test_tree() {
 	struct test_tree_control : controls::tree {
 		void expanding(builder&  e) {
-			e.add(cultivated_land_manager.get(0), 0, 0, false);
-			e.add(cultivated_land_manager.get(1), 1, 0, true);
-			e.add(cultivated_land_manager.get(2), 1, 0, true);
+			e.add((void*)bsmeta<cultivated_land>::data.get(0), 0, 0, false);
+			e.add((void*)bsmeta<cultivated_land>::data.get(1), 1, 0, true);
+			e.add((void*)bsmeta<cultivated_land>::data.get(2), 1, 0, true);
 		}
-		constexpr test_tree_control() : tree(cultivated_land_manager.fields){}
+		constexpr test_tree_control() : tree(bsmeta<cultivated_land>::meta){}
 	} test;
 	test.select_mode = SelectText;
 	test.addcol("image", 0, "image", SizeInner);
@@ -313,7 +285,7 @@ static void test_widget() {
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
-		draw::render(10, 10, 500, bsval(&test, element_type), elements);
+		draw::render(10, 10, 500, bsval(&test, bsmeta<element>::meta), elements);
 		domodal();
 	}
 }
@@ -508,7 +480,7 @@ static void test_requisit() {
 }
 
 static void test_binary_serial() {
-	bsdata::write("test.mtd", element_data, element_type);
+	bsdata::write("test.mtd");
 }
 
 static bool test_map() {

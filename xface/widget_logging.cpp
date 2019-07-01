@@ -17,11 +17,10 @@ struct log_message {
 	const char*		text;
 };
 static arem<log_message> messages;
-bsreq log_message_type[] = {
-	BSREQ(log_message, stamp, number_type),
-	BSREQ(log_message, text, text_type),
-{0}
-};
+const bsreq bsmeta<log_message>::meta[] = {
+	BSREQ(stamp),
+	BSREQ(text),
+{}};
 
 void logmsgv(const char* format, const char* arguments) {
 	log_message e = {0}; char temp[8192];

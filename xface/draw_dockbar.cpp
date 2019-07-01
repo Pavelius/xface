@@ -1,4 +1,4 @@
-#include "bsdata.h"
+#include "bsreq.h"
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
@@ -139,7 +139,7 @@ void dockbar(rect& rc) {
 
 static struct dockbar_settings_strategy : io::strategy {
 
-	int getindex(const io::node& n, const char* name) const {
+	int getindex(const io::reader::node& n, const char* name) const {
 		if(!n.parent)
 			return -1;
 		auto text = n.parent->name;
@@ -161,7 +161,7 @@ static struct dockbar_settings_strategy : io::strategy {
 		}
 	}
 
-	void set(io::node& n, const char* value) override {
+	void set(io::reader::node& n, const char* value) override {
 		auto i = getindex(n, "Dock");
 		if(i == -1 || i >= sizeof(dock_data) / sizeof(dock_data[0]))
 			return;

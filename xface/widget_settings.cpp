@@ -1,4 +1,4 @@
-#include "bsdata.h"
+#include "bsreq.h"
 #include "collection.h"
 #include "crt.h"
 #include "draw.h"
@@ -27,26 +27,27 @@ static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
-static struct dock {
+namespace {
+struct dock_info {
 	const char*	name;
 	const char*	id;
-} dock_data[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
+};
+}
+dock_info bsmeta<dock_info>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
 {"Присоединить слева и снизу", "dock_left_bottom"},
 {"Присоединить справа", "dock_right"},
 {"Присоединить справа и снизу", "dock_right_bottom"},
 {"Присоединить снизу", "dock_bottom"},
 {"На рабочем столе", "dock_workspace"}
 };
-getstr_enum(dock)
-bsreq dock_type[] = {
-	BSREQ(dock, id, text_type),
-	BSREQ(dock, name, text_type),
-{0}
-};
-BSMETA(dock)
-bsreq draw::controls::control::plugin::metadata[] = {
-	BSREQ(plugin, id, text_type),
-	BSREQ(plugin, dock, dock_type),
+DECLENUM(dock);
+const bsreq bsmeta<dock_info>::meta[] = {
+	BSREQ(id),
+	BSREQ(name),
+{}};
+const bsreq bsmeta<draw::controls::control::plugin>::meta[] = {
+	BSREQ(id),
+	BSREQ(dock),
 {}};
 
 static const char* get_setting_name(char* result, const char* result_maximum, void* p) {
@@ -198,7 +199,7 @@ static struct widget_control_viewer : controls::gridref {
 		return gridref::getname(result, result_maximum, row, column);
 	}
 
-	widget_control_viewer() : gridref(draw::controls::control::plugin::metadata) {
+	widget_control_viewer() : gridref(bsmeta<draw::controls::control::plugin>::meta) {
 	}
 
 } control_viewer;
@@ -636,7 +637,7 @@ static struct settings_settings_strategy : io::strategy {
 		write(file, settings::root);
 	}
 
-	settings* find(io::node& n) {
+	settings* find(io::reader::node& n) {
 		auto result = (settings*)settings::root.data;
 		if(n.parent && strcmp(n.parent->name, "Root") != 0) {
 			result = find(*n.parent);
@@ -653,7 +654,7 @@ static struct settings_settings_strategy : io::strategy {
 		return sz2num(value);
 	}
 
-	void set(io::node& n, const char* value) override {
+	void set(io::reader::node& n, const char* value) override {
 		auto e = find(n);
 		if(!e)
 			return;
@@ -690,7 +691,7 @@ static struct window_settings_strategy : io::strategy {
 		file.set("flags", window.flags);
 	}
 
-	void set(io::node& n, const char* value) override {
+	void set(io::reader::node& n, const char* value) override {
 		if(n == "x")
 			window.x = sz2num(value);
 		else if(n=="y")
@@ -723,7 +724,7 @@ static struct controls_settings_strategy : io::strategy {
 		}
 	}
 
-	settings* find(io::node& n) {
+	settings* find(io::reader::node& n) {
 		settings* result = (settings*)settings::root.data;
 		if(n.parent && szcmpi(n.parent->name, "Root") != 0) {
 			result = find(*n.parent);
@@ -744,7 +745,7 @@ static struct controls_settings_strategy : io::strategy {
 			&& value[4] == 0;
 	}
 
-	void set(io::node& n, const char* value) override {
+	void set(io::reader::node& n, const char* value) override {
 		if(!n.parent || !n.parent->parent)
 			return;
 		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));
