@@ -83,9 +83,7 @@ struct bsdata_bin {
 		// Вначале определим базу данных
 		bsdata* pb = 0;
 		if(writemode) {
-			pb = bsdata::findbyptr(pv, bsdata::firstenum);
-			if(!pb)
-				pb = bsdata::findbyptr(pv, bsdata::first);
+			pb = bsdata::findbyptr(pv);
 			if(!pb) {
 				file.write(&pb, sizeof(pb));
 				return true;
@@ -96,9 +94,7 @@ struct bsdata_bin {
 			auto key = read_string();
 			if(!key) // Пустая ссылка
 				return true;
-			pb = bsdata::find(key, bsdata::firstenum);
-			if(!pb)
-				pb = bsdata::find(key, bsdata::first);
+			pb = bsdata::find(key);
 		}
 		if(!pb)
 			return false;

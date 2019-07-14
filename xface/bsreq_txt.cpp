@@ -9,10 +9,7 @@ struct bsdata_writer_txt {
 	bsdata_writer_txt(writer& ew) : ew(ew) {}
 
 	static bsdata* find_base(const bsreq* type) {
-		auto p = bsdata::find(type, bsdata::first);
-		if(!p)
-			p = bsdata::find(type, bsdata::firstenum);
-		return p;
+		return bsdata::find(type);
 	}
 
 	bool write_object(const void* pv, const bsreq* pf, const char* id, bool run) {
@@ -58,9 +55,7 @@ struct bsdata_writer_txt {
 					ew.set(id, value);
 				return false;
 			}
-			auto pb = bsdata::findbyptr((void*)value, bsdata::first);
-			if(!pb)
-				pb = bsdata::findbyptr((void*)value, bsdata::firstenum);
+			auto pb = bsdata::findbyptr((void*)value);
 			if(!pb)
 				return false;
 			return write_field((void*)value, pb->meta, id, run);
@@ -156,9 +151,7 @@ struct bsdata_reader_txt : reader {
 		else if(pf->is(KindNumber))
 			return sz2num(value);
 		else if(pf->is(KindReference) || pf->is(KindEnum) || pf->is(KindCFlags)) {
-			auto pd = bsdata::find(pf->type, bsdata::firstenum);
-			if(!pd)
-				pd = bsdata::find(pf->type, bsdata::first);
+			auto pd = bsdata::find(pf->type);
 			if(!pd)
 				return 0;
 			auto pv = findvalue(value, pd);
@@ -216,9 +209,7 @@ struct bsdata_reader_txt : reader {
 			if(!e.parent)
 				return;
 			// Это идентификатор типа
-			auto pd = bsdata::find(value, bsdata::first);
-			if(!pd)
-				pd = bsdata::find(value, bsdata::firstenum);
+			auto pd = bsdata::find(value);
 			e.parent->set(Database, (int)pd);
 			e.parent->set(Meta, (int)pd->meta);
 			return;

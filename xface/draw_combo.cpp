@@ -24,9 +24,7 @@ static int compare_name_ds(const char* n1, const char* n2) {
 static void* get_value(const bsval& e) {
 	auto type = e.type;
 	if(type->is(KindEnum)) {
-		auto b = bsdata::find(type->type, bsdata::firstenum);
-		if(!b)
-			b = bsdata::find(type->type, bsdata::first);
+		auto b = bsdata::find(type->type);
 		if(!b)
 			return 0;
 		auto index = type->get(type->ptr(e.data));
@@ -36,9 +34,7 @@ static void* get_value(const bsval& e) {
 }
 
 static void set_value(const bsval& e1, void* value) {
-	auto ps = bsdata::find(e1.type->type, bsdata::firstenum);
-	if(!ps)
-		ps = bsdata::find(e1.type->type, bsdata::first);
+	auto ps = bsdata::find(e1.type->type);
 	if(!ps)
 		return;
 	auto index = ps->indexof(value);
@@ -69,9 +65,7 @@ static int compare_objects(const void* p1, const void* p2) {
 }
 
 static void* find_next(const bsval& e1, comparer c1) {
-	auto ps = bsdata::find(e1.type->type, bsdata::firstenum);
-	if(!ps)
-		ps = bsdata::find(e1.type->type, bsdata::first);
+	auto ps = bsdata::find(e1.type->type);
 	if(!ps)
 		return 0;
 	auto pf = ps->meta->find("name");
@@ -94,9 +88,7 @@ static void* find_next(const bsval& e1, comparer c1) {
 }
 
 static void* find_name(const bsreq* type, const char* name) {
-	auto ps = bsdata::find(type, bsdata::firstenum);
-	if(!ps)
-		ps = bsdata::find(type, bsdata::first);
+	auto ps = bsdata::find(type);
 	auto pf = ps->meta->find("name");
 	if(!pf)
 		return 0;
@@ -177,9 +169,7 @@ struct combo_list : controls::list, adat<void*, 64> {
 };
 
 static void show_drop_down() {
-	auto ps = bsdata::find(combo_value.type->type, bsdata::firstenum);
-	if(!ps)
-		ps = bsdata::find(combo_value.type->type, bsdata::first);
+	auto ps = bsdata::find(combo_value.type->type);
 	if(!ps)
 		return;
 	combo_list list(*ps);

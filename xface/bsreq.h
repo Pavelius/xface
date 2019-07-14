@@ -96,7 +96,6 @@ struct bsdata {
 	void*				data;
 	bstype_s			subtype;
 	static bsdata*		first;
-	static bsdata*		firstenum;
 	//
 	bsdata(const char* id, const bsreq* meta,
 		void* data, unsigned size, unsigned count, unsigned maximum,
@@ -105,11 +104,11 @@ struct bsdata {
 	void*				add();
 	const char*			begin() const { return (char*)data; }
 	const char*			end() const { return (char*)data + size*count; }
-	static bsdata*		find(const char* id, bsdata* first);
-	static bsdata*		find(const bsreq* id, bsdata* first);
+	static bsdata*		find(const char* id);
+	static bsdata*		find(const bsreq* id);
 	const void*			find(const bsreq* id, const char* value) const;
 	const void*			find(const bsreq* id, const void* value, unsigned size) const;
-	static bsdata*		findbyptr(const void* object, bsdata* first);
+	static bsdata*		findbyptr(const void* object);
 	const void*			get(int index) const { return (char*)data + size * index; }
 	static const char*	getstring(const void* object, const bsreq* type, const char* id);
 	bool				has(const void* object) const { return object >= data && object < ((char*)data + maximum * size); }

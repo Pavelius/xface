@@ -5,7 +5,6 @@ extern "C" int strcmp(const char* s1, const char* s2);
 extern "C" int memcmp(const void* s1, const void* s2, unsigned size);
 
 bsdata*	bsdata::first;
-bsdata*	bsdata::firstenum;
 const bsreq bsmeta<int>::meta[] = {{"number"}, {}};
 const bsreq bsmeta<const char*>::meta[] = {{"text"}, {}};
 const bsreq bsmeta<bsreq>::meta[] = {
@@ -92,8 +91,6 @@ bsdata::bsdata(const char* id, const bsreq* meta,
 	data(data), count(count), maximum(maximum), size(size),
 	subtype(subtype) {
 	auto pf = &first;
-	if(subtype == KindEnum)
-		pf = &firstenum;
 	while(*pf)
 		pf = &((*pf)->next);
 	*pf = this;
@@ -105,7 +102,7 @@ void* bsdata::add() {
 	return data;
 }
 
-bsdata* bsdata::find(const char* v, bsdata* first) {
+bsdata* bsdata::find(const char* v) {
 	if(!v || !v[0])
 		return 0;
 	for(auto p = first; p; p = p->next) {
@@ -115,7 +112,7 @@ bsdata* bsdata::find(const char* v, bsdata* first) {
 	return 0;
 }
 
-bsdata* bsdata::find(const bsreq* v, bsdata* first) {
+bsdata* bsdata::find(const bsreq* v) {
 	if(!v)
 		return 0;
 	for(auto p = first; p; p = p->next) {
@@ -125,7 +122,7 @@ bsdata* bsdata::find(const bsreq* v, bsdata* first) {
 	return 0;
 }
 
-bsdata* bsdata::findbyptr(const void* object, bsdata* first) {
+bsdata* bsdata::findbyptr(const void* object) {
 	if(!object)
 		return 0;
 	for(auto p = first; p; p = p->next)
@@ -214,9 +211,7 @@ const char* bsreq::get(const void* p, char* result, const char* result_max) cons
 			return "";
 		return pf->get(pf->ptr(v), result, result_max);
 	} else if(is(KindEnum)) {
-		auto pb = bsdata::find(type, bsdata::firstenum);
-		if(!pb)
-			pb = bsdata::find(type, bsdata::first);
+		auto pb = bsdata::find(type);
 		if(!pb)
 			return "";
 		auto pf = pb->meta->getname();
