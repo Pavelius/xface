@@ -104,6 +104,7 @@ struct metadata {
 	bool					ispointer() const { return id[0] == '*' && id[1] == 0; }
 	requisit*				find(const char* id) const;
 	metadata*				reference();
+	void					write(const char* url) const;
 };
 struct requisit {
 	const char*				id;
@@ -118,7 +119,7 @@ struct requisit {
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				set(expression* v) { if(this) code = v; return this; }
 };
-void					logmsg(const char* format, ...);
+void						logmsg(const char* format, ...);
 extern adat<requisit, 256 * 16>	requisit_data;
 extern adat<metadata, 256 * 4>	metadata_data;
 }
