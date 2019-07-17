@@ -184,11 +184,8 @@ void expression::set(expression_s v) {
 void expression::select(valuelist& v, expression_s t) const {
 	switch(t) {
 	case Requisit:
-		for(auto& e : requisit_data) {
-			if(e.parent != req->parent)
-				continue;
+		for(auto& e : met->requisits)
 			v.add(e.id, (int)&e, Requisit, 0);
-		}
 		break;
 	case Metadata:
 		for(auto& e : metadata_data)

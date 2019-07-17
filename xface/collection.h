@@ -70,6 +70,7 @@ template<class T>
 struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(0, 0), count_maximum(0) {}
+	constexpr arem(T* source, unsigned count) : aref<T>(source, count), count_maximum(0) {}
 	~arem() { if(this->data && count_maximum) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
 	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }

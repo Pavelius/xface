@@ -13,15 +13,6 @@ struct requisit;
 struct expression;
 struct statement;
 
-extern metadata void_meta[];
-extern metadata int_meta[];
-extern metadata sint_meta[];
-extern metadata usint_meta[];
-extern metadata char_meta[];
-extern metadata text_meta[];
-extern metadata proc_meta[];
-extern metadata section_meta[];
-
 metadata*				addtype(const char* id);
 metadata*				findtype(const char* id);
 
@@ -99,8 +90,10 @@ struct requisit {
 	metadata*				type;
 	unsigned				offset;
 	unsigned				count;
-	metadata*				parent;
 	expression*				code;
+	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0) {}
+	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), code(0) {}
+	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), code(0) {}
 	constexpr operator bool() const { return id != 0; }
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
@@ -108,23 +101,34 @@ struct requisit {
 	requisit*				set(expression* v) { if(this) code = v; return this; }
 };
 struct requisitc : arem<requisit> {
+	constexpr requisitc() : arem() {}
+	template<unsigned N> constexpr requisitc(requisit(&data)[N]) : arem<requisit>(data, N) {}
 	const requisit*			find(const char* id) const;
 };
 struct metadata {
+	typedef arem<metadata*> typec;
 	const char*				id;
 	metadata*				type;
 	unsigned				size;
 	requisitc				requisits;
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
+	requisit*				add(const char* id, const char* type) { return add(id, findtype(type)); }
+	void					addto(metadata::typec& source) const;
 	metadata*				dereference();
+	static void				initialize();
+	bool					is(const char* id) const;
+	bool					isnumber() const;
 	bool					ispointer() const { return id[0] == '*' && id[1] == 0; }
-	requisit*				find(const char* id) const;
+	bool					ispredefined() const;
+	bool					istext() const;
+	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
 	metadata*				reference();
+	void					update();
 	void					write(const char* url) const;
+	static void				write(const char* url, typec& types);
 };
 void						logmsg(const char* format, ...);
-extern adat<requisit, 256 * 16>	requisit_data;
 extern adat<metadata, 256 * 4>	metadata_data;
 }
 void						choose_metadata(code::metadata* v);

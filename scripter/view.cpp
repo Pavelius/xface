@@ -14,7 +14,7 @@ const bsreq bsmeta<metadata>::meta[] = {
 const bsreq bsmeta<requisit>::meta[] = {
 	BSREQ(id),
 	BSREQ(type),
-	BSREQ(parent),
+//	BSREQ(parent),
 	BSREQ(count),
 	BSREQ(offset),
 {}};
@@ -102,10 +102,8 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	void before_render() {
 		clear();
 		if(current_parent) {
-			for(auto& e : requisit_data) {
-				if(e.parent == current_parent)
-					add(&e);
-			}
+			for(auto& e : current_parent->requisits)
+				add(&e);
 		}
 		//if((unsigned)current < getcount())
 		//	setcode(((requisit**)data)[current]);

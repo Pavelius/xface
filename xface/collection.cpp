@@ -7,7 +7,7 @@ extern "C" void	free(void* pointer);
 
 unsigned rmoptimal(unsigned need_count) {
 	const unsigned mc = 256 * 256 * 256;
-	unsigned m = 64;
+	unsigned m = 16;
 	while(m < mc) {
 		if(need_count < m)
 			return m;

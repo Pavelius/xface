@@ -5,30 +5,33 @@ using namespace code;
 
 const unsigned pointer_size = 4;
 
-metadata code::void_meta[] = {""};
-metadata code::text_meta[] = {"Text"};
-metadata code::int_meta[] = {"Integer"};
-metadata code::sint_meta[] = {"Short"};
-metadata code::usint_meta[] = {"Short Unsigned"};
-metadata code::char_meta[] = {"Char"};
+static metadata void_meta[] = {"Void"};
+static metadata text_meta[] = {"Text", 0, pointer_size};
+static metadata int_meta[] = {"Integer", 0, pointer_size};
+static metadata uint_meta[] = {"Unsigned", 0, pointer_size};
+static metadata sint_meta[] = {"Short", 0, pointer_size / 2};
+static metadata usint_meta[] = {"Short Unsigned", 0, pointer_size / 2};
+static metadata char_meta[] = {"Char", 0, pointer_size / 4};
+static metadata type_meta[] = {"Type"};
 
-adat<requisit, 256 * 16>		code::requisit_data;
+static metadata* custom_types[] = {text_meta, int_meta, uint_meta, sint_meta, uint_meta, char_meta, type_meta};
+
 adat<metadata, 256 * 4>			code::metadata_data;
 static adat<metadata, 256 * 8>	pointers;
 
-static requisit requisit_meta[] = {
-	{"id", text_meta},
-};
-
 metadata* findpointer(metadata* m) {
 	for(auto& e : pointers) {
-		if(e.type==m)
+		if(e.type == m)
 			return &e;
 	}
 	return 0;
 }
 
 metadata* code::findtype(const char* id) {
+	for(auto p : custom_types) {
+		if(strcmp(p->id, id) == 0)
+			return p;
+	}
 	for(auto& e : metadata_data) {
 		if(strcmp(e.id, id) == 0)
 			return &e;
@@ -44,6 +47,37 @@ metadata* code::addtype(const char* id) {
 	p->size = 0;
 	p->type = 0;
 	return p;
+}
+
+bool metadata::isnumber() const {
+	return this == int_meta
+		|| this == uint_meta
+		|| this == sint_meta
+		|| this == usint_meta
+		|| this == char_meta;
+}
+
+bool metadata::ispredefined() const {
+	for(auto p : custom_types) {
+		if(p == this)
+			return true;
+	}
+	return false;
+}
+
+bool metadata::istext() const {
+	return this == text_meta;
+}
+
+void metadata::initialize() {
+	auto p = type_meta;
+	if(p->requisits)
+		return;
+	p->add("id", "Text");
+	p->add("type", "Type");
+	p->add("offset", "Unsigned");
+	p->add("count", "Unsigned");
+	p->update();
 }
 
 metadata* metadata::reference() {
@@ -62,23 +96,18 @@ metadata* metadata::dereference() {
 }
 
 requisit* metadata::add(const char* id, metadata* type) {
+	if(!type)
+		return 0;
 	id = szdup(id);
 	auto p = find(id);
-	if(!p)
-		p = requisit_data.add();
+	if(!p) {
+		p = requisits.add();
+		memset(p, 0, sizeof(requisit));
+	}
 	p->id = id;
-	p->parent = this;
 	p->type = type;
 	p->count = 1;
 	return p;
-}
-
-requisit* metadata::find(const char* id) const {
-	for(auto& e : requisit_data) {
-		if(e.parent==this && strcmp(e.id, id) == 0)
-			return &e;
-	}
-	return 0;
 }
 
 const requisit* requisitc::find(const char* id) const {
@@ -87,4 +116,20 @@ const requisit* requisitc::find(const char* id) const {
 			return &e;
 	}
 	return 0;
+}
+
+unsigned requisit::getsize() const {
+	return type->size;
+}
+
+void metadata::update() {
+	size = 0;
+	for(auto& e : requisits) {
+		e.offset = size;
+		size += e.getsizeof();
+	}
+}
+
+bool metadata::is(const char* id) const {
+	return this && strcmp(this->id, id) == 0;
 }
