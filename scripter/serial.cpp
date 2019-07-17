@@ -59,8 +59,19 @@ struct metadata_context {
 		}
 	}
 
+	void serial_ref(void* object, const requisit& e) {
+
+	}
+
 	void serial(void* object, const requisit& e) {
-		if(e.type->istext())
+		if(e.isreference()) {
+			if(e.type->ispredefined())
+				return; // Не поддерживается
+			auto pid = e.type->getid();
+			if(!pid)
+				return;
+			serial_ref(object, e);
+		} else if(e.type->istext())
 			serial_txt(object);
 		else if(e.type->is("Type"))
 			serial_met(object);
@@ -75,6 +86,28 @@ struct metadata_context {
 			serial(object, e);
 	}
 
+	void serial(void** data, unsigned size, unsigned& count, unsigned& count_maximum) {
+		serial(&count, sizeof(count));
+		if(write_mode)
+			serial(*data, count*size);
+		else {
+
+		}
+	}
+
+	template<class T> void serial(arem<T>& source) {
+		serial((void**)&source.data, sizeof(source.data[0]), source.count, source.count_maximum);
+	}
+
+	template<class T> void serial(T& source) {
+		serial(&source, sizeof(source));
+	}
+
+	void serial_strings() {
+		serial(strings.indecies);
+		serial(strings.data);
+	}
+
 };
 
 void metadata::write(const char* url, arem<metadata*>& types) {
@@ -85,11 +118,12 @@ void metadata::write(const char* url, arem<metadata*>& types) {
 	if(!file)
 		return;
 	metadata_context e(file, true, types);
-	e.header.metadata.offset = sizeof(e.header);
-	e.header.metadata.count = types.count;
-	e.serial(&e.header, sizeof(e.header));
+	e.serial(e.header);
+	e.serial(e.types.count);
 	for(auto& m : types)
 		e.serial(&m, meta_type);
+	e.serial_strings();
+
 }
 
 void metadata::addto(metadata::typec& source) const {

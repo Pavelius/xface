@@ -133,3 +133,12 @@ void metadata::update() {
 bool metadata::is(const char* id) const {
 	return this && strcmp(this->id, id) == 0;
 }
+
+const requisit* metadata::getid() const {
+	if(!requisits.count)
+		return 0;
+	auto p = requisits.data;
+	if(p->type->istext())
+		return p;
+	return 0;
+}

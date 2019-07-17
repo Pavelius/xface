@@ -90,13 +90,15 @@ struct requisit {
 	metadata*				type;
 	unsigned				offset;
 	unsigned				count;
+	unsigned				reference;
 	expression*				code;
-	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0) {}
-	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), code(0) {}
-	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), code(0) {}
+	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0), reference(0) {}
+	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), reference(0), code(0) {}
+	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), reference(0), code(0) {}
 	constexpr operator bool() const { return id != 0; }
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
+	bool					isreference() const { return reference > 0; }
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				set(expression* v) { if(this) code = v; return this; }
 };
@@ -123,6 +125,7 @@ struct metadata {
 	bool					ispredefined() const;
 	bool					istext() const;
 	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
+	const requisit*			getid() const;
 	metadata*				reference();
 	void					update();
 	void					write(const char* url) const;
