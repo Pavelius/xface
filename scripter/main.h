@@ -94,32 +94,34 @@ struct statement {
 	void* operator			new(unsigned size);
 	void operator			delete(void* p, unsigned size);
 };
+struct requisit {
+	const char*				id;
+	metadata*				type;
+	unsigned				offset;
+	unsigned				count;
+	metadata*				parent;
+	expression*				code;
+	constexpr operator bool() const { return id != 0; }
+	unsigned				getsize() const;
+	unsigned				getsizeof() const { return getsize() * count; }
+	requisit*				setcount(int v) { if(this) count = v; return this; }
+	requisit*				set(expression* v) { if(this) code = v; return this; }
+};
+struct requisitc : arem<requisit> {
+	const requisit*			find(const char* id) const;
+};
 struct metadata {
 	const char*				id;
 	metadata*				type;
 	unsigned				size;
-	//aref<requisit>		requisits;
+	requisitc				requisits;
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
 	metadata*				dereference();
 	bool					ispointer() const { return id[0] == '*' && id[1] == 0; }
 	requisit*				find(const char* id) const;
 	metadata*				reference();
-	void					release();
 	void					write(const char* url) const;
-};
-struct requisit {
-	const char*				id;
-	metadata*				parent;
-	metadata*				type;
-	unsigned				offset;
-	unsigned				count;
-	expression*				code;
-	constexpr operator bool() const { return id != 0; }
-	constexpr unsigned		getsize() const { return type ? type->size : 0; }
-	constexpr unsigned		getsizeof() const { return getsize() * count; }
-	requisit*				setcount(int v) { if(this) count = v; return this; }
-	requisit*				set(expression* v) { if(this) code = v; return this; }
 };
 void						logmsg(const char* format, ...);
 extern adat<requisit, 256 * 16>	requisit_data;

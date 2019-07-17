@@ -6,6 +6,9 @@ void setcode(requisit* v);
 
 int main() {
 	metadata test;
+	test.requisits.add({"x", 0, 0, 1});
+	test.requisits.add({"y", 0, 0, 1});
+	test.requisits.add({"z", 0, 0, 1});
 	test.write("text");
 	auto p = addtype("Rect");
 	auto p1 = addtype("Point");

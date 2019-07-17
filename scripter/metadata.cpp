@@ -16,6 +16,10 @@ adat<requisit, 256 * 16>		code::requisit_data;
 adat<metadata, 256 * 4>			code::metadata_data;
 static adat<metadata, 256 * 8>	pointers;
 
+static requisit requisit_meta[] = {
+	{"id", text_meta},
+};
+
 metadata* findpointer(metadata* m) {
 	for(auto& e : pointers) {
 		if(e.type==m)
@@ -77,6 +81,10 @@ requisit* metadata::find(const char* id) const {
 	return 0;
 }
 
-void metadata::release() {
-	//delete requisits.data;
+const requisit* requisitc::find(const char* id) const {
+	for(auto& e : *this) {
+		if(strcmp(e.id, id) == 0)
+			return &e;
+	}
+	return 0;
 }

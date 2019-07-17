@@ -50,6 +50,7 @@ struct aref {
 	T*						data;
 	unsigned				count;
 	constexpr aref() = default;
+	constexpr aref(T* source, unsigned count) : data(source), count(count) {}
 	template<unsigned N> constexpr aref(T(&data)[N]) : data(data), count(N) {}
 	template<unsigned N> constexpr aref(adat<T, N>& source) : data(source.data), count(source.count) {}
 	constexpr T& operator[](int index) { return data[index]; }
@@ -68,8 +69,8 @@ struct aref {
 template<class T>
 struct arem : aref<T> {
 	unsigned				count_maximum;
-	constexpr arem() : aref<T>(), count_maximum() {}
-	~arem() { if(this->data) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
+	constexpr arem() : aref<T>(0, 0), count_maximum(0) {}
+	~arem() { if(this->data && count_maximum) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
 	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }
 	void					clear() { aref<T>::count = 0; }
