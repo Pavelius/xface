@@ -5,6 +5,8 @@ using namespace code;
 void setcode(requisit* v);
 
 int main() {
+	metadata test;
+	test.write("text");
 	auto p = addtype("Rect");
 	auto p1 = addtype("Point");
 	auto p2 = addtype("FileName");

@@ -98,12 +98,14 @@ struct metadata {
 	const char*				id;
 	metadata*				type;
 	unsigned				size;
+	//aref<requisit>		requisits;
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
 	metadata*				dereference();
 	bool					ispointer() const { return id[0] == '*' && id[1] == 0; }
 	requisit*				find(const char* id) const;
 	metadata*				reference();
+	void					release();
 	void					write(const char* url) const;
 };
 struct requisit {

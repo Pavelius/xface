@@ -76,3 +76,7 @@ requisit* metadata::find(const char* id) const {
 	}
 	return 0;
 }
+
+void metadata::release() {
+	//delete requisits.data;
+}
