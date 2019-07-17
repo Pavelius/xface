@@ -13,10 +13,7 @@ struct metadata_context {
 	struct headeri {
 		char				signature[4];
 		char				version[4];
-		slicei				metadata;
-		slicei				strings;
 	};
-
 	headeri					header;
 	io::stream&				file;
 	strlib					strings;
