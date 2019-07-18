@@ -4,17 +4,18 @@
 using namespace code;
 
 const unsigned pointer_size = 4;
+const unsigned array_size = sizeof(arem<char>);
 
-static metadata void_meta[] = {"Void"};
-static metadata text_meta[] = {"Text", 0, pointer_size};
-static metadata int_meta[] = {"Integer", 0, pointer_size};
-static metadata uint_meta[] = {"Unsigned", 0, pointer_size};
-static metadata sint_meta[] = {"Short", 0, pointer_size / 2};
-static metadata usint_meta[] = {"Short Unsigned", 0, pointer_size / 2};
-static metadata char_meta[] = {"Char", 0, pointer_size / 4};
-static metadata type_meta[] = {"Type"};
+static metadata void_meta = {"Void"};
+static metadata text_meta = {"Text", 0, pointer_size};
+static metadata int_meta = {"Integer", 0, pointer_size};
+static metadata uint_meta = {"Unsigned", 0, pointer_size};
+static metadata sint_meta = {"Short", 0, pointer_size / 2};
+static metadata usint_meta = {"Short Unsigned", 0, pointer_size / 2};
+static metadata char_meta = {"Char", 0, pointer_size / 4};
+static metadata type_meta = {"Type"};
 
-static metadata* custom_types[] = {text_meta, int_meta, uint_meta, sint_meta, uint_meta, char_meta, type_meta};
+static metadata* custom_types[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta, &type_meta};
 
 adat<metadata, 256 * 4>			code::metadata_data;
 static adat<metadata, 256 * 8>	pointers;
@@ -50,11 +51,15 @@ metadata* code::addtype(const char* id) {
 }
 
 bool metadata::isnumber() const {
-	return this == int_meta
-		|| this == uint_meta
-		|| this == sint_meta
-		|| this == usint_meta
-		|| this == char_meta;
+	return this == &int_meta
+		|| this == &uint_meta
+		|| this == &sint_meta
+		|| this == &usint_meta
+		|| this == &char_meta;
+}
+
+bool metadata::ismeta() const {
+	return this == &type_meta;
 }
 
 bool metadata::ispredefined() const {
@@ -66,15 +71,15 @@ bool metadata::ispredefined() const {
 }
 
 bool metadata::istext() const {
-	return this == text_meta;
+	return this == &text_meta;
 }
 
 void metadata::initialize() {
-	auto p = type_meta;
+	auto p = &type_meta;
 	if(p->requisits)
 		return;
 	p->add("id", "Text");
-	p->add("type", "Type");
+	p->add("type", "Type")->set(KindReference);
 	p->add("offset", "Unsigned");
 	p->add("count", "Unsigned");
 	p->update();
@@ -119,7 +124,14 @@ const requisit* requisitc::find(const char* id) const {
 }
 
 unsigned requisit::getsize() const {
-	return type->size;
+	switch(kind) {
+	case KindReference:
+		return pointer_size;
+	case KindArray:
+		return array_size;
+	default:
+		return type->size;
+	}
 }
 
 void metadata::update() {
