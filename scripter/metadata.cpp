@@ -17,7 +17,7 @@ static metadata usint_meta = {"Short Unsigned", 0, pointer_size / 2};
 static metadata char_meta = {"Char", 0, pointer_size / 4};
 static metadata type_meta = {"Type"};
 
-static metadata* custom_types[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta, &type_meta};
+metadata* configi::standart[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta, &type_meta};
 
 bool metadata::isnumber() const {
 	return this == &int_meta
@@ -32,7 +32,7 @@ bool metadata::ismeta() const {
 }
 
 bool metadata::ispredefined() const {
-	for(auto p : custom_types) {
+	for(auto p : configi::standart) {
 		if(p == this)
 			return true;
 	}
@@ -110,7 +110,7 @@ const char* pointer_id = "*";
 const char* array_id = "%";
 
 metadata* metadatac::find(const char* id) const {
-	for(auto p : custom_types) {
+	for(auto p : configi::standart) {
 		if(strcmp(p->id, id) == 0)
 			return p;
 	}

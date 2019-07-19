@@ -137,6 +137,7 @@ struct metadatac : agrw<metadata, 64> {
 };
 struct configi {
 	metadatac				types;
+	static metadata*		standart[];
 };
 extern configi				config;
 void						logmsg(const char* format, ...);

@@ -6,7 +6,7 @@
     },
     "Dock1":{
       "current":0,
-      "size":146
+      "size":124
     },
     "Dock2":{
       "current":0,
@@ -67,8 +67,8 @@
     }
   },
   "window":{
-    "x":177,
-    "y":96,
+    "x":87,
+    "y":2,
     "width":852,
     "height":561,
     "header_width":113,
