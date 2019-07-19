@@ -18,17 +18,18 @@ struct metadata_context {
 	};
 	headeri					header;
 	io::stream&				file;
-	metadata::typec&		types;
+	arem<metadata*>			types;
+	arem<metadata>			types_read;
 	bool					write_mode;
 
-	metadata_context(io::stream& file, bool write_mode, metadata::typec& types) :
+	metadata_context(io::stream& file, bool write_mode, arem<metadata*>& types) :
 		header{"MTP", "0.1"}, file(file), write_mode(write_mode), types(types) {
 	}
 
-	metadata::typec* findtype(const char* id) const {
+	metadata* findtype(const char* id) const {
 		for(auto p : types) {
 			if(strcmp(p->id, id) == 0)
-				return (metadata::typec*)p;
+				return const_cast<metadata*>(p);
 		}
 		return 0;
 	}
@@ -54,15 +55,7 @@ struct metadata_context {
 		}
 	}
 
-	void serial_txt(const char*& ps) {
-		//if(write_mode) {
-		//	unsigned i = strings.add(*((const char**)object));
-		//	file.write(&i, sizeof(i));
-		//} else {
-		//	unsigned i = 0xFFFFFFFF;
-		//	file.read(&i, sizeof(i));
-		//	*((const char**)object) = strings.get(i);
-		//}
+	void serial(const char*& ps) {
 		unsigned len;
 		if(write_mode) {
 			if(ps)
@@ -87,43 +80,34 @@ struct metadata_context {
 		}
 	}
 
-	void serial_ref(void* object_reference, const requisit& e, const requisit* pid) {
+	void serial(void* object, const requisit& e, const requisit* pid) {
 		if(write_mode) {
-			auto pv = *((void**)object_reference);
+			auto pv = *((void**)object);
 			if(!pv)
 				serial(&pv, sizeof(pv));
 			else
 				serial(pv, *pid);
 		} else {
-			const char* id;
-			serial_txt(id);
+			const char* id = 0;
+			serial(id);
 			if(e.type->ismeta()) {
-
+				auto pt = findtype(id);
+				if(!pt)
+					pt = addtype(id);
 			}
 		}
 	}
 
 	void serial(void* object, const requisit& e) {
-		arrayc* pa;
-		const requisit* pid;
-		switch(e.kind) {
-		case KindReference:
-			if(e.type->isnumber() || e.type->istext())
+		if(e.type->isreference()) {
+			auto type = e.type->dereference();
+			if(type->isnumber() || type->istext())
 				return;
-			pid = e.type->getid();
+			auto pid = type->getid();
 			if(pid)
-				serial_ref(object, e, pid);
-			break;
-		case KindObject:
-			if(e.type->istext())
-				serial_txt(*((const char**)object));
-			else if(e.type->isnumber())
-				serial(object, e.type->size);
-			else
-				serial(object, e.type);
-			break;
-		case KindArray:
-			pa = (arrayc*)object;
+				serial(object, e, pid);
+		} else if(e.type->isarray()) {
+			auto pa = (arrayc*)object;
 			serial(pa->count);
 			if(!write_mode) {
 				if(pa->count>0)
@@ -131,8 +115,12 @@ struct metadata_context {
 			}
 			for(unsigned i = 0; i < pa->count; i++)
 				serial(pa->data + i * e.type->size, e.type);
-			break;
-		}
+		} else if(e.type->istext())
+			serial(*((const char**)object));
+		else if(e.type->isnumber())
+			serial(object, e.type->size);
+		else
+			serial(object, e.type);
 	}
 
 	void serial(void* object, const metadata* pm) {
@@ -181,7 +169,7 @@ void metadata::write(const char* url, arem<metadata*>& types) {
 		e.serial(m, meta_type);
 }
 
-void metadata::addto(metadata::typec& source) const {
+void metadata::addto(arem<metadata*>& source) const {
 	auto i = source.indexof(const_cast<metadata*>(this));
 	if(i != -1)
 		return;

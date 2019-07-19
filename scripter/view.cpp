@@ -70,7 +70,7 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	struct metadata* current_parent;
 
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {
-		if(type->ispointer()) {
+		if(type->isreference()) {
 			getname(result, result_max, type->dereference());
 			szprint(zend(result), result_max, "*");
 		} else

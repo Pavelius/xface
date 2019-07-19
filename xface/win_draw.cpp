@@ -249,15 +249,16 @@ static const char* register_class(const char* class_name) {
 }
 
 void draw::getwindowpos(point& pos, point& size, unsigned* flags) {
-	RECT rc; WINDOWPLACEMENT wp;
-	GetWindowPlacement(hwnd, &wp);
-	GetWindowRect(hwnd, &rc);
+	RECT rc;
+	GetClientRect(hwnd, &rc);
 	size.x = (short)(rc.right - rc.left);
 	size.y = (short)(rc.bottom - rc.top);
 	GetWindowRect(hwnd, &rc);
 	pos.x = (short)rc.left;
 	pos.y = (short)rc.top;
 	if(flags) {
+		WINDOWPLACEMENT wp;
+		GetWindowPlacement(hwnd, &wp);
 		*flags = 0;
 		auto wf = GetWindowLongA(hwnd, GWL_STYLE);
 		if(wp.showCmd==SW_SHOWMAXIMIZED)

@@ -24,15 +24,15 @@ int main() {
 	p1->update();
 	p2->add("Name", "Char")->setcount(260);
 	p2->update();
-	p3->add("Master", "Character")->set(KindReference);
+	p3->add("Master", p3->reference());
 	p3->add("Ability", "Char")->setcount(6);
-	p3->add("Wears", p4)->setcount(8);
+	p3->add("Wears", "Item")->setcount(8);
 	p3->update();
 	p4->add("Id", "Text");
 	p4->add("Name", "Text");
 	p4->update();
 	auto r = p4->add("Add", "Void");
-	p3->write("character.mtp");
+	//p3->write("character.mtp");
 	r->set(new expression(Add, new expression(10), new expression(12)));
 	//logmsg("Размер метаданных %1i", sizeof(metadata));
 	//logmsg("Размер реквизита %1i", sizeof(requisit));

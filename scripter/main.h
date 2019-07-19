@@ -34,8 +34,8 @@ enum token_s : unsigned char {
 	Whitespace, Keyword, OpenTag, CloseTag,
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
-enum kind_s : unsigned char {
-	KindObject, KindReference, KindArray,
+struct config {
+
 };
 struct expression {
 	expression_s			type;
@@ -93,28 +93,24 @@ struct requisit {
 	metadata*				type;
 	unsigned				offset;
 	unsigned				count;
-	kind_s					kind;
 	expression*				code;
-	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0), kind(KindObject) {}
-	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), kind(KindObject), code(0) {}
-	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), kind(KindObject), code(0) {}
+	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0) {}
+	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), code(0) {}
+	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), code(0) {}
 	constexpr operator bool() const { return id != 0; }
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
-	bool					isreference() const { return kind==KindReference; }
 	void*					ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				set(expression* v) { if(this) code = v; return this; }
-	requisit*				set(kind_s v) { if(this) kind = v; return this; }
 };
 struct requisitc : arem<requisit> {
 	constexpr requisitc() : arem() {}
-	template<unsigned N> constexpr requisitc(requisit(&data)[N]) : arem<requisit>(data, N) {}
+	template<unsigned N> constexpr requisitc(requisit(&data)[N]) : arem(data, N) {}
 	const requisit*			find(const char* id) const;
 };
 struct metadata {
-	typedef arem<metadata*> typec;
 	const char*				id;
 	metadata*				type;
 	unsigned				size;
@@ -122,13 +118,14 @@ struct metadata {
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
 	requisit*				add(const char* id, const char* type) { return add(id, findtype(type)); }
-	void					addto(metadata::typec& source) const;
+	void					addto(arem<metadata*>& source) const;
 	metadata*				dereference();
 	static void				initialize();
 	bool					is(const char* id) const;
+	bool					isarray() const { return id[0] == '[' && id[1] == ']' && id[2] == 0; }
 	bool					ismeta() const;
 	bool					isnumber() const;
-	bool					ispointer() const { return id[0] == '*' && id[1] == 0; }
+	bool					isreference() const { return id[0] == '*' && id[1] == 0; }
 	bool					ispredefined() const;
 	bool					istext() const;
 	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
@@ -136,7 +133,11 @@ struct metadata {
 	metadata*				reference();
 	void					update();
 	void					write(const char* url) const;
-	static void				write(const char* url, typec& types);
+	static void				write(const char* url, arem<metadata*>& types);
+};
+struct metadatac : agrw<metadata, 64> {
+	metadata*				add(const char* id);
+	metadata*				find(const char* id);
 };
 void						logmsg(const char* format, ...);
 extern adat<metadata, 256 * 4>	metadata_data;

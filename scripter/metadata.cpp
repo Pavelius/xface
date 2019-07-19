@@ -19,6 +19,7 @@ static metadata* custom_types[] = {&text_meta, &int_meta, &uint_meta, &sint_meta
 
 adat<metadata, 256 * 4>			code::metadata_data;
 static adat<metadata, 256 * 8>	pointers;
+static adat<metadata, 256 * 8>	arrays;
 
 metadata* findpointer(metadata* m) {
 	for(auto& e : pointers) {
@@ -79,7 +80,7 @@ void metadata::initialize() {
 	if(p->requisits)
 		return;
 	p->add("id", "Text");
-	p->add("type", "Type")->set(KindReference);
+	p->add("type", "Type*");
 	p->add("offset", "Unsigned");
 	p->add("count", "Unsigned");
 	p->update();
@@ -124,14 +125,11 @@ const requisit* requisitc::find(const char* id) const {
 }
 
 unsigned requisit::getsize() const {
-	switch(kind) {
-	case KindReference:
+	if(type->isreference())
 		return pointer_size;
-	case KindArray:
+	else if(type->isarray())
 		return array_size;
-	default:
-		return type->size;
-	}
+	return type->size;
 }
 
 void metadata::update() {
