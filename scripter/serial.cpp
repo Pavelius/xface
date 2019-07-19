@@ -91,16 +91,13 @@ struct metadata_context {
 			const char* id = 0;
 			serial(id);
 			if(e.type->ismeta()) {
-				auto pt = findtype(id);
-				if(!pt)
-					pt = addtype(id);
 			}
 		}
 	}
 
 	void serial(void* object, const requisit& e) {
 		if(e.type->isreference()) {
-			auto type = e.type->dereference();
+			auto type = config.types.dereference(e.type);
 			if(type->isnumber() || type->istext())
 				return;
 			auto pid = type->getid();
@@ -156,7 +153,7 @@ struct metadata_context {
 };
 
 void metadata::write(const char* url, arem<metadata*>& types) {
-	auto meta_type = findtype("Type");
+	auto meta_type = config.types.find("Type");
 	if(!meta_type)
 		return;
 	io::file file(url, StreamWrite);

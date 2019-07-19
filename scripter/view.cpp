@@ -36,10 +36,12 @@ static translate translate_data[] = {{"count", "Количество"},
 
 static struct metadata_control : controls::gridref, controls::control::plugin {
 	void before_render() {
-		if(metadata_instance.getcount() != metadata_data.getcount()) {
+		if(metadata_instance.getcount() != config.types.getcount()) {
 			clear();
-			for(auto& e : metadata_data) {
+			for(auto& e : config.types) {
 				if(!e)
+					continue;
+				if(e.isreference() || e.isarray())
 					continue;
 				add(&e);
 			}
@@ -71,7 +73,7 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {
 		if(type->isreference()) {
-			getname(result, result_max, type->dereference());
+			getname(result, result_max, config.types.dereference(type));
 			szprint(zend(result), result_max, "*");
 		} else
 			szprint(result, result_max, type->id);

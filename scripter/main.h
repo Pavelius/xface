@@ -13,9 +13,6 @@ struct requisit;
 struct expression;
 struct statement;
 
-metadata*				addtype(const char* id);
-metadata*				findtype(const char* id);
-
 enum operator_s : unsigned char {
 	Determinal,
 	Unary, Binary, Statement,
@@ -114,9 +111,7 @@ struct metadata {
 	requisitc				requisits;
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
-	requisit*				add(const char* id, const char* type) { return add(id, findtype(type)); }
 	void					addto(arem<metadata*>& source) const;
-	metadata*				dereference();
 	static void				initialize();
 	bool					is(const char* id) const;
 	bool					isarray() const { return id[0] == '[' && id[1] == ']' && id[2] == 0; }
@@ -127,7 +122,6 @@ struct metadata {
 	bool					istext() const;
 	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
 	const requisit*			getid() const;
-	metadata*				reference();
 	void					update();
 	void					write(const char* url) const;
 	static void				write(const char* url, arem<metadata*>& types);
@@ -135,15 +129,17 @@ struct metadata {
 struct metadatac : agrw<metadata, 64> {
 	metadata*				add(const char* id);
 	metadata*				array(metadata* type);
+	metadata*				dereference(metadata* type);
 	metadata*				find(const char* id) const;
 	metadata*				find(const char* id, const metadata*) const;
 	metadata*				reference(metadata* type);
+	metadata*				addfind(const char* id, metadata* type);
 };
-struct config {
+struct configi {
 	metadatac				types;
 };
+extern configi				config;
 void						logmsg(const char* format, ...);
-extern adat<metadata, 256 * 4>	metadata_data;
 }
 void						choose_metadata(code::metadata* v);
 void						run_main();

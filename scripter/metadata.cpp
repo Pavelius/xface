@@ -6,6 +6,8 @@ using namespace code;
 const unsigned pointer_size = 4;
 const unsigned array_size = sizeof(arem<char>);
 
+configi				code::config;
+
 static metadata void_meta = {"Void"};
 static metadata text_meta = {"Text", 0, pointer_size};
 static metadata int_meta = {"Integer", 0, pointer_size};
@@ -16,40 +18,6 @@ static metadata char_meta = {"Char", 0, pointer_size / 4};
 static metadata type_meta = {"Type"};
 
 static metadata* custom_types[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta, &type_meta};
-
-adat<metadata, 256 * 4>			code::metadata_data;
-static adat<metadata, 256 * 8>	pointers;
-static adat<metadata, 256 * 8>	arrays;
-
-metadata* findpointer(metadata* m) {
-	for(auto& e : pointers) {
-		if(e.type == m)
-			return &e;
-	}
-	return 0;
-}
-
-metadata* code::findtype(const char* id) {
-	for(auto p : custom_types) {
-		if(strcmp(p->id, id) == 0)
-			return p;
-	}
-	for(auto& e : metadata_data) {
-		if(strcmp(e.id, id) == 0)
-			return &e;
-	}
-	return 0;
-}
-
-metadata* code::addtype(const char* id) {
-	auto p = findtype(id);
-	if(!p)
-		p = metadata_data.add();
-	p->id = id;
-	p->size = 0;
-	p->type = 0;
-	return p;
-}
 
 bool metadata::isnumber() const {
 	return this == &int_meta
@@ -79,26 +47,11 @@ void metadata::initialize() {
 	auto p = &type_meta;
 	if(p->requisits)
 		return;
-	p->add("id", "Text");
-	p->add("type", "Type*");
-	p->add("offset", "Unsigned");
-	p->add("count", "Unsigned");
+	p->add("id", config.types.find("Text"));
+	p->add("type", config.types.reference(config.types.find("Type")));
+	p->add("offset", config.types.find("Unsigned"));
+	p->add("count", config.types.find("Unsigned"));
 	p->update();
-}
-
-metadata* metadata::reference() {
-	auto p = findpointer(this);
-	if(p)
-		return p;
-	p = pointers.add();
-	p->type = this;
-	p->id = "*";
-	p->size = pointer_size;
-	return p;
-}
-
-metadata* metadata::dereference() {
-	return type;
 }
 
 requisit* metadata::add(const char* id, metadata* type) {
@@ -157,6 +110,10 @@ const char* pointer_id = "*";
 const char* array_id = "%";
 
 metadata* metadatac::find(const char* id) const {
+	for(auto p : custom_types) {
+		if(strcmp(p->id, id) == 0)
+			return p;
+	}
 	for(auto pb = (arraydata*)this; pb; pb = pb->next) {
 		auto pe = (element*)pb->end(sizeof(element));
 		for(auto p = (element*)pb->begin(); p < pe; p++) {
@@ -191,12 +148,24 @@ metadata* metadatac::add(const char* id) {
 	return p;
 }
 
-metadata* metadatac::reference(metadata* type) {
-	auto p = find(pointer_id, type);
+metadata* metadatac::addfind(const char* id, metadata* type) {
+	auto p = find(id, type);
 	if(!p) {
 		p = (metadata*)arraydata::add(sizeof(element));
-		p->id = pointer_id;
+		p->id = id;
 		p->type = type;
 	}
 	return p;
+}
+
+metadata* metadatac::reference(metadata* type) {
+	return addfind(pointer_id, type);
+}
+
+metadata* metadatac::dereference(metadata* type) {
+	return type->type;
+}
+
+metadata* metadatac::array(metadata* type) {
+	return addfind(array_id, type);
 }

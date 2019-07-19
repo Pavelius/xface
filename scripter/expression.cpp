@@ -188,8 +188,11 @@ void expression::select(valuelist& v, expression_s t) const {
 			v.add(e.id, (int)&e, Requisit, 0);
 		break;
 	case Metadata:
-		for(auto& e : metadata_data)
-			v.add(e.id, (int)&e, Metadata, 2);
+		for(auto pb = static_cast<arraydata*>(&config.types); pb; pb = pb->next) {
+			auto pe = (metadata*)pb->end(sizeof(metadata));
+			for(auto p = (metadata*)pb->begin(); p < pe; p++)
+				v.add(p->id, (int)p, Metadata, 2);
+		}
 		break;
 	case While:
 		for(auto& e : expression_data) {

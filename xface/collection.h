@@ -13,7 +13,7 @@ struct arraydata {
 	constexpr arraydata(unsigned N) : count(0), maximum(N), next(0) {}
 	explicit constexpr operator bool() const { return count != 0; }
 	void*					add(unsigned size);
-	void*					begin() { return (char*)this + sizeof(*this); }
+	void*					begin() const { return (char*)this + sizeof(*this); }
 	void					clear();
 	void*					end(unsigned size) { return (char*)this + sizeof(*this) + count*size; }
 	unsigned				getcount() const;
@@ -51,6 +51,31 @@ struct adat {
 };
 template<class T, unsigned N = 64>
 class agrw : public arraydata {
+	template<class T>
+	class iterator {
+		const arraydata*	source;
+		char*				pb;
+		char*				pe;
+	public:
+		iterator(const arraydata* source) : source(source) { initialize(); }
+		constexpr T& operator*() const { return *((T*)pb); }
+		constexpr bool operator!=(const iterator& e) const { return pb != e.pb; }
+		void initialize() {
+			if(!source)
+				pb = pe = 0;
+			else {
+				pb = (char*)source->begin();
+				pe = (char*)((T*)pb + source->count);
+			}
+		}
+		void operator++() {
+			if(pb >= pe) {
+				source = source->next;
+				initialize();
+			} else
+				pb += sizeof(T);
+		}
+	};
 	T						data[N]; // Размер data[] увеличивается динамически
 public:
 	typedef T				element;
@@ -59,6 +84,8 @@ public:
 	T& operator[](int index) { return *((T*)arraydata::get(index, sizeof(T))); }
 	const T& operator[](int index) const { return *((const T*)arraydata::get(index, sizeof(T))); }
 	T*						add() { auto p = (T*)arraydata::add(sizeof(T)); *p = T(); return p; }
+	iterator<T>				begin() const { return iterator<T>(this); }
+	iterator<T>				end() const { return iterator<T>(0); }
 	T*						get(int index) const { return (T*)arraydata::get(index, sizeof(T)); }
 	int						indexof(const T* e) const { return arraydata::indexof(e, sizeof(T)); }
 };
