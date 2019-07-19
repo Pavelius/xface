@@ -152,3 +152,51 @@ const requisit* metadata::getid() const {
 		return p;
 	return 0;
 }
+
+const char* pointer_id = "*";
+const char* array_id = "%";
+
+metadata* metadatac::find(const char* id) const {
+	for(auto pb = (arraydata*)this; pb; pb = pb->next) {
+		auto pe = (element*)pb->end(sizeof(element));
+		for(auto p = (element*)pb->begin(); p < pe; p++) {
+			if(strcmp(p->id, id) == 0)
+				return p;
+		}
+	}
+	return 0;
+}
+
+metadata* metadatac::find(const char* id, const metadata* type) const {
+	for(auto pb = (arraydata*)this; pb; pb = pb->next) {
+		auto pe = (element*)pb->end(sizeof(element));
+		for(auto p = (element*)pb->begin(); p < pe; p++) {
+			if(p->type != type)
+				continue;
+			if(strcmp(p->id, id) != 0)
+				continue;
+			return p;
+		}
+	}
+	return 0;
+}
+
+metadata* metadatac::add(const char* id) {
+	auto p = find(id);
+	if(!p) {
+		p = (metadata*)arraydata::add(sizeof(element));
+		memset(p, 0, sizeof(element));
+		p->id = szdup(id);
+	}
+	return p;
+}
+
+metadata* metadatac::reference(metadata* type) {
+	auto p = find(pointer_id, type);
+	if(!p) {
+		p = (metadata*)arraydata::add(sizeof(element));
+		p->id = pointer_id;
+		p->type = type;
+	}
+	return p;
+}

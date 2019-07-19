@@ -34,9 +34,6 @@ enum token_s : unsigned char {
 	Whitespace, Keyword, OpenTag, CloseTag,
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
-struct config {
-
-};
 struct expression {
 	expression_s			type;
 	union {
@@ -137,7 +134,13 @@ struct metadata {
 };
 struct metadatac : agrw<metadata, 64> {
 	metadata*				add(const char* id);
-	metadata*				find(const char* id);
+	metadata*				array(metadata* type);
+	metadata*				find(const char* id) const;
+	metadata*				find(const char* id, const metadata*) const;
+	metadata*				reference(metadata* type);
+};
+struct config {
+	metadatac				types;
 };
 void						logmsg(const char* format, ...);
 extern adat<metadata, 256 * 4>	metadata_data;

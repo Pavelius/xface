@@ -13,7 +13,9 @@ struct arraydata {
 	constexpr arraydata(unsigned N) : count(0), maximum(N), next(0) {}
 	explicit constexpr operator bool() const { return count != 0; }
 	void*					add(unsigned size);
+	void*					begin() { return (char*)this + sizeof(*this); }
 	void					clear();
+	void*					end(unsigned size) { return (char*)this + sizeof(*this) + count*size; }
 	unsigned				getcount() const;
 	void*					get(int index, unsigned size) const;
 	int						indexof(const void* e, unsigned size) const;
@@ -51,6 +53,7 @@ template<class T, unsigned N = 64>
 class agrw : public arraydata {
 	T						data[N]; // Размер data[] увеличивается динамически
 public:
+	typedef T				element;
 	constexpr agrw() : arraydata(N), data() {}
 	~agrw() { release(); }
 	T& operator[](int index) { return *((T*)arraydata::get(index, sizeof(T))); }
