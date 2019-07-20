@@ -79,6 +79,22 @@ int arraydata::indexof(const void* e, unsigned size) const {
 	return -1;
 }
 
+void arraydata::iterator::initialize(const arraydata* source, unsigned size) {
+	this->source = source;
+	if(!source)
+		pb = pe = 0;
+	else {
+		pb = (char*)source->begin();
+		pe = pb + source->count*size;
+	}
+}
+
+void arraydata::iterator::increment(unsigned size) {
+	if(pb >= pe)
+		initialize(source->next, size);
+	else
+		pb += size;
+}
 
 void* array::add() {
 	if(count >= count_maximum) {

@@ -128,12 +128,12 @@ struct metadata {
 };
 struct metadatac : agrw<metadata, 64> {
 	metadata*				add(const char* id);
+	metadata*				add(const char* id, metadata* type, unsigned size);
 	metadata*				array(metadata* type);
 	metadata*				dereference(metadata* type);
 	metadata*				find(const char* id) const;
 	metadata*				find(const char* id, const metadata*) const;
 	metadata*				reference(metadata* type);
-	metadata*				addfind(const char* id, metadata* type);
 };
 struct configi {
 	metadatac				types;

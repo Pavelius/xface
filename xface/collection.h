@@ -7,6 +7,14 @@ void*						rmreserve(void* data, unsigned new_size);
 
 // Basic autogrow array
 struct arraydata {
+	struct iterator {
+		const arraydata*	source;
+		char*				pb;
+		char*				pe;
+		constexpr bool operator!=(const iterator& e) const { return pb != e.pb; }
+		void				initialize(const arraydata* source, unsigned size);
+		void				increment(unsigned size);
+	};
 	unsigned				count;
 	unsigned				maximum;
 	arraydata*				next;
@@ -52,29 +60,11 @@ struct adat {
 template<class T, unsigned N = 64>
 class agrw : public arraydata {
 	template<class T>
-	class iterator {
-		const arraydata*	source;
-		char*				pb;
-		char*				pe;
-	public:
-		iterator(const arraydata* source) : source(source) { initialize(); }
+	struct iterator : arraydata::iterator {
+		iterator(const arraydata* source) { initialize(source, sizeof(T)); }
 		constexpr T& operator*() const { return *((T*)pb); }
 		constexpr bool operator!=(const iterator& e) const { return pb != e.pb; }
-		void initialize() {
-			if(!source)
-				pb = pe = 0;
-			else {
-				pb = (char*)source->begin();
-				pe = (char*)((T*)pb + source->count);
-			}
-		}
-		void operator++() {
-			if(pb >= pe) {
-				source = source->next;
-				initialize();
-			} else
-				pb += sizeof(T);
-		}
+		void operator++() { increment(sizeof(T)); }
 	};
 	T						data[N]; // Размер data[] увеличивается динамически
 public:

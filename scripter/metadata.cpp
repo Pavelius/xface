@@ -3,10 +3,11 @@
 
 using namespace code;
 
-const unsigned pointer_size = 4;
-const unsigned array_size = sizeof(arem<char>);
-
-configi				code::config;
+const unsigned	pointer_size = 4;
+const unsigned	array_size = sizeof(arem<char>);
+const char*		pointer_id = "*";
+const char*		array_id = "%";
+configi			code::config;
 
 static metadata void_meta = {"Void"};
 static metadata text_meta = {"Text", 0, pointer_size};
@@ -106,9 +107,6 @@ const requisit* metadata::getid() const {
 	return 0;
 }
 
-const char* pointer_id = "*";
-const char* array_id = "%";
-
 metadata* metadatac::find(const char* id) const {
 	for(auto p : configi::standart) {
 		if(strcmp(p->id, id) == 0)
@@ -148,18 +146,19 @@ metadata* metadatac::add(const char* id) {
 	return p;
 }
 
-metadata* metadatac::addfind(const char* id, metadata* type) {
+metadata* metadatac::add(const char* id, metadata* type, unsigned size) {
 	auto p = find(id, type);
 	if(!p) {
 		p = (metadata*)arraydata::add(sizeof(element));
 		p->id = id;
 		p->type = type;
+		p->size = size;
 	}
 	return p;
 }
 
 metadata* metadatac::reference(metadata* type) {
-	return addfind(pointer_id, type);
+	return add(pointer_id, type, pointer_size);
 }
 
 metadata* metadatac::dereference(metadata* type) {
@@ -167,5 +166,5 @@ metadata* metadatac::dereference(metadata* type) {
 }
 
 metadata* metadatac::array(metadata* type) {
-	return addfind(array_id, type);
+	return add(array_id, type, array_size);
 }
