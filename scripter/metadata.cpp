@@ -46,17 +46,17 @@ void metadata::initialize() {
 	if(type_meta.requisits)
 		return;
 	auto p = &type_requisit;
-	p->add("id", config.types.find("Text"));
-	p->add("type", config.types.reference(config.types.find("Type")));
-	p->add("offset", config.types.find("Unsigned"));
-	p->add("count", config.types.find("Unsigned"));
-	p->add("expression", config.types.find("Unsigned"));
+	p->add("id", config.types.add("Text"));
+	p->add("type", config.types.add("*Type"));
+	p->add("offset", config.types.add("Unsigned"));
+	p->add("count", config.types.add("Unsigned"));
+	p->add("expression", config.types.add("Unsigned"));
 	p->update();
 	p = &type_meta;
 	p->add("id", config.types.find("Text"));
 	p->add("type", config.types.reference(config.types.find("Type")));
 	p->add("size", config.types.find("Unsigned"));
-	p->add("requisits", config.types.array(config.types.find("Requisit")));
+	p->add("requisits", config.types.add("%Requisit"));
 	p->update();
 }
 
@@ -146,6 +146,10 @@ metadata* metadatac::find(const char* id, const metadata* type) const {
 }
 
 metadata* metadatac::add(const char* id) {
+	if(id[0] == '*')
+		return reference(add(id + 1));
+	else if(id[0] == '%')
+		return array(add(id + 1));
 	auto p = find(id);
 	if(!p) {
 		p = (metadata*)arraydata::add(sizeof(element));

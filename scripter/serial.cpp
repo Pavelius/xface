@@ -13,7 +13,7 @@ struct metadata_context {
 	headeri					header;
 	io::stream&				file;
 	arem<metadata*>&		types;
-	arem<metadata>			types_read;
+	metadatac				types_read;
 	bool					write_mode;
 
 	metadata_context(io::stream& file, bool write_mode, arem<metadata*>& types) :
@@ -53,6 +53,44 @@ struct metadata_context {
 			ps = szdup(ppt);
 			if(ppt != temp)
 				delete ppt;
+		}
+	}
+
+	metadata* read_type_recurse() {
+	}
+
+	void serial(metadata*& value) {
+		char temp[256];
+		if(write_mode) {
+			auto p = value;
+			auto ps = temp; ps[0] = 0;
+			auto pe = ps + sizeof(temp) / sizeof(temp[0]) - 1;
+			while(p) {
+				if(p->isreference()) {
+					if(ps<pe)
+						*ps++ = '*';
+					*ps = 0;
+					p = p->type;
+				} else if(p->isarray()) {
+					if(ps<pe)
+						*ps++ = '%';
+					*ps = 0;
+					p = p->type;
+				} else {
+					szprint(ps, pe, p->id);
+					break;
+				}
+			}
+			serial(temp);
+		} else {
+			value = 0;
+			unsigned len = 0;
+			serial(len);
+			if(len > 0) {
+				file.read(temp, len);
+				temp[len] = 0;
+				value = types_read.add(temp);
+			}
 		}
 	}
 
