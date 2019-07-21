@@ -32,7 +32,7 @@ struct metadata_context {
 	}
 
 	void serial(const char*& ps) {
-		unsigned len;
+		unsigned len = 0;
 		if(write_mode) {
 			if(ps)
 				len = zlen(ps);
@@ -62,12 +62,10 @@ struct metadata_context {
 			if(!pv)
 				serial(&pv, sizeof(pv));
 			else
-				serial(pv, *pid);
+				serial(pid->ptr(pv), *pid);
 		} else {
 			const char* id = 0;
 			serial(id);
-			if(e.type->ismeta()) {
-			}
 		}
 	}
 
@@ -76,9 +74,13 @@ struct metadata_context {
 			auto type = e.type->type;
 			if(type->isnumber() || type->istext() || type->isreference())
 				return;
-			auto pid = type->getid();
-			if(pid)
-				serial(object, e, pid);
+			else if(type == &metadata::type_meta) {
+
+			} else {
+				auto pid = type->getid();
+				if(pid)
+					serial(object, e, pid);
+			}
 		} else if(e.type->isarray()) {
 			auto pa = (arrayc*)object;
 			auto sz = e.type->type->size;

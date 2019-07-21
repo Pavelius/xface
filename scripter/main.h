@@ -115,8 +115,7 @@ struct metadata {
 	void					addto(arem<metadata*>& source) const;
 	static void				initialize();
 	bool					is(const char* id) const;
-	bool					isarray() const { return id[0] == '[' && id[1] == ']' && id[2] == 0; }
-	bool					ismeta() const;
+	bool					isarray() const { return id[0] == '%' && id[1] == 0; }
 	bool					isnumber() const;
 	bool					isreference() const { return id[0] == '*' && id[1] == 0; }
 	bool					ispredefined() const;
@@ -124,6 +123,9 @@ struct metadata {
 	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
 	const requisit*			getid() const;
 	const metadata*			gettype() const;
+	void					hilite();
+	static metadata			type_meta;
+	static metadata			type_requisit;
 	void					update();
 	void					write(const char* url) const;
 	static void				write(const char* url, arem<metadata*>& types);
@@ -141,7 +143,5 @@ struct configi {
 	static metadata*		standart[];
 };
 extern configi				config;
-void						logmsg(const char* format, ...);
 }
-void						choose_metadata(code::metadata* v);
 void						run_main();

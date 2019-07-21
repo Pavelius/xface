@@ -14,7 +14,6 @@ const bsreq bsmeta<metadata>::meta[] = {
 const bsreq bsmeta<requisit>::meta[] = {
 	BSREQ(id),
 	BSREQ(type),
-//	BSREQ(parent),
 	BSREQ(count),
 	BSREQ(offset),
 {}};
@@ -47,7 +46,7 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 			}
 		}
 		if(getcount() > 0)
-			choose_metadata((struct metadata*)gridref::get(current));
+			((metadata*)gridref::get(current))->hilite();
 	}
 	control& getcontrol() override {
 		return *this;
@@ -75,7 +74,7 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 		if(type->isreference()) {
 			getname(result, result_max, type->type);
 			szprint(zend(result), result_max, "*");
-		} else if(type->isreference()) {
+		} else if(type->isarray()) {
 			getname(result, result_max, type->type);
 			szprint(zend(result), result_max, "[]");
 		} else
@@ -125,8 +124,8 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	}
 } requisit_instance;
 
-void choose_metadata(metadata* v) {
-	requisit_instance.current_parent = v;
+void metadata::hilite() {
+	requisit_instance.current_parent = this;
 }
 
 static struct properties_control : controls::properties, controls::control::plugin {

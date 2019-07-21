@@ -16,10 +16,11 @@ static metadata uint_meta = {"Unsigned", 0, pointer_size};
 static metadata sint_meta = {"Short", 0, pointer_size / 2};
 static metadata usint_meta = {"Short Unsigned", 0, pointer_size / 2};
 static metadata char_meta = {"Char", 0, pointer_size / 4};
-static metadata type_meta = {"Type"};
-static metadata requisit_meta = {"Requisit"};
+metadata metadata::type_meta = {"Type"};
+metadata metadata::type_requisit = {"Requisit"};
 
-metadata* configi::standart[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta, &type_meta};
+metadata* configi::standart[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta,
+&metadata::type_meta, &metadata::type_requisit};
 
 bool metadata::isnumber() const {
 	return this == &int_meta
@@ -27,10 +28,6 @@ bool metadata::isnumber() const {
 		|| this == &sint_meta
 		|| this == &usint_meta
 		|| this == &char_meta;
-}
-
-bool metadata::ismeta() const {
-	return this == &type_meta;
 }
 
 bool metadata::ispredefined() const {
@@ -46,18 +43,21 @@ bool metadata::istext() const {
 }
 
 void metadata::initialize() {
-	auto p = &type_meta;
-	if(p->requisits)
+	if(type_meta.requisits)
 		return;
-	p->add("id", config.types.find("Text"));
-	p->add("type", config.types.reference(config.types.find("Type")));
-	p->add("size", config.types.find("Unsigned"));
-	p->update();
-	p = &requisit_meta;
+	auto p = &type_requisit;
 	p->add("id", config.types.find("Text"));
 	p->add("type", config.types.reference(config.types.find("Type")));
 	p->add("offset", config.types.find("Unsigned"));
 	p->add("count", config.types.find("Unsigned"));
+	p->add("expression", config.types.find("Unsigned"));
+	p->update();
+	p = &type_meta;
+	p->add("id", config.types.find("Text"));
+	p->add("type", config.types.reference(config.types.find("Type")));
+	p->add("size", config.types.find("Unsigned"));
+	p->add("requisits", config.types.array(config.types.find("Requisit")));
+	p->update();
 }
 
 requisit* metadata::add(const char* id, metadata* type) {
