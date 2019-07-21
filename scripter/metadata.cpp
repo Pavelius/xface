@@ -17,6 +17,7 @@ static metadata sint_meta = {"Short", 0, pointer_size / 2};
 static metadata usint_meta = {"Short Unsigned", 0, pointer_size / 2};
 static metadata char_meta = {"Char", 0, pointer_size / 4};
 static metadata type_meta = {"Type"};
+static metadata requisit_meta = {"Requisit"};
 
 metadata* configi::standart[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta, &type_meta};
 
@@ -50,9 +51,13 @@ void metadata::initialize() {
 		return;
 	p->add("id", config.types.find("Text"));
 	p->add("type", config.types.reference(config.types.find("Type")));
+	p->add("size", config.types.find("Unsigned"));
+	p->update();
+	p = &requisit_meta;
+	p->add("id", config.types.find("Text"));
+	p->add("type", config.types.reference(config.types.find("Type")));
 	p->add("offset", config.types.find("Unsigned"));
 	p->add("count", config.types.find("Unsigned"));
-	p->update();
 }
 
 requisit* metadata::add(const char* id, metadata* type) {
@@ -79,10 +84,6 @@ const requisit* requisitc::find(const char* id) const {
 }
 
 unsigned requisit::getsize() const {
-	if(type->isreference())
-		return pointer_size;
-	else if(type->isarray())
-		return array_size;
 	return type->size;
 }
 
@@ -105,6 +106,14 @@ const requisit* metadata::getid() const {
 	if(p->type->istext())
 		return p;
 	return 0;
+}
+
+const metadata* metadata::gettype() const {
+	if(isarray())
+		return type->gettype();
+	if(isreference())
+		return type->gettype();
+	return this;
 }
 
 metadata* metadatac::find(const char* id) const {
@@ -159,10 +168,6 @@ metadata* metadatac::add(const char* id, metadata* type, unsigned size) {
 
 metadata* metadatac::reference(metadata* type) {
 	return add(pointer_id, type, pointer_size);
-}
-
-metadata* metadatac::dereference(metadata* type) {
-	return type->type;
 }
 
 metadata* metadatac::array(metadata* type) {

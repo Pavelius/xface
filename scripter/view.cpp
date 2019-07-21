@@ -73,8 +73,11 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {
 		if(type->isreference()) {
-			getname(result, result_max, config.types.dereference(type));
+			getname(result, result_max, type->type);
 			szprint(zend(result), result_max, "*");
+		} else if(type->isreference()) {
+			getname(result, result_max, type->type);
+			szprint(zend(result), result_max, "[]");
 		} else
 			szprint(result, result_max, type->id);
 		return result;

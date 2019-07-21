@@ -4,6 +4,7 @@
 
 unsigned					rmoptimal(unsigned need_count);
 void*						rmreserve(void* data, unsigned new_size);
+void*						rmreserve(void* data, unsigned count, unsigned& count_maximum, unsigned size);
 
 // Basic autogrow array
 struct arraydata {
@@ -106,12 +107,12 @@ struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(0, 0), count_maximum(0) {}
 	constexpr arem(T* source, unsigned count) : aref<T>(source, count), count_maximum(0) {}
-	~arem() { if(this->data && count_maximum) delete this->data; this->data = 0; this->count = 0; count_maximum = 0; }
+	~arem() { if(aref<T>::data && count_maximum) delete aref<T>::data; }
 	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }
 	void					clear() { aref<T>::count = 0; }
 	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
-	void					reserve(unsigned count) { if(count >= count_maximum) { count_maximum = rmoptimal(count + 1); this->data = (T*)rmreserve(this->data, count_maximum * sizeof(T)); } }
+	void					reserve(unsigned count) { aref<T>::data = (T*)rmreserve(aref<T>::data, count, count_maximum, sizeof(T)); }
 };
 // Abstract flag data bazed on enumerator
 template<typename T, typename DT = unsigned>

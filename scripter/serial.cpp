@@ -6,19 +6,13 @@
 using namespace code;
 
 struct metadata_context {
-
-	typedef arem<char>		arrayc;
-	struct slicei {
-		unsigned			offset;
-		unsigned			count;
-	};
 	struct headeri {
 		char				signature[4];
 		char				version[4];
 	};
 	headeri					header;
 	io::stream&				file;
-	arem<metadata*>			types;
+	arem<metadata*>&		types;
 	arem<metadata>			types_read;
 	bool					write_mode;
 
@@ -26,12 +20,8 @@ struct metadata_context {
 		header{"MTP", "0.1"}, file(file), write_mode(write_mode), types(types) {
 	}
 
-	metadata* findtype(const char* id) const {
-		for(auto p : types) {
-			if(strcmp(p->id, id) == 0)
-				return const_cast<metadata*>(p);
-		}
-		return 0;
+	template<class T> void serial(T& source) {
+		serial(&source, sizeof(source));
 	}
 
 	void serial(void* object, unsigned size) {
@@ -39,20 +29,6 @@ struct metadata_context {
 			file.write(object, size);
 		else
 			file.read(object, size);
-	}
-
-	void serial_met(void* object) {
-		if(write_mode) {
-			unsigned i = types.indexof(*((metadata**)object));
-			file.write(&i, sizeof(i));
-		} else {
-			unsigned i = 0xFFFFFFFF;
-			file.read(&i, sizeof(i));
-			if(i == 0xFFFFFFFF)
-				*((metadata**)object) = 0;
-			else
-				*((metadata**)object) = (metadata*)types.data + i;
-		}
 	}
 
 	void serial(const char*& ps) {
@@ -97,21 +73,22 @@ struct metadata_context {
 
 	void serial(void* object, const requisit& e) {
 		if(e.type->isreference()) {
-			auto type = config.types.dereference(e.type);
-			if(type->isnumber() || type->istext())
+			auto type = e.type->type;
+			if(type->isnumber() || type->istext() || type->isreference())
 				return;
 			auto pid = type->getid();
 			if(pid)
 				serial(object, e, pid);
 		} else if(e.type->isarray()) {
 			auto pa = (arrayc*)object;
+			auto sz = e.type->type->size;
 			serial(pa->count);
 			if(!write_mode) {
-				if(pa->count>0)
-					pa->reserve(pa->count*e.type->size);
+				if(pa->count > 0)
+					pa->reserve(pa->count*sz);
 			}
 			for(unsigned i = 0; i < pa->count; i++)
-				serial(pa->data + i * e.type->size, e.type);
+				serial(pa->data + i * sz, e.type->type);
 		} else if(e.type->istext())
 			serial(*((const char**)object));
 		else if(e.type->isnumber())
@@ -133,23 +110,6 @@ struct metadata_context {
 		}
 	}
 
-	void serial(void** data, unsigned size, unsigned& count, unsigned& count_maximum) {
-		serial(&count, sizeof(count));
-		if(write_mode)
-			serial(*data, count*size);
-		else {
-
-		}
-	}
-
-	template<class T> void serial(arem<T>& source) {
-		serial((void**)&source.data, sizeof(source.data[0]), source.count, source.count_maximum);
-	}
-
-	template<class T> void serial(T& source) {
-		serial(&source, sizeof(source));
-	}
-
 };
 
 void metadata::write(const char* url, arem<metadata*>& types) {
@@ -162,18 +122,25 @@ void metadata::write(const char* url, arem<metadata*>& types) {
 	metadata_context e(file, true, types);
 	e.serial(e.header);
 	e.serial(e.types.count);
-	for(auto& m : types)
-		e.serial(m, meta_type);
+	for(auto p : types) {
+		if(p->isreference())
+			continue;
+		if(p->isarray())
+			continue;
+		e.serial(p, meta_type);
+	}
 }
 
 void metadata::addto(arem<metadata*>& source) const {
+	if(ispredefined())
+		return;
 	auto i = source.indexof(const_cast<metadata*>(this));
 	if(i != -1)
 		return;
 	source.add(const_cast<metadata*>(this));
 	for(auto& e : requisits) {
-		if(e.type->ispredefined())
-			continue;
+		if(e.type->type)
+			e.type->type->addto(source);
 		e.type->addto(source);
 	}
 }

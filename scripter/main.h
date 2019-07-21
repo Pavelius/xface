@@ -12,6 +12,7 @@ struct metadata;
 struct requisit;
 struct expression;
 struct statement;
+typedef arem<char> arrayc;
 
 enum operator_s : unsigned char {
 	Determinal,
@@ -94,7 +95,7 @@ struct requisit {
 	constexpr operator bool() const { return id != 0; }
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
-	void*					ptr(void* object) const { return (char*)object + offset; }
+	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				set(expression* v) { if(this) code = v; return this; }
@@ -122,6 +123,7 @@ struct metadata {
 	bool					istext() const;
 	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
 	const requisit*			getid() const;
+	const metadata*			gettype() const;
 	void					update();
 	void					write(const char* url) const;
 	static void				write(const char* url, arem<metadata*>& types);
@@ -130,7 +132,6 @@ struct metadatac : agrw<metadata, 64> {
 	metadata*				add(const char* id);
 	metadata*				add(const char* id, metadata* type, unsigned size);
 	metadata*				array(metadata* type);
-	metadata*				dereference(metadata* type);
 	metadata*				find(const char* id) const;
 	metadata*				find(const char* id, const metadata*) const;
 	metadata*				reference(metadata* type);

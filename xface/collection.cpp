@@ -22,6 +22,14 @@ void* rmreserve(void* data, unsigned new_size) {
 	return malloc(new_size);
 }
 
+void* rmreserve(void* data, unsigned count, unsigned& count_maximum, unsigned size) {
+	if(count >= count_maximum) {
+		count_maximum = rmoptimal(count + 1);
+		data = rmreserve(data, count_maximum * size);
+	}
+	return data;
+}
+
 void* arraydata::add(unsigned size) {
 	auto p = this;
 	while(p->count >= p->maximum) {

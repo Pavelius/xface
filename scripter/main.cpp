@@ -31,6 +31,7 @@ int main() {
 	p4->add("Id", config.types.find("Text"));
 	p4->add("Name", config.types.find("Text"));
 	p4->update();
+	p3->write("character.mtd");
 	auto r = p4->add("Add", config.types.find("Void"));
 	//p3->write("character.mtp");
 	r->set(new expression(Add, new expression(10), new expression(12)));
