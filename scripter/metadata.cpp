@@ -19,7 +19,7 @@ static metadata char_meta = {"Char", 0, pointer_size / 4};
 metadata metadata::type_meta = {"Type"};
 metadata metadata::type_requisit = {"Requisit"};
 
-metadata* configi::standart[] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta,
+metadata* configi::standart[8] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta,
 &metadata::type_meta, &metadata::type_requisit};
 
 bool metadata::isnumber() const {

@@ -140,7 +140,7 @@ struct metadatac : agrw<metadata, 64> {
 };
 struct configi {
 	metadatac				types;
-	static metadata*		standart[];
+	static metadata*		standart[8];
 };
 extern configi				config;
 }
