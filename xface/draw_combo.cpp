@@ -46,22 +46,11 @@ static void set_value(const bsval& e1, void* value) {
 		e1.set((int)value);
 }
 
-static const char* get_name(const bsreq* type, const void* object) {
-	if(!object || !type)
+static const char* get_name(const void* object, const bsreq* field) {
+	if(!object || !field)
 		return "";
-	auto pf = type->find("name");
-	if(!pf)
-		return 0;
-	auto pn = pf->get(pf->ptr(object));
-	if(!pn)
-		return "";
-	return (const char*)pn;
-}
-
-static int compare_objects(const void* p1, const void* p2) {
-	auto n1 = get_name(combo_value.type, *((void**)p1));
-	auto n2 = get_name(combo_value.type, *((void**)p2));
-	return strcmp(n1, n2);
+	auto p = *((const char**)field->ptr(object));
+	return p ? p : "";
 }
 
 static void* find_next(const bsval& e1, comparer c1) {
@@ -71,7 +60,7 @@ static void* find_next(const bsval& e1, comparer c1) {
 	auto pf = ps->meta->find("name");
 	if(!pf)
 		return 0;
-	auto n1 = get_name(e1.type, get_value(e1));
+	auto n1 = get_name(get_value(e1), e1.type->find("name"));
 	auto n2 = "";
 	const char* e2 = 0;
 	auto pe = ps->end();
@@ -121,6 +110,12 @@ static void combo_find_name() {
 		set_value(combo_value, pn);
 }
 
+static int compare_by_order(void* v1, void* v2, const bsreq* field) {
+	auto n1 = get_name(*((void**)v1), field);
+	auto n2 = get_name(*((void**)v2), field);
+	return strcmp(n1, n2);
+}
+
 struct combo_list : controls::list, adat<void*, 64> {
 
 	const bsreq*	field;
@@ -167,26 +162,10 @@ struct combo_list : controls::list, adat<void*, 64> {
 		return -1;
 	}
 
-	const char* getname(void* object) {
-		if(!object)
-			return "";
-		auto pp = field->ptr(object);
-		auto p = *((const char**)pp);
-		if(p)
-			return p;
-		return "";
-	}
-
-	int compare_by_order(void* v1, void* v2) {
-		auto n1 = getname(*((void**)v1));
-		auto n2 = getname(*((void**)v2));
-		return strcmp(n1, n2);
-	}
-
 	void sort() {
 		for(auto step = count / 2; step > 0; step /= 2) {
 			for(auto i = step; i < count; i++) {
-				for(int j = i - step; j >= 0 && compare_by_order(data + j, data + (j + step)); j -= step) {
+				for(int j = i - step; j >= 0 && compare_by_order(data + j, data + (j + step), field); j -= step) {
 					auto temp = data[j];
 					data[j] = data[j + step];
 					data[j + step] = temp;
@@ -316,7 +295,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 	if(focused)
 		rectx(rco, colors::black);
 	rco.offset(2, 2);
-	auto name = get_name(cmd.type, get_value(cmd));
+	auto name = get_name(get_value(cmd), cmd.type);
 	if(name && name[0])
 		textc(rco.x1, rco.y1, rco.width(), name);
 	if(tips && a == AreaHilited)
