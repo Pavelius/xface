@@ -26,6 +26,16 @@ const bsreq* bsreq::find(const char* name) const {
 	return 0;
 }
 
+const bsreq* bsreq::find(const char* name, unsigned count) const {
+	if(!this || !name || name[0] == 0)
+		return 0;
+	for(auto p = this; p->id; p++) {
+		if(memcmp(p->id, name, count) == 0)
+			return p;
+	}
+	return 0;
+}
+
 const bsreq* bsreq::find(const char* name, const bsreq* type) const {
 	if(!this)
 		return 0;
@@ -33,25 +43,6 @@ const bsreq* bsreq::find(const char* name, const bsreq* type) const {
 		if(p->type != type)
 			continue;
 		if(strcmp(p->id, name) == 0)
-			return p;
-	}
-	return 0;
-}
-
-const bsreq* bsreq::find(const char* name, unsigned count) const {
-	if(!this)
-		return 0;
-	for(auto p = this; p->id; p++) {
-		if(p->type != type)
-			continue;
-		auto found = true;
-		for(unsigned i = 0; i < count; i++) {
-			if(p->id[i] != name[i]) {
-				found = false;
-				break;
-			}
-		}
-		if(found)
 			return p;
 	}
 	return 0;
@@ -193,7 +184,7 @@ const bsreq* bsreq::getname() const {
 	return p;
 }
 
-const char* bsreq::get(const void* p, char* result, const char* result_max) const {
+const char* bsreq::get(const void* p, char* result, const char* result_max, const bsreq* pf) const {
 	if(is(KindNumber)) {
 		auto v = get(p);
 		szprint(result, result_max, "%1i", v);
@@ -203,7 +194,8 @@ const char* bsreq::get(const void* p, char* result, const char* result_max) cons
 			return "";
 		return v;
 	} else if(is(KindReference)) {
-		auto pf = type->getname();
+		if(!pf)
+			pf = type->getname();
 		if(!pf)
 			return "";
 		auto v = (void*)get(p);
@@ -214,7 +206,8 @@ const char* bsreq::get(const void* p, char* result, const char* result_max) cons
 		auto pb = bsdata::find(type);
 		if(!pb)
 			return "";
-		auto pf = pb->meta->getname();
+		if(!pf)
+			pf = pb->meta->getname();
 		if(!pf)
 			return "";
 		auto vi = get(p);
@@ -225,7 +218,14 @@ const char* bsreq::get(const void* p, char* result, const char* result_max) cons
 }
 
 bsval bsval::ptr(const char* url) const {
-	bsval r(data, type->find(url));
+	bsval r(data, type);
+	for(auto i = 0; url[i]; i++) {
+		if(url[i] == '.') {
+			r.type = type->find(url, i);
+			r = r.dereference();
+		}
+	}
+	r.type = r.type->find(url);
 	if(!r.type)
 		r.data = 0;
 	return r;

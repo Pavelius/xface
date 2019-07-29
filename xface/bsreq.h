@@ -76,7 +76,7 @@ struct bsreq {
 	const bsreq*		find(const char* name, unsigned count) const;
 	const bsreq*		find(const char* name, const bsreq* type) const;
 	int					get(const void* p) const;
-	const char*			get(const void* p, char* result, const char* result_max) const;
+	const char*			get(const void* p, char* result, const char* result_max, const bsreq* field = 0) const;
 	const bsreq*		getname() const;
 	bool				is(bstype_s v) const { return subtype == v; }
 	bool				issimple() const { return is(KindNumber) || is(KindText); }
