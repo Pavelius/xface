@@ -233,29 +233,22 @@ static struct widget_settings : controls::control {
 	}
 
 	static int element(int x, int y, int width, unsigned flags, settings& e) {
-		struct cmdv : runable {
-			settings*		pe;
-			draw::callback	p;
-			int	getid() const { return (int)pe; }
-			void execute() const { draw::execute(p, (int)pe); }
-			void set(draw::callback p, settings& e) { this->p = p; pe = &e; }
-		};
 		const auto title = 160;
 		settings* pc;
 		char temp[512]; temp[0] = 0;
 		if(e.e_visible && !e.e_visible(e))
 			return 0;
 		int y1 = y;
-		cmdv ec;
+		//cmdv ec;
 		switch(e.type) {
 		case settings::Radio:
-			ec.set(callback_radio, e);
-			y += radio(x, y, width, flags | ((*((int*)e.data) == e.value) ? Checked : 0), ec, getname(temp, e), 0);
+			y += radio(x, y, width, flags | ((*((int*)e.data) == e.value) ? Checked : 0),
+				cmd(callback_radio, (int)&e), getname(temp, e), 0);
 			break;
 		case settings::Bool:
-			ec.set(callback_bool, e);
 			y += metrics::padding;
-			y += checkbox(x, y, width, flags | (*((bool*)e.data) ? Checked : 0), ec, getname(temp, e), 0);
+			y += checkbox(x, y, width, flags | (*((bool*)e.data) ? Checked : 0),
+				cmd(callback_bool, (int)&e), getname(temp, e), 0);
 			break;
 		case settings::Int:
 			// Есть максимум
@@ -270,8 +263,8 @@ static struct widget_settings : controls::control {
 			y += field(x, y, width, flags, *((color*)e.data), e.name, 0, title);
 			break;
 		case settings::Button:
-			ec.set(callback_button, e);
-			y += button(x, y, width, flags, ec, getname(temp, e), 0);
+			y += button(x, y, width, flags,
+				cmd(callback_button, (int)&e), getname(temp, e), 0);
 			break;
 		case settings::TextPtr:
 			y += field(x, y, width, flags, *((const char**)e.data), e.name, 0, title);

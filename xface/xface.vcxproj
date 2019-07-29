@@ -129,6 +129,7 @@
     <ClCompile Include="bsreq_txt.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_autocomplete.cpp" />
+    <ClCompile Include="draw_cmd.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
     <ClCompile Include="draw_markup.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

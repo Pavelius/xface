@@ -11,40 +11,6 @@ const unsigned WidgetMask = 0xF;
 
 struct dlgform : bsval {
 
-	struct reqcheck : bsval, runable {
-		constexpr reqcheck() : bsval(), pw() {}
-		constexpr reqcheck(bsval v, const widget& e) : bsval(v), pw(&e) {}
-		void			execute() const override { current = *this; draw::execute(callback_proc); }
-		int				getid() const { return (int)pw; }
-		unsigned		getfocus() const { return is() ? Checked : 0; }
-		bool			is() const { return get() == pw->value; }
-	private:
-		static reqcheck	current;
-		static void callback_proc() {
-			auto value = current.pw->value;
-			if(!value)
-				value = 1;
-			auto v = current.get() ^ value;
-			current.set(v);
-		}
-		const widget*	pw;
-	};
-
-	struct reqradio : bsval, runable {
-		constexpr reqradio() : bsval(), pw() {}
-		constexpr reqradio(bsval v, const widget& e) : bsval(v), pw(&e) {}
-		void			execute() const override { current = *this; draw::execute(callback_proc); }
-		int				getid() const { return (int)pw; }
-		unsigned		getfocus() const { return is() ? Checked : 0; }
-		bool			is() const { return get() == pw->value; }
-	private:
-		static reqradio	current;
-		static void callback_proc() {
-			current.set(current.pw->value);
-		}
-		const widget*	pw;
-	};
-
 	unsigned getflags(const widget& e) const {
 		return e.flags;
 	}
@@ -203,7 +169,7 @@ struct dlgform : bsval {
 		auto po = getinfo(e.id);
 		if(!po)
 			return 0;
-		reqradio ev(po, e);
+		cmd ev(cmd::apply_set, e.value, po.type->ptr(po.data), po.type->size);
 		auto checked = (po.get() == e.value);
 		auto flags = getflags(e);
 		if(checked)
@@ -220,7 +186,7 @@ struct dlgform : bsval {
 		auto value = e.value;
 		if(!value)
 			value = 1;
-		reqcheck ev(po, e);
+		cmd ev(cmd::apply_set, e.value, po.type->ptr(po.data), po.type->size);
 		auto checked = (po.get()&value) != 0;
 		auto flags = getflags(e);
 		if(checked)
@@ -251,9 +217,6 @@ struct dlgform : bsval {
 	dlgform(const bsval& value) : bsval(value) {}
 
 };
-
-dlgform::reqcheck dlgform::reqcheck::current;
-dlgform::reqradio dlgform::reqradio::current;
 
 int draw::render(int x, int y, int width, const bsval& value, const widget* elements) {
 	dlgform e(value);

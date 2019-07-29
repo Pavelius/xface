@@ -36,21 +36,21 @@ void draw::titletext(int& x, int y, int& width, unsigned flags, const char* labe
 	width -= title;
 }
 
-int	draw::button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips, int key) {
+int	draw::button(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips, int key) {
 	setposition(x, y, width);
 	struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
-	focusing(cmd.getid(), flags, rc);
+	focusing(ev.getid(), flags, rc);
 	if(buttonh({x, y, x + width, rc.y2},
 		ischecked(flags), isfocused(flags), isdisabled(flags), true, label, key, false, tips)
 		|| (isfocused(flags) && hot.key == KeyEnter)) {
-		cmd.execute();
+		ev.execute();
 	}
 	if(label && label[0] && areb(rc))
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
 }
 
-int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips) {
+int draw::radio(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips) {
 	draw::state push;
 	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
@@ -61,7 +61,7 @@ int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, con
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
 	decortext(flags);
-	focusing(cmd.getid(), flags, rc);
+	focusing(ev.getid(), flags, rc);
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
 	auto a = draw::area(rc);
@@ -75,7 +75,7 @@ int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, con
 			need_select = true;
 	}
 	if(need_select)
-		cmd.execute();
+		ev.execute();
 	rc = rc1; rc.offset(2);
 	draw::text(rc, label);
 	if(tips && a == AreaHilited)
@@ -83,7 +83,7 @@ int draw::radio(int x, int y, int width, unsigned flags, const runable& cmd, con
 	return rc1.height() + 2;
 }
 
-int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips) {
+int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips) {
 	draw::state push;
 	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
@@ -92,7 +92,7 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 	rc.y1 = rc1.y1;
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
-	focusing(cmd.getid(), flags, rc);
+	focusing(ev.getid(), flags, rc);
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), 0, flags, ":check");
 	decortext(flags);
 	auto a = draw::area(rc);
@@ -107,7 +107,7 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const runable& cmd, 
 			need_value = true;
 	}
 	if(need_value)
-		cmd.execute();
+		ev.execute();
 	draw::text(rc1, label);
 	if(tips && a == AreaHilited)
 		tooltips(tips);

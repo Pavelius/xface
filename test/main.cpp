@@ -67,33 +67,9 @@ struct testinfo {
 	int				value;
 };
 
-struct cmd_value : runable {
-
-	callback	id;
-	void*			param;
-
-	constexpr cmd_value(callback id, void* param) : id(id), param(param) {}
-	constexpr cmd_value(bool& value) : cmd_value(execute_bool, &value) {}
-
-	void execute() const override {
-		draw::execute(id, (int)param);
-	}
-
-	int	getid() const override {
-		return (int)param;
-	}
-
-
-	static void execute_bool() {
-		auto v = *((bool*)hot.param);
-		*((bool*)hot.param) = !v;
-	}
-
-};
-
 static int checkbox(int x, int y, int width, bool& value, const char* title, const char* tips = 0) {
 	return checkbox(x, y, width,
-		value ? Checked : 0, cmd_value(value), title)
+		value ? Checked : 0, cmd(value), title)
 		+ metrics::padding;
 }
 

@@ -1,3 +1,4 @@
+#include "anyval.h"
 #include "bsreq.h"
 #include "draw.h"
 #include "pointl.h"
@@ -31,19 +32,19 @@ enum dock_s : unsigned char {
 	DockBottom, DockWorkspace,
 };
 typedef void(*editproc)(const storage& e);
-struct runable {
-	virtual int			getid() const = 0;
-	virtual void		execute() const = 0;
-};
-struct cmd : runable {
-	constexpr cmd() : id(0), param(0) {}
-	constexpr cmd(callback id, int param = 0) : id(id), param(param) {}
-	virtual void		execute() const override { draw::execute(id, param); }
-	virtual int			getid() const override { return (int)id; }
-	void				set(callback id, int param) { this->id; this->param = param; }
-private:
-	callback			id;
+struct cmd : anyval {
+	callback			proc;
 	int					param;
+	static anyval		current;
+	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0) {}
+	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
+	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
+	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param) {}
+	constexpr cmd(bool& value) : anyval(value), proc(apply_xor), param(1) {}
+	static void			apply_xor();
+	static void			apply_set();
+	void				execute() const { current = *this; draw::execute(proc, param); }
+	int					getid() const { return (int)data; }
 };
 namespace controls {
 struct control {
@@ -310,8 +311,8 @@ void						application(bool allow_multiply_windows);
 void						application(const char* name, bool allow_multiply_windows);
 inline void					application() { application(true); }
 void						application_initialize();
-int							button(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0, int key = 0);
-int							checkbox(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
+int							button(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0, int key = 0);
+int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0);
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
 void						combobox(const rect& rc, const bsval& cmd);
 int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
@@ -319,7 +320,7 @@ void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width, editproc choose = 0);
 int							field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width);
-int							radio(int x, int y, int width, unsigned flags, const runable& cmd, const char* label, const char* tips = 0);
+int							radio(int x, int y, int width, unsigned flags, const cmd& cmd, const char* label, const char* tips = 0);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title);
 }

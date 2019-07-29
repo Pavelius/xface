@@ -32,7 +32,7 @@ static void check_flags() {
 static void set_command_value() {
 	command.value = (const int)hot.param;
 }
-struct cmd_check : runable {
+struct cmd_check : cmd {
 	constexpr cmd_check(const anyval& value, const void* source, unsigned index)
 		: source(source), index(index), value(value) {}
 	virtual int	getid() const { return (int)source; }
@@ -224,9 +224,7 @@ static int error(int x, int y, int width, contexti& ctx, const markup& e, const 
 }
 
 void field_enum(const rect& rc, unsigned flags, const anyval& ev, const bsreq* meta_type, const void* object, const markup::proci* pri, const markup::propi* ppi) {
-	auto pb = bsdata::find(meta_type, bsdata::firstenum);
-	if(!pb)
-		pb = bsdata::find(meta_type, bsdata::first);
+	auto pb = bsdata::find(meta_type);
 	if(!pb)
 		return;
 	char temp[128];
@@ -339,7 +337,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		if(!bv.data || !bv.type)
 			return 0;
 		if(strcmp(pn, "checkboxes") == 0 && (bv.type->is(KindEnum) || bv.type->is(KindCFlags))) {
-			auto pb = bsdata::find(bv.type->type, bsdata::firstenum);
+			auto pb = bsdata::find(bv.type->type);
 			if(!pb)
 				return error(x, y, width, ctx, e, "Не найдена база");
 			if(pb->count == 0)
@@ -374,7 +372,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			}
 			y = y1;
 		} else if(strcmp(pn, "radiobuttons") == 0 && bv.type->is(KindEnum)) {
-			auto pb = bsdata::find(bv.type->type, bsdata::firstenum);
+			auto pb = bsdata::find(bv.type->type);
 			if(!pb)
 				return error(x, y, width, ctx, e, "Не найдена база");
 			if(pb->count == 0)
@@ -393,7 +391,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		} else {
 			if(!bv.type->is(KindNumber))
 				return error(x, y, width, ctx, e, bv.type->id);
-			auto pb = bsdata::find(pn, bsdata::firstenum);
+			auto pb = bsdata::find(pn);
 			if(!pb)
 				return error(x, y, width, ctx, e, pn);
 			if(pb->count == 0)
