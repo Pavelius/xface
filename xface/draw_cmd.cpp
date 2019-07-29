@@ -14,3 +14,7 @@ void cmd::apply_xor() {
 void cmd::apply_set() {
 	current.set(hot.param);
 }
+
+void cmd::apply_add() {
+	current.set(current.get() + hot.param);
+}

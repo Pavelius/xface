@@ -1,4 +1,4 @@
-#include "bsreq.h"
+﻿#include "bsreq.h"
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
@@ -122,8 +122,9 @@ static void combo_find_name() {
 }
 
 struct combo_list : controls::list, adat<void*, 64> {
-	const bsreq*		field;
-	const bsdata&		metadata;
+
+	const bsreq*	field;
+	const bsdata&	metadata;
 
 	combo_list(const bsdata& metadata) : metadata(metadata) {
 		field = metadata.meta->find("name");
@@ -166,6 +167,34 @@ struct combo_list : controls::list, adat<void*, 64> {
 		return -1;
 	}
 
+	const char* getname(void* object) {
+		if(!object)
+			return "";
+		auto pp = field->ptr(object);
+		auto p = *((const char**)pp);
+		if(p)
+			return p;
+		return "";
+	}
+
+	int compare_by_order(void* v1, void* v2) {
+		auto n1 = getname(*((void**)v1));
+		auto n2 = getname(*((void**)v2));
+		return strcmp(n1, n2);
+	}
+
+	void sort() {
+		for(auto step = count / 2; step > 0; step /= 2) {
+			for(auto i = step; i < count; i++) {
+				for(int j = i - step; j >= 0 && compare_by_order(data + j, data + (j + step)); j -= step) {
+					auto temp = data[j];
+					data[j] = data[j + step];
+					data[j + step] = temp;
+				}
+			}
+		}
+	}
+
 };
 
 static void show_drop_down() {
@@ -180,7 +209,7 @@ static void show_drop_down() {
 	auto value = get_value(combo_value);
 	for(auto p = ps->begin(); p < pe; p += ps->size)
 		list.add((void*)p);
-	qsort(list.data, list.getcount(), sizeof(list.data[0]), compare_objects);
+	list.sort();
 	list.pixels_per_line = list.getrowheight();
 	list.lines_per_page = imin(list.getcount(), 7);
 	rect rc = combo_rect;
@@ -256,7 +285,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 	if(focused) {
 		switch(hot.key) {
 		case InputSymbol:
-			if(hot.param>=0x20) {
+			if(hot.param >= 0x20) {
 				unsigned time = clock();
 				if(!combo_time || (time - combo_time) > 1000)
 					combo_name[0] = 0;

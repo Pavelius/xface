@@ -14,7 +14,8 @@ namespace metrics {
 namespace show {
 extern bool				left, right, top, bottom;
 extern bool				padding, statusbar;
-}}
+}
+}
 namespace draw {
 enum show_s : unsigned char {
 	NoView, ViewIcon, ViewText, ViewIconAndText
@@ -33,18 +34,18 @@ enum dock_s : unsigned char {
 };
 typedef void(*editproc)(const storage& e);
 struct cmd : anyval {
-	callback			proc;
-	int					param;
-	static anyval		current;
+	callback				proc;
+	int						param;
+	static anyval			current;
 	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0) {}
 	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param) {}
-	constexpr cmd(bool& value) : anyval(value), proc(apply_xor), param(1) {}
-	static void			apply_xor();
-	static void			apply_set();
-	void				execute() const { current = *this; draw::execute(proc, param); }
-	int					getid() const { return (int)data; }
+	static void				apply_add();
+	static void				apply_set();
+	static void				apply_xor();
+	void					execute() const { current = *this; draw::execute(proc, param); }
+	int						getid() const { return (int)data; }
 };
 namespace controls {
 struct control {
@@ -170,7 +171,7 @@ struct column {
 	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
 	explicit operator bool() const { return method != 0; }
 	bool					isvisible() const { return true; }
-	bool					isreadonly() const { return (flags & Disabled)!=0; }
+	bool					isreadonly() const { return (flags & Disabled) != 0; }
 	column*					setreadonly() { if(!this) return 0; flags |= Disabled; return this; }
 };
 struct table : list {

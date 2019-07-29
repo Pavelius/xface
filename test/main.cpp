@@ -69,7 +69,7 @@ struct testinfo {
 
 static int checkbox(int x, int y, int width, bool& value, const char* title, const char* tips = 0) {
 	return checkbox(x, y, width,
-		value ? Checked : 0, cmd(value), title)
+		value ? Checked : 0, cmd(cmd::apply_xor, 1, value), title)
 		+ metrics::padding;
 }
 
