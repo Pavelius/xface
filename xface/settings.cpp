@@ -5,7 +5,6 @@
 using namespace draw;
 
 settings					settings::root;
-static agrw<settings, 128>	globals;
 
 settings* settings::child() {
 	if(type != Group)
@@ -24,6 +23,7 @@ settings* settings::find(const char* name) {
 }
 
 static settings& add_element(settings* e, const char* name, settings::types type, void* data) {
+	static agrw<settings, 128>	globals;
 	if(e->type != settings::Group)
 		return *e;
 	settings* e1;

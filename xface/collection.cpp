@@ -35,6 +35,8 @@ void* arraydata::add(unsigned size) {
 	while(p->count >= p->maximum) {
 		if(!p->next) {
 			auto m = p->maximum * 2;
+			if(!m)
+				m = 64;
 			auto s = sizeof(*this) + size * m;
 			p->next = (arraydata*)new char[s];
 			p->next->count = 0;

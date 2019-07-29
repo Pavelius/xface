@@ -185,17 +185,16 @@ void table::rowtotal(const rect& rc) const {
 
 void table::cell(const rect& rc, int line, int column) const {
 	char temp[260];
-	if(true) {
-		auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, line, column);
-		if(p) {
-			cellhilite(rc, line, column, p, AlignLeft);
-			draw::text(rc, p, AlignLeft);
-		}
-	} else {
-		szprint(temp, zendof(temp), "%1i", getnumber(line, column));
-		cellhilite(rc, line, column, temp, AlignRight);
-		draw::text(rc, temp, AlignLeft);
+	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, line, column);
+	if(p) {
+		cellhilite(rc, line, column, p, AlignLeft);
+		draw::text(rc, p, AlignLeft);
 	}
+	//} else {
+	//	szprint(temp, zendof(temp), "%1i", getnumber(line, column));
+	//	cellhilite(rc, line, column, temp, AlignRight);
+	//	draw::text(rc, temp, AlignLeft);
+	//}
 }
 
 void table::row(const rect& rc, int index) {
