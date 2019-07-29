@@ -95,7 +95,7 @@ struct dlgform : bsval {
 		if(!po)
 			return 0;
 		auto flags = getflags(e);
-		if(po.type->type->issimple()) {
+		if(po.type->issimple()) {
 			storage ev;
 			ev.data = (void*)po.type->ptr(po.data);
 			ev.size = po.type->size;

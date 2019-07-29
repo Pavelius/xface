@@ -17,7 +17,7 @@ const bsreq bsmeta<bsreq>::meta[] = {
 {}};
 
 const bsreq* bsreq::find(const char* name) const {
-	if(!this || !name || name[0]==0)
+	if(!this || !name || name[0] == 0)
 		return 0;
 	for(auto p = this; p->id; p++) {
 		if(strcmp(p->id, name) == 0)
@@ -134,7 +134,7 @@ const void* bsdata::find(const bsreq* id, const char* value) const {
 	if(!value)
 		return find(id, &value, sizeof(value));
 	auto ps = (char*)id->ptr(data);
-	auto pe = ps + size*count;
+	auto pe = ps + size * count;
 	for(; ps < pe; ps += size) {
 		auto ps_value = (const char*)id->get(ps);
 		if(!ps_value)
@@ -184,37 +184,41 @@ const bsreq* bsreq::getname() const {
 	return p;
 }
 
-const char* bsreq::get(const void* p, char* result, const char* result_max, const bsreq* pf) const {
-	if(is(KindNumber)) {
-		auto v = get(p);
-		szprint(result, result_max, "%1i", v);
-	} else if(is(KindText)) {
+const char* bsreq::gets(const void* p) const {
+	if(is(KindText)) {
 		auto v = (const char*)get(p);
 		if(!v)
 			return "";
 		return v;
 	} else if(is(KindReference)) {
-		if(!pf)
-			pf = type->getname();
+		auto pf = type->getname();
 		if(!pf)
 			return "";
 		auto v = (void*)get(p);
 		if(!v)
 			return "";
-		return pf->get(pf->ptr(v), result, result_max);
+		return pf->gets(pf->ptr(v));
 	} else if(is(KindEnum)) {
 		auto pb = bsdata::find(type);
 		if(!pb)
 			return "";
-		if(!pf)
-			pf = pb->meta->getname();
+		auto pf = pb->meta->getname();
 		if(!pf)
 			return "";
 		auto vi = get(p);
 		auto v = (void*)pb->get(vi);
-		return pf->get(pf->ptr(v), result, result_max);
+		return pf->gets(pf->ptr(v));
 	}
-	return result;
+	return "";
+}
+
+const char* bsreq::get(const void* p, char* result, const char* result_max) const {
+	if(is(KindNumber)) {
+		auto v = get(p);
+		szprint(result, result_max, "%1i", v);
+		return result;
+	}
+	return gets(p);
 }
 
 bsval bsval::ptr(const char* url) const {

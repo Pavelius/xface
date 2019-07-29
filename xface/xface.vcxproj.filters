@@ -144,9 +144,6 @@
     <ClCompile Include="bstream.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="draw_combo.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
     <ClCompile Include="draw_dropdown.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
@@ -241,6 +238,9 @@
       <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="draw_cmd.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_combo.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
   </ItemGroup>

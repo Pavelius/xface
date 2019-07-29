@@ -46,28 +46,28 @@ static void set_value(const bsval& e1, void* value) {
 		e1.set((int)value);
 }
 
-static const char* get_name(const void* object, const bsreq* field) {
-	if(!object || !field)
+static const char* getstrval(const void* object, const bsreq* type) {
+	if(!object || !type)
 		return "";
-	auto p = *((const char**)field->ptr(object));
-	return p ? p : "";
+	auto p = (const char*)type->get(type->ptr(object));
+	if(!p)
+		return "";
+	return p;
 }
 
 static void* find_next(const bsval& e1, comparer c1) {
 	auto ps = bsdata::find(e1.type->type);
 	if(!ps)
 		return 0;
-	auto pf = ps->meta->find("name");
+	auto pf = ps->meta->getname();
 	if(!pf)
 		return 0;
-	auto n1 = get_name(get_value(e1), e1.type->find("name"));
+	auto n1 = getstrval(e1.data, pf);
 	auto n2 = "";
 	const char* e2 = 0;
 	auto pe = ps->end();
 	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
-		auto nx = (const char*)pf->get(pf->ptr(ex));
-		if(!nx)
-			nx = "";
+		auto nx = getstrval(ex, pf);
 		if(c1(nx, n1) < 0 && (!e2 || c1(nx, n2) > 0)) {
 			n2 = nx;
 			e2 = ex;
@@ -78,13 +78,15 @@ static void* find_next(const bsval& e1, comparer c1) {
 
 static void* find_name(const bsreq* type, const char* name) {
 	auto ps = bsdata::find(type);
-	auto pf = ps->meta->find("name");
+	if(!ps)
+		return 0;
+	auto pf = type->getname();
 	if(!pf)
 		return 0;
 	auto pe = ps->end();
 	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
-		auto nx = (const char*)pf->get(pf->ptr(ex));
-		if(!nx || nx[0] == 0)
+		auto nx = getstrval(ex, pf);
+		if(nx[0] == 0)
 			continue;
 		if(matchuc(nx, name))
 			return (void*)ex;
@@ -110,26 +112,27 @@ static void combo_find_name() {
 		set_value(combo_value, pn);
 }
 
-static int compare_by_order(void* v1, void* v2, const bsreq* field) {
-	auto n1 = get_name(*((void**)v1), field);
-	auto n2 = get_name(*((void**)v2), field);
-	return strcmp(n1, n2);
-}
-
 struct combo_list : controls::list, adat<void*, 64> {
 
-	const bsreq*	field;
-	const bsdata&	metadata;
+	const bsreq* field;
 
-	combo_list(const bsdata& metadata) : metadata(metadata) {
-		field = metadata.meta->find("name");
-		if(!field)
-			field = metadata.meta->find("id");
+	combo_list(const bsdata& metadata) : field(metadata.meta->getname()) {
 	}
 
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		auto p = (const char*)field->get(field->ptr(data[line]));
-		return p ? p : "";
+		return field->gets(field->ptr(data[line]));
+	}
+
+	int compare_by_order(void* v1, void* v2) {
+		auto p1 = *((void**)v1);
+		auto p2 = *((void**)v2);
+		auto n1 = "";
+		if(p1)
+			n1 = field->gets(field->ptr(p1));
+		auto n2 = field->gets(p2);
+		if(p2)
+			n2 = field->gets(field->ptr(p2));
+		return strcmp(n1, n2);
 	}
 
 	int	getmaximum() const {
@@ -165,7 +168,7 @@ struct combo_list : controls::list, adat<void*, 64> {
 	void sort() {
 		for(auto step = count / 2; step > 0; step /= 2) {
 			for(auto i = step; i < count; i++) {
-				for(int j = i - step; j >= 0 && compare_by_order(data + j, data + (j + step), field); j -= step) {
+				for(int j = i - step; j >= 0 && compare_by_order(data + j, data + (j + step)); j -= step) {
 					auto temp = data[j];
 					data[j] = data[j + step];
 					data[j + step] = temp;
@@ -182,10 +185,7 @@ static void show_drop_down() {
 		return;
 	combo_list list(*ps);
 	list.hilite_odd_lines = false;
-	if(!list.field)
-		return;
 	auto pe = ps->end();
-	auto value = get_value(combo_value);
 	for(auto p = ps->begin(); p < pe; p += ps->size)
 		list.add((void*)p);
 	list.sort();
@@ -202,6 +202,7 @@ static void show_drop_down() {
 		rc.y1 = rc.y2 - (list.pixels_per_line + 1);
 		list.lines_per_page = list.getlinesperpage(rc.height());
 	}
+	auto value = get_value(combo_value);
 	list.current = list.find(value);
 	list.ensurevisible();
 	if(dropdown(rc, list)) {
@@ -295,9 +296,7 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 	if(focused)
 		rectx(rco, colors::black);
 	rco.offset(2, 2);
-	auto name = get_name(get_value(cmd), cmd.type);
-	if(name && name[0])
-		textc(rco.x1, rco.y1, rco.width(), name);
+	textc(rco.x1, rco.y1, rco.width(), cmd.type->gets(cmd.data));
 	if(tips && a == AreaHilited)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;

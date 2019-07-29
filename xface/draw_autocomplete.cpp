@@ -7,7 +7,7 @@ using namespace draw;
 using namespace draw::controls;
 
 namespace {
-struct autocomplete : draw::controls::list {
+struct autocomplete : list {
 	arem<listelement*>	source;
 	bool				show_images;
 	const sprite*		images;
@@ -85,66 +85,7 @@ struct fillable {
 };
 }
 
-listelement* choose_text(int x, int y, int width, control& e, fillable& vs, const char* start_filter) {
-	char filter[32] = {};
-	if(start_filter)
-		zcpy(filter, start_filter, sizeof(filter) - 1);
-	rect rc = {x, y, x + width, y + 100};
-	screenshoot screen;
-	auto push_focus = getfocus();
-	setfocus((int)&e, true);
-	vs.update(filter, rc);
-	while(ismodal()) {
-		screen.restore();
-		if(rc.y1<rc.y2)
-			e.view(rc);
-		domodal();
-		switch(hot.key) {
-		case KeyEscape:
-			breakmodal(0);
-			hot.zero();
-			break;
-		case KeyTab:
-		case KeyTab | Shift:
-			breakmodal(0);
-			break;
-		case MouseLeft:
-		case MouseLeft + Ctrl:
-		case MouseLeft + Shift:
-		case MouseLeftDBL:
-		case MouseLeftDBL + Ctrl:
-		case MouseLeftDBL + Shift:
-			if(!areb(rc))
-				breakmodal(0);
-			else {
-				if(!hot.pressed) {
-					breakmodal(vs.getcurrent());
-					hot.zero();
-				}
-			}
-			break;
-		case InputSymbol:
-			if(hot.param > 32) {
-				szput(zend(filter), hot.param);
-				vs.update(filter, rc);
-			}
-			break;
-		case KeyBackspace:
-			if(filter[0])
-				filter[zlen(filter) - 1] = 0;
-			vs.update(filter, rc);
-			break;
-		case KeyEnter:
-			breakmodal(vs.getcurrent());
-			hot.zero();
-			break;
-		}
-	}
-	setfocus(push_focus, true);
-	return (listelement*)getresult();
-}
-
-listelement* choose(int x, int y, int width, valuelist& vs, const char* start_filter, const struct sprite* images) {
+listelement* valuelist::choose(int x, int y, int width, const char* start_filter, const struct sprite* images) {
 	char filter[32] = {};
 	if(start_filter)
 		zcpy(filter, start_filter, sizeof(filter)-1);
@@ -156,7 +97,7 @@ listelement* choose(int x, int y, int width, valuelist& vs, const char* start_fi
 	e.images = images;
 	if(e.images)
 		e.show_images = true;
-	e.update(filter, vs, rc);
+	e.update(filter, *this, rc);
 	while(ismodal()) {
 		if(!e.getmaximum()) {
 			breakmodal(0);
@@ -193,13 +134,13 @@ listelement* choose(int x, int y, int width, valuelist& vs, const char* start_fi
 		case InputSymbol:
 			if(hot.param > 32) {
 				szput(zend(filter), hot.param);
-				e.update(filter, vs, rc);
+				e.update(filter, *this, rc);
 			}
 			break;
 		case KeyBackspace:
 			if(filter[0])
 				filter[zlen(filter) - 1] = 0;
-			e.update(filter, vs, rc);
+			e.update(filter, *this, rc);
 			break;
 		case KeyEnter:
 			breakmodal((int)e.getcurrent());

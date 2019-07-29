@@ -3,21 +3,15 @@
 #pragma once
 
 struct sprite;
+
 struct listelement {
-	unsigned char		type;
-	unsigned char		image;
 	const char*			text;
 	int					value;
+	unsigned char		type;
+	unsigned char		image;
 };
-struct valuelist : arem<listelement> {
-	listelement&		add(const char* text, int value = 0, unsigned char type = 0, unsigned char image = 0) {
-		auto p = arem<listelement>::add();
-		p->text = text;
-		p->value = value;
-		p->image = image;
-		p->type = type;
-		return *p;
-	}
+struct valuelist : adat<listelement, 64> {
+	listelement&		add(const char* text, int value = 0, unsigned char type = 0, unsigned char image = 0);
+	listelement*		choose(int x, int y, int width, const char* start_filter = 0, const sprite* images = 0);
 	int					findvalue(int value) const;
 };
-listelement*			choose(int x, int y, int width, valuelist& vs, const char* start_filter = 0, const sprite* images = 0);

@@ -366,7 +366,7 @@ static void test_autocomplite() {
 	e.add("Lviv");
 	e.add("Kherson");
 	e.add("Mikolaev");
-	auto p = choose(10, 10, 200, e, "M");
+	auto p = e.choose(10, 10, 200, "M");
 }
 
 static void test_edit_field() {

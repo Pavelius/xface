@@ -7,3 +7,12 @@ int valuelist::findvalue(int value) const {
 	}
 	return -1;
 }
+
+listelement& valuelist::add(const char* text, int value, unsigned char type, unsigned char image) {
+	auto p = adat::add();
+	p->text = text;
+	p->value = value;
+	p->image = image;
+	p->type = type;
+	return *p;
+}
