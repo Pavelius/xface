@@ -232,7 +232,19 @@ bsval bsval::ptr(const char* url) const {
 }
 
 bsval bsval::dereference() const {
-	return *this;
+	bsval r(data, type);
+	while(true) {
+		if(r.type->is(KindReference)) {
+			r.data = *((void**)r.type->ptr(r.data));
+			r.type = r.type->type;
+		} else if(r.type->is(KindEnum)) {
+			auto p = bsdata::find(r.type->type);
+			r.data = (void*)p->get(r.get());
+			r.type = r.type->type;
+		} else
+			break;
+	}
+	return r;
 }
 
 const char*	bsval::getname() const {
