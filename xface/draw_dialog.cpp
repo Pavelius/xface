@@ -25,12 +25,14 @@ void draw::focusing(int id, unsigned& flags, rect rc) {
 	}
 }
 
-void draw::titletext(int& x, int y, int& width, unsigned flags, const char* label, int title) {
+void draw::titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator) {
+	if(!separator)
+		separator = ":";
 	char temp[1024];
 	if(!title)
 		title = 128;
 	zcpy(temp, label, sizeof(temp) - 2);
-	zcat(temp, ":");
+	zcat(temp, separator);
 	text(x, y + 4, temp);
 	x += title;
 	width -= title;

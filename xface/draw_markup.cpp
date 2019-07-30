@@ -21,45 +21,45 @@ struct commandi {
 };
 static commandi	command;
 static void check_flags() {
-	unsigned v1 = command.value;
+	unsigned v1 = command.value.get();
 	unsigned v2 = 1 << hot.param;
 	if(v1&v2)
 		v1 &= ~v2;
 	else
 		v1 |= v2;
-	command.value = (const int)v1;
+	command.value.set(v1);
 }
 static void set_command_value() {
-	command.value = (const int)hot.param;
+	command.value.set(hot.param);
 }
-struct cmd_check : cmd {
-	constexpr cmd_check(const anyval& value, const void* source, unsigned index)
-		: source(source), index(index), value(value) {}
-	virtual int	getid() const { return (int)source; }
-	virtual void execute() const {
-		command.clear();
-		command.value = value;
-		draw::execute(check_flags, index);
-	}
-	virtual bool isdisabled() const { return false; }
-	bool ischecked() const { return (((int)value) & (1 << index)) != 0; }
-private:
-	const void*		source;
-	unsigned		index;
-	const anyval	value;
-};
-struct cmd_radio : runable {
-	constexpr cmd_radio(const anyval& value, const void* source, unsigned index)
-		: source(source), index(index), value(value) {}
-	virtual int	getid() const { return (int)source; }
-	virtual void execute() const { command.value = value; draw::execute(set_command_value, index); }
-	virtual bool isdisabled() const { return false; }
-	bool ischecked() const { return (int)value == index; }
-private:
-	const void*		source;
-	unsigned		index;
-	const anyval	value;
-};
+//struct cmd_check : cmd {
+//	constexpr cmd_check(const anyval& value, const void* source, unsigned index)
+//		: source(source), index(index), value(value) {}
+//	virtual int	getid() const { return (int)source; }
+//	virtual void execute() const {
+//		command.clear();
+//		command.value = value;
+//		draw::execute(check_flags, index);
+//	}
+//	virtual bool isdisabled() const { return false; }
+//	bool ischecked() const { return (((int)value) & (1 << index)) != 0; }
+//private:
+//	const void*		source;
+//	unsigned		index;
+//	anyval			value;
+//};
+//struct cmd_radio : cmd {
+//	constexpr cmd_radio(const anyval& value, const void* source, unsigned index)
+//		: source(source), index(index), value(value) {}
+//	virtual int	getid() const { return (int)source; }
+//	virtual void execute() const { command.value = value; draw::execute(set_command_value, index); }
+//	virtual bool isdisabled() const { return false; }
+//	bool ischecked() const { return (int)value == index; }
+//private:
+//	const void*		source;
+//	unsigned		index;
+//	const anyval	value;
+//};
 struct contexti {
 	int				title;
 	const char*		title_text;
@@ -124,14 +124,14 @@ static void choose_enum() {
 	}
 	auto mc = imin(12, ev.getmaximum());
 	auto rc = command.rc;
-	auto ci = ev.indexof(command.value);
+	auto ci = ev.indexof(command.value.get());
 	if(ci != -1)
 		ev.current = ci;
 	rc.y1 = rc.y2;
 	rc.y2 = rc.y1 + ev.getrowheight() * mc + 1;
 	rectf(rc, colors::form);
-	if(dropdown(rc, ev, true))
-		command.value = ev.getcurrent();
+	if(dropdown(rc, ev))
+		command.value.set(ev.getcurrent());
 }
 
 static bsval getvalue(const bsval& source, const markup& e) {
@@ -203,7 +203,7 @@ static void header(int& x, int y, int& width, contexti& ctx, const char* label) 
 		return;
 	if(ctx.title_state == TitleShort) {
 		auto w = textw(label);
-		titletext(x, y, width, 0, label, w, 0);
+		titletext(x, y, width, 0, label, w);
 		x += metrics::padding;
 		width -= metrics::padding;
 	} else
@@ -233,11 +233,11 @@ void field_enum(const rect& rc, unsigned flags, const anyval& ev, const bsreq* m
 	if(buttonh(rc, false, focused, false, true, 0, 0, false, 0))
 		result = true;
 	auto pn = "";
-	auto pv = pb->get(ev);
+	auto pv = pb->get(ev.get());
 	if(ppi && ppi->getname)
 		pn = ppi->getname(pv, temp, zendof(temp));
 	else
-		pn = getpresent(pb->get(ev), pb->meta);
+		pn = getpresent(pb->get(ev.get()), pb->meta);
 	textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 4 * 2, pn);
 	if(focused)
 		rectx({rc.x1 + 2, rc.y1 + 2, rc.x2 - 2, rc.y2 - 2}, colors::border);
@@ -322,7 +322,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		}
 		return e.proc.custom(x, y, width, pv);
 	} else if(e.cmd.execute)
-		return button(x, y, width, 0, cmd(e.cmd.execute, ctx.source.data), e.title);
+		return button(x, y, width, 0, cmd(e.cmd.execute, (int)ctx.source.data), e.title);
 	else if(e.title && e.title[0] == '#') {
 		auto pn = e.title + 1;
 		auto y0 = y;
@@ -356,10 +356,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				cmd_check ev({bv.type->ptr(bv.data), size}, p, i);
+				cmd ev(cmd::apply_set, i, {bv.type->ptr(bv.data), size});
 				unsigned flags = 0;
-				if(ev.ischecked())
-					flags |= Checked;
+				//if(ev.ischecked())
+				//	flags |= Checked;
 				auto y0 = y + checkbox(x, y, wc, flags, ev, p, 0) + 2;
 				if(y1 < y0)
 					y1 = y0;
@@ -382,10 +382,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				cmd_radio ev({bv.type->ptr(bv.data), size}, p, i);
+				cmd ev(cmd::apply_xor, i<<1, {bv.type->ptr(bv.data), size});
 				unsigned flags = 0;
-				if(ev.ischecked())
-					flags |= Checked;
+				//if(ev.ischecked())
+				//	flags |= Checked;
 				y += radio(x, y, width, flags, ev, p, 0) + 2;
 			}
 		} else {

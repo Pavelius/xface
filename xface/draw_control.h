@@ -1,8 +1,8 @@
 #include "anyval.h"
 #include "bsreq.h"
 #include "draw.h"
+#include "markup.h"
 #include "pointl.h"
-#include "storage.h"
 
 #pragma once
 
@@ -32,11 +32,18 @@ enum dock_s : unsigned char {
 	DockRight, DockRightBottom,
 	DockBottom, DockWorkspace,
 };
-typedef void(*editproc)(const storage& e);
+enum field_type_s :unsigned char {
+	FieldText, FieldNumber,
+};
 struct cmd : anyval {
+	struct contexti {
+		void*				source;
+		const bsreq*		type;
+		anyval				value;
+	};
 	callback				proc;
 	int						param;
-	static anyval			current;
+	static contexti			ctx;
 	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0) {}
 	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
@@ -44,7 +51,7 @@ struct cmd : anyval {
 	static void				apply_add();
 	static void				apply_set();
 	static void				apply_xor();
-	void					execute() const { current = *this; draw::execute(proc, param); }
+	void					execute() const { ctx.value = *this; ctx.source = 0; ctx.type = 0; draw::execute(proc, param); }
 	int						getid() const { return (int)data; }
 };
 namespace controls {
@@ -297,6 +304,7 @@ struct textedit : scrollable {
 	void					right(bool shift, bool ctrl);
 	void					select(int index, bool shift);
 	unsigned				select_all(bool run);
+	void					setcount(int value) {}
 	void					setrecordlist(const char* string);
 	void					updaterecords(bool setfilter);
 private:
@@ -319,11 +327,14 @@ void						combobox(const rect& rc, const bsval& cmd);
 int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-int							field(int x, int y, int width, unsigned flags, const storage& ev, const char* header_label, const char* tips, int header_width, editproc choose = 0);
+void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, field_type_s type);
 int							field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width);
+int							field(int x, int y, int width, const char* header_label, const char*& sev, int header_width);
+int							field(int x, int y, int width, const char* header_label, const anyval& ev, int header_width, int digits);
+int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
 int							radio(int x, int y, int width, unsigned flags, const cmd& cmd, const char* label, const char* tips = 0);
 void						setposition(int& x, int& y, int& width, int padding = -1);
-void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title);
+void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
 template<> struct bsmeta<draw::controls::control::plugin> {
 	typedef draw::controls::control::plugin	data_type;

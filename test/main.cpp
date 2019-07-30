@@ -316,17 +316,17 @@ static void test_drag_drop() {
 	}
 }
 
-static void choose_folder(const storage& ev) {
-	char temp[260] = {};
-	if(!dialog::folder("Выбирайте папку", temp))
-		return;
-	ev.set(temp);
-}
+//static void choose_folder(const storage& ev) {
+//	char temp[260] = {};
+//	if(!dialog::folder("Выбирайте папку", temp))
+//		return;
+//	ev.set(temp);
+//}
 
 static int point_input(int x, int y, point& result, int width, int title, const char* t1, const char* t2) {
 	auto y0 = y;
-	y += field(x, y, width, 0, result.x, t1, 0, title);
-	y += field(x, y, width, 0, result.y, t2, 0, title);
+	y += field(x, y, width, t1, result.x, title, 4);
+	y += field(x, y, width, t2, result.y, title, 4);
 	return y - y0;
 }
 
@@ -336,7 +336,7 @@ static void choose_transparent_color() {
 
 static void test_tile_manager() {
 	setfocus(0, true);
-	char filename[260] = {};
+	const char* filename = "";
 	point tile = {};
 	point origin = {};
 	color transparent = {160, 160, 0};
@@ -345,7 +345,7 @@ static void test_tile_manager() {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto x = 20, y = 20;
 		auto h = draw::texth();
-		y += field(x, y, 380, 0, filename, "Файл тайлов", 0, 100, choose_folder);
+		y += field(x, y, 380, "Файл тайлов", filename, 100);
 		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
 		if(use_transparent) {
 			y += field(x, y, 380, 0, transparent, "Цвет", 0, 100);
@@ -371,9 +371,9 @@ static void test_autocomplite() {
 
 static void test_edit_field() {
 	setfocus(0, true);
-	char name[260] = "Павел";
-	char surname[260] = "Чистяков";
-	char lastname[260] = "Валенинович";
+	const char* name = "Павел";
+	const char* surname = "Чистяков";
+	const char* lastname = "Валенинович";
 	const char* anystr = "Любая строка";
 	int number = 10;
 	while(ismodal()) {
@@ -381,11 +381,11 @@ static void test_edit_field() {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto h = draw::texth();
 		auto w = 300;
-		y += field(x, y, 300, 0, name, "Тест", "Теперь подсказки можно выводить прямо в поле ввода", 100);
-		y += field(x, y, 300, 0, surname, "Еще тест", 0, 100);
-		y += field(x, y, 300, 0, lastname, "Еще поле", 0, 100);
-		y += field(x, y, 300, 0, anystr, "Путь к папке", 0, 100, choose_folder);
-		y += field(x, y, 300, 0, number, "Скорость", 0, 100);
+		y += field(x, y, 300, "Тест", name, 100);
+		y += field(x, y, 300, "Еще тест", surname, 100);
+		y += field(x, y, 300, "Еще поле", lastname, 100);
+		y += field(x, y, 300, "Путь к папке", anystr, 100);
+		y += field(x, y, 300, "Скорость", number, 100, 4);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
 	}

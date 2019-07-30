@@ -131,9 +131,7 @@
     <ClCompile Include="draw_autocomplete.cpp" />
     <ClCompile Include="draw_cmd.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
-    <ClCompile Include="draw_markup.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="draw_markup.cpp" />
     <ClCompile Include="draw_properties.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
@@ -151,7 +149,9 @@
     <ClCompile Include="draw_control.cpp" />
     <ClCompile Include="draw_dialog.cpp" />
     <ClCompile Include="draw_field.cpp" />
-    <ClCompile Include="draw_form.cpp" />
+    <ClCompile Include="draw_form.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="draw_grid.cpp" />
     <ClCompile Include="draw_list.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
