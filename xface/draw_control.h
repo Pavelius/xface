@@ -32,9 +32,6 @@ enum dock_s : unsigned char {
 	DockRight, DockRightBottom,
 	DockBottom, DockWorkspace,
 };
-enum field_type_s :unsigned char {
-	FieldText, FieldNumber,
-};
 struct cmd : anyval {
 	struct contexti {
 		const bsreq*		type;
@@ -328,7 +325,7 @@ void						combobox(const rect& rc, const bsval& cmd);
 int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, field_type_s type, callback choose_proc);
+void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc);
 int							field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width);
 int							field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, callback choose_proc = 0);
 int							field(int x, int y, int width, const char* header_label, const anyval& ev, int header_width, int digits);

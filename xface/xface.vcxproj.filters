@@ -28,16 +28,16 @@
     <Filter Include="draw\widgets">
       <UniqueIdentifier>{08d7be51-ee03-4c85-bfe9-8dab638d2fe1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="draw\collections">
+    <Filter Include="collections">
       <UniqueIdentifier>{32b6fc22-5eb7-44ef-be4e-11fec932a46b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="collection.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="archive.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="stringcreator.cpp">
       <Filter>strings</Filter>
@@ -124,7 +124,7 @@
       <Filter>draw\simple</Filter>
     </ClCompile>
     <ClCompile Include="bsreq.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="resources.cpp">
       <Filter>draw\core</Filter>
@@ -166,7 +166,7 @@
       <Filter>platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="strlib.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="sz2numf.cpp">
       <Filter>support</Filter>
@@ -214,7 +214,7 @@
       <Filter>draw\controls</Filter>
     </ClCompile>
     <ClCompile Include="valuelist.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="markup.cpp">
       <Filter>support</Filter>
@@ -226,10 +226,10 @@
       <Filter>support</Filter>
     </ClCompile>
     <ClCompile Include="bsreq_bin.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="bsreq_txt.cpp">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClCompile>
     <ClCompile Include="draw_cmd.cpp">
       <Filter>draw\controls</Filter>
@@ -240,13 +240,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="archive.h">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="initializer_list.h">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="string.h">
       <Filter>strings</Filter>
@@ -279,7 +279,7 @@
       <Filter>draw\core</Filter>
     </ClInclude>
     <ClInclude Include="bsreq.h">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="resources.h">
       <Filter>draw\core</Filter>
@@ -300,7 +300,7 @@
       <Filter>draw\controls</Filter>
     </ClInclude>
     <ClInclude Include="strlib.h">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="crt.h">
       <Filter>strings</Filter>
@@ -321,7 +321,7 @@
       <Filter>draw\controls</Filter>
     </ClInclude>
     <ClInclude Include="valuelist.h">
-      <Filter>draw\collections</Filter>
+      <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="markup.h">
       <Filter>support</Filter>

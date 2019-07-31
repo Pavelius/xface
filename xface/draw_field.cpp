@@ -9,14 +9,14 @@ static anyval edit_value;
 
 void standart_domodal();
 
-static const char* getvalue(const anyval& v, field_type_s t, char* result, const char* result_end) {
+static const char* getvalue(const anyval& v, bstype_s t, char* result, const char* result_end) {
 	if(!v)
 		return "";
 	const char* p;
 	switch(t) {
-	case FieldNumber:
+	case KindNumber:
 		return szprint(result, result_end, "%1i", v.get());
-	case FieldText:
+	case KindText:
 		p = (const char*)v.get();
 		if(p)
 			return szprint(result, result_end, p);
@@ -26,13 +26,13 @@ static const char* getvalue(const anyval& v, field_type_s t, char* result, const
 	}
 }
 
-static void setvalue(const anyval& v, field_type_s t, const char* result) {
+static void setvalue(const anyval& v, bstype_s t, const char* result) {
 	if(!v)
 		return;
 	int value = 0;
 	switch(t) {
-	case FieldNumber: value = sz2num(result); break;
-	case FieldText: value = (int)szdup(result); break;
+	case KindNumber: value = sz2num(result); break;
+	case KindText: value = (int)szdup(result); break;
 	}
 	v.set(value);
 }
@@ -40,10 +40,10 @@ static void setvalue(const anyval& v, field_type_s t, const char* result) {
 static class edit_driver : public controls::textedit {
 	char			source[2048];
 	anyval			value;
-	field_type_s	type;
+	bstype_s		type;
 public:
 	constexpr edit_driver() : textedit(source, sizeof(source) / sizeof(source), false),
-		value(), source(), type(FieldNumber) {
+		value(), source(), type(KindNumber) {
 	}
 	bool isfocusable() const override {
 		return false;
@@ -60,7 +60,7 @@ public:
 	void save() {
 		setvalue(value, type, source);
 	}
-	void update(const anyval& ev, field_type_s et, int digits = -1) {
+	void update(const anyval& ev, bstype_s et, int digits = -1) {
 		if(value == ev)
 			return;
 		value = ev;
@@ -107,13 +107,13 @@ static void execute(callback proc, const anyval& ev) {
 	draw::execute(proc);
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, field_type_s type, callback choose_proc) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc) {
 	rect rc = rco;
 	const unsigned edit_mask = AlignMask | TextSingleLine | TextBold | TextStroke;
 	draw::rectf(rc, colors::window);
 	draw::rectb(rc, colors::border);
 	auto focused = isfocused(flags);
-	if(type == FieldNumber) {
+	if(type == KindNumber) {
 		auto result = addbutton(rc, focused,
 			"+", Ctrl + KeyUp, "Увеличить",
 			"-", Ctrl + KeyDown, "Уменьшить");
@@ -146,7 +146,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignRight;
 	focusing((int)ev.ptr(), flags, rc);
-	field(rc, flags | TextSingleLine, ev, digits, FieldNumber, 0);
+	field(rc, flags | TextSingleLine, ev, digits, KindNumber, 0);
 	return rc.height() + metrics::padding * 2;
 }
 
@@ -158,6 +158,6 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignLeft;
 	focusing((int)&sev, flags, rc);
-	field(rc, flags | TextSingleLine, anyval(sev), -1, FieldText, choose_proc);
+	field(rc, flags | TextSingleLine, anyval(sev), -1, KindText, choose_proc);
 	return rc.height() + metrics::padding * 2;
 }
