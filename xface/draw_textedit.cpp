@@ -328,8 +328,8 @@ bool textedit::keyinput(unsigned id) {
 				i = linee(linee(p1) + 1);
 			else if(i >= 0)
 				select(i, (id & Shift) != 0);
-			else if(i==-1)
-				draw::setfocus(getnext(draw::getfocus(), id), true);
+			else if(i == -1)
+				return false;
 		}
 		break;
 	case KeyUp:
@@ -341,7 +341,7 @@ bool textedit::keyinput(unsigned id) {
 			else if(i >= 0)
 				select(i, (id & Shift) != 0);
 			else if(i == -1)
-				draw::setfocus(getnext(draw::getfocus(), id), true);
+				return false;
 		}
 		break;
 	case KeyRight:

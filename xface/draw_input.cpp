@@ -174,7 +174,7 @@ int draw::getresult() {
 
 bool control_input();
 
-void standart_domodal() {
+static void standart_domodal() {
 	for(auto p = plugin::first; p; p = p->next)
 		p->after();
 	hot.key = draw::rawinput();
@@ -186,6 +186,10 @@ void standart_domodal() {
 	case KeyTab | Shift:
 	case KeyTab | Ctrl:
 	case KeyTab | Ctrl | Shift:
+	case KeyUp:
+	case KeyDown:
+	case KeyRight:
+	case KeyLeft:
 		id = getnext(draw::getfocus(), hot.key);
 		if(id)
 			setfocus(id, true);
