@@ -234,7 +234,7 @@ static struct code_control : controls::control, controls::control::plugin {
 			auto w = current_rect.width();
 			if(w < 100)
 				w = 100;
-			auto pe = choose(current_rect.x1, current_rect.y2, w, e, filter, control::standart_tree);
+			auto pe = e.choose(current_rect.x1, current_rect.y2, w, filter, control::standart_tree);
 			if(pe) {
 				result->set((expression_s)pe->type);
 				switch(result->type) {

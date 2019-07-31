@@ -16,19 +16,18 @@ int properties::vertical(int x, int y, int width, const bsval& ev) {
 int properties::element(int x, int y, int width, const bsval& ev) {
 	if(!isvisible(ev))
 		return 0;
-	//storage st;
-	//st.data = (void*)ev.type->ptr(ev.data);
-	//st.size = ev.type->size;
 	int h = 0;
-	//char temp[260];
-	//if(ev.type->is(KindNumber)) {
-	//	st.type = st.Number;
-	//	h = field(x, y, width, 0, st, gettitle(temp, zendof(temp), ev), 0, title);
-	//} else if(ev.type->is(KindText)) {
-	//	st.type = st.TextPtr;
-	//	h = field(x, y, width, 0, st, gettitle(temp, zendof(temp), ev), 0, title);
-	//} else if(ev.type->is(KindReference))
-	//	h = combobox(x, y, width, 0, ev, gettitle(temp, zendof(temp), ev), 0, title);
+	char temp[260];
+	if(ev.type->is(KindNumber)) {
+		anyval st;
+		st.data = ev.type->ptr(ev.data);
+		st.size = ev.type->size;
+		h = field(x, y, width, gettitle(temp, zendof(temp), ev), st, title, 4);
+	} else if(ev.type->is(KindText))
+		h = field(x, y, width, gettitle(temp, zendof(temp), ev), *((const char**)ev.type->ptr(ev.data)), title);
+	else if(ev.type->is(KindReference)) {
+		//	h = combobox(x, y, width, 0, ev, gettitle(temp, zendof(temp), ev), 0, title);
+	}
 	if(!h)
 		return 0;
 	return h + spacing;
