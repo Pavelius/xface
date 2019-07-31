@@ -325,7 +325,7 @@ int							button(int x, int y, int width, unsigned flags, const cmd& ev, const c
 int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0);
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
 void						combobox(const rect& rc, const bsval& cmd);
-int							combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* label, const char* tips, int header_width);
+int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, field_type_s type, callback choose_proc);

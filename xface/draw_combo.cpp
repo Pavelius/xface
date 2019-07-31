@@ -13,14 +13,6 @@ static char			combo_name[32];
 static bsval		combo_value;
 static rect			combo_rect;
 
-static int compare_name_as(const char* n1, const char* n2) {
-	return strcmp(n1, n2);
-}
-
-static int compare_name_ds(const char* n1, const char* n2) {
-	return strcmp(n2, n1);
-}
-
 static void* get_value(const bsval& e) {
 	auto type = e.type;
 	if(type->is(KindEnum)) {
@@ -55,27 +47,6 @@ static const char* getstrval(const void* object, const bsreq* type) {
 	return p;
 }
 
-static void* find_next(const bsval& e1, comparer c1) {
-	auto ps = bsdata::find(e1.type->type);
-	if(!ps)
-		return 0;
-	auto pf = ps->meta->getname();
-	if(!pf)
-		return 0;
-	auto n1 = getstrval(e1.data, pf);
-	auto n2 = "";
-	const char* e2 = 0;
-	auto pe = ps->end();
-	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
-		auto nx = getstrval(ex, pf);
-		if(c1(nx, n1) < 0 && (!e2 || c1(nx, n2) > 0)) {
-			n2 = nx;
-			e2 = ex;
-		}
-	}
-	return (void*)e2;
-}
-
 static void* find_name(const bsreq* type, const char* name) {
 	auto ps = bsdata::find(type);
 	if(!ps)
@@ -92,18 +63,6 @@ static void* find_name(const bsreq* type, const char* name) {
 			return (void*)ex;
 	}
 	return 0;
-}
-
-static void combo_previous() {
-	auto pn = find_next(combo_value, compare_name_as);
-	if(pn)
-		set_value(combo_value, pn);
-}
-
-static void combo_next() {
-	auto pn = find_next(combo_value, compare_name_ds);
-	if(pn)
-		set_value(combo_value, pn);
 }
 
 static void combo_find_name() {
@@ -217,42 +176,30 @@ void draw::combobox(const rect& rc, const bsval& cmd) {
 	show_drop_down();
 }
 
-int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, const char* header_label, const char* tips, int header_width) {
+int	draw::combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips) {
 	draw::state push;
 	setposition(x, y, width);
-	decortext(flags);
+	decortext(0);
 	if(header_label && header_label[0])
-		titletext(x, y, width, flags, header_label, header_width);
+		titletext(x, y, width, 0, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	unsigned flags = 0;
 	focusing((int)cmd.type->ptr(cmd.data), flags, rc);
 	auto focused = isfocused(flags);
 	auto result = false;
 	auto a = area(rc);
-	if(isdisabled(flags)) {
-		gradv(rc, colors::button.lighten(), colors::button.darken());
-		rectb(rc, colors::border.mix(colors::window));
-	} else {
-		if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
-			result = true;
-		color active = colors::button.mix(colors::edit, 128);
-		switch(a) {
-		case AreaHilited: gradv(rc, active.lighten(), active.darken()); break;
-		case AreaHilitedPressed: gradv(rc, active.darken(), active.lighten()); break;
-		default: gradv(rc, colors::button.lighten(), colors::button.darken()); break;
-		}
-		rectb(rc, colors::border);
+	if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
+		result = true;
+	color active = colors::button.mix(colors::edit, 128);
+	switch(a) {
+	case AreaHilited: gradv(rc, active.lighten(), active.darken()); break;
+	case AreaHilitedPressed: gradv(rc, active.darken(), active.lighten()); break;
+	default: gradv(rc, colors::button.lighten(), colors::button.darken()); break;
 	}
+	rectb(rc, colors::border);
 	rect rco = rc;
 	if(a == AreaHilited || a == AreaHilitedPressed) {
 		switch(hot.key) {
-		case MouseWheelDown:
-			combo_value = cmd;
-			execute(combo_next);
-			break;
-		case MouseWheelUp:
-			combo_value = cmd;
-			execute(combo_previous);
-			break;
 		case MouseLeft:
 			if(!hot.pressed) {
 				combo_value = cmd;
@@ -276,14 +223,6 @@ int	draw::combobox(int x, int y, int width, unsigned flags, const bsval& cmd, co
 					execute(combo_find_name);
 				}
 			}
-			break;
-		case KeyUp:
-			combo_value = cmd;
-			execute(combo_previous);
-			break;
-		case KeyDown:
-			combo_value = cmd;
-			execute(combo_next);
 			break;
 		case KeyEnter:
 			combo_value = cmd;

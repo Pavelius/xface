@@ -29,7 +29,7 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 		bsval st;
 		st.data = ev.type->ptr(ev.data);
 		st.type = ev.type;
-		h = combobox(x, y, width, 0, st, gettitle(temp, zendof(temp), st), 0, title);
+		h = combobox(x, y, width, gettitle(temp, zendof(temp), st), st, title, 0);
 	}
 	if(!h)
 		return 0;
