@@ -1523,6 +1523,8 @@ int	draw::text(rect rc, const char* string, unsigned state, int* max_width) {
 	if(max_width)
 		*max_width = 0;
 	if(state&TextSingleLine) {
+		draw::state push;
+		draw::setclip(rc);
 		text(aligned(x1, rc.width(), state, draw::textw(string)), y1,
 			string, -1, state);
 		return dy;

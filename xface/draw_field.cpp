@@ -134,7 +134,7 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 	} else {
 		char temp[260];
 		auto p = getvalue(ev, type, temp, temp + sizeof(temp) / sizeof(temp[0]));
-		draw::texte(rc + metrics::edit, p, flags & edit_mask, -1, -1);
+		draw::text(rc + metrics::edit, p, flags & edit_mask);
 	}
 }
 
