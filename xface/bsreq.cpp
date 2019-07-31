@@ -243,6 +243,11 @@ bsval bsval::dereference() const {
 			r.type = r.type->type;
 		} else if(r.type->is(KindEnum)) {
 			auto p = bsdata::find(r.type->type);
+			if(!p) {
+				r.data = 0;
+				r.type = 0;
+				break;
+			}
 			r.data = (void*)p->get(r.get());
 			r.type = r.type->type;
 		} else

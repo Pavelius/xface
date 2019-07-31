@@ -207,9 +207,6 @@
     <ClCompile Include="win_cmd.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
-    <ClCompile Include="storage.cpp">
-      <Filter>support</Filter>
-    </ClCompile>
     <ClCompile Include="draw_properties.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
@@ -318,9 +315,6 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="settings.h">
-      <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="storage.h">
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="draw_properties.h">

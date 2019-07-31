@@ -1,6 +1,5 @@
 #include "xface/draw_control.h"
 #include "xface/draw_grid.h"
-#include "xface/widget.h"
 #include "main.h"
 
 static bool		show_grid;
