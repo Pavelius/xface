@@ -1,6 +1,5 @@
 #pragma once
 
-//#define xva_start(v) ((const char*)&v + sizeof(v))
 #ifdef _DEBUG
 #define assert(e) if(!(e)) {exit(255);}
 #else

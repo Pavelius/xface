@@ -326,9 +326,9 @@ int							combobox(int x, int y, int width, const char* header_label, const bsva
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc);
-int							field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width);
-int							field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, callback choose_proc = 0);
-int							field(int x, int y, int width, const char* header_label, const anyval& ev, int header_width, int digits);
+int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
+int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, callback choose_proc = 0);
+int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
 int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
 int							radio(int x, int y, int width, unsigned flags, const cmd& cmd, const char* label, const char* tips = 0);
 void						setposition(int& x, int& y, int& width, int padding = -1);

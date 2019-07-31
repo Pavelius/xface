@@ -349,7 +349,7 @@ static void test_tile_manager() {
 		y += field(x, y, 380, "Файл тайлов", filename, 100, choose_folder);
 		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
 		if(use_transparent) {
-			y += field(x, y, 380, 0, transparent, "Цвет", 0, 100);
+			y += field(x, y, 380, "Цвет", transparent, 100);
 			y += button(x + 100, y, 280, choose_transparent_color, "Выбрать цвет с картнки");
 		}
 		auto y0 = y;
@@ -379,7 +379,7 @@ static void test_edit_field() {
 	int number = 10;
 	while(ismodal()) {
 		auto x = 20, y = 20;
-		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		rectf({0, 0, getwidth(), getheight()}, colors::form);
 		auto h = draw::texth();
 		auto w = 300;
 		y += field(x, y, 300, "Тест", name, 100);

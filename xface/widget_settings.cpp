@@ -204,14 +204,15 @@ static struct widget_control_viewer : controls::gridref {
 
 } control_viewer;
 
-int draw::field(int x, int y, int width, unsigned flags, color& value, const char* header_label, const char* tips, int header_width) {
+int draw::field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips) {
 	draw::state push;
 	setposition(x, y, width);
-	decortext(flags);
-	if(header_label && header_label[0])
-		titletext(x, y, width, flags, header_label, header_width);
+	decortext(0);
+	if(label && label[0])
+		titletext(x, y, width, 0, label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
+	unsigned flags = 0;
 	focusing((int)&value, flags, rc);
 	if(buttonh(rc,
 		ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
@@ -260,7 +261,7 @@ static struct widget_settings : controls::control {
 			y += field(x, y, width, e.name, *((int*)e.data), title, getdigitscount(e.value) + 1);
 			break;
 		case settings::Color:
-			y += field(x, y, width, flags, *((color*)e.data), e.name, 0, title);
+			y += field(x, y, width, e.name, *((color*)e.data), title);
 			break;
 		case settings::Button:
 			y += button(x, y, width, flags,
