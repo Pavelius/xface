@@ -117,9 +117,6 @@
     <ClCompile Include="win_clipboard.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
-    <ClCompile Include="draw_field.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
     <ClCompile Include="bsreq.cpp">
       <Filter>collections</Filter>
     </ClCompile>
@@ -236,6 +233,9 @@
     </ClCompile>
     <ClCompile Include="stringbuilder.cpp">
       <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_field.cpp">
+      <Filter>draw\controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -108,6 +108,8 @@ static void execute(callback proc, const anyval& ev) {
 }
 
 void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc) {
+	if(rco.width() <= 0)
+		return;
 	rect rc = rco;
 	const unsigned edit_mask = AlignMask | TextSingleLine | TextBold | TextStroke;
 	draw::rectf(rc, colors::window);

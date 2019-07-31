@@ -6,8 +6,6 @@
 
 using namespace draw;
 
-typedef int(*comparer)(const char* v1, const char* v2);
-
 static unsigned		combo_time;
 static char			combo_name[32];
 static bsval		combo_value;
@@ -183,6 +181,8 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 	if(header_label && header_label[0])
 		titletext(x, y, width, 0, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	if(rc.width() <= 0)
+		return rc.height() + metrics::padding * 2;
 	unsigned flags = 0;
 	focusing((int)cmd.type->ptr(cmd.data), flags, rc);
 	auto focused = isfocused(flags);
