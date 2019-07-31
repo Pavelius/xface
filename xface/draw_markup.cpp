@@ -322,7 +322,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		}
 		return e.proc.custom(x, y, width, pv);
 	} else if(e.cmd.execute)
-		return button(x, y, width, 0, cmd(e.cmd.execute, (int)ctx.source.data), e.title);
+		return button(x, y, width, 0, cmd(e.cmd.execute, ctx.source.data), e.title);
 	else if(e.title && e.title[0] == '#') {
 		auto pn = e.title + 1;
 		auto y0 = y;

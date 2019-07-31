@@ -76,7 +76,7 @@ public:
 	}
 } cedit;
 
-void save_focus() {
+void draw::updatefocus() {
 	if(cedit.isfocused()) {
 		cedit.save();
 		cedit.clear();

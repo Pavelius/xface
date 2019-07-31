@@ -1,6 +1,5 @@
 #include "point.h"
 #include "color.h"
-#include "widget.h"
 
 #pragma once
 
@@ -259,7 +258,6 @@ rect					getarea();
 int						getbpp();
 color					getcolor(color normal, unsigned flags);
 color					getcolor(rect rc, color normal, color hilite, unsigned flags);
-inline draw_event_s		getcontrol(unsigned flags) { return (draw_event_s)(flags&ControlMask); }
 int						getfocus();
 int						getheight();
 int						getnext(int id, int key);

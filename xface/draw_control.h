@@ -37,7 +37,6 @@ enum field_type_s :unsigned char {
 };
 struct cmd : anyval {
 	struct contexti {
-		void*				source;
 		const bsreq*		type;
 		anyval				value;
 	};
@@ -48,10 +47,12 @@ struct cmd : anyval {
 	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param) {}
+	constexpr cmd(markup::command_type proc, void* source) : anyval(proc, 0), proc(call_object), param((int)source) {}
 	static void				apply_add();
 	static void				apply_set();
 	static void				apply_xor();
-	void					execute() const { ctx.value = *this; ctx.source = 0; ctx.type = 0; draw::execute(proc, param); }
+	static void				call_object() { ((markup::command_type)ctx.value.data)((void*)hot.param); }
+	void					execute() const { ctx.value = *this; ctx.type = 0; draw::execute(proc, param); }
 	int						getid() const { return (int)data; }
 };
 namespace controls {

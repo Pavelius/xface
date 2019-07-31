@@ -391,7 +391,7 @@ bool table::change(bool run) {
 
 void table::cellbox(const rect& rc, int line, int column) {
 	auto number_value = getnumber(line, column);
-	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, number_value ? Check : 0, ":check");
+	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, 0, ":check");
 }
 
 void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {

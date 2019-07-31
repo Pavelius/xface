@@ -225,46 +225,46 @@ static void test_tree() {
 	show_table(test);
 }
 
-static void test_widget() {
-	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
-	{Radio, "radio", "Nokia", 1},
-	{Radio, "radio", "Google", 2},
-	{}};
-	static widget elements_right[] = {{Radio, "radio", "Noobie", 3},
-	{Radio, "radio", "Glass", 4},
-	{Radio, "radio", "Keeps", 5},
-	{}};
-	static widget brands[] = {{Group, 0, 0, 0, 3, 0, 0, elements_left},
-	{Group, 0, 0, 0, 3, 0, 0, elements_right},
-	{Image, "cat", "art/pictures", 0, 5},
-	{}};
-	static widget field_group_left[] = {{Field, "name", "Имя"},
-	{Field, "surname", "Фамилия"},
-	{Field, "age", "Возраст"},
-	{Field, "gender", "Пол", 0, 0, 0, 0, 0, "Этот элемент позволяет произвести выбор из списка"},
-	{Field, "alignment", "Мировозрение"},
-	{}};
-	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, KeyEscape, buttoncancel},
-	{}};
-	static widget field_group[] = {{Group, 0, 0, 0, 8, 0, 0, field_group_left},
-	{Group, 0, 0, 0, 4, 0, 0, field_group_right},
-	{}};
-	static widget elements[] = {{Label, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
-	{Check, "mark", "Простая пометка"},
-	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
-	{Group, 0, 0, 0, 0, 0, 0, field_group},
-	{}};
-	element test = {0};
-	test.gender = Male;
-	test.mark = 1;
-	test.radio = 2;
-	while(ismodal()) {
-		rect rc = {0, 0, getwidth(), getheight()};
-		rectf(rc, colors::form);
-		draw::render(10, 10, 500, bsval(&test, bsmeta<element>::meta), elements);
-		domodal();
-	}
-}
+//static void test_widget() {
+//	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
+//	{Radio, "radio", "Nokia", 1},
+//	{Radio, "radio", "Google", 2},
+//	{}};
+//	static widget elements_right[] = {{Radio, "radio", "Noobie", 3},
+//	{Radio, "radio", "Glass", 4},
+//	{Radio, "radio", "Keeps", 5},
+//	{}};
+//	static widget brands[] = {{Group, 0, 0, 0, 3, 0, 0, elements_left},
+//	{Group, 0, 0, 0, 3, 0, 0, elements_right},
+//	{Image, "cat", "art/pictures", 0, 5},
+//	{}};
+//	static widget field_group_left[] = {{Field, "name", "Имя"},
+//	{Field, "surname", "Фамилия"},
+//	{Field, "age", "Возраст"},
+//	{Field, "gender", "Пол", 0, 0, 0, 0, 0, "Этот элемент позволяет произвести выбор из списка"},
+//	{Field, "alignment", "Мировозрение"},
+//	{}};
+//	static widget field_group_right[] = {{Button, "button1", "Отмена", 0, 0, 0, 0, 0, 0, KeyEscape, buttoncancel},
+//	{}};
+//	static widget field_group[] = {{Group, 0, 0, 0, 8, 0, 0, field_group_left},
+//	{Group, 0, 0, 0, 4, 0, 0, field_group_right},
+//	{}};
+//	static widget elements[] = {{Label, 0, "A **character** who uses a weapon without being proficient with it suffers a [--4] penalty on attack rolls. The character can gain this feat multiple times.Each time the character takes the feat, it applies to a new weapon. A cleric whose deity's favored weapon is a martial weapon and who chooses War as one of his domains receives the Martial Weapon Proficiency feat related to that weapon for free, as well as the [Weapon Focus] feat related to that weapon."},
+//	{Check, "mark", "Простая пометка"},
+//	{Group, 0, "Выбирайте брэнд", 0, 0, 0, 0, brands},
+//	{Group, 0, 0, 0, 0, 0, 0, field_group},
+//	{}};
+//	element test = {0};
+//	test.gender = Male;
+//	test.mark = 1;
+//	test.radio = 2;
+//	while(ismodal()) {
+//		rect rc = {0, 0, getwidth(), getheight()};
+//		rectf(rc, colors::form);
+//		draw::render(10, 10, 500, bsval(&test, bsmeta<element>::meta), elements);
+//		domodal();
+//	}
+//}
 
 static void test_list() {
 	struct test_class : controls::list {
@@ -404,7 +404,6 @@ static void start_menu() {
 	{"Таблица с ячейками", test_grid},
 	{"Таблица ссылок", test_grid_ref},
 	{"Дерево", test_tree},
-	{"Виджеты", test_widget},
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
 	{"Приложение", draw::application},

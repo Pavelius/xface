@@ -108,12 +108,12 @@ static void callback_down() {
 	(*((int*)p->data))++;
 }
 
-static void callback_choose_folder(const storage& ev) {
-	char temp[260];
-	ev.getf(temp, zendof(temp));
-	if(draw::dialog::folder("Укажите папку", temp))
-		ev.set(temp);
-}
+//static void callback_choose_folder(const storage& ev) {
+//	char temp[260];
+//	ev.getf(temp, zendof(temp));
+//	if(draw::dialog::folder("Укажите папку", temp))
+//		ev.set(temp);
+//}
 
 static void callback_choose_color() {
 	auto p = (color*)hot.param;
@@ -257,7 +257,7 @@ static struct widget_settings : controls::control {
 				if(title + w < width)
 					width = title + w;
 			}
-			y += field(x, y, width, flags, *((int*)e.data), e.name, 0, title);
+			y += field(x, y, width, e.name, *((int*)e.data), title, getdigitscount(e.value) + 1);
 			break;
 		case settings::Color:
 			y += field(x, y, width, flags, *((color*)e.data), e.name, 0, title);
@@ -267,10 +267,10 @@ static struct widget_settings : controls::control {
 				cmd(callback_button, (int)&e), getname(temp, e), 0);
 			break;
 		case settings::TextPtr:
-			y += field(x, y, width, flags, *((const char**)e.data), e.name, 0, title);
+			y += field(x, y, width, e.name, *((const char**)e.data), title);
 			break;
 		case settings::UrlFolderPtr:
-			y += field(x, y, width, flags, *((const char**)e.data), e.name, 0, title, callback_choose_folder);
+			y += field(x, y, width, e.name, *((const char**)e.data), title);// , callback_choose_folder);
 			break;
 		case settings::Control:
 			break;
