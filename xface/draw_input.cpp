@@ -174,7 +174,7 @@ int draw::getresult() {
 
 bool control_input();
 
-static void standart_domodal() {
+void standart_domodal() {
 	for(auto p = plugin::first; p; p = p->next)
 		p->after();
 	hot.key = draw::rawinput();

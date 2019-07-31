@@ -7,6 +7,8 @@ using namespace draw;
 
 static anyval edit_value;
 
+void standart_domodal();
+
 static const char* getvalue(const anyval& v, field_type_s t, char* result, const char* result_end) {
 	if(!v)
 		return "";

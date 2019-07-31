@@ -326,8 +326,10 @@ bool textedit::keyinput(unsigned id) {
 			auto i = hittest(rcclient, {pt.x, (short)(pt.y + texth())}, align);
 			if(i == -3)
 				i = linee(linee(p1) + 1);
-			if(i >= 0)
+			else if(i >= 0)
 				select(i, (id & Shift) != 0);
+			else if(i==-1)
+				draw::setfocus(getnext(draw::getfocus(), id), true);
 		}
 		break;
 	case KeyUp:
@@ -336,8 +338,10 @@ bool textedit::keyinput(unsigned id) {
 			auto i = hittest(rcclient, {pt.x, (short)(pt.y - texth())}, align);
 			if(i == -3)
 				i = linee(lineb(p1) - 1);
-			if(i >= 0)
+			else if(i >= 0)
 				select(i, (id & Shift) != 0);
+			else if(i == -1)
+				draw::setfocus(getnext(draw::getfocus(), id), true);
 		}
 		break;
 	case KeyRight:
