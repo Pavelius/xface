@@ -123,9 +123,6 @@
     <ClCompile Include="draw_field.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
-    <ClCompile Include="draw_form.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
     <ClCompile Include="bsreq.cpp">
       <Filter>collections</Filter>
     </ClCompile>
@@ -325,9 +322,6 @@
     </ClInclude>
     <ClInclude Include="storage.h">
       <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="widget.h">
-      <Filter>draw\simple</Filter>
     </ClInclude>
     <ClInclude Include="draw_properties.h">
       <Filter>draw\controls</Filter>

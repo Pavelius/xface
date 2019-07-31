@@ -149,9 +149,6 @@
     <ClCompile Include="draw_control.cpp" />
     <ClCompile Include="draw_dialog.cpp" />
     <ClCompile Include="draw_field.cpp" />
-    <ClCompile Include="draw_form.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="draw_grid.cpp" />
     <ClCompile Include="draw_list.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
@@ -229,7 +226,6 @@
     <ClInclude Include="string.h" />
     <ClInclude Include="stringcreator.h" />
     <ClInclude Include="strlib.h" />
-    <ClInclude Include="widget.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

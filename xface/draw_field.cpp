@@ -78,11 +78,16 @@ public:
 	}
 } cedit;
 
-void draw::updatefocus() {
+void draw::savefocus() {
 	if(cedit.isfocused()) {
 		cedit.save();
 		cedit.clear();
 	}
+}
+
+void draw::loadfocus() {
+	cedit.load();
+	cedit.invalidate();
 }
 
 static void field_up() {
@@ -102,8 +107,9 @@ static void execute(callback proc, const anyval& ev) {
 	draw::execute(proc);
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, field_type_s type) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, field_type_s type, callback choose_proc) {
 	rect rc = rco;
+	const unsigned edit_mask = AlignMask | TextSingleLine | TextBold | TextStroke;
 	draw::rectf(rc, colors::window);
 	draw::rectb(rc, colors::border);
 	auto focused = isfocused(flags);
@@ -116,15 +122,19 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 		case 2: execute(field_down, ev); break;
 		}
 	}
+	if(choose_proc) {
+		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать"))
+			draw::execute(choose_proc, (int)ev.data);
+	}
 	auto a = area(rc);
 	if(focused) {
-		cedit.align = flags & AlignMask;
+		cedit.align = flags & edit_mask;
 		cedit.update(ev, type, digits);
 		cedit.view(rc);
 	} else {
 		char temp[260];
 		auto p = getvalue(ev, type, temp, temp + sizeof(temp) / sizeof(temp[0]));
-		draw::texte(rc + metrics::edit, p, flags & AlignMask, -1, -1);
+		draw::texte(rc + metrics::edit, p, flags & edit_mask, -1, -1);
 	}
 }
 
@@ -136,11 +146,11 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignRight;
 	focusing((int)ev.ptr(), flags, rc);
-	field(rc, flags, ev, digits, FieldNumber);
+	field(rc, flags | TextSingleLine, ev, digits, FieldNumber, 0);
 	return rc.height() + metrics::padding * 2;
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width) {
+int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, draw::callback choose_proc) {
 	draw::state push;
 	setposition(x, y, width);
 	if(header_label && header_label[0])
@@ -148,6 +158,6 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignLeft;
 	focusing((int)&sev, flags, rc);
-	field(rc, flags, anyval(sev), -1, FieldText);
+	field(rc, flags | TextSingleLine, anyval(sev), -1, FieldText, choose_proc);
 	return rc.height() + metrics::padding * 2;
 }

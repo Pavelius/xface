@@ -115,7 +115,7 @@ void draw::setfocus(int id, bool instant) {
 	if(id == current_focus)
 		return;
 	if(instant) {
-		updatefocus();
+		savefocus();
 		current_focus = id;
 	} else
 		execute(setfocus_callback, id);

@@ -320,8 +320,9 @@ bool textedit::keyinput(unsigned id) {
 		if(isshowrecords()) {
 			records->keyinput(id);
 			break;
-		}
-		if(true) {
+		} else if(align&TextSingleLine)
+			return false;
+		else {
 			auto pt = getpos(rcclient, p1, align);
 			auto i = hittest(rcclient, {pt.x, (short)(pt.y + texth())}, align);
 			if(i == -3)
@@ -333,7 +334,9 @@ bool textedit::keyinput(unsigned id) {
 		}
 		break;
 	case KeyUp:
-		if(true) {
+		if(align&TextSingleLine)
+			return false;
+		else {
 			auto pt = getpos(rcclient, p1, align);
 			auto i = hittest(rcclient, {pt.x, (short)(pt.y - texth())}, align);
 			if(i == -3)

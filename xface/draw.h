@@ -285,6 +285,7 @@ void					linet(int x1, int y1, int x2, int y2);
 inline void				linet(point p1, point p2) { linet(p1.x, p1.y, p2.x, p2.y); }
 extern float			linw;
 extern char				link[4096];
+void					loadfocus();
 extern bool				mouseinput;
 extern color*			palt;
 void					pixel(int x, int y);
@@ -297,6 +298,7 @@ void					rectf(rect rc); // Draw rectangle area. Right and bottom side is one pi
 void					rectf(rect rc, color c1);
 void					rectf(rect rc, color c1, unsigned char alpha);
 void					rectx(rect rc, color c1);
+void					savefocus();
 void					set(void(*proc)(int& x, int& y, int x0, int x2, int* max_width, int& w, const char* id));
 void					setcaption(const char* string);
 void					setclip(rect rc);
@@ -322,7 +324,6 @@ int						textw(int sym);
 int						textw(const char* string, int count = -1);
 int						textw(rect& rc, const char* string);
 int						textw(sprite* font);
-void					updatefocus();
 void					updatewindow();
 void					write(const char* url, unsigned char* bits, int width, int height, int bpp, int scanline, color* pallette);
 }

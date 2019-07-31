@@ -26,7 +26,10 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 	} else if(ev.type->is(KindText))
 		h = field(x, y, width, gettitle(temp, zendof(temp), ev), *((const char**)ev.type->ptr(ev.data)), title);
 	else if(ev.type->is(KindReference)) {
-		//	h = combobox(x, y, width, 0, ev, gettitle(temp, zendof(temp), ev), 0, title);
+		bsval st;
+		st.data = ev.type->ptr(ev.data);
+		st.type = ev.type;
+		h = combobox(x, y, width, 0, st, gettitle(temp, zendof(temp), st), 0, title);
 	}
 	if(!h)
 		return 0;
