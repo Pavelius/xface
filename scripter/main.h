@@ -1,5 +1,5 @@
 #include "xface/collection.h"
-#include "xface/stringcreator.h"
+#include "xface/stringbuilder.h"
 #include "xface/valuelist.h"
 
 const char*				szdup(const char *text);

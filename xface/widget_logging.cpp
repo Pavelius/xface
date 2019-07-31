@@ -5,7 +5,7 @@
 #include "draw_grid.h"
 #include "io.h"
 #include "settings.h"
-#include "stringcreator.h"
+#include "stringbuilder.h"
 
 using namespace	draw;
 using namespace	draw::controls;
@@ -23,8 +23,9 @@ const bsreq bsmeta<log_message>::meta[] = {
 {}};
 
 void logmsgv(const char* format, const char* arguments) {
-	log_message e = {0}; char temp[8192];
-	szprintvs(temp, zendof(temp), format, arguments);
+	log_message e = {0};
+	char temp[8192]; stringbuilder sb(temp);
+	sb.addv(format, arguments);
 	e.stamp = datetime::now();
 	e.text = szdup(temp);
 	messages.add(e);

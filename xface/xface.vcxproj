@@ -163,11 +163,14 @@
     <ClCompile Include="draw_toolbar.cpp" />
     <ClCompile Include="draw_tooltips.cpp" />
     <ClCompile Include="draw_dropdown.cpp" />
-    <ClCompile Include="grammar.cpp" />
+    <ClCompile Include="grammar.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="resources.cpp" />
     <ClCompile Include="resource_dynamic.cpp" />
     <ClCompile Include="screenshoot.cpp" />
     <ClCompile Include="settings.cpp" />
+    <ClCompile Include="stringbuilder.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="draw_input.cpp" />
@@ -175,7 +178,6 @@
     <ClCompile Include="draw_textf.cpp" />
     <ClCompile Include="io.cpp" />
     <ClCompile Include="point.cpp" />
-    <ClCompile Include="stringcreator.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="surface_serial.cpp" />
     <ClCompile Include="sz2numf.cpp" />
@@ -201,6 +203,7 @@
     <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
     <ClInclude Include="markup.h" />
+    <ClInclude Include="stringbuilder.h" />
     <ClInclude Include="valuelist.h" />
     <ClInclude Include="requisit.h" />
     <ClInclude Include="bsreq.h" />
@@ -212,7 +215,9 @@
     <ClInclude Include="draw.h" />
     <ClInclude Include="draw_control.h" />
     <ClInclude Include="draw_grid.h" />
-    <ClInclude Include="grammar.h" />
+    <ClInclude Include="grammar.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="initializer_list.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="point.h" />
@@ -222,7 +227,6 @@
     <ClInclude Include="screenshoot.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="string.h" />
-    <ClInclude Include="stringcreator.h" />
     <ClInclude Include="strlib.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>

@@ -3,10 +3,10 @@
 #pragma once
 
 #define	BSHIN(fn,hint) {#fn, (unsigned)&((data_type*)0)->fn,\
-sizeof(bsreq::btype<decltype(data_type::fn)>::value),\
+sizeof(bsreq::decoy<decltype(data_type::fn)>::value),\
 sizeof(data_type::fn),\
 bsreq::icount<decltype(data_type::fn)>::value,\
-bsmeta<bsreq::btype<decltype(data_type::fn)>::value>::meta,\
+bsmeta<bsreq::decoy<decltype(data_type::fn)>::value>::meta,\
 bsreq::isubtype<decltype(data_type::fn)>::value,\
 hint}
 #define	BSREQ(fn) BSHIN(fn,0)
@@ -32,16 +32,16 @@ struct bsreq {
 	template<class T> struct icount<T[]> : static_int<0> {};
 	template<class T, unsigned N> struct icount<adat<T, N>> : static_int<N> {};
 	// Get base type
-	template<class T> struct btype { typedef T value; };
-	template<> struct btype<const char*> { typedef const char* value; };
-	template<class T> struct btype<T*> : btype<T> {};
-	template<class T, unsigned N> struct btype<T[N]> : btype<T> {};
-	template<class T> struct btype<T[]> : btype<T> {};
-	template<class T> struct btype<const T> : btype<T> {};
-	template<class T> struct btype<const T*> : btype<T> {};
-	template<class T> struct btype<aref<T>> : btype<T> {};
-	template<class T, unsigned N> struct btype<adat<T, N>> : btype<T> {};
-	template<class T, class DT> struct btype<cflags<T, DT>> : btype<T> {};
+	template<class T> struct decoy { typedef T value; };
+	template<> struct decoy<const char*> { typedef const char* value; };
+	template<class T> struct decoy<T*> : decoy<T> {};
+	template<class T, unsigned N> struct decoy<T[N]> : decoy<T> {};
+	template<class T> struct decoy<T[]> : decoy<T> {};
+	template<class T> struct decoy<const T> : decoy<T> {};
+	template<class T> struct decoy<const T*> : decoy<T> {};
+	template<class T> struct decoy<aref<T>> : decoy<T> {};
+	template<class T, unsigned N> struct decoy<adat<T, N>> : decoy<T> {};
+	template<class T, class DT> struct decoy<cflags<T, DT>> : decoy<T> {};
 	// Get subtype
 	template<class T> struct isubtype : static_value<bstype_s, __is_enum(T) ? KindEnum : KindScalar> {};
 	template<> struct isubtype<const char*> : static_value<bstype_s, KindText> {};

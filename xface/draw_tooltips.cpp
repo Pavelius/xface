@@ -1,6 +1,6 @@
 #include "crt.h"
 #include "draw.h"
-#include "stringcreator.h"
+#include "stringbuilder.h"
 
 rect tooltips_rect;
 char tooltips_text[4096];
@@ -10,7 +10,8 @@ void draw::tooltipsv(int x, int y, int width, const char* format, const char* fo
 	tooltips_text[0] = 0;
 	if(hot.key != InputIdle)
 		return;
-	szprintvs(tooltips_text, zendof(tooltips_text), format, format_param);
+	stringbuilder sb(tooltips_text);
+	sb.addv(format, format_param);
 }
 
 void draw::tooltips(int x, int y, int width, const char* format, ...) {

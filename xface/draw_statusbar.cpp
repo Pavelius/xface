@@ -1,6 +1,6 @@
 #include "crt.h"
 #include "draw.h"
-#include "stringcreator.h"
+#include "stringbuilder.h"
 
 using namespace draw;
 
@@ -8,7 +8,8 @@ static rect	statusbar_rect;
 static char	statusbar_text[512];
 
 void draw::statusbarv(const char* format, const char* format_param) {
-	szprintvs(statusbar_text, statusbar_text + sizeof(statusbar_text) - 1, format, format_param);
+	stringbuilder sb(statusbar_text);
+	sb.addv(format, format_param);
 }
 
 void draw::statusbar(const char* format, ...) {

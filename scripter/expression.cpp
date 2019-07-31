@@ -64,7 +64,7 @@ void expression::add(expression* v) {
 }
 
 void expression::builder::add(const expression* context, int v) {
-	char temp[32]; stringcreator sc(temp);
+	char temp[32]; stringbuilder sc(temp);
 	sc.add("%1i", v);
 	add(NumberToken, context, temp);
 }

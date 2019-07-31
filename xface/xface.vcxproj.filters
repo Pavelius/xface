@@ -39,9 +39,6 @@
     <ClCompile Include="archive.cpp">
       <Filter>collections</Filter>
     </ClCompile>
-    <ClCompile Include="stringcreator.cpp">
-      <Filter>strings</Filter>
-    </ClCompile>
     <ClCompile Include="szdup.cpp">
       <Filter>strings</Filter>
     </ClCompile>
@@ -237,6 +234,9 @@
     <ClCompile Include="draw_combo.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="stringbuilder.cpp">
+      <Filter>strings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">
@@ -249,9 +249,6 @@
       <Filter>collections</Filter>
     </ClInclude>
     <ClInclude Include="string.h">
-      <Filter>strings</Filter>
-    </ClInclude>
-    <ClInclude Include="stringcreator.h">
       <Filter>strings</Filter>
     </ClInclude>
     <ClInclude Include="draw.h">
@@ -328,6 +325,9 @@
     </ClInclude>
     <ClInclude Include="anyval.h">
       <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="stringbuilder.h">
+      <Filter>strings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

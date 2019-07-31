@@ -3,7 +3,7 @@
 #include "xface/draw_properties.h"
 #include "xface/markup.h"
 #include "xface/requisit.h"
-#include "xface/stringcreator.h"
+#include "xface/stringbuilder.h"
 #include "xface/valuelist.h"
 #include "main.h"
 

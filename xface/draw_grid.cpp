@@ -1,7 +1,7 @@
 #include "crt.h"
 #include "datetime.h"
 #include "screenshoot.h"
-#include "stringcreator.h"
+#include "stringbuilder.h"
 #include "draw_grid.h"
 
 using namespace draw;
@@ -74,7 +74,7 @@ const char* grid::getname(char* result, const char* result_max, int line, int co
 	if(!bv)
 		return "";
 	if(bv.type->is(KindNumber)) {
-		stringcreator sc(result, result_max);
+		stringbuilder sc(result, result_max);
 		auto value = getnumber(line, column);
 		sc.add("%1i", value);
 		return result;

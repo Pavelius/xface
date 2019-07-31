@@ -2,23 +2,29 @@
 
 #define xva_start(v) ((const char*)&v + sizeof(v))
 
-class stringcreator {
+class stringbuilder {
+	struct grammar;
 	char*				p;
 	char*				pb;
 	const char*			pe;
 	const char*			readformat(const char* format, const char* format_param);
 	const char*			readvariable(const char* format);
+	void				add(const char* s, const grammar* source, const char* def = 0);
 public:
-	constexpr stringcreator(char* pb, const char* pe) : pb(pb), p(pb), pe(pe) { pb[0] = 0; }
-	template<unsigned N> constexpr stringcreator(char(&result)[N]) : stringcreator(result, result + N) {}
+	constexpr stringbuilder(char* pb, const char* pe) : pb(pb), p(pb), pe(pe) {}
+	template<unsigned N> constexpr stringbuilder(char(&result)[N]) : stringbuilder(result, result + N - 1) {}
 	constexpr operator char*() const { return pb; }
 	void				add(const char* format, ...) { addv(format, xva_start(format)); }
-	void				addicon(const char* id, int value);
+	void				addby(const char* s);
 	virtual void		addidentifier(const char* identifier);
+	void				addicon(const char* id, int value);
 	static char*		addint(char* result, const char* result_maximum, int value, int precision, const int radix);
 	void				addn(const char* format, ...) { addx('\n', format, xva_start(format)); }
+	void				addof(const char* s);
 	void				adds(const char* format, ...) { addx(' ', format, xva_start(format)); }
+	void				addsep(char separator);
 	void				addsz() { if(p < pe) *p++ = 0; }
+	void				addto(const char* s);
 	void				addv(const char* format, const char* format_param);
 	void				addx(char separator, const char* format, const char* format_param);
 	static char*		adduint(char* result, const char* result_maximum, unsigned value, int precision, const int radix);
@@ -31,5 +37,6 @@ public:
 	static bool			isnum(unsigned char sym) { return sym >= '0' && sym <= '9'; }
 	bool				ispos(const char* v) const { return p == v; }
 	static unsigned char lower(unsigned char sym);
+	void				set(char* v) { p = v; p[0] = 0; }
 	static unsigned char upper(unsigned char sym);
 };
