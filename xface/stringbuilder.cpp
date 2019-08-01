@@ -240,6 +240,14 @@ void stringbuilder::addx(char separator, const char* format, const char* format_
 	addv(format, format_param);
 }
 
+void stringbuilder::addx(const char* separator, const char* format, const char* format_param) {
+	if(!format || format[0] == 0)
+		return;
+	if(p != pb)
+		add(separator);
+	addv(format, format_param);
+}
+
 void stringbuilder::addicon(const char* id, int value) {
 	if(value < 0)
 		adds(":%1:[-%2i]", id, -value);
@@ -327,5 +335,11 @@ void stringbuilder::addto(const char* s) {
 char* szprint(char* result, const char* result_maximum, const char* src, ...) {
 	stringbuilder e(result, result_maximum);
 	e.addv(src, xva_start(src));
+	return e;
+}
+
+char* szprintv(char* result, const char* result_maximum, const char* format, const char* format_param) {
+	stringbuilder e(result, result_maximum);
+	e.addv(format, format_param);
 	return e;
 }

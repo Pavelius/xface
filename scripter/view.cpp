@@ -31,6 +31,7 @@ struct translate {
 static translate translate_data[] = {{"count", "Количество"},
 {"id", "Идентификатор"},
 {"parent", "Родитель"},
+{"position", "Позиция"},
 {"type", "Тип"},
 };
 

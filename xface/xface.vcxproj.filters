@@ -84,9 +84,6 @@
     <ClCompile Include="draw_theme.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
-    <ClCompile Include="grammar.cpp">
-      <Filter>strings</Filter>
-    </ClCompile>
     <ClCompile Include="draw_dialog.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
@@ -265,9 +262,6 @@
     </ClInclude>
     <ClInclude Include="rect.h">
       <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="grammar.h">
-      <Filter>strings</Filter>
     </ClInclude>
     <ClInclude Include="pointl.h">
       <Filter>support</Filter>

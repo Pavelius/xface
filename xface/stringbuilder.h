@@ -27,6 +27,7 @@ public:
 	void				addto(const char* s);
 	void				addv(const char* format, const char* format_param);
 	void				addx(char separator, const char* format, const char* format_param);
+	void				addx(const char* separator, const char* format, const char* format_param);
 	static char*		adduint(char* result, const char* result_maximum, unsigned value, int precision, const int radix);
 	char*				begin() { return pb; }
 	const char*			begin() const { return pb; }

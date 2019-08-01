@@ -73,7 +73,7 @@ struct combo_list : controls::list, adat<void*, 64> {
 
 	const bsreq* field;
 
-	combo_list(const bsdata& metadata) : field(metadata.meta->getname()) {
+	combo_list() : field(0) {
 	}
 
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
@@ -137,14 +137,20 @@ struct combo_list : controls::list, adat<void*, 64> {
 };
 
 static void show_drop_down() {
+	combo_list list;
 	auto ps = bsdata::find(combo_value.type->type);
-	if(!ps)
+	if(ps) {
+		list.field = ps->meta->getname();
+		auto pe = ps->end();
+		for(auto p = ps->begin(); p < pe; p += ps->size)
+			list.add((void*)p);
+	} else if(combo_value.type->type==bsmeta<bsreq>::meta) {
+		list.field = bsmeta<bsreq>::meta->find("id");
+		for(auto ps = bsdata::first; ps; ps = ps->next)
+			list.add((void*)ps->meta);
+	} else
 		return;
-	combo_list list(*ps);
 	list.hilite_odd_lines = false;
-	auto pe = ps->end();
-	for(auto p = ps->begin(); p < pe; p += ps->size)
-		list.add((void*)p);
 	list.sort();
 	list.pixels_per_line = list.getrowheight();
 	list.lines_per_page = imin(list.getcount(), 7);
@@ -184,7 +190,7 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
 	unsigned flags = 0;
-	focusing((int)cmd.type->ptr(cmd.data), flags, rc);
+	focusing((int)cmd.getptr(), flags, rc);
 	auto focused = isfocused(flags);
 	auto result = false;
 	auto a = area(rc);
@@ -198,14 +204,12 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 	}
 	rectb(rc, colors::border);
 	rect rco = rc;
+	auto execute_drop_down = false;
 	if(a == AreaHilited || a == AreaHilitedPressed) {
 		switch(hot.key) {
 		case MouseLeft:
-			if(!hot.pressed) {
-				combo_value = cmd;
-				combo_rect = rc;
-				execute(show_drop_down);
-			}
+			if(!hot.pressed)
+				execute_drop_down = true;
 			break;
 		}
 	}
@@ -225,17 +229,20 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 			}
 			break;
 		case KeyEnter:
-			combo_value = cmd;
-			combo_rect = rc;
-			execute(show_drop_down);
+			execute_drop_down = true;
 			break;
 		}
+	}
+	if(execute_drop_down) {
+		combo_value = cmd;
+		combo_rect = rc;
+		execute(show_drop_down);
 	}
 	rco.offset(2, 2);
 	if(focused)
 		rectx(rco, colors::black);
 	rco.offset(2, 2);
-	textc(rco.x1, rco.y1, rco.width(), cmd.type->gets(cmd.data));
+	textc(rco.x1, rco.y1, rco.width(), cmd.type->gets(cmd.type->ptr(cmd.data)));
 	if(tips && a == AreaHilited)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;

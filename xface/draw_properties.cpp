@@ -1,5 +1,6 @@
 #include "crt.h"
 #include "draw_properties.h"
+#include "stringbuilder.h"
 
 using namespace draw;
 using namespace draw::controls;
@@ -31,12 +32,23 @@ void properties::treemark(int x, int y, int width, bool isopen) const {
 }
 
 int properties::group(int x, int y, int width, int ident, const char* label, const bsval& ev) const {
+	char temp[260];
 	draw::state push;
 	treemark(x, y + 4, ident, false);
 	addwidth(x, width, ident);
 	setposition(x, y, width);
 	if(label && label[0])
 		titletext(x, y, width, 0, label, title);
+	bsval ob;
+	ob.data = ev.getptr();
+	ob.type = ev.type->type;
+	stringbuilder sb(temp);
+	for(auto p = ob.type; *p; p++) {
+		char tem2[64]; p->get(p->ptr(ob.data), tem2, zendof(tem2));
+		sb.addx(", ", tem2, 0);
+	}
+	setposition(x, y, width);
+	text(x, y, temp);
 	return ident;
 }
 
@@ -58,16 +70,9 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 	}
 	else if(ev.type->is(KindReference)) {
 		addwidth(x, width, ident);
-		bsval st;
-		st.data = ev.type->ptr(ev.data);
-		st.type = ev.type;
-		h = combobox(x, y, width, gettitle(temp, zendof(temp), st), st, title, 0);
-	} else if(ev.type->is(KindScalar)) {
-		bsval st;
-		st.data = ev.type->ptr(ev.data);
-		st.type = ev.type;
-		group(x, y, width, ident, gettitle(temp, zendof(temp), st), ev);
-	}
+		h = combobox(x, y, width, gettitle(temp, zendof(temp), ev), ev, title, 0);
+	} else if(ev.type->is(KindScalar))
+		h = group(x, y, width, ident, gettitle(temp, zendof(temp), ev), ev);
 	if(!h)
 		return 0;
 	return h + spacing;

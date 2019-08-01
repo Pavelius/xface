@@ -152,6 +152,7 @@ struct bsval {
 	bsval				dereference() const;
 	int					get() const { return type->get(type->ptr(data)); }
 	const char*			getname() const;
+	void*				getptr() const { return type->ptr(data); }
 	bsval				ptr(const char* url) const;
 	void				set(int value) const { type->set(type->ptr(data), value); }
 };
