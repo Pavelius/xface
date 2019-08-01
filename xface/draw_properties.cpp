@@ -30,6 +30,8 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 		st.data = ev.type->ptr(ev.data);
 		st.type = ev.type;
 		h = combobox(x, y, width, gettitle(temp, zendof(temp), st), st, title, 0);
+	} else if(ev.type->is(KindScalar)) {
+
 	}
 	if(!h)
 		return 0;

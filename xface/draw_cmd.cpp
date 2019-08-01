@@ -2,19 +2,19 @@
 
 using namespace draw;
 
-cmd::contexti cmd::ctx;
+cmd cmd::ctx;
 
 void cmd::apply_xor() {
-	if(!hot.param)
-		hot.param = 1;
-	auto v = ctx.value.get() ^ hot.param;
-	ctx.value.set(v);
+	if(!ctx.param)
+		ctx.param = 1;
+	auto v = ctx.get() ^ ctx.param;
+	ctx.set(v);
 }
 
 void cmd::apply_set() {
-	ctx.value.set(hot.param);
+	ctx.set(ctx.param);
 }
 
 void cmd::apply_add() {
-	ctx.value.set(ctx.value.get() + hot.param);
+	ctx.set(ctx.get() + ctx.param);
 }

@@ -33,23 +33,21 @@ enum dock_s : unsigned char {
 	DockBottom, DockWorkspace,
 };
 struct cmd : anyval {
-	struct contexti {
-		const bsreq*		type;
-		anyval				value;
-	};
+	const bsreq*			type;
 	callback				proc;
 	int						param;
-	static contexti			ctx;
-	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0) {}
-	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
-	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
-	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param) {}
-	constexpr cmd(markup::command_type proc, void* source) : anyval(proc, 0), proc(call_object), param((int)source) {}
+	static cmd				ctx;
+	constexpr cmd() : anyval(), proc(0), param(0), type(0) {}
+	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0), type(0) {}
+	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param), type(0) {}
+	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param), type(0) {}
+	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param), type(0) {}
+	constexpr cmd(markup::command_type proc, void* source) : anyval(source, 0), proc(call_object), param((int)proc), type(0) {}
 	static void				apply_add();
 	static void				apply_set();
 	static void				apply_xor();
-	static void				call_object() { ((markup::command_type)ctx.value.data)((void*)hot.param); }
-	void					execute() const { ctx.value = *this; ctx.type = 0; draw::execute(proc, param); }
+	static void				call_object() { ((markup::command_type)ctx.param)((void*)ctx.data); }
+	void					execute() const { ctx = *this; draw::execute(proc, param); }
 	int						getid() const { return (int)data; }
 };
 namespace controls {
