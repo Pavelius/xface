@@ -33,20 +33,20 @@ enum dock_s : unsigned char {
 	DockBottom, DockWorkspace,
 };
 struct cmd : anyval {
-	const bsreq*			type;
 	callback				proc;
 	int						param;
 	static cmd				ctx;
-	constexpr cmd() : anyval(), proc(0), param(0), type(0) {}
-	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0), type(0) {}
-	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param), type(0) {}
-	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param), type(0) {}
-	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param), type(0) {}
-	constexpr cmd(markup::command_type proc, void* source) : anyval(source, 0), proc(call_object), param((int)proc), type(0) {}
-	static void				apply_add();
-	static void				apply_set();
-	static void				apply_xor();
-	static void				call_object() { ((markup::command_type)ctx.param)((void*)ctx.data); }
+	constexpr cmd() : anyval(), proc(0), param(0) {}
+	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0) {}
+	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
+	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
+	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param) {}
+	constexpr cmd(markup::command_type proc, void* source) : anyval(proc, 0), proc(calling), param((int)source) {}
+	static void				add();
+	static void				assign();
+	static void				calling();
+	static void				invert();
+	bool					ischecked() const { return ((get()&param)!=0) ? true : false; }
 	void					execute() const { ctx = *this; draw::execute(proc, param); }
 	int						getid() const { return (int)data; }
 };

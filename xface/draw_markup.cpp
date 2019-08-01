@@ -356,10 +356,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				cmd ev(cmd::apply_set, i, {bv.type->ptr(bv.data), size});
+				cmd ev(cmd::invert, 1<<i, {bv.type->ptr(bv.data), size});
 				unsigned flags = 0;
-				//if(ev.ischecked())
-				//	flags |= Checked;
+				if(ev.ischecked())
+					flags |= Checked;
 				auto y0 = y + checkbox(x, y, wc, flags, ev, p, 0) + 2;
 				if(y1 < y0)
 					y1 = y0;
@@ -382,10 +382,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				cmd ev(cmd::apply_xor, i<<1, {bv.type->ptr(bv.data), size});
+				cmd ev(cmd::assign, i, {bv.type->ptr(bv.data), size});
 				unsigned flags = 0;
-				//if(ev.ischecked())
-				//	flags |= Checked;
+				if(ev.get()==i)
+					flags |= Checked;
 				y += radio(x, y, width, flags, ev, p, 0) + 2;
 			}
 		} else {
