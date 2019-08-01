@@ -16,6 +16,7 @@ const bsreq bsmeta<requisit>::meta[] = {
 	BSREQ(type),
 	BSREQ(count),
 	BSREQ(offset),
+	BSREQ(position),
 {}};
 
 struct translate {

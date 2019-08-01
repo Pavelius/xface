@@ -44,6 +44,7 @@ int draw::clipart(int x, int y, int width, unsigned flags, const char* string) {
 		for(auto e : clipart_dropdown)
 			pixel(x + e.x, y + e.y);
 		return rc.height();
-	}
+	} else if(strcmp(p, "tree") == 0)
+		circle(x + 7, y + 6, 6, getcolor(colors::border, flags));
 	return 0;
 }

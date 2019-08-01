@@ -1,4 +1,5 @@
 #include "xface/collection.h"
+#include "xface/point.h"
 #include "xface/stringbuilder.h"
 #include "xface/valuelist.h"
 
@@ -89,9 +90,10 @@ struct requisit {
 	unsigned				offset;
 	unsigned				count;
 	expression*				code;
-	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0) {}
-	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), code(0) {}
-	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), code(0) {}
+	point					position;
+	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0), position{0,0} {}
+	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), code(0), position{0, 0} {}
+	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), code(0), position{0, 0} {}
 	constexpr operator bool() const { return id != 0; }
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }

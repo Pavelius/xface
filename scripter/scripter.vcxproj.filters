@@ -8,6 +8,7 @@
     <ClCompile Include="expression.cpp" />
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="serial.cpp" />
+    <ClCompile Include="point.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
