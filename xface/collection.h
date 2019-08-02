@@ -111,7 +111,15 @@ struct arem : aref<T> {
 	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }
 	void					clear() { aref<T>::count = 0; }
-	void					remove(int index, int elements_count = 1) { if(index < 0 || index >= count) return; count -= elements_count; if(index >= count) return; memmove(data + index, data + index + elements_count, sizeof(data[0])*(count - index)); }
+	void					remove(int index, int elements_count = 1) {
+		if((unsigned)index >= aref<T>::count)
+			return;
+		aref<T>::count -= elements_count;
+		if((unsigned)index >= aref<T>::count)
+			return;
+		memmove(aref<T>::data + index, aref<T>::data + index + elements_count,
+			sizeof(T)*(aref<T>::count - index));
+	}
 	void					reserve(unsigned count) { aref<T>::data = (T*)rmreserve(aref<T>::data, count, count_maximum, sizeof(T)); }
 };
 // Abstract flag data bazed on enumerator

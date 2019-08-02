@@ -14,6 +14,18 @@ int properties::vertical(int x, int y, int width, const bsval& ev) {
 	return y - y0;
 }
 
+void properties::open(void* object) {
+	if(isopen(object))
+		return;
+	opened.add(object);
+}
+
+void properties::close(void* object) {
+	auto i = opened.indexof(object);
+	if(i != -1)
+		opened.remove(i);
+}
+
 void properties::treemark(int x, int y, int width, bool isopen) const {
 	auto x1 = x + width / 2;
 	auto y1 = y + width / 2 - 1;
@@ -34,7 +46,7 @@ void properties::treemark(int x, int y, int width, bool isopen) const {
 int properties::group(int x, int y, int width, int ident, const char* label, const bsval& ev) const {
 	char temp[260];
 	draw::state push;
-	treemark(x, y + 4, ident, false);
+	treemark(x, y + 4, ident, isopen(ev.type));
 	addwidth(x, width, ident);
 	setposition(x, y, width);
 	if(label && label[0])

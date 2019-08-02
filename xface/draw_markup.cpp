@@ -20,46 +20,9 @@ struct commandi {
 	void clear() { memset(this, 0, sizeof(commandi)); }
 };
 static commandi	command;
-static void check_flags() {
-	unsigned v1 = command.value.get();
-	unsigned v2 = 1 << hot.param;
-	if(v1&v2)
-		v1 &= ~v2;
-	else
-		v1 |= v2;
-	command.value.set(v1);
-}
 static void set_command_value() {
 	command.value.set(hot.param);
 }
-//struct cmd_check : cmd {
-//	constexpr cmd_check(const anyval& value, const void* source, unsigned index)
-//		: source(source), index(index), value(value) {}
-//	virtual int	getid() const { return (int)source; }
-//	virtual void execute() const {
-//		command.clear();
-//		command.value = value;
-//		draw::execute(check_flags, index);
-//	}
-//	virtual bool isdisabled() const { return false; }
-//	bool ischecked() const { return (((int)value) & (1 << index)) != 0; }
-//private:
-//	const void*		source;
-//	unsigned		index;
-//	anyval			value;
-//};
-//struct cmd_radio : cmd {
-//	constexpr cmd_radio(const anyval& value, const void* source, unsigned index)
-//		: source(source), index(index), value(value) {}
-//	virtual int	getid() const { return (int)source; }
-//	virtual void execute() const { command.value = value; draw::execute(set_command_value, index); }
-//	virtual bool isdisabled() const { return false; }
-//	bool ischecked() const { return (int)value == index; }
-//private:
-//	const void*		source;
-//	unsigned		index;
-//	const anyval	value;
-//};
 struct contexti {
 	int				title;
 	const char*		title_text;
