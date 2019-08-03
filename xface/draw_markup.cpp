@@ -231,7 +231,8 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	unsigned flags = AlignLeft;
 	if(type->is(KindNumber))
 		flags = AlignRight;
-	draw::focusing((int)pv, flags, rc);
+	if(draw::focusing((int)pv, rc))
+		flags |= Focused;
 	if(type->is(KindText))
 		draw::field(rc, flags, anyval(pv, type->size), -1, KindText, 0);
 	else if(type->is(KindEnum) || (type->is(KindNumber) && type->hint_type)) {

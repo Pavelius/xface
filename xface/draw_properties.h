@@ -16,7 +16,7 @@ struct properties : control {
 	int					element(int x, int y, int width, const bsval& ev);
 	const char*			getlabel(char* result, const char* result_maximum) const override { return "Свойства"; }
 	virtual const char*	gettitle(char* result, const char* result_maximum, const bsval& ev) const { return ev.type->id; }
-	int					group(int x, int y, int width, int ident, const char* label, const bsval& ev);
+	int					group(int x, int y, int width, const char* label, const bsval& ev);
 	bool				isfocusable() const override { return false; }
 	bool				isopen(const void* object) const { return opened.is((void*)object); }
 	virtual bool		isvisible(const bsval& v) const { return true; }

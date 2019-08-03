@@ -253,7 +253,7 @@ bool					dragactive();
 void					dragbegin(const void* p);
 extern point			dragmouse;
 void					execute(callback proc, int value = 0);
-void					focusing(int id, unsigned& flags, rect rc);
+bool					focusing(int id, const rect& rc);
 rect					getarea();
 int						getbpp();
 color					getcolor(color normal, unsigned flags);

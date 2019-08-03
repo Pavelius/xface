@@ -189,9 +189,7 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
-	unsigned flags = 0;
-	focusing((int)cmd.getptr(), flags, rc);
-	auto focused = isfocused(flags);
+	auto focused = focusing((int)cmd.getptr(), rc);
 	auto result = false;
 	auto a = area(rc);
 	if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)

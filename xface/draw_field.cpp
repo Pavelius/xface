@@ -147,7 +147,8 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 		titletext(x, y, width, 0, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignRight;
-	focusing((int)ev.ptr(), flags, rc);
+	if(focusing((int)ev.ptr(), rc))
+		flags |= Focused;
 	field(rc, flags | TextSingleLine, ev, digits, KindNumber, 0);
 	return rc.height() + metrics::padding * 2;
 }
@@ -159,7 +160,8 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 		titletext(x, y, width, 0, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignLeft;
-	focusing((int)&sev, flags, rc);
+	if(focusing((int)&sev, rc))
+		flags |= Focused;
 	field(rc, flags | TextSingleLine, anyval(sev), -1, KindText, choose_proc);
 	return rc.height() + metrics::padding * 2;
 }

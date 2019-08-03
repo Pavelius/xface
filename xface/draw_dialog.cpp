@@ -4,25 +4,22 @@
 using namespace draw;
 
 void draw::setposition(int& x, int& y, int& width, int padding) {
-	if(padding==-1)
+	if(padding == -1)
 		padding = metrics::padding;
 	x += padding;
 	y += padding;
 	width -= padding * 2;
 }
 
-void draw::focusing(int id, unsigned& flags, rect rc) {
-	if(flags&Disabled)
-		return;
+bool draw::focusing(int id, const rect& rc) {
 	addelement(id, rc);
 	if(!getfocus())
 		setfocus(id, true);
-	if(getfocus() == id)
-		flags |= Focused;
 	else if(area(rc) == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
 		setfocus(id, false);
 		hot.key = MouseLeft;
 	}
+	return getfocus() == id;
 }
 
 void draw::titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator) {
@@ -41,10 +38,11 @@ void draw::titletext(int& x, int y, int& width, unsigned flags, const char* labe
 int	draw::button(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips, int key) {
 	setposition(x, y, width);
 	struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
-	focusing(ev.getid(), flags, rc);
+	auto disabled = isdisabled(flags);
+	auto focus = !disabled && focusing(ev.getid(), rc);
 	if(buttonh({x, y, x + width, rc.y2},
-		ischecked(flags), isfocused(flags), isdisabled(flags), true, label, key, false, tips)
-		|| (isfocused(flags) && hot.key == KeyEnter)) {
+		ischecked(flags), focus, disabled, true, label, key, false, tips)
+		|| (focus && hot.key == KeyEnter)) {
 		ev.execute();
 	}
 	if(label && label[0] && areb(rc))
@@ -63,7 +61,8 @@ int draw::radio(int x, int y, int width, unsigned flags, const cmd& ev, const ch
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
 	decortext(flags);
-	focusing(ev.getid(), flags, rc);
+	if(focusing(ev.getid(), rc))
+		flags |= Focused;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
 	auto a = draw::area(rc);
@@ -94,7 +93,8 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const
 	rc.y1 = rc1.y1;
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
-	focusing(ev.getid(), flags, rc);
+	if(focusing(ev.getid(), rc))
+		flags |= Focused;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), 0, flags, ":check");
 	decortext(flags);
 	auto a = draw::area(rc);

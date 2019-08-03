@@ -212,10 +212,9 @@ int draw::field(int x, int y, int width, const char* label, color& value, int he
 		titletext(x, y, width, 0, label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
-	unsigned flags = 0;
-	focusing((int)&value, flags, rc);
+	auto focused = focusing((int)&value, rc);
 	if(buttonh(rc,
-		ischecked(flags), (flags&Focused) != 0, (flags&Disabled) != 0, true, value,
+		false, focused, false, true, value,
 		temp, KeyEnter, false, tips))
 		execute(callback_choose_color, (int)&value);
 	return rc.height() + metrics::padding * 2;
@@ -438,7 +437,8 @@ static struct widget_application : draw::controls::control {
 			unsigned flags = ec->isfocused() ? Focused : 0;
 			if(ec->isdisabled())
 				flags |= Disabled;
-			draw::focusing((int)ec, flags, rc);
+			else
+				draw::focusing((int)ec, rc);
 			ec->view(rc);
 		}
 	}

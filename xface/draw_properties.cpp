@@ -53,31 +53,41 @@ void properties::treemark(int x, int y, int width, void* object, bool isopen) co
 		line(x1, y1 - 4, x1, y1 + 4, c1);
 }
 
-int properties::group(int x, int y, int width, int ident, const char* label, const bsval& ev) {
-	char temp[260];
+int properties::group(int x, int y, int width, const char* label, const bsval& ev) {
 	draw::state push;
 	auto y1 = y;
-	auto x1 = x;
-	auto w1 = width;
+	auto dy = texth() + 4;
 	auto opened = isopen(ev.type);
-	treemark(x, y + 4, ident, (void*)ev.type, opened);
-	addwidth(x, width, ident);
-	setposition(x, y, width);
+	rect rc = {x, y, x + width, y + dy};
+	gradv(rc, colors::form, colors::border);
+	auto focused = focusing((int)ev.type, rc);
 	if(label && label[0])
-		titletext(x, y, width, 0, label, title);
-	bsval ob;
-	ob.data = ev.getptr();
-	ob.type = ev.type->type;
-	stringbuilder sb(temp);
-	for(auto p = ob.type; *p; p++) {
-		char tem2[64]; p->get(p->ptr(ob.data), tem2, zendof(tem2));
-		sb.addx(", ", tem2, 0);
+		text(x + 4, y + 2, label);
+	auto need_open = false;
+	if(focused) {
+		rectx(rc, colors::border);
+		if(hot.key == KeyRight)
+			need_open = true;
 	}
-	setposition(x, y, width);
-	text(x, y, temp);
-	y += ident;
-	if(opened)
-		y += vertical(x1, y, w1, ob);
+	switch(hot.key) {
+	case MouseLeft:
+		if(areb(rc) && !hot.pressed)
+			need_open = true;
+		break;
+	case KeyRight:
+		if(focused)
+			need_open = true;
+		break;
+	}
+	y += dy;
+	if(opened) {
+		bsval ob;
+		ob.data = ev.getptr();
+		ob.type = ev.type->type;
+		y += vertical(x, y, width, ob);
+	}
+	if(need_open)
+		execute((callback)&properties::cmdopen, (int)ev.type);
 	return y - y1;
 }
 
@@ -86,22 +96,17 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 		return 0;
 	int h = 0;
 	char temp[260];
-	auto ident = texth() + 4 * 2;
 	if(ev.type->is(KindNumber)) {
 		anyval st;
-		addwidth(x, width, ident);
 		st.data = ev.type->ptr(ev.data);
 		st.size = ev.type->size;
 		h = field(x, y, width, gettitle(temp, zendof(temp), ev), st, title, 4);
 	} else if(ev.type->is(KindText)) {
-		addwidth(x, width, ident);
 		h = field(x, y, width, gettitle(temp, zendof(temp), ev), *((const char**)ev.type->ptr(ev.data)), title);
-	}
-	else if(ev.type->is(KindReference)) {
-		addwidth(x, width, ident);
+	} else if(ev.type->is(KindReference)) {
 		h = combobox(x, y, width, gettitle(temp, zendof(temp), ev), ev, title, 0);
 	} else if(ev.type->is(KindScalar))
-		h = group(x, y, width, ident, gettitle(temp, zendof(temp), ev), ev);
+		h = group(x, y, width, gettitle(temp, zendof(temp), ev), ev);
 	if(!h)
 		return 0;
 	return h + spacing;
