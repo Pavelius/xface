@@ -118,6 +118,7 @@ namespace colors {
 extern color			active;
 extern color			button;
 extern color			form;
+extern color			focus;
 extern color			window;
 extern color			border;
 extern color			text, edit, h1, h2, h3, special;

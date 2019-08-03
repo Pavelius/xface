@@ -5,6 +5,10 @@
 using namespace draw;
 using namespace draw::controls;
 
+int properties::translate::compare(const void* v1, const void* v2) {
+	return strcmp(((translate*)v1)->id, ((translate*)v2)->id);
+}
+
 int properties::vertical(int x, int y, int width, const bsval& ev) {
 	if(!ev)
 		return 0;
@@ -64,16 +68,14 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 	if(label && label[0])
 		text(x + 4, y + 2, label);
 	auto need_open = false;
-	if(focused) {
+	if(focused)
 		rectx(rc, colors::border);
-		if(hot.key == KeyRight)
-			need_open = true;
-	}
 	switch(hot.key) {
 	case MouseLeft:
 		if(areb(rc) && !hot.pressed)
 			need_open = true;
 		break;
+	case KeySpace:
 	case KeyRight:
 		if(focused)
 			need_open = true;
@@ -89,6 +91,15 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 	if(need_open)
 		execute((callback)&properties::cmdopen, (int)ev.type);
 	return y - y1;
+}
+
+const char* properties::gettitle(char* result, const char* result_maximum, const bsval& ev) const {
+	auto pv = ev.type->id;
+	translate kv = {pv, 0};
+	auto fv = (translate*)bsearch(&kv, dictionary.data, dictionary.count, sizeof(dictionary.data[0]), translate::compare);
+	if(fv)
+		return fv->value;
+	return pv;
 }
 
 int properties::element(int x, int y, int width, const bsval& ev) {

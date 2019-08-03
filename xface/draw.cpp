@@ -15,6 +15,7 @@ using namespace draw;
 // Default theme colors
 color				colors::active;
 color				colors::button;
+color				colors::focus;
 color				colors::form;
 color				colors::window;
 color				colors::text;

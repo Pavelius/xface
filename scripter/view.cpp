@@ -19,16 +19,7 @@ const bsreq bsmeta<requisit>::meta[] = {
 	BSREQ(position),
 {}};
 
-struct translate {
-	const char*			id;
-	const char*			name;
-	static int compare(const void* v1, const void* v2) {
-		auto e1 = (translate*)v1;
-		auto e2 = (translate*)v2;
-		return strcmp(e1->id, e2->id);
-	}
-};
-static translate translate_data[] = {{"count", "Количество"},
+static controls::properties::translate translate_data[] = {{"count", "Количество"},
 {"id", "Идентификатор"},
 {"parent", "Родитель"},
 {"position", "Позиция"},
@@ -152,13 +143,6 @@ static struct properties_control : controls::properties, controls::control::plug
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return "Свойства";
 	}
-	const char* gettitle(char* result, const char* result_maximum, const bsval& ev) const override {
-		translate k = {ev.type->id, 0};
-		auto p = (translate*)bsearch(&k, translate_data, sizeof(translate_data) / sizeof(translate_data[0]), sizeof(translate_data[0]), translate::compare);
-		if(p)
-			return p->name;
-		return ev.type->id;
-	}
 	bool isvisible(const bsval& ev) const {
 		if(!ev)
 			return false;
@@ -170,7 +154,11 @@ static struct properties_control : controls::properties, controls::control::plug
 			return false;
 		return true;
 	}
-	properties_control() : plugin("properties", DockRight) { title = 100; }
+	properties_control() : plugin("properties", DockRight) {
+		title = 100;
+		for(auto& e : translate_data)
+			dictionary.add(e);
+	}
 } properties_instance;
 
 void run_main() {
