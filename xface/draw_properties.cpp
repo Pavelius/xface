@@ -26,15 +26,25 @@ void properties::close(void* object) {
 		opened.remove(i);
 }
 
-void properties::treemark(int x, int y, int width, bool isopen) const {
+bool properties::cmdopen(bool run) {
+	auto object = (void*)hot.param;
+	if(run) {
+		if(isopen(object))
+			close(object);
+		else
+			open(object);
+	}
+	return true;
+}
+
+void properties::treemark(int x, int y, int width, void* object, bool isopen) const {
 	auto x1 = x + width / 2;
 	auto y1 = y + width / 2 - 1;
 	rect rc = {x, y, x + width, y + width};
 	areas a = area(rc);
 	if(a == AreaHilitedPressed) {
-		if(hot.key == MouseLeft) {
-
-		}
+		if(hot.key == MouseLeft)
+			execute((callback)&properties::cmdopen, (int)object);
 	}
 	color c1 = fore;
 	circle(x1, y1, 6, c1);
@@ -43,10 +53,14 @@ void properties::treemark(int x, int y, int width, bool isopen) const {
 		line(x1, y1 - 4, x1, y1 + 4, c1);
 }
 
-int properties::group(int x, int y, int width, int ident, const char* label, const bsval& ev) const {
+int properties::group(int x, int y, int width, int ident, const char* label, const bsval& ev) {
 	char temp[260];
 	draw::state push;
-	treemark(x, y + 4, ident, isopen(ev.type));
+	auto y1 = y;
+	auto x1 = x;
+	auto w1 = width;
+	auto opened = isopen(ev.type);
+	treemark(x, y + 4, ident, (void*)ev.type, opened);
 	addwidth(x, width, ident);
 	setposition(x, y, width);
 	if(label && label[0])
@@ -61,7 +75,10 @@ int properties::group(int x, int y, int width, int ident, const char* label, con
 	}
 	setposition(x, y, width);
 	text(x, y, temp);
-	return ident;
+	y += ident;
+	if(opened)
+		y += vertical(x1, y, w1, ob);
+	return y - y1;
 }
 
 int properties::element(int x, int y, int width, const bsval& ev) {
