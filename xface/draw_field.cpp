@@ -5,10 +5,6 @@
 
 using namespace draw;
 
-static anyval edit_value;
-
-void standart_domodal();
-
 static const char* getvalue(const anyval& v, bstype_s t, char* result, const char* result_end) {
 	if(!v)
 		return "";
@@ -91,20 +87,15 @@ void draw::loadfocus() {
 }
 
 static void field_up() {
-	edit_value.set(edit_value.get() + 1);
+	cmd::ctx.value.set(cmd::ctx.value.get() + 1);
 	cedit.load();
 	cedit.invalidate();
 }
 
 static void field_down() {
-	edit_value.set(edit_value.get() - 1);
+	cmd::ctx.value.set(cmd::ctx.value.get() - 1);
 	cedit.load();
 	cedit.invalidate();
-}
-
-static void execute(callback proc, const anyval& ev) {
-	edit_value = ev;
-	draw::execute(proc);
 }
 
 void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc) {
@@ -120,8 +111,14 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 			"+", Ctrl + KeyUp, "Увеличить",
 			"-", Ctrl + KeyDown, "Уменьшить");
 		switch(result) {
-		case 1: execute(field_up, ev);  break;
-		case 2: execute(field_down, ev); break;
+		case 1:
+			cmd::ctx.value = ev;
+			execute(field_up); 
+			break;
+		case 2:
+			cmd::ctx.value = ev;
+			execute(field_down);
+			break;
 		}
 	}
 	if(choose_proc) {

@@ -5,20 +5,20 @@ using namespace draw;
 cmd cmd::ctx;
 
 void cmd::calling() {
-	((markup::command_type)ctx.data)((void*)ctx.param);
+	((markup::command_type)ctx.value.data)((void*)ctx.param);
 }
 
 void cmd::invert() {
 	if(!ctx.param)
 		ctx.param = 1;
-	auto v = ctx.get() ^ ctx.param;
-	ctx.set(v);
+	auto v = ctx.value.get() ^ ctx.param;
+	ctx.value.set(v);
 }
 
 void cmd::assign() {
-	ctx.set(ctx.param);
+	ctx.value.set(ctx.param);
 }
 
 void cmd::add() {
-	ctx.set(ctx.get() + ctx.param);
+	ctx.value.set(ctx.value.get() + ctx.param);
 }

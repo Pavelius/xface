@@ -348,7 +348,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				auto p = getpresent(pb->get(i), pb->meta);
 				cmd ev(cmd::assign, i, {bv.type->ptr(bv.data), size});
 				unsigned flags = 0;
-				if(ev.get()==i)
+				if(ev.value.get()==i)
 					flags |= Checked;
 				y += radio(x, y, width, flags, ev, p, 0) + 2;
 			}

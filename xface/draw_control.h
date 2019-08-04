@@ -32,23 +32,24 @@ enum dock_s : unsigned char {
 	DockRight, DockRightBottom,
 	DockBottom, DockWorkspace,
 };
-struct cmd : anyval {
+struct cmd {
 	callback				proc;
 	int						param;
+	anyval					value;
 	static cmd				ctx;
-	constexpr cmd() : anyval(), proc(0), param(0) {}
-	constexpr cmd(callback proc) : anyval(proc, 0), proc(proc), param(0) {}
-	constexpr cmd(callback proc, int param) : anyval(proc, 0), proc(proc), param(param) {}
-	constexpr cmd(callback proc, int param, void* data, unsigned size) : anyval(data, size), proc(proc), param(param) {}
-	constexpr cmd(callback proc, int param, const anyval& value) : anyval(value), proc(proc), param(param) {}
-	constexpr cmd(markup::command_type proc, void* source) : anyval(proc, 0), proc(calling), param((int)source) {}
+	constexpr cmd() : value(), proc(0), param(0) {}
+	constexpr cmd(callback proc) : value(proc, 0), proc(proc), param(0) {}
+	constexpr cmd(callback proc, int param) : value(proc, 0), proc(proc), param(param) {}
+	constexpr cmd(callback proc, int param, void* data, unsigned size) : value(data, size), proc(proc), param(param) {}
+	constexpr cmd(callback proc, int param, const anyval& value) : value(value), proc(proc), param(param) {}
+	constexpr cmd(markup::command_type proc, void* source) : value(proc, 0), proc(calling), param((int)source) {}
 	static void				add();
 	static void				assign();
 	static void				calling();
 	static void				invert();
-	bool					ischecked() const { return ((get()&param)!=0) ? true : false; }
+	bool					ischecked() const { return ((value.get()&param)!=0) ? true : false; }
 	void					execute() const { ctx = *this; draw::execute(proc, param); }
-	int						getid() const { return (int)data; }
+	int						getid() const { return (int)value.data; }
 };
 namespace controls {
 struct control {
