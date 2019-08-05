@@ -42,7 +42,7 @@ struct cmd {
 	constexpr cmd(callback proc, int param) : value(proc, 0), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, void* data, unsigned size) : value(data, size), proc(proc), param(param) {}
 	constexpr cmd(callback proc, int param, const anyval& value) : value(value), proc(proc), param(param) {}
-	constexpr cmd(markup::command_type proc, void* source) : value(proc, 0), proc(calling), param((int)source) {}
+	constexpr cmd(markup::commandproc proc, void* source) : value(proc, 0), proc(calling), param((int)source) {}
 	static void				add();
 	static void				assign();
 	static void				calling();

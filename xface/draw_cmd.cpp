@@ -5,7 +5,7 @@ using namespace draw;
 cmd cmd::ctx;
 
 void cmd::calling() {
-	((markup::command_type)ctx.value.data)((void*)ctx.param);
+	((markup::commandproc)ctx.value.data)((void*)ctx.param);
 }
 
 void cmd::invert() {
