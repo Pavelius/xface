@@ -313,6 +313,7 @@ private:
 	int						p1, p2;
 };
 }
+typedef void procchooselist(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
 void						application(bool allow_multiply_windows);
 void						application(const char* name, bool allow_multiply_windows);
 inline void					application() { application(true); }
@@ -321,7 +322,7 @@ int							button(int x, int y, int width, unsigned flags, const cmd& ev, const c
 int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0);
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
 void						combobox(const rect& rc, const bsval& cmd);
-int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips);
+int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, procchooselist choose = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc);

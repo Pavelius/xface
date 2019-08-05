@@ -6,10 +6,11 @@
 
 using namespace draw;
 
-static unsigned		combo_time;
-static char			combo_name[32];
-static bsval		combo_value;
-static rect			combo_rect;
+static unsigned			combo_time;
+static char				combo_name[32];
+static bsval			combo_value;
+static rect				combo_rect;
+static procchooselist*	combo_choose;
 
 static void* get_value(const bsval& e) {
 	auto type = e.type;
@@ -24,15 +25,15 @@ static void* get_value(const bsval& e) {
 }
 
 static void set_value(const bsval& e1, void* value) {
-	auto ps = bsdata::find(e1.type->type);
-	if(!ps)
-		return;
-	auto index = ps->indexof(value);
-	if(index == -1)
-		return;
-	if(e1.type->is(KindEnum))
+	if(e1.type->is(KindEnum)) {
+		auto ps = bsdata::find(e1.type->type);
+		if(!ps)
+			return;
+		auto index = ps->indexof(value);
+		if(index == -1)
+			return;
 		e1.set(index);
-	else if(e1.type->size == sizeof(void*))
+	} else
 		e1.set((int)value);
 }
 
@@ -138,17 +139,23 @@ struct combo_list : controls::list, adat<void*, 64> {
 
 static void show_drop_down() {
 	combo_list list;
-	auto ps = bsdata::find(combo_value.type->type);
-	if(ps) {
-		list.field = ps->meta->getname();
-		auto pe = ps->end();
-		for(auto p = ps->begin(); p < pe; p += ps->size)
-			list.add((void*)p);
-	} else if(combo_value.type->type==bsmeta<bsreq>::meta) {
-		list.field = bsmeta<bsreq>::meta->find("id");
-		for(auto ps = bsdata::first; ps; ps = ps->next)
-			list.add((void*)ps->meta);
-	} else
+	if(combo_choose)
+		combo_choose(list, &list.field, (void*)combo_value.type);
+	else {
+		auto ps = bsdata::find(combo_value.type->type);
+		if(ps) {
+			list.field = ps->meta->getname();
+			auto pe = ps->end();
+			for(auto p = ps->begin(); p < pe; p += ps->size)
+				list.add((void*)p);
+		} else if(combo_value.type->type == bsmeta<bsreq>::meta) {
+			list.field = bsmeta<bsreq>::meta->find("id");
+			for(auto ps = bsdata::first; ps; ps = ps->next)
+				list.add((void*)ps->meta);
+		} else
+			return;
+	}
+	if(list.getcount() == 0)
 		return;
 	list.hilite_odd_lines = false;
 	list.sort();
@@ -180,7 +187,7 @@ void draw::combobox(const rect& rc, const bsval& cmd) {
 	show_drop_down();
 }
 
-int	draw::combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips) {
+int	draw::combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, procchooselist chooseproc) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(0);
@@ -234,6 +241,7 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 	if(execute_drop_down) {
 		combo_value = cmd;
 		combo_rect = rc;
+		combo_choose = chooseproc;
 		execute(show_drop_down);
 	}
 	rco.offset(2, 2);

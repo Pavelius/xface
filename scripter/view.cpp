@@ -137,6 +137,24 @@ static struct properties_control : controls::properties, controls::control::plug
 			set(v);
 		properties::view(rc);
 	}
+	static void choose_metadata(adat<void*, 64>& result, const bsreq** name_requisit, void* type) {
+		if(name_requisit)
+			*name_requisit = bsmeta<metadata>::meta;
+		for(auto& e : config.types) {
+			if(!e)
+				continue;
+			if(e.isreference() || e.isarray())
+				continue;
+			result.add(&e);
+		}
+		for(auto p : config.standart)
+			result.add(p);
+	}
+	procchooselist* getprocchoose(const bsreq* type) const {
+		if(type->type == bsmeta<metadata>::meta)
+			return choose_metadata;
+		return 0;
+	}
 	control& getcontrol() override {
 		return *this;
 	}
