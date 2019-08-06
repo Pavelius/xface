@@ -38,7 +38,7 @@ bool				draw::mouseinput = true;
 color*				draw::palt;
 rect				draw::clipping;
 char				draw::link[4096];
-hotinfo				draw::hot;
+hoti				draw::hot;
 // Hot keys and menus
 bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;

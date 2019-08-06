@@ -1,13 +1,14 @@
 #pragma once
 
+typedef bool(*allowproc)(const void* object, int index); // Is allow some property
+typedef void(*changeproc)(void* object, const void* previous_object); // Change object
+typedef void(*commandproc)(void* object); // Object's actions
+typedef int(*drawproc)(int x, int y, int width, const void* object); // Custom draw
+typedef int(*numproc)(const void* object); // Get object numeric properties
+typedef const char* (*textproc)(const void* object, char* result, const char* result_maximum);
+
 // Standart markup
 struct markup {
-	typedef const char* (*textproc)(const void* object, char* result, const char* result_maximum);
-	typedef int(*numproc)(const void* object);
-	typedef bool(*allowproc)(const void* object, int index);
-	typedef int(*drawproc)(int x, int y, int width, const void* object); // Custom draw
-	typedef void(*commandproc)(void* object);
-	typedef void(*changeproc)(void* object, const void* previous_object);
 	struct element {
 		const char*		id;			// Field identificator (0 for group)
 		int				index;		// Array index

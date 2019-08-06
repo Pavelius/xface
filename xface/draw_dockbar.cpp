@@ -31,7 +31,7 @@ const control::plugin* control::plugin::find(const char* id) {
 	return 0;
 }
 
-static const char* get_control_name(char* result, const char* result_maximum, void* p) {
+static const char* get_control_name(const void* p, char* result, const char* result_maximum) {
 	result[0] = 0;
 	auto pr = ((control*)p)->getlabel(result, result_maximum);
 	if(!pr)

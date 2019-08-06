@@ -33,16 +33,16 @@ enum dock_s : unsigned char {
 	DockBottom, DockWorkspace,
 };
 struct cmd {
-	callback				proc;
+	eventproc				proc;
 	int						param;
 	anyval					value;
 	static cmd				ctx;
 	constexpr cmd() : value(), proc(0), param(0) {}
-	constexpr cmd(callback proc) : value(proc, 0), proc(proc), param(0) {}
-	constexpr cmd(callback proc, int param) : value(proc, 0), proc(proc), param(param) {}
-	constexpr cmd(callback proc, int param, void* data, unsigned size) : value(data, size), proc(proc), param(param) {}
-	constexpr cmd(callback proc, int param, const anyval& value) : value(value), proc(proc), param(param) {}
-	constexpr cmd(markup::commandproc proc, void* source) : value(proc, 0), proc(calling), param((int)source) {}
+	constexpr cmd(eventproc proc) : value(proc, 0), proc(proc), param(0) {}
+	constexpr cmd(eventproc proc, int param) : value(proc, 0), proc(proc), param(param) {}
+	constexpr cmd(eventproc proc, int param, void* data, unsigned size) : value(data, size), proc(proc), param(param) {}
+	constexpr cmd(eventproc proc, int param, const anyval& value) : value(value), proc(proc), param(param) {}
+	constexpr cmd(commandproc proc, void* source) : value(proc, 0), proc(calling), param((int)source) {}
 	static void				add();
 	static void				assign();
 	static void				calling();
@@ -325,9 +325,9 @@ void						combobox(const rect& rc, const bsval& cmd);
 int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, procchooselist choose = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc);
+void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, eventproc choose_proc);
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
-int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, callback choose_proc = 0);
+int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, eventproc choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
 int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
 int							radio(int x, int y, int width, unsigned flags, const cmd& cmd, const char* label, const char* tips = 0);
