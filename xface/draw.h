@@ -245,7 +245,7 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
-extern eventproc			domodal;
+extern eventproc		domodal;
 bool					dragactive(const void* p);
 bool					dragactive();
 void					dragbegin(const void* p);

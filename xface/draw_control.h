@@ -6,6 +6,8 @@
 
 #pragma once
 
+typedef void listproc(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
+
 namespace clipboard {
 void					copy(const void* string, int lenght);
 char*					paste();
@@ -313,7 +315,6 @@ private:
 	int						p1, p2;
 };
 }
-typedef void procchooselist(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
 void						application(bool allow_multiply_windows);
 void						application(const char* name, bool allow_multiply_windows);
 inline void					application() { application(true); }
@@ -321,8 +322,8 @@ void						application_initialize();
 int							button(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0);
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
-void						combobox(const rect& rc, const bsval& cmd);
-int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, procchooselist choose = 0);
+void						combobox(const rect& rc, const bsval& cmd, listproc choose = 0, bool instant = true);
+int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, listproc choose = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, eventproc choose_proc);

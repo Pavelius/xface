@@ -150,7 +150,7 @@ static struct properties_control : controls::properties, controls::control::plug
 		for(auto p : config.standart)
 			result.add(p);
 	}
-	procchooselist* getprocchoose(const bsreq* type) const {
+	listproc* getprocchoose(const bsreq* type) const {
 		if(type->type == bsmeta<metadata>::meta)
 			return choose_metadata;
 		return 0;
