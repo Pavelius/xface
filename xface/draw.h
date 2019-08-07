@@ -3,9 +3,8 @@
 
 #pragma once
 
-#define TEXTPLUGIN(control_name) static int control_name(int x, int y, int width, const char* id, int value, const char* label, const char* tips);\
-static textplugin control_name##_plugin(#control_name, control_name);\
-static int control_name(int x, int y, int width, const char* id, int value, const char* label, const char* tips)
+typedef void(*eventproc)();
+typedef const char* (*textproc)(const void* object, char* result, const char* result_maximum);
 extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 
 enum draw_event_s {
@@ -113,7 +112,6 @@ struct sprite : pma {
 	int					glyph(unsigned sym) const;
 	const unsigned char* ptr(unsigned o) const { return (unsigned char*)this + o; }
 };
-typedef const char* (*proctext)(char* result, const char* result_maximum, void* object);
 namespace colors {
 extern color			active;
 extern color			button;
@@ -141,14 +139,13 @@ extern int				padding;
 extern int				scroll;
 }
 namespace draw {
-typedef void(*callback)();
 namespace dialog {
 bool					color(struct color& result, struct color* custom = 0);
 bool					folder(const char* title, char* path);
 bool					open(const char* title, char* path, const char* filter, int filter_index = 0, const char* ext = 0);
 bool					save(const char* title, char* path, const char* filter, int filter_index = 0);
 }
-struct hotinfo {
+struct hoti {
 	cursors				cursor; // set this mouse cursor
 	unsigned			key; // if pressed key or mouse this field has key
 	point				mouse; // current mouse coordinates
@@ -157,7 +154,7 @@ struct hotinfo {
 	explicit operator bool() const { return key != 0; }
 	void				zero() { key = InputUpdate; }
 };
-extern hotinfo			hot;
+extern hoti				hot;
 struct surface {
 	struct plugin {
 		const char*		name;
@@ -248,12 +245,12 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
-extern callback			domodal;
+extern eventproc		domodal;
 bool					dragactive(const void* p);
 bool					dragactive();
 void					dragbegin(const void* p);
 extern point			dragmouse;
-void					execute(callback proc, int value = 0);
+void					execute(eventproc proc, int value = 0);
 bool					focusing(int id, const rect& rc);
 rect					getarea();
 int						getbpp();
@@ -328,7 +325,7 @@ int						textw(sprite* font);
 void					updatewindow();
 void					write(const char* url, unsigned char* bits, int width, int height, int bpp, int scanline, color* pallette);
 }
-namespace draw	 {
+namespace draw {
 int						addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1, const char* t2, int k2, const char* tt2);
 bool					addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1);
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, int key, bool press, const char* tips = 0);
@@ -343,8 +340,8 @@ void					splith(int x, int y, int width, int& value, int size, int minimum, int 
 void					statusbar(const char* format, ...);
 void					statusbarv(const char* format, const char* format_param);
 int						statusbardw();
-int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext = 0, rect position = {0, 0, 0, 0});
-int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, proctext gtext, rect position = {0,0,0,0});
+int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, textproc gtext = 0, rect position = {0, 0, 0, 0});
+int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, textproc gtext, rect position = {0, 0, 0, 0});
 bool					tool(const rect& rc, bool disabled, bool checked, bool press, bool focused = false, int key = 0);
 void					tooltips(const char* format, ...);
 void					tooltips(int x, int y, int width, const char* format, ...);

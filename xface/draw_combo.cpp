@@ -10,8 +10,18 @@ static unsigned		combo_time;
 static char			combo_name[32];
 static bsval		combo_value;
 static rect			combo_rect;
+static listproc*	combo_choose;
 
-static void* get_value(const bsval& e) {
+static const char* getv(const void* object, const bsreq* type) {
+	if(!object || !type)
+		return "";
+	auto p = (const char*)type->get(type->ptr(object));
+	if(!p)
+		return "";
+	return p;
+}
+
+static void* getv(const bsval& e) {
 	auto type = e.type;
 	if(type->is(KindEnum)) {
 		auto b = bsdata::find(type->type);
@@ -23,26 +33,18 @@ static void* get_value(const bsval& e) {
 		return (void*)type->get(type->ptr(e.data));
 }
 
-static void set_value(const bsval& e1, void* value) {
-	auto ps = bsdata::find(e1.type->type);
-	if(!ps)
-		return;
-	auto index = ps->indexof(value);
-	if(index == -1)
-		return;
-	if(e1.type->is(KindEnum))
-		e1.set(index);
-	else if(e1.type->size == sizeof(void*))
-		e1.set((int)value);
-}
-
-static const char* getstrval(const void* object, const bsreq* type) {
-	if(!object || !type)
-		return "";
-	auto p = (const char*)type->get(type->ptr(object));
-	if(!p)
-		return "";
-	return p;
+static void setv(const bsval& e, void* value) {
+	auto type = e.type;
+	if(type->is(KindEnum)) {
+		auto ps = bsdata::find(type->type);
+		if(!ps)
+			return;
+		auto index = ps->indexof(value);
+		if(index == -1)
+			return;
+		e.set(index);
+	} else
+		e.set((int)value);
 }
 
 static void* find_name(const bsreq* type, const char* name) {
@@ -54,7 +56,7 @@ static void* find_name(const bsreq* type, const char* name) {
 		return 0;
 	auto pe = ps->end();
 	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
-		auto nx = getstrval(ex, pf);
+		auto nx = getv(ex, pf);
 		if(nx[0] == 0)
 			continue;
 		if(matchuc(nx, name))
@@ -66,7 +68,7 @@ static void* find_name(const bsreq* type, const char* name) {
 static void combo_find_name() {
 	auto pn = find_name(combo_value.type->type, combo_name);
 	if(pn)
-		set_value(combo_value, pn);
+		setv(combo_value, pn);
 }
 
 struct combo_list : controls::list, adat<void*, 64> {
@@ -136,19 +138,28 @@ struct combo_list : controls::list, adat<void*, 64> {
 
 };
 
-static void show_drop_down() {
-	combo_list list;
+static void standart_combo_choose(adat<void*, 64>& result, const bsreq** name_requisit, void* source) {
 	auto ps = bsdata::find(combo_value.type->type);
 	if(ps) {
-		list.field = ps->meta->getname();
+		if(name_requisit)
+			*name_requisit = ps->meta->getname();
 		auto pe = ps->end();
 		for(auto p = ps->begin(); p < pe; p += ps->size)
-			list.add((void*)p);
-	} else if(combo_value.type->type==bsmeta<bsreq>::meta) {
-		list.field = bsmeta<bsreq>::meta->find("id");
+			result.add((void*)p);
+	} else if(combo_value.type->type == bsmeta<bsreq>::meta) {
+		if(name_requisit)
+			*name_requisit = bsmeta<bsreq>::meta->find("id");
 		for(auto ps = bsdata::first; ps; ps = ps->next)
-			list.add((void*)ps->meta);
-	} else
+			result.add((void*)ps->meta);
+	}
+}
+
+static void show_drop_down() {
+	combo_list list;
+	if(!combo_choose)
+		combo_choose = standart_combo_choose;
+	combo_choose(list, &list.field, (void*)combo_value.type);
+	if(list.getcount() == 0)
 		return;
 	list.hilite_odd_lines = false;
 	list.sort();
@@ -165,22 +176,26 @@ static void show_drop_down() {
 		rc.y1 = rc.y2 - (list.pixels_per_line + 1);
 		list.lines_per_page = list.getlinesperpage(rc.height());
 	}
-	auto value = get_value(combo_value);
+	auto value = getv(combo_value);
 	list.current = list.find(value);
 	list.ensurevisible();
 	if(dropdown(rc, list)) {
 		auto value = list.data[list.current];
-		set_value(combo_value, value);
+		setv(combo_value, value);
 	}
 }
 
-void draw::combobox(const rect& rc, const bsval& cmd) {
+void draw::combobox(const rect& rc, const bsval& cmd, listproc choose, bool instant) {
 	combo_value = cmd;
 	combo_rect = rc;
-	show_drop_down();
+	combo_choose = choose;
+	if(instant)
+		show_drop_down();
+	else
+		execute(show_drop_down);
 }
 
-int	draw::combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips) {
+int	draw::combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, listproc choose) {
 	draw::state push;
 	setposition(x, y, width);
 	decortext(0);
@@ -231,11 +246,8 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 			break;
 		}
 	}
-	if(execute_drop_down) {
-		combo_value = cmd;
-		combo_rect = rc;
-		execute(show_drop_down);
-	}
+	if(execute_drop_down)
+		combobox(rc, cmd, choose, false);
 	rco.offset(2, 2);
 	if(focused)
 		rectx(rco, colors::black);

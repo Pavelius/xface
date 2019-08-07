@@ -98,7 +98,7 @@ static void field_down() {
 	cedit.invalidate();
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, callback choose_proc) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, eventproc pchoose) {
 	if(rco.width() <= 0)
 		return;
 	rect rc = rco;
@@ -121,9 +121,9 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 			break;
 		}
 	}
-	if(choose_proc) {
+	if(pchoose) {
 		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать"))
-			draw::execute(choose_proc, (int)ev.data);
+			draw::execute(pchoose, (int)ev.data);
 	}
 	auto a = area(rc);
 	if(focused) {
@@ -150,7 +150,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	return rc.height() + metrics::padding * 2;
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, draw::callback choose_proc) {
+int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, eventproc pchoose) {
 	draw::state push;
 	setposition(x, y, width);
 	if(header_label && header_label[0])
@@ -159,6 +159,6 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	unsigned flags = AlignLeft;
 	if(focusing((int)&sev, rc))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, anyval(sev), -1, KindText, choose_proc);
+	field(rc, flags | TextSingleLine, anyval(sev), -1, KindText, pchoose);
 	return rc.height() + metrics::padding * 2;
 }

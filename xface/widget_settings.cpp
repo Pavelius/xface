@@ -50,7 +50,7 @@ const bsreq bsmeta<draw::controls::control::plugin>::meta[] = {
 	BSREQ(dock),
 {}};
 
-static const char* get_setting_name(char* result, const char* result_maximum, void* p) {
+static const char* get_setting_name(const void* p, char* result, const char* result_maximum) {
 	return szprint(result, result_maximum, ((settings*)p)->name);
 }
 
@@ -365,7 +365,7 @@ static struct widget_settings : controls::control {
 
 } widget_settings_control;
 
-static const char* get_control_name(char* result, const char* result_maximum, void* object) {
+static const char* get_control_name(const void* object, char* result, const char* result_maximum) {
 	auto p = ((controls::control*)object)->getlabel(result, result_maximum);
 	if(!p)
 		return "No label";

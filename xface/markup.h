@@ -1,36 +1,37 @@
 #pragma once
 
+typedef bool(*allowproc)(const void* object, int index); // Is allow some property
+typedef void(*changeproc)(void* object, const void* previous_object); // Change object
+typedef void(*commandproc)(void* object); // Object's actions
+typedef int(*drawproc)(int x, int y, int width, const void* object); // Custom draw
+typedef int(*numproc)(const void* object); // Get object numeric properties
+typedef const char* (*textproc)(const void* object, char* result, const char* result_maximum);
+
 // Standart markup
 struct markup {
-	typedef const char* (*text_type)(const void* object, char* result, const char* result_maximum);
-	typedef int(*num_type)(const void* object);
-	typedef bool(*allow_type)(const void* object, int index);
-	typedef int(*custom_type)(int x, int y, int width, const void* object); // Custom draw
-	typedef void(*command_type)(void* object);
-	typedef void(*change_type)(void* object, const void* previous_object);
 	struct element {
 		const char*		id;			// Field identificator (0 for group)
 		int				index;		// Array index
 		const markup*	child;		// Group or next field
 	};
 	struct cmdi {
-		command_type	execute;
-		change_type		change;
+		commandproc		execute;
+		changeproc		change;
 		constexpr cmdi() : execute(0), change(0) {}
-		template<class T> constexpr cmdi(void(*v)(T*)) : execute((command_type)v), change(0) {}
-		template<class T> constexpr cmdi(void(*v)(T*, const T*)) : execute(0), change((change_type)v) {}
+		template<class T> constexpr cmdi(void(*v)(T*)) : execute((commandproc)v), change(0) {}
+		template<class T> constexpr cmdi(void(*v)(T*, const T*)) : execute(0), change((changeproc)v) {}
 	};
 	struct proci {
-		allow_type		isallow;	// Is allow special element or command
-		allow_type		isvisible;	// Is element visible
-		custom_type		custom;
+		allowproc		isallow;	// Is allow special element or command
+		allowproc		isvisible;	// Is element visible
+		drawproc		custom;
 	};
 	struct propi {
-		text_type		getname;
-		num_type		getvalue;
+		textproc		getname;
+		numproc			getvalue;
 		constexpr propi() : getname(0), getvalue(0) {}
-		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((text_type)v), getvalue(0) {}
-		template<class T> constexpr propi(int(*v)(const T*)) : getname(0), getvalue((num_type)v) {}
+		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((textproc)v), getvalue(0) {}
+		template<class T> constexpr propi(int(*v)(const T*)) : getname(0), getvalue((numproc)v) {}
 	};
 	constexpr explicit operator bool() const { return title || value.id || value.child; }
 	int					width;
