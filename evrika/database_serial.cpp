@@ -1,18 +1,18 @@
 #include "xface/io.h"
 #include "main.h"
 
-static timestamp* read_stamp(io::stream& e) {
-	timestamp ts; e.read(ts);
-	auto& db = databases[ts.type];
+static stampi* read_stamp(io::stream& e) {
+	stampi ts; e.read(ts);
+	auto& db = ts.getbase();
 	auto p = ts.getreference();
 	if(!p) {
-		p = (timestamp*)databases[ts.type].add();
+		p = (stampi*)db.add();
 		memcpy(p, &ts, sizeof(ts));
 	}
 	return p;
 }
 
-static void write_stamp(io::stream& e, const timestamp* v) {
+static void write_stamp(io::stream& e, const stampi* v) {
 	e.write(v, sizeof(*v));
 }
 
@@ -31,16 +31,16 @@ struct archive {
 	}
 	
 	// Any pointer class
-	void set(coreobject*& value) {
+	void set(objecti*& value) {
 		if(writemode) {
 			if(value)
 				write_stamp(source, value);
 			else {
-				timestamp ts;
+				stampi ts;
 				set(&ts, sizeof(ts));
 			}
 		} else
-			value = (coreobject*)read_stamp(source);
+			value = (objecti*)read_stamp(source);
 	}
 
 	// Strings case
@@ -93,12 +93,8 @@ bool database::writefile(const char* url) {
 	if(!file)
 		return false;
 	for(auto& db : databases) {
-		for(auto p = db.elements; p; p = p->next) {
-			auto pe = p->begin() + db.size * p->count;
-			for(auto pp = p->begin(); pp < pe; pp += db.size) {
-				write_stamp(file, (timestamp*)pp);
-			}
-		}
+		for(auto pp : db)
+			write_stamp(file, (stampi*)pp);
 	}
 	return true;
 }

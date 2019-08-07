@@ -1,16 +1,8 @@
 #include "main.h"
 
-static short unsigned	global_counter;
-static unsigned	char	current_session;
-
-void timestamp::write() {
-	if(create_date)
+void stampi::write() {
+	if(!isnew())
 		return;
-	create_date = datetime::now();
-	counter = ++global_counter;
-	session = current_session;
-}
-
-void timestamp::setsession(unsigned char v) {
-	current_session = v;
+	counter &= 0xFF000000;
+	counter |= getbase().getcount();
 }

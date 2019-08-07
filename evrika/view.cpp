@@ -2,14 +2,14 @@
 #include "main.h"
 
 static void initialize_databases() {
-	databases[Reference].size = sizeof(reference);
-	databases[Document].size = sizeof(document);
+	databases[Reference].initialize(sizeof(reference), 1024);
+	databases[Document].initialize(sizeof(documenti), 1024);
 }
 
 static bool test_database() {
 	const unsigned real_db_count = 72;
 	for(auto i = 0; i < real_db_count; i++) {
-		document e;
+		documenti e;
 		e.date = datetime::now().daybegin();
 		e.text = "Произвольный комментарий";
 		e.write();

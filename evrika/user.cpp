@@ -1,3 +1,3 @@
 #include "main.h"
 
-userinfo*				current_user;
+useri*				current_user;

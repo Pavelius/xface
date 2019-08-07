@@ -3,14 +3,13 @@
 #include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
-#include "xface/stringcreator.h"
 
 #pragma once
 
 struct reference;
-struct document;
-struct userinfo;
-struct headerinfo;
+struct documenti;
+struct useri;
+struct headeri;
 
 enum type_s : unsigned char {
 	Number, Text, Date, DateTime,
@@ -26,26 +25,32 @@ struct nameable {
 	const char*				text;
 	constexpr nameable() : id(0), name(0), text(0) {}
 };
-struct arrayseq {
-	unsigned				count;
-	unsigned				count_maximum;
-	arrayseq*				next;
-	char*					begin() const { return (char*)this + sizeof(arrayseq); }
-	unsigned				getcount() const;
-	arrayseq*				last();
-};
-struct database : nameable {
+class database : public nameable {
 	unsigned				size;
-	unsigned				key;
-	arrayseq*				elements;
-	constexpr database() : size(0), key(0), elements(0) {}
+	unsigned				count;
+	unsigned				maximum;
+	void*					elements;
+	struct iterator {
+		char*				p;
+		unsigned			size;
+		constexpr iterator(void* p, unsigned size) : p((char*)p), size(size) {}
+		constexpr char& operator*() const { return *p; }
+		constexpr bool operator!=(const iterator& e) const { return p != e.p; }
+		void operator++() { p += size; }
+	};
+public:
+	constexpr database() : size(0), count(0), maximum(0), elements(0) {}
 	explicit operator bool() const { return elements != 0; }
 	~database();
 	void*					add();
-	void*					find(unsigned offset, const void* object, unsigned size) const;
-	void*					get(int index) const;
-	unsigned				getcount() const { return elements->getcount(); }
+	iterator				begin() const { return iterator(elements, size); }
+	iterator				begin() { return iterator(elements, size); }
+	iterator				end() { return iterator((char*)elements + count*size, size); }
+	void*					find(unsigned offset, const void* object, unsigned object_size) const;
+	void*					get(int index) const { return elements ? (char*)elements + index * size : 0; }
+	unsigned				getcount() const { return count; }
 	unsigned				getsize() const { return size; }
+	void					initialize(unsigned size, unsigned maximum);
 	static bool				readfile(const char* file);
 	static bool				writefile(const char* file);
 };
@@ -54,48 +59,51 @@ struct datareq {
 	reference*				field;
 	unsigned				size;
 };
-struct timestamp {
-	object_s				type;
-	unsigned char			session;
-	short unsigned			counter;
-	datetime				create_date;
-	constexpr timestamp() : type(Reference), session(0), counter(0), create_date(0) {}
-	constexpr timestamp(object_s type) : type(type), session(0), counter(0), create_date(0) {}
-	timestamp*				getreference() const { return (timestamp*)databases[type].find(0, this, sizeof(*this)); }
-	static void				setsession(unsigned char v);
+struct stampi {
+	unsigned				counter;
+	constexpr stampi() : counter(0) {}
+	constexpr stampi(object_s type) : counter(type<<24|0xFFFFFF) {}
+	bool					isnew() const { return (counter & 0xFFFFFF) == 0xFFFFFF; }
+	database&				getbase() const { return databases[gettype()]; }
+	unsigned				getbaseindex() const { return (counter & 0xFFFFFF); }
+	stampi*					getreference() const { return (stampi*)getbase().find(0, this, sizeof(*this)); }
+	constexpr type_s		gettype() const { return type_s(counter>>24); }
 	void					write();
 };
-struct coreobject : timestamp {
-	unsigned				flags;
-	datetime				change_date;
-	userinfo*				change_user;
-	coreobject*				parent;
-	constexpr coreobject(object_s type) : timestamp(type), flags(0), change_date(0), change_user(0), parent(0) {}
-	coreobject*				write(); // Store element to database and get valid reference
-};
-struct reference : coreobject, nameable {
-	constexpr reference() : coreobject(Reference) {}
-	constexpr reference(object_s type) : coreobject(type) {}
-};
-struct document : coreobject {
+struct actioni {
 	datetime				date;
-	unsigned				number;
-	const char*				text;
-	constexpr document() : coreobject(Document), date(0), number(0), text(0) {}
+	useri*					user;
+	constexpr actioni() : date(), user() {}
 };
-struct headerinfo : reference {
-	constexpr headerinfo() : reference(Header) {}
+struct objecti : stampi {
+	objecti*				parent;
+	unsigned				flags;
+	actioni					create, change;
+	constexpr objecti(object_s type) : stampi(type), flags(0), parent(0) {}
+	objecti*				write(); // Store element to database and get valid reference
+};
+struct reference : objecti, nameable {
+	constexpr reference() : objecti(Reference) {}
+	constexpr reference(object_s type) : objecti(type) {}
+};
+struct documenti : objecti {
+	datetime				date;
+	const char*				text;
+	constexpr documenti() : objecti(Document), date(0), text(0) {}
+};
+struct headeri : reference {
+	constexpr headeri() : reference(Header) {}
 };
 struct requisit : reference {
 	type_s					type;
-	headerinfo*				type_folder;
+	headeri*				type_folder;
 	constexpr requisit() : reference(Requisit), type(Number), type_folder() {}
 };
-struct userinfo : reference {
+struct useri : reference {
 	const char*				first_name;
 	const char*				last_name;
 	const char*				third_name;
 	const char*				password;
-	constexpr userinfo() : reference(User), first_name(0), last_name(0), third_name(0), password(0) {}
+	constexpr useri() : reference(User), first_name(0), last_name(0), third_name(0), password(0) {}
 };
-extern userinfo*			current_user;
+extern useri*				current_user;
