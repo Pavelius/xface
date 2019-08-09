@@ -35,6 +35,8 @@ struct map_info {
 	map_type_s			type;
 	point				element;
 	point				size;
+	point				screen; // Screen coordinates
+	point				offset; // Offset from center in elements
 };
 struct tileset {
 	void				import();
