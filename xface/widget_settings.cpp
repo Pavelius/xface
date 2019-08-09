@@ -28,12 +28,12 @@ static rect					current_rect;
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
 namespace {
-struct dock_info {
+struct docki {
 	const char*	name;
 	const char*	id;
 };
 }
-dock_info bsmeta<dock_info>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
+docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
 {"Присоединить слева и снизу", "dock_left_bottom"},
 {"Присоединить справа", "dock_right"},
 {"Присоединить справа и снизу", "dock_right_bottom"},
@@ -41,7 +41,7 @@ dock_info bsmeta<dock_info>::elements[DockWorkspace + 1] = {{"Присоединить слева
 {"На рабочем столе", "dock_workspace"}
 };
 DECLENUM(dock);
-const bsreq bsmeta<dock_info>::meta[] = {
+const bsreq bsmeta<docki>::meta[] = {
 	BSREQ(id),
 	BSREQ(name),
 {}};

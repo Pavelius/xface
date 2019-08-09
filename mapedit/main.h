@@ -1,15 +1,19 @@
-#include "xface/point.h"
 #include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
+#include "xface/point.h"
 #include "xface/stringbuilder.h"
 
 #pragma once
 
-enum map_s : unsigned char {
+enum map_type_s : unsigned char {
 	Rectangle, IsometricRectangle,
 };
 
+struct map_typei {
+	const char*			id;
+	const char*			name;
+};
 struct answer : stringbuilder {
 	struct element {
 		int				param;
@@ -28,10 +32,11 @@ private:
 	char				buffer[4096];
 };
 struct map_info {
-	map_s				type;
+	map_type_s			type;
 	point				element;
 	point				size;
 };
 struct tileset {
 	void				import();
 };
+DECLENUM(map_type);

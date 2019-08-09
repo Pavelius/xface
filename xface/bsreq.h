@@ -12,10 +12,10 @@ hint}
 #define	BSREQ(fn) BSHIN(fn,0)
 #define BSDATA(c, i) c bsmeta<c>::elements[i];\
 bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
-#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##_info> {}
-#define assert_enum(e, last) static_assert(sizeof(bsmeta<e##_info>::elements) / sizeof(bsmeta<e##_info>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
-const bsreq bsmeta<e##_info>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-bsdatat<e##_info> bsmeta<e##_info>::data(#e, bsmeta<e##_info>::elements, KindEnum);
+#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
+#define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
+const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
+bsdatat<e##i> bsmeta<e##i>::data(#e, bsmeta<e##i>::elements, KindEnum);
 
 // Basic metadata types
 enum bstype_s : unsigned char {
