@@ -41,8 +41,21 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 			result.x += element.x / 2;
 			result.y += element.y / 2;
 		}
-		result.x += rc.x1;
-		result.y += rc.y1;
+		result.x += rc.x1 - offset.x;
+		result.y += rc.y1 - offset.y;
+		return result;
+	}
+
+	point getoffset(const rect& rc) const {
+		point result = {};
+		if(size.x == 0 || size.y == 0)
+			return result;
+		switch(type) {
+		case Rectangle:
+			result.x = rc.width() / element.x;
+			result.y = rc.height() / element.y;
+			break;
+		}
 		return result;
 	}
 
@@ -57,6 +70,7 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 	void render_grid(const rect& rc) const {
 		auto push_fore = fore;
 		fore = colors::gray.mix(colors::window);
+		auto offset = getoffset(rc);
 		for(auto y = 0; y < size.y; y++) {
 			for(auto x = 0; x < size.x; x++) {
 				auto pt = m2s(rc, {(short)x, (short)y});
