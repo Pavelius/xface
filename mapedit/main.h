@@ -2,7 +2,7 @@
 #include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
-#include "xface/stringcreator.h"
+#include "xface/stringbuilder.h"
 
 #pragma once
 
@@ -10,13 +10,13 @@ enum map_s : unsigned char {
 	Rectangle, IsometricRectangle,
 };
 
-struct answer : stringcreator {
+struct answer : stringbuilder {
 	struct element {
 		int				param;
 		const char*		text;
 		const char*		getname() const { return text; }
 	};
-	typedef void(*tips_proc)(stringcreator& sb, const element& e);
+	typedef void(*tips_proc)(stringbuilder& sb, const element& e);
 	adat<element, 8>	elements;
 	constexpr explicit operator bool() const { return elements.count != 0; }
 	answer();
