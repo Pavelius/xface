@@ -175,8 +175,8 @@ void textedit::invalidate() {
 	cashed_width = -1;
 }
 
-void textedit::redraw(rect rc) {
-	rc = rc + rctext;
+void textedit::redraw(const rect& rcorigin) {
+	rect rc = rcorigin + rctext;
 	rc.y1 -= origin.y;
 	cashing(rc);
 	if(isfocused()) {

@@ -17,10 +17,12 @@ void scrollable::invalidate() {
 }
 
 void scrollable::view(const rect& rcc) {
+	control::view(rcc);
 	rect scrollv, scrollh, rc = rcc;
+	if(show_border)
+		rc.offset(1, 1);
 	int rcheight = rc.height();
 	int rcwidth = rc.width();
-	control::view(rc);
 	// calculate scroll positions
 	scrollv.clear();
 	scrollh.clear();

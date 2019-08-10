@@ -31,7 +31,7 @@ struct answer : stringbuilder {
 private:
 	char				buffer[4096];
 };
-struct map_info {
+struct mapi {
 	map_type_s			type;
 	point				element;
 	point				size;

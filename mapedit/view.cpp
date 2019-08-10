@@ -18,7 +18,7 @@ void tileset::import() {
 	}
 }
 
-struct map_control_type : controls::scrollable, map_info, controls::control::plugin {
+struct map_control_type : controls::scrollable, mapi, controls::control::plugin {
 
 	control& getcontrol() override {
 		return *this;
@@ -69,17 +69,33 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 
 	void render_grid(const rect& rc) const {
 		auto push_fore = fore;
-		fore = colors::gray.mix(colors::window);
+		fore = colors::gray.mix(colors::window, 32);
 		auto offset = getoffset(rc);
+		point p1, p2;
 		for(auto y = 0; y < size.y; y++) {
-			for(auto x = 0; x < size.x; x++) {
-				auto pt = m2s(rc, {(short)x, (short)y});
-			}
+			p1 = m2s(rc, {(short)0, (short)y});
+			p2 = m2s(rc, {(short)size.x, (short)y});
+			p1.x -= element.x / 2;
+			p1.y -= element.y / 2;
+			p2.x -= element.x / 2;
+			p2.y -= element.y / 2;
+			line(p1.x , p1.y + element.y, p2.x, p2.y + element.y);
 		}
+		//line(p1.x, p1.y + element.y, p2.x, p2.y + element.y);
+		for(auto x = 0; x < size.x; x++) {
+			p1 = m2s(rc, {(short)x, (short)0});
+			p2 = m2s(rc, {(short)x, (short)size.y});
+			p1.x -= element.x / 2;
+			p1.y -= element.y / 2;
+			p2.x -= element.x / 2;
+			p2.y -= element.y / 2;
+			line(p1.x, p1.y, p2.x, p2.y);
+		}
+		//line(p1.x + element.x, p1.y, p2.x + element.x, p2.y);
 		fore = push_fore;
 	}
 
-	void redraw(rect rc) override {
+	void redraw(const rect& rc) override {
 		render_grid(rc);
 	}
 
@@ -94,7 +110,7 @@ struct map_control_type : controls::scrollable, map_info, controls::control::plu
 		element.x = 128;
 		element.y = 64;
 		size.x = 2;
-		size.y = 1;
+		size.y = 4;
 		change_type();
 	}
 

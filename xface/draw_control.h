@@ -265,7 +265,7 @@ struct scrollable : control {
 	scrollable();
 	rect					centerview(const rect& rc);
 	virtual void			invalidate();
-	virtual void			redraw(rect rc) {}
+	virtual void			redraw(const rect& rc) {}
 	void					view(const rect& rc) override;
 };
 struct textedit : scrollable {
@@ -299,7 +299,7 @@ struct textedit : scrollable {
 	point					getpos(rect rc, int index, unsigned state) const;
 	unsigned				paste(bool run);
 	void					paste(const char* string);
-	void					redraw(rect rc) override;
+	void					redraw(const rect& rc) override;
 	void					right(bool shift, bool ctrl);
 	void					select(int index, bool shift);
 	unsigned				select_all(bool run);
