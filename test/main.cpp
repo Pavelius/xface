@@ -21,13 +21,13 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 "Soldier", "Heavy Soldier", "Sniper", "Commando"
 };
 
-gender_info bsmeta<gender_info>::elements[] = {{"Неизвестен"},
+genderi bsmeta<genderi>::elements[] = {{"Неизвестен"},
 {"Мужчина"},
 {"Женщина"},
 };
 assert_enum(gender, Female);
 
-alignment_info bsmeta<alignment_info>::elements[] = {{"Neutral", "Нейтральный"},
+alignmenti bsmeta<alignmenti>::elements[] = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
 {"Neutral Good", "Нейтрально добрый"},
 {"Chaotic Good", "Хаотично добрый"},
@@ -68,7 +68,7 @@ struct testinfo {
 
 static int checkbox(int x, int y, int width, bool& value, const char* title, const char* tips = 0) {
 	return checkbox(x, y, width,
-		value ? Checked : 0, cmd(cmd::apply_xor, 1, value), title)
+		value ? Checked : 0, cmd(cmd::invert, 1, value), title)
 		+ metrics::padding;
 }
 
@@ -192,13 +192,13 @@ static void test_grid() {
 }
 
 static void test_grid_ref() {
-	controls::gridref test(bsmeta<cultivated_land>::meta);
+	controls::gridref test(bsmeta<cultivatedi>::meta);
 	test.addcol("name", "Наименование", "text", SizeAuto);
 	test.addcol("cult_land", "Обрабатывается", "number");
 	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-	test.add(bsmeta<cultivated_land>::data.get(0));
-	test.add(bsmeta<cultivated_land>::data.get(1));
-	test.add(bsmeta<cultivated_land>::data.get(1));
+	test.add(bsmeta<cultivatedi>::data.get(0));
+	test.add(bsmeta<cultivatedi>::data.get(1));
+	test.add(bsmeta<cultivatedi>::data.get(1));
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;
@@ -209,11 +209,11 @@ static void test_grid_ref() {
 static void test_tree() {
 	struct test_tree_control : controls::tree {
 		void expanding(builder&  e) {
-			e.add((void*)bsmeta<cultivated_land>::data.get(0), 0, 0, false);
-			e.add((void*)bsmeta<cultivated_land>::data.get(1), 1, 0, true);
-			e.add((void*)bsmeta<cultivated_land>::data.get(2), 1, 0, true);
+			e.add((void*)bsmeta<cultivatedi>::data.get(0), 0, 0, false);
+			e.add((void*)bsmeta<cultivatedi>::data.get(1), 1, 0, true);
+			e.add((void*)bsmeta<cultivatedi>::data.get(2), 1, 0, true);
 		}
-		constexpr test_tree_control() : tree(bsmeta<cultivated_land>::meta){}
+		constexpr test_tree_control() : tree(bsmeta<cultivatedi>::meta){}
 	} test;
 	test.select_mode = SelectText;
 	test.addcol("image", 0, "image", SizeInner);
@@ -395,7 +395,7 @@ static void test_edit_field() {
 static void start_menu() {
 	struct element {
 		const char*		name;
-		callback	proc;
+		eventproc		proc;
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},

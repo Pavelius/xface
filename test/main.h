@@ -14,15 +14,15 @@ enum gender_s : unsigned char {
 	NoGender, Male, Female,
 };
 
-struct gender_info {
+struct genderi {
 	const char*		id;
 	const char*		name;
 };
-struct alignment_info {
+struct alignmenti {
 	const char*		id;
 	const char*		name;
 };
-struct cultivated_land {
+struct cultivatedi {
 	char			rang;
 	const char*		name;
 	unsigned		cult_land;

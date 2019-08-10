@@ -1,6 +1,6 @@
 #include "xface/collection.h"
 #include "xface/crt.h"
-#include "xface/stringcreator.h"
+#include "xface/stringbuilder.h"
 #include "xface/draw.h"
 #include "xface/io.h"
 #include "xml.h"
@@ -23,7 +23,8 @@ static const char* parse_component(const char* p, unsigned char& a) {
 }
 
 static void printcf(const char* format, ...) {
-	char temp[1024]; szprintvs(temp, zendof(temp), format, xva_start(format));
+	char temp[1024]; stringbuilder sb(temp);
+	sb.addv(format, xva_start(format));
 	printcnf(temp);
 }
 
