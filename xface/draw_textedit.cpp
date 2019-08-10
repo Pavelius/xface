@@ -177,6 +177,8 @@ void textedit::invalidate() {
 
 void textedit::redraw(const rect& rcorigin) {
 	rect rc = rcorigin + rctext;
+	if(show_border)
+		rc.offset(-1, -1);
 	rc.y1 -= origin.y;
 	cashing(rc);
 	if(isfocused()) {

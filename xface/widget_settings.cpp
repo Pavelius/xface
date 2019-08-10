@@ -248,7 +248,7 @@ static struct widget_settings : controls::control {
 		case settings::Bool:
 			y += metrics::padding;
 			y += checkbox(x, y, width, flags | (*((bool*)e.data) ? Checked : 0),
-				cmd(callback_bool, (int)&e), getname(temp, e), 0);
+				cmd(callback_bool, (int)&e, &e, sizeof(bool)), getname(temp, e), 0);
 			break;
 		case settings::Int:
 			// Есть максимум
@@ -337,19 +337,22 @@ static struct widget_settings : controls::control {
 				hot.param = hilited;
 			}
 			line(rc.x1, rc.y1 + h1, rc.x2, rc.y1 + h1, colors::border);
-			rc.y1 += h1 + metrics::padding * 2;
-			rc.x1 += metrics::padding;
-			rc.x2 -= metrics::padding;
 			// Нариуем текущую закладку
 			if(current_tab != -1) {
-				int w4 = rc.width();
-				int w3 = imin(w4, 640);
+				int w3, w4;
 				auto p1 = tabs[current_tab];
 				switch(p1->type) {
 				case settings::Control:
+					rc.y1 += h1;
+					if(metrics::show::padding)
+						rc.y1 += metrics::padding;
+					((control*)p1->data)->show_border = metrics::show::padding;
 					((control*)p1->data)->view(rc);
 					break;
 				default:
+					rc.y1 += h1 + metrics::padding;
+					w4 = rc.width();
+					w3 = imin(w4, 620);
 					for(auto p = p1->child(); p; p = p->next)
 						rc.y1 += element(rc.x1, rc.y1, w3, 0, *p);
 					break;
