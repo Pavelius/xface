@@ -1,109 +1,63 @@
 #include "xface/datetime.h"
 #include "xface/point.h"
-#include "xface/bsreq.h"
 #include "xface/collection.h"
 #include "xface/crt.h"
+#include "xface/valuelist.h"
 
 #pragma once
 
-struct reference;
-struct documenti;
-struct useri;
-struct headeri;
+struct metadata;
 
-enum type_s : unsigned char {
-	Number, Text, Date, DateTime,
-	RefObject, Table,
-};
-enum object_s : unsigned char {
-	Reference, Document, Header, Requisit,
-	User,
-};
 struct nameable {
 	const char*				id;
 	const char*				name;
 	const char*				text;
 	constexpr nameable() : id(0), name(0), text(0) {}
+	constexpr nameable(const char* id, const char* name) : id(id), name(name), text(0) {}
 };
-class database : public nameable {
-	unsigned				size;
+struct requisit : nameable {
+	const metadata*			type;
+	unsigned				offset;
+	constexpr requisit() : type(0), offset(0) {}
+	constexpr requisit(const char* id, const char* name, metadata* type, unsigned offset) : nameable(id, name), type(type), offset(offset) {}
+	constexpr operator bool() const { return id != 0; }
+	constexpr int			get(void* object) const { return *((int*)((char*)object + offset)); }
+	constexpr unsigned		getsize() const { return 4; }
+	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
+};
+struct datalist {
+	void*					elements;
 	unsigned				count;
 	unsigned				maximum;
-	void*					elements;
-	struct iterator {
-		char*				p;
-		unsigned			size;
-		constexpr iterator(void* p, unsigned size) : p((char*)p), size(size) {}
-		constexpr char& operator*() const { return *p; }
-		constexpr bool operator!=(const iterator& e) const { return p != e.p; }
-		void operator++() { p += size; }
-	};
-public:
-	constexpr database() : size(0), count(0), maximum(0), elements(0) {}
-	explicit operator bool() const { return elements != 0; }
-	~database();
+	unsigned				size;
+	constexpr datalist() : elements(0), count(0), maximum(0), size(0) {}
+	constexpr datalist(unsigned size, unsigned maximum = 64) : elements(0), count(0), maximum(maximum), size(size) {}
+	constexpr datalist(void* elements, unsigned count, unsigned size) : elements(elements), count(count), maximum(0), size(size) {}
 	void*					add();
-	iterator				begin() const { return iterator(elements, size); }
-	iterator				begin() { return iterator(elements, size); }
-	iterator				end() { return iterator((char*)elements + count*size, size); }
+	char*					begin() const { return (char*)elements; }
+	char*					end() const { return (char*)elements + size*count; }
+	void*					get(unsigned index) { return (char*)elements + index * size; }
+};
+struct metadata : nameable, datalist {
+	const metadata*			parent;
+	datalist				requisits;
+	explicit operator bool() const { return elements != 0; }
+	constexpr metadata() : requisits(sizeof(requisit)), parent(0) {}
+	constexpr metadata(const char* id, const char* name) : nameable(id, name), parent(0) {}
+	constexpr metadata(const char* id, const char* name, const metadata* parent) : nameable(id, name), parent(parent), requisits(sizeof(requisit), 16) {}
+	~metadata();
+	void*					add() { return datalist::add(); }
+	void					add(const requisit* type);
+	requisit*				add(const char* id, const char* name, const metadata* type);
+	requisit*				addnum(const char* id, const char* nam);
+	requisit*				addtxt(const char* id, const char* nam);
 	void*					find(unsigned offset, const void* object, unsigned object_size) const;
+	static metadata*		find(const void* object);
+	static void				select(valuelist& result, bool standart_types, bool object_types);
 	void*					get(int index) const { return elements ? (char*)elements + index * size : 0; }
 	unsigned				getcount() const { return count; }
 	unsigned				getsize() const { return size; }
-	void					initialize(unsigned size, unsigned maximum);
+	static void				initialize();
 	static bool				readfile(const char* file);
 	static bool				writefile(const char* file);
 };
-extern database				databases[256];
-struct datareq {
-	reference*				field;
-	unsigned				size;
-};
-struct stampi {
-	unsigned				counter;
-	constexpr stampi() : counter(0) {}
-	constexpr stampi(object_s type) : counter(type<<24|0xFFFFFF) {}
-	bool					isnew() const { return (counter & 0xFFFFFF) == 0xFFFFFF; }
-	database&				getbase() const { return databases[gettype()]; }
-	unsigned				getbaseindex() const { return (counter & 0xFFFFFF); }
-	stampi*					getreference() const { return (stampi*)getbase().find(0, this, sizeof(*this)); }
-	constexpr type_s		gettype() const { return type_s(counter>>24); }
-	void					write();
-};
-struct actioni {
-	datetime				date;
-	useri*					user;
-	constexpr actioni() : date(), user() {}
-};
-struct objecti : stampi {
-	objecti*				parent;
-	unsigned				flags;
-	actioni					create, change;
-	constexpr objecti(object_s type) : stampi(type), flags(0), parent(0) {}
-	objecti*				write(); // Store element to database and get valid reference
-};
-struct reference : objecti, nameable {
-	constexpr reference() : objecti(Reference) {}
-	constexpr reference(object_s type) : objecti(type) {}
-};
-struct documenti : objecti {
-	datetime				date;
-	const char*				text;
-	constexpr documenti() : objecti(Document), date(0), text(0) {}
-};
-struct headeri : reference {
-	constexpr headeri() : reference(Header) {}
-};
-struct requisit : reference {
-	type_s					type;
-	headeri*				type_folder;
-	constexpr requisit() : reference(Requisit), type(Number), type_folder() {}
-};
-struct useri : reference {
-	const char*				first_name;
-	const char*				last_name;
-	const char*				third_name;
-	const char*				password;
-	constexpr useri() : reference(User), first_name(0), last_name(0), third_name(0), password(0) {}
-};
-extern useri*				current_user;

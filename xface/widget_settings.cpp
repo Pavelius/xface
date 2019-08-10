@@ -40,11 +40,9 @@ docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock
 {"Присоединить снизу", "dock_bottom"},
 {"На рабочем столе", "dock_workspace"}
 };
+assert_enum(dock, DockWorkspace);
 DECLENUM(dock);
-const bsreq bsmeta<docki>::meta[] = {
-	BSREQ(id),
-	BSREQ(name),
-{}};
+
 const bsreq bsmeta<draw::controls::control::plugin>::meta[] = {
 	BSREQ(id),
 	BSREQ(dock),

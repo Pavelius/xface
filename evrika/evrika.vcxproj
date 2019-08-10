@@ -126,14 +126,10 @@
   <ItemGroup>
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="..\xface\widget_logging.cpp" />
-    <ClCompile Include="arrayseq.cpp">
+    <ClCompile Include="database.cpp" />
+    <ClCompile Include="database_serial.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="coreobject.cpp" />
-    <ClCompile Include="database.cpp" />
-    <ClCompile Include="database_serial.cpp" />
-    <ClCompile Include="timestamp.cpp" />
-    <ClCompile Include="user.cpp" />
     <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>

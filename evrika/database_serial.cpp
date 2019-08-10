@@ -1,100 +1,107 @@
 #include "xface/io.h"
 #include "main.h"
 
-static stampi* read_stamp(io::stream& e) {
-	stampi ts; e.read(ts);
-	auto& db = ts.getbase();
-	auto p = ts.getreference();
-	if(!p) {
-		p = (stampi*)db.add();
-		memcpy(p, &ts, sizeof(ts));
-	}
-	return p;
-}
-
-static void write_stamp(io::stream& e, const stampi* v) {
-	e.write(v, sizeof(*v));
-}
-
-// Fast and simple driver for streaming binary data
-struct archive {
-	io::stream&	source;
+struct database_serial_bin {
+	io::stream&	file;
 	bool		writemode;
-	
-	constexpr archive(io::stream& source, bool writemode) : source(source), writemode(writemode) {}
-	
-	void set(void* value, unsigned size) {
+	const char* read_string() {
+		unsigned lenght = 0;
+		file.read(&lenght, sizeof(lenght));
+		if(!lenght)
+			return 0;
+		char buffer[2048];
+		auto p = buffer;
+		if(lenght >= (sizeof(buffer) - 1))
+			p = new char[lenght + 1];
+		file.read(p, lenght);
+		p[lenght] = 0;
+		auto result = szdup(p);
+		if(p != buffer)
+			delete p;
+		return result;
+	}
+	void write_string(const char* v) {
+		unsigned lenght = 0;
+		if(v)
+			lenght = zlen(v);
+		file.write(&lenght, sizeof(lenght));
+		if(lenght != 0)
+			file.write(v, lenght);
+	}
+	void serial(void* v, unsigned lenght) {
 		if(writemode)
-			source.write(value, size);
+			file.write(v, lenght);
 		else
-			source.read(value, size);
+			file.read(v, lenght);
 	}
-	
-	// Any pointer class
-	void set(objecti*& value) {
-		if(writemode) {
-			if(value)
-				write_stamp(source, value);
-			else {
-				stampi ts;
-				set(&ts, sizeof(ts));
-			}
-		} else
-			value = (objecti*)read_stamp(source);
-	}
-
-	// Strings case
-	void set(const char*& e) {
-		unsigned len = 0;
-		char temp[128 * 128];
-		if(writemode) {
-			if(*e)
-				len = zlen(e);
-			source.write(&len, sizeof(len));
-			if(len)
-				source.write(e, len);
-		} else {
-			source.read(&len, sizeof(len));
-			e = 0;
-			if(len) {
-				source.read(temp, len);
-				temp[len] = 0;
-				e = szdup(temp);
+	bool serial(const void* object, const bsreq* records) {
+		for(auto p = records; *p; p++) {
+			switch(p->subtype) {
+			case KindNumber:
+			case KindCFlags:
+			case KindEnum:
+				// Сериализация с оптимизацией
+				serial(p->ptr(object), p->lenght);
+				break;
+			case KindText:
+				for(unsigned i = 0; i < p->count; i++) {
+					auto ps = (const char**)p->ptr(object, i);
+					if(writemode)
+						write_string(*ps);
+					else
+						*ps = read_string();
+				}
+				break;
+			case KindReference:
+				for(unsigned i = 0; i < p->count; i++) {
+					if(writemode) {
+						auto pv = (reference*)p->get(p->ptr(object, i));
+						write_reference(pv);
+					} else {
+						auto pv = read_reference();
+						p->set(p->ptr(object, i), (int)pv);
+					}
+				}
+				break;
+			case KindScalar:
+				for(unsigned i = 0; i < p->count; i++)
+					serial(p->ptr(object, i), p->type); // Подчиненный объект, указанный прямо в теле
+				break;
 			}
 		}
+		return true;
 	}
-
-	// Array with fixed count
-	template<typename T, unsigned N> void set(T(&value)[N]) {
-		for(int i = 0; i < N; i++)
-			set(value[i]);
-	};
-
-	// All simple types and requisites
-	template<class T> void set(T& value) {
-		set(&value, sizeof(value));
+	void write_reference(objecti* p) {
 	}
-
+	void* read_reference() {
+		return 0;
+	}
+	//bool read_object() {
+	//	auto pv = read_reference();
+	//	if(!pv)
+	//		return false;
+	//	auto pm = pv->getmeta();
+	//	return serial(pv, pv->getmeta() + 1);
+	//}
+	//bool write_object(bsdata* pb, const void* pv) {
+	//	auto cpv = (void*)pv;
+	//	if(!serial_reference(cpv, 0))
+	//		return false;
+	//	return serial(pv, pb->meta + 1);
+	//}
+	constexpr database_serial_bin(io::stream& file, bool writemode) : file(file), writemode(writemode) {}
 };
 
-bool database::readfile(const char* url) {
+bool metadata::readfile(const char* url) {
 	io::file file(url, StreamRead);
 	if(!file)
-		return false;
-	while(true) {
-		auto p = read_stamp(file);
-		if(!p)
-			return true;
-	}
+		return 0;
+	return 0;
 }
 
-bool database::writefile(const char* url) {
+bool metadata::writefile(const char* url) {
 	io::file file(url, StreamWrite);
 	if(!file)
-		return false;
-	for(auto& db : databases) {
-		for(auto pp : db)
-			write_stamp(file, (stampi*)pp);
-	}
-	return true;
+		return 0;
+	return 0;
 }
