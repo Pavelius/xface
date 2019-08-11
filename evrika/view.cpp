@@ -31,8 +31,10 @@ static void pass_verification() {
 static void test_database() {
 }
 
+void initialize_metadata();
+
 int main() {
-	metadata::initialize();
+	initialize_metadata();
 	draw::application("Evrika", true, pass_verification);
 }
 
