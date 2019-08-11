@@ -6,13 +6,13 @@ static metadata datetime_type[] = {{"DateTime", "Дата и время"}};
 static metadata text_type[] = {{"Text", "Строка"}};
 static metadata state_type[] = {{"State", "Состояние"}};
 
-static metadata object_type[] = {{"Object", "Объект", 0}};
-static metadata reference_type[] = {{"Reference", "Справочник", object_type}};
-static metadata document_type[] = {{"Document", "Документ", object_type}};
-static metadata users[] = {{"User", "Пользователь", reference_type}};
-static metadata headers[] = {{"Header", "Раздел", reference_type}};
+static metadata object_type[] = {{"Object", "Объект"}};
+static metadata reference_type[] = {{"Reference", "Справочник"}};
+static metadata document_type[] = {{"Document", "Документ"}};
+static metadata users[] = {{"User", "Пользователь"}};
+static metadata headers[] = {{"Header", "Раздел"}};
 
-static metadata* object_types[] = {headers, reference_type, users, document_type, users};
+static metadata* object_types[] = {headers, reference_type, users, document_type};
 static metadata* simple_types[] = {number_type, date_type, datetime_type, text_type, state_type};
 
 static void add_stamp(metadata& e) {
@@ -70,15 +70,18 @@ metadata* metadata::find(const void* object) {
 }
 
 void* datalist::add() {
-	if(!elements && size && !count)
-		elements = new char[maximum*size];
-	if(count < maximum)
-		return (char*)elements + (count++)*size;
-	return 0;
+	if(count >= maximum) {
+		if(!size)
+			return 0;
+		maximum = rmoptimal(maximum+1);
+		auto new_size = maximum * size;
+		elements = rmreserve(elements, new_size);
+	}
+	return (char*)elements + (count++)*size;
 }
 
 metadata::~metadata() {
-	if(maximum && elements)
+	if(elements)
 		delete elements;
 }
 
@@ -91,7 +94,7 @@ void* metadata::find(unsigned offset, const void* object, unsigned object_size) 
 	return 0;
 }
 
-void select(valuelist& result, bool standart, bool object) {
+void metadata::select(valuelist& result, bool standart, bool object) {
 	if(standart) {
 		for(auto p : simple_types)
 			result.add(p->name, (int)p, 0, 4);
@@ -100,4 +103,45 @@ void select(valuelist& result, bool standart, bool object) {
 		for(auto p : object_types)
 			result.add(p->name, (int)p, 0, 4);
 	}
+}
+
+bool requisit::isreference() const {
+	for(auto p : object_types) {
+		if(type == p)
+			return true;
+	}
+	return false;
+}
+
+static const char* findurl(const char* p) {
+	while(*p && p[0] != '.')
+		p++;
+	return p;
+}
+
+const requisit* requisit::find(const char* id, unsigned size) const {
+	for(auto p = this; *p; p++) {
+		if(memcmp(p->id, id, size) == 0)
+			return p;
+	}
+	return 0;
+}
+
+void* requisit::ptr(void* object, const char* url, const requisit** result) const {
+	while(object) {
+		auto p1 = findurl(url);
+		auto pf = find(url, p1 - url);
+		if(!pf)
+			return 0;
+		object = pf->ptr(object);
+		if(p1[0] == 0) {
+			if(result)
+				*result = pf;
+			return object;
+		}
+		if(!pf->isreference())
+			return 0;
+		object = *((void**)object);
+	}
+	return 0;
 }

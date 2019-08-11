@@ -1,6 +1,7 @@
 #include "crt.h"
 #include "draw_control.h"
 
+using namespace draw;
 using namespace draw::controls;
 
 void table::update_columns(const rect& rc) {
@@ -310,6 +311,13 @@ bool table::keyinput(unsigned id) {
 
 column* table::addcol(const char* id, const char* name, const char* type, draw::column_size_s size, int width) {
 	auto pf = getvisuals()->find(type);
+	if(!pf) {
+		for(auto pp = getvisualsparent(); pp && *pp; pp++) {
+			pf = (*pp)->find(type);
+			if(pf)
+				break;
+		}
+	}
 	if(!pf)
 		return 0;
 	auto p = columns.add();
@@ -449,12 +457,9 @@ void table::cellpercent(const rect& rc, int line, int column) {
 	draw::text(rc, temp, AlignRight);
 }
 
-const visual* table::getvisuals() const {
-	static visual elements[] = {{"checkbox", "Пометка", 20, 20, SizeFixed, &table::cellbox, &table::changecheck},
-	{"text", "Текстовое поле", 8, 200, SizeResized, &table::celltext, &table::changetext},
-	{"number", "Числовое поле", 8, 80, SizeResized, &table::cellnumber, &table::changenumber},
-	{"percent", "Процент", 40, 60, SizeResized, &table::cellpercent, &table::changenumber},
-	{"image", "Изображение", 20, 20, SizeInner, &table::cellimage},
-	{}};
-	return elements;
-}
+visual table::standart_visuals[] = {{"checkbox", "Пометка", 20, 20, SizeFixed, &table::cellbox, &table::changecheck},
+{"text", "Текстовое поле", 8, 200, SizeResized, &table::celltext, &table::changetext},
+{"number", "Числовое поле", 8, 80, SizeResized, &table::cellnumber, &table::changenumber},
+{"percent", "Процент", 40, 60, SizeResized, &table::cellpercent, &table::changenumber},
+{"image", "Изображение", 20, 20, SizeInner, &table::cellimage},
+{}};

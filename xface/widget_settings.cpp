@@ -594,9 +594,11 @@ void draw::application_initialize() {
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
 
-void draw::application(const char* name, bool allow_multiply_window) {
+void draw::application(const char* name, bool allow_multiply_window, eventproc showproc) {
 	application_initialize();
 	setcaption(name);
+	if(showproc)
+		showproc();
 	application(allow_multiply_window);
 }
 

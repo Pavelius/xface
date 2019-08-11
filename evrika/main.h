@@ -8,43 +8,40 @@
 
 struct metadata;
 
-struct nameable {
-	const char*				id;
-	const char*				name;
-	const char*				text;
-	constexpr nameable() : id(0), name(0), text(0) {}
-	constexpr nameable(const char* id, const char* name) : id(id), name(name), text(0) {}
-};
-struct requisit : nameable {
-	const metadata*			type;
-	unsigned				offset;
-	constexpr requisit() : type(0), offset(0) {}
-	constexpr requisit(const char* id, const char* name, metadata* type, unsigned offset) : nameable(id, name), type(type), offset(offset) {}
-	constexpr operator bool() const { return id != 0; }
-	constexpr int			get(void* object) const { return *((int*)((char*)object + offset)); }
-	constexpr unsigned		getsize() const { return 4; }
-	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
-};
 struct datalist {
 	void*					elements;
 	unsigned				count;
 	unsigned				maximum;
 	unsigned				size;
 	constexpr datalist() : elements(0), count(0), maximum(0), size(0) {}
-	constexpr datalist(unsigned size, unsigned maximum = 64) : elements(0), count(0), maximum(maximum), size(size) {}
-	constexpr datalist(void* elements, unsigned count, unsigned size) : elements(elements), count(count), maximum(0), size(size) {}
+	constexpr datalist(unsigned size) : elements(0), count(0), maximum(maximum), size(size) {}
 	void*					add();
 	char*					begin() const { return (char*)elements; }
-	char*					end() const { return (char*)elements + size*count; }
+	char*					end() const { return (char*)elements + size * count; }
 	void*					get(unsigned index) { return (char*)elements + index * size; }
 };
-struct metadata : nameable, datalist {
-	const metadata*			parent;
+struct requisit {
+	const char*				id;
+	const char*				name;
+	const metadata*			type;
+	unsigned				offset;
+	constexpr requisit() : id(0), name(0), type(0), offset(0) {}
+	constexpr requisit(const char* id, const char* name, metadata* type, unsigned offset) : id(id), name(name), type(type), offset(offset) {}
+	constexpr operator bool() const { return id != 0; }
+	const requisit*			find(const char* id, unsigned size) const;
+	constexpr int			get(void* object) const { return *((int*)((char*)object + offset)); }
+	constexpr unsigned		getsize() const { return 4; }
+	bool					isreference() const;
+	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
+	void*					ptr(void* object, const char* url, const requisit** result = 0) const;
+};
+struct metadata : datalist {
+	const char*				id;
+	const char*				name;
 	datalist				requisits;
 	explicit operator bool() const { return elements != 0; }
-	constexpr metadata() : requisits(sizeof(requisit)), parent(0) {}
-	constexpr metadata(const char* id, const char* name) : nameable(id, name), parent(0) {}
-	constexpr metadata(const char* id, const char* name, const metadata* parent) : nameable(id, name), parent(parent), requisits(sizeof(requisit), 16) {}
+	constexpr metadata() : id(0), name(0), requisits(sizeof(requisit)) {}
+	constexpr metadata(const char* id, const char* name) : id(id), name(name), requisits(sizeof(requisit)) {}
 	~metadata();
 	void*					add() { return datalist::add(); }
 	void					add(const requisit* type);

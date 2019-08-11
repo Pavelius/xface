@@ -27,7 +27,8 @@ struct grid : table, array {
 	virtual int				getnumber(int line, int column) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
 	virtual bsval			getvalue(int row, int column) const;
-	virtual const visual*	getvisuals() const override;
+	virtual const visual*	getvisuals() const override { return standart_visuals; }
+	virtual visual**		getvisualsparent() const override { return standart_visualsparent; }
 	bool					keyinput(unsigned id) override;
 	bool					movedown(bool run);
 	bool					moveup(bool run);
@@ -36,6 +37,8 @@ struct grid : table, array {
 	void					sort(int column, bool ascending);
 	bool					sortas(bool run);
 	bool					sortds(bool run);
+	static visual			standart_visuals[];
+	static visual*			standart_visualsparent[];
 };
 struct gridref : grid {
 	constexpr gridref(const bsreq* type, unsigned size=sizeof(void*)) : grid(type, size) {}

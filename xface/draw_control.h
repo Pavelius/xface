@@ -49,7 +49,7 @@ struct cmd {
 	static void				assign();
 	static void				calling();
 	static void				invert();
-	bool					ischecked() const { return ((value.get()&param)!=0) ? true : false; }
+	bool					ischecked() const { return ((value.get()&param) != 0) ? true : false; }
 	void					execute() const { ctx = *this; draw::execute(proc, param); }
 	int						getid() const { return (int)value.data; }
 };
@@ -132,8 +132,7 @@ struct list : control {
 	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
 		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true),
-		current_rect(), view_rect() {
-	}
+		current_rect(), view_rect() {}
 	void					correction();
 	void					correction_width();
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
@@ -190,8 +189,7 @@ struct table : list {
 	bool					show_totals;
 	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
 		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
-		select_mode(SelectCell) {
-	}
+		select_mode(SelectCell) {}
 	virtual column*			addcol(const char* id, const char* name, const char* type, column_size_s size = SizeDefault, int width = 0);
 	void					cell(const rect& rc, int line, int column) const;
 	void					cellbox(const rect& rc, int line, int column);
@@ -217,13 +215,15 @@ struct table : list {
 	virtual int				gettotal(int column) const { return 0; }
 	virtual const char*		gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	int						getvalid(int column, int direction = 1) const;
-	virtual const visual*	getvisuals() const;
+	virtual const visual*	getvisuals() const { return standart_visuals; }
+	virtual visual**		getvisualsparent() const { return 0; }
 	bool					keyinput(unsigned id) override;
 	void					mouseselect(int id, bool pressed) override;
 	virtual void			row(const rect& rc, int index) override; // Draw single row - part of list
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
+	static visual			standart_visuals[];
 	void					view(const rect& rc) override;
 private:
 	void					update_columns(const rect& rc);
@@ -234,26 +234,18 @@ struct visual {
 	const char*				name;
 	int						minimal_width, default_width;
 	column_size_s			size;
-	union {
-		proc_render			render;
-		const visual*		child;
-	};
+	proc_render				render;
 	proc_render				change;
 	visual() = default;
 	template<typename T, typename U> visual(const char* id, const char* name, int mw, int dw, column_size_s sz,
 		void (T::*pr)(const rect& rc, int line, int column),
 		void (U::*pc)(const rect& rc, int line, int column)) : id(id), name(name),
 		render((proc_render)pr), change((proc_render)pc),
-		size(sz), minimal_width(mw), default_width(dw) {
-	}
+		size(sz), minimal_width(mw), default_width(dw) {}
 	template<typename T> visual(const char* id, const char* name, int mw, int dw, column_size_s sz,
 		void (T::*pr)(const rect& rc, int line, int column)) : id(id), name(name),
 		render((proc_render)pr), change((proc_render)0),
-		size(sz), minimal_width(mw), default_width(dw) {
-	}
-	constexpr visual(const visual* vs) : id("*"), name(""), change(0), minimal_width(0),
-		default_width(0), child(vs), size(SizeDefault) {
-	}
+		size(sz), minimal_width(mw), default_width(dw) {}
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };
@@ -316,7 +308,7 @@ private:
 };
 }
 void						application(bool allow_multiply_windows);
-void						application(const char* name, bool allow_multiply_windows);
+void						application(const char* name, bool allow_multiply_windows, eventproc showproc = 0);
 inline void					application() { application(true); }
 void						application_initialize();
 int							button(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0, int key = 0);

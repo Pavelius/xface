@@ -234,15 +234,6 @@ void grid::celldatetime(const rect& rc, int line, int column) {
 	}
 }
 
-const visual* grid::getvisuals() const {
-	static visual elements[] = {{table::getvisuals()},
-	{"date", "Дата", 8, 10*10 + 4, SizeResized, &grid::celldate},
-	{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, &grid::celldatetime},
-	{"ref", "Ссылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
-	{}};
-	return elements;
-}
-
 const control::command* grid::getcommands() const {
 	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
 	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
@@ -268,3 +259,10 @@ void gridref::add(const void* object) {
 void* gridref::get(int index) const {
 	return *((void**)array::get(index));
 }
+
+visual grid::standart_visuals[] = {{"date", "Дата", 8, 10 * 10 + 4, SizeResized, &grid::celldate},
+{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, &grid::celldatetime},
+{"ref", "Ссылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
+{}};
+
+visual*	grid::standart_visualsparent[] = {table::standart_visuals, 0};
