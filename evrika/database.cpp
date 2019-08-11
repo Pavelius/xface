@@ -1,42 +1,60 @@
 #include "main.h"
 
-static metadata number_type[] = {{"Number", "Число"}};
-static metadata date_type[] = {{"Date", "Дата"}};
-static metadata datetime_type[] = {{"DateTime", "Дата и время"}};
-static metadata text_type[] = {{"Text", "Строка"}};
-static metadata state_type[] = {{"State", "Состояние"}};
+metadata databases[] = {{"Number", "Число"},
+{"Date", "Дата"},
+{"DateTime", "Дата и время"},
+{"Text", "Строка"},
+{"Reference", "Справочник"},
+{"Document", "Документ"},
+{"User", "Пользователь"},
+{"Header", "Раздел"},
+};
 
-static metadata object_type[] = {{"Object", "Объект"}};
-static metadata reference_type[] = {{"Reference", "Справочник"}};
-static metadata document_type[] = {{"Document", "Документ"}};
-static metadata users[] = {{"User", "Пользователь"}};
-static metadata headers[] = {{"Header", "Раздел"}};
-
-static metadata* object_types[] = {headers, reference_type, users, document_type};
-static metadata* simple_types[] = {number_type, date_type, datetime_type, text_type, state_type};
-
-static void add_stamp(metadata& e) {
-	e.add("create_user", "Автор", users);
-	e.add("create_date", "Дата создания", datetime_type);
-	e.add("change_user", "Изменил", users);
-	e.add("change_date", "Дата изменения", datetime_type);
+static void add_name(base_s type) {
+	auto& e = databases[type];
+	e.add("name", "Наименование", TextType);
+	e.add("text", "Комментарий", TextType);
+}
+static void add_stamp(base_s type) {
+	auto& e = databases[type];
+	e.add("create_date", "Дата создания", DateTimeType);
+	e.add("counter", "Токен", NumberType);
+}
+static void add_change(base_s type) {
+	auto& e = databases[type];
+	e.add("create_user", "Автор", UserType);
+	e.add("change_user", "Изменил", UserType);
+	e.add("change_date", "Дата изменения", DateTimeType);
+}
+static void add_reference(base_s type) {
+	add_stamp(type);
+	add_name(type);
+	add_change(type);
+}
+static void add_document(base_s type) {
+	add_stamp(type);
+	add_change(type);
+	auto& e = databases[type];
+	e.add("number", "Номер", NumberType);
+}
+static void add_fio(base_s type) {
+	add_reference(type);
+	auto& e = databases[type];
+	e.add("firstname", "Имя", TextType);
+	e.add("surname", "Фамилия", TextType);
+	e.add("lastname", "Отчество", TextType);
 }
 
 void metadata::initialize() {
-	object_type->add("id", "Идентификатор", text_type);
-	object_type->add("name", "Наименование", text_type);
-	object_type->add("text", "Комментарий", text_type);
-	object_type->add("parent", "Родитель", object_type);
-	object_type->add("state", "Состояние", state_type);
-	add_stamp(object_type[0]);
-	users->add("firstname", "Имя", text_type);
-	users->add("surname", "Фамилия", text_type);
-	users->add("lastname", "Отчество", text_type);
-	document_type->add("date", "Дата", datetime_type);
-	add_stamp(document_type[0]);
+	add_reference(ReferenceType);
+	//
+	add_document(DocumentType);
+	//
+	add_reference(UserType);
+	add_fio(UserType);
 }
 
-requisit* metadata::add(const char* id, const char* name, const metadata* type) {
+requisit* metadata::add(const char* id, const char* name, base_s type) {
 	if(count)
 		return 0;
 	auto p = (requisit*)requisits.add();
@@ -55,17 +73,6 @@ void metadata::add(const requisit* source) {
 }
 
 metadata* metadata::find(const void* object) {
-	if(!object)
-		return 0;
-	for(auto p : object_types) {
-		auto pb = p->elements;
-		if(!pb)
-			continue;
-		auto pe = (char*)pb + p->size*p->count;
-		if(object < pb || object > pe)
-			continue;
-		return p;
-	}
 	return 0;
 }
 
@@ -95,22 +102,6 @@ void* metadata::find(unsigned offset, const void* object, unsigned object_size) 
 }
 
 void metadata::select(valuelist& result, bool standart, bool object) {
-	if(standart) {
-		for(auto p : simple_types)
-			result.add(p->name, (int)p, 0, 4);
-	}
-	if(object) {
-		for(auto p : object_types)
-			result.add(p->name, (int)p, 0, 4);
-	}
-}
-
-bool requisit::isreference() const {
-	for(auto p : object_types) {
-		if(type == p)
-			return true;
-	}
-	return false;
 }
 
 static const char* findurl(const char* p) {

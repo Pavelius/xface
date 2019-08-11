@@ -6,6 +6,11 @@
 
 #pragma once
 
+enum base_s : unsigned char {
+	NumberType, DateType, DateTimeType, TextType,
+	ReferenceType, DocumentType, UserType, HeaderType,
+};
+
 struct metadata;
 
 struct datalist {
@@ -23,15 +28,15 @@ struct datalist {
 struct requisit {
 	const char*				id;
 	const char*				name;
-	const metadata*			type;
 	unsigned				offset;
-	constexpr requisit() : id(0), name(0), type(0), offset(0) {}
-	constexpr requisit(const char* id, const char* name, metadata* type, unsigned offset) : id(id), name(name), type(type), offset(offset) {}
+	base_s					type;
+	constexpr requisit() : id(0), name(0), type(NumberType), offset(0) {}
+	constexpr requisit(const char* id, const char* name, base_s type, unsigned offset) : id(id), name(name), type(type), offset(offset) {}
 	constexpr operator bool() const { return id != 0; }
 	const requisit*			find(const char* id, unsigned size) const;
 	constexpr int			get(void* object) const { return *((int*)((char*)object + offset)); }
 	constexpr unsigned		getsize() const { return 4; }
-	bool					isreference() const;
+	bool					isreference() const { return type >= ReferenceType; }
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, const char* url, const requisit** result = 0) const;
 };
@@ -45,7 +50,7 @@ struct metadata : datalist {
 	~metadata();
 	void*					add() { return datalist::add(); }
 	void					add(const requisit* type);
-	requisit*				add(const char* id, const char* name, const metadata* type);
+	requisit*				add(const char* id, const char* name, base_s type);
 	requisit*				addnum(const char* id, const char* nam);
 	requisit*				addtxt(const char* id, const char* nam);
 	void*					find(unsigned offset, const void* object, unsigned object_size) const;
@@ -57,4 +62,12 @@ struct metadata : datalist {
 	static void				initialize();
 	static bool				readfile(const char* file);
 	static bool				writefile(const char* file);
+};
+struct stamp {
+	datetime				create_date;
+	base_s					type;
+	unsigned char			session;
+	short unsigned			counter;
+	constexpr stamp(base_s type = NumberType) : type(type), create_date(0), session(0), counter(0) {}
+	constexpr bool			isnew() const { return create_date != 0; }
 };
