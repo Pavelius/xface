@@ -234,6 +234,9 @@
     <ClCompile Include="draw_field.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="draw_tableref.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="collection.h">

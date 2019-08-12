@@ -133,6 +133,7 @@
     <ClCompile Include="draw_dockbar.cpp" />
     <ClCompile Include="draw_markup.cpp" />
     <ClCompile Include="draw_properties.cpp" />
+    <ClCompile Include="draw_tableref.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="markup.cpp" />

@@ -1,10 +1,9 @@
 #include "xface/draw_control.h"
-#include "xface/draw_grid.h"
 #include "main.h"
 
 using namespace draw;
 
-static struct header_control : controls::table, controls::control::plugin {
+static struct header_control : controls::tableref, controls::control::plugin {
 	void before_render() {
 	}
 	control& getcontrol() override {
@@ -16,7 +15,7 @@ static struct header_control : controls::table, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
-	header_control() : table(), plugin("header", DockLeft) {
+	header_control() : tableref(), plugin("header", DockLeft) {
 		show_header = false;
 		read_only = true;
 		no_change_count = true;
@@ -35,6 +34,7 @@ void initialize_metadata();
 
 int main() {
 	initialize_metadata();
+	metadata::writefile("test.edb");
 	draw::application("Evrika", true, pass_verification);
 }
 

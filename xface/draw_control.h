@@ -206,6 +206,7 @@ struct table : list {
 	void					changetext(const rect& rc, int line, int column);
 	virtual void			clickcolumn(int column) const {}
 	virtual void			ensurevisible() override;
+	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
 	virtual aref<column>	getcolumns() const { return aref<column>(); }
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
@@ -227,6 +228,47 @@ struct table : list {
 	void					view(const rect& rc) override;
 private:
 	void					update_columns(const rect& rc);
+};
+struct tableref : table, array {
+	struct element {
+		unsigned char		level;
+		unsigned char		flags;
+		unsigned char		type;
+		unsigned char		image;
+		void*				object;
+	};
+	struct builder {
+		int					index;
+		unsigned char		level;
+		tableref*			pc;
+		constexpr builder(tableref* pc, int index, unsigned char level) : pc(pc), index(index), level(level) {}
+		void*				add(void* object, unsigned char image, unsigned char type, bool group);
+	};
+	bool					sort_rows_by_name;
+	constexpr tableref(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
+	void					collapse(int index);
+	void					expand(int index, int level);
+	virtual void			expanding(builder& e) {}
+	int						find(const void* value) const;
+	void*					get(int index) const override;
+	int						getblockcount(int index) const;
+	int						getimage(int index) const;
+	int						getlevel(int index) const override;
+	int						getnext(int index, int increment = 1) const;
+	int						getnumber(int line, int column) const override;
+	int						getparent(int index) const;
+	int						getroot(int index) const;
+	int						gettreecolumn() const;
+	int						gettype(int index) const;
+	bool					isgroup(int index) const override;
+	bool					keyinput(unsigned id) override;
+	bool					moveup(bool run);
+	bool					movedown(bool run);
+	void					open(int max_level);
+	bool					remove(bool run);
+	void					shift(int i1, int i2);
+	void					toggle(int index);
+	bool					treemarking(bool run) override;
 };
 struct visual {
 	typedef void			(table::*proc_render)(const rect& rc, int line, int column);

@@ -1,27 +1,5 @@
 #include "main.h"
 
-struct metadata : datalist {
-	const char*				id;
-	const char*				name;
-	datalist				requisits;
-	explicit operator bool() const { return elements != 0; }
-	constexpr metadata() : id(0), name(0), requisits(sizeof(requisit)) {}
-	constexpr metadata(const char* id, const char* name) : id(id), name(name), requisits(sizeof(requisit)) {}
-	~metadata();
-	void*					add() { return datalist::add(); }
-	void					add(const requisit* type);
-	requisit*				add(const char* id, const char* name, base_s type);
-	void*					find(unsigned offset, const void* object, unsigned object_size) const;
-	static metadata*		find(const void* object);
-	static void				select(valuelist& result, bool standart_types, bool object_types);
-	void*					get(int index) const { return elements ? (char*)elements + index * size : 0; }
-	unsigned				getcount() const { return count; }
-	unsigned				getsize() const { return size; }
-	static void				initialize();
-	static bool				readfile(const char* file);
-	static bool				writefile(const char* file);
-};
-
 metadata databases[] = {{"Number", "Число"},
 {"Date", "Дата"},
 {"DateTime", "Дата и время"},
