@@ -1,3 +1,4 @@
+#include "crt.h"
 #include "draw_control.h"
 
 using namespace draw;
@@ -15,6 +16,12 @@ void* tableref::builder::add(void* object, unsigned char image, unsigned char ty
 	if(pc->count == 0 || (unsigned)index > pc->count)
 		return pc->array::add(&e);
 	return pc->array::insert(++index, &e);
+}
+
+void tableref::addref(void* object) {
+	auto p = (element*)array::add();
+	memset(p, 0, sizeof(*p));
+	p->object = object;
 }
 
 int	tableref::find(const void* value) const {
@@ -51,17 +58,17 @@ int tableref::getroot(int index) const {
 	}
 }
 
-int	tableref::getnumber(int line, int column) const {
-	if(columns[column].id) {
-		if(strcmp(columns[column].id, "image") == 0)
-			return getimage(line);
-		else if(strcmp(columns[column].id, "type") == 0)
-			return gettype(line);
-		else if(strcmp(columns[column].id, "level") == 0)
-			return getlevel(line);
-	}
-	return 0;
-}
+//int tableref::getnumber(int line, int column) const {
+//	if(columns[column].id) {
+//		if(strcmp(columns[column].id, "image") == 0)
+//			return getimage(line);
+//		else if(strcmp(columns[column].id, "type") == 0)
+//			return gettype(line);
+//		else if(strcmp(columns[column].id, "level") == 0)
+//			return getlevel(line);
+//	}
+//	return 0;
+//}
 
 int tableref::getparent(int index) const {
 	int level = getlevel(index);
@@ -216,14 +223,6 @@ int	tableref::gettreecolumn() const {
 	return getvalid(0, 1);
 }
 
-bool tableref::remove(bool run) {
-	//if(!table::remove(false))
-	//	return false;
-	if(run)
-		array::remove(current, getblockcount(current));
-	return true;
-}
-
 int	tableref::getnext(int index, int increment) const {
 	auto i = index;
 	auto level = getlevel(i);
@@ -252,23 +251,69 @@ void tableref::shift(int i1, int i2) {
 }
 
 bool tableref::moveup(bool run) {
-	//if(!grid::moveup(false))
-	//	return false;
-	auto new_current = getnext(current, -1);
-	if(new_current == current)
+	if(no_change_order)
 		return false;
-	if(run)
-		shift(new_current, current);
+	if(current <= 0)
+		return false;
+	if(getmaximum() == 1)
+		return false;
+	if(run) {
+		auto new_current = getnext(current, -1);
+		if(new_current == current)
+			return false;
+		if(run)
+			shift(new_current, current);
+		//swap(current - 1, current);
+		//select(current - 1, getcolumn());
+	}
 	return true;
 }
 
 bool tableref::movedown(bool run) {
-	//if(!grid::moveup(false))
-	//	return false;
-	auto new_current = getnext(current, 1);
-	if(new_current == current)
+	if(no_change_order)
+		return false;
+	if(current >= int(getmaximum() - 1))
+		return false;
+	if(run) {
+		auto new_current = getnext(current, 1);
+		if(new_current == current)
+			return false;
+		if(run)
+			shift(new_current, current);
+		//swap(current + 1, current);
+		//select(current + 1, getcolumn());
+	}
+	return true;
+}
+
+bool tableref::remove(bool run) {
+	if(read_only)
+		return false;
+	if(no_change_count)
+		return false;
+	if(!getcount())
 		return false;
 	if(run)
-		shift(new_current, current);
+		array::remove(current, 1);
+	return true;
+}
+
+bool tableref::sortas(bool run) {
+	if(no_change_order)
+		return false;
+	if(getmaximum() <= 1)
+		return false;
+//	if(run)
+//		sort(current_column, true);
+	return true;
+}
+
+bool tableref::sortds(bool run) {
+	if(no_change_order)
+		return false;
+	if(getmaximum() <= 1)
+		return false;
+//	if(run)
+//		sort(current_column, false);
 	return true;
 }

@@ -83,14 +83,14 @@ struct database_serial_bin {
 		auto pv = read_reference();
 		if(!pv)
 			return false;
-		auto& bs = databases[pv->getmeta()];
+		auto& bs = databases[pv->type];
 		return serial(pv,
 			((requisit*)bs.requisits.begin()) + 2,
 			(requisit*)bs.requisits.end());
 	}
 	bool write_object(stamp* pv) {
 		write_reference(pv);
-		auto& bs = databases[pv->getmeta()];
+		auto& bs = databases[pv->type];
 		return serial(pv,
 			((requisit*)bs.requisits.begin()) + 2,
 			(requisit*)bs.requisits.end());

@@ -56,8 +56,8 @@ static void before_application_exit() {
 static struct widget_logging : control::plugin, table {
 
 	void after_initialize() override {
-		addcol("date", "Дата", "text", SizeFixed, textw("0")*15+4);
-		addcol("text", "Сообщение", "text", SizeAuto);
+		auto p1 = addcol("Дата", "text", SizeFixed); p1->width = textw("0") * 15 + 4;
+		addcol("Сообщение", "text", SizeAuto);
 	}
 
 	control& getcontrol() override {
@@ -75,21 +75,6 @@ static struct widget_logging : control::plugin, table {
 
 	void* get(int line) const {
 		return messages.data + line;
-	}
-
-	const char*	getname(char* result, const char* result_max, int line, int column) const override {
-		auto p = (log_message*)get(line);
-		auto c = columns.data + column;
-		if(strcmp(c->id, "text") == 0)
-			return p->text;
-		else if(strcmp(c->id, "date") == 0) {
-			datetime d = p->stamp;
-			szprint(result, result_max, "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
-				d.day(), d.month(), d.year(),
-				d.hour(), d.minute());
-			return result;
-		}
-		return "";
 	}
 		
 	int	getmaximum() const override {

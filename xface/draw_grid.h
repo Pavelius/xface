@@ -19,12 +19,10 @@ struct grid : table, array {
 	void					celldate(const rect& rc, int line, int column);
 	void					celldatetime(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
-	bool					changing(int line, int column, const char* name) override;
 	void					clickcolumn(int column) const override;
 	virtual void*			get(int index) const { return array::get(index); }
 	const control::command* getcommands() const override;
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const override;
-	virtual int				getnumber(int line, int column) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
 	bsval					getvalue(int row, int column) const;
 	const visual*			getvisuals() const override { return standart_visuals; }
@@ -73,7 +71,6 @@ struct tree : grid {
 	int						getimage(int index) const;
 	int						getlevel(int index) const override;
 	int						getnext(int index, int increment = 1) const;
-	int						getnumber(int line, int column) const override;
 	int						getparent(int index) const;
 	int						getroot(int index) const;
 	int						gettreecolumn() const;

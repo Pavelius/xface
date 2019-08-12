@@ -62,30 +62,30 @@ bsval grid::getvalue(int row, int column) const {
 	return bsval(get(row), type).ptr(columns[column].id);
 }
 
-int grid::getnumber(int line, int column) const {
-	auto bv = getvalue(line, column);
-	if(bv && bv.type->is(KindNumber))
-		return bv.get();
-	return 0;
-}
+//int grid::getnumber(int line, int column) const {
+//	auto bv = getvalue(line, column);
+//	if(bv && bv.type->is(KindNumber))
+//		return bv.get();
+//	return 0;
+//}
 
-const char* grid::getname(char* result, const char* result_max, int line, int column) const {
-	auto bv = getvalue(line, column);
-	if(!bv)
-		return "";
-	if(bv.type->is(KindNumber)) {
-		stringbuilder sc(result, result_max);
-		auto value = getnumber(line, column);
-		sc.add("%1i", value);
-		return result;
-	} else if(bv.type->is(KindText)) {
-		auto p = (const char*)bv.get();
-		if(p)
-			return p;
-		return "";
-	} else
-		return bv.dereference().getname();
-}
+//const char* grid::getname(char* result, const char* result_max, int line, int column) const {
+//	auto bv = getvalue(line, column);
+//	if(!bv)
+//		return "";
+//	if(bv.type->is(KindNumber)) {
+//		stringbuilder sc(result, result_max);
+//		auto value = getnumber(line, column);
+//		sc.add("%1i", value);
+//		return result;
+//	} else if(bv.type->is(KindText)) {
+//		auto p = (const char*)bv.get();
+//		if(p)
+//			return p;
+//		return "";
+//	} else
+//		return bv.dereference().getname();
+//}
 
 void grid::changeref(const rect& rc, int line, int column) {
 	draw::combobox({rc.x1-1, rc.y1, rc.x2, rc.y2}, getvalue(line, column));
@@ -212,28 +212,6 @@ bool grid::sortds(bool run) {
 	return true;
 }
 
-void grid::celldate(const rect& rc, int line, int column) {
-	char temp[260]; temp[0] = 0;
-	datetime d(getnumber(line, column));
-	if(d) {
-		szprint(temp, zendof(temp), "%1.2i.%2.2i.%3.2i",
-			d.day(), d.month(), d.year());
-		cellhilite(rc, line, column, temp, AlignLeft);
-		draw::text(rc, temp, AlignLeft);
-	}
-}
-
-void grid::celldatetime(const rect& rc, int line, int column) {
-	char temp[260]; temp[0] = 0;
-	datetime d(getnumber(line, column));
-	if(d) {
-		szprint(temp, zendof(temp), "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
-			d.day(), d.month(), d.year(), d.hour(), d.minute());
-		cellhilite(rc, line, column, temp, AlignLeft);
-		draw::text(rc, temp, AlignLeft);
-	}
-}
-
 const control::command* grid::getcommands() const {
 	static command add_elements[] = {{"add", "Добавить", 0, 0, &grid::add},
 	{"addcopy", "Скопировать", 9, 0, &grid::addcopy},
@@ -260,8 +238,7 @@ void* gridref::get(int index) const {
 	return *((void**)array::get(index));
 }
 
-visual grid::standart_visuals[] = {{"date", "Дата", 8, 10 * 10 + 4, SizeResized, &grid::celldate},
-{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, &grid::celldatetime},
+visual grid::standart_visuals[] = {
 {"ref", "Ссылка", 8, 200, SizeResized, &table::celltext, &grid::changeref},
 {}};
 

@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="anyreq.cpp" />
     <ClCompile Include="anyval.cpp" />
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="bsreq_bin.cpp" />
@@ -134,7 +135,9 @@
     <ClCompile Include="draw_markup.cpp" />
     <ClCompile Include="draw_properties.cpp" />
     <ClCompile Include="draw_tableref.cpp" />
-    <ClCompile Include="draw_tree.cpp" />
+    <ClCompile Include="draw_tree.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="markup.cpp" />
     <ClCompile Include="requisit.cpp" />
@@ -150,7 +153,9 @@
     <ClCompile Include="draw_control.cpp" />
     <ClCompile Include="draw_dialog.cpp" />
     <ClCompile Include="draw_field.cpp" />
-    <ClCompile Include="draw_grid.cpp" />
+    <ClCompile Include="draw_grid.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="draw_list.cpp" />
     <ClCompile Include="draw_scroll.cpp" />
     <ClCompile Include="draw_scrollable.cpp" />
@@ -195,6 +200,7 @@
     <ClCompile Include="win_menu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="anyreq.h" />
     <ClInclude Include="anyval.h" />
     <ClInclude Include="archive.h" />
     <ClInclude Include="datetime.h" />
@@ -212,7 +218,9 @@
     <ClInclude Include="crt.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="draw_control.h" />
-    <ClInclude Include="draw_grid.h" />
+    <ClInclude Include="draw_grid.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="initializer_list.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="point.h" />

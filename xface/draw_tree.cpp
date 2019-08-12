@@ -51,17 +51,17 @@ int tree::getroot(int index) const {
 	}
 }
 
-int	tree::getnumber(int line, int column) const {
-	if(columns[column].id) {
-		if(strcmp(columns[column].id, "image") == 0)
-			return getimage(line);
-		else if(strcmp(columns[column].id, "type") == 0)
-			return gettype(line);
-		else if(strcmp(columns[column].id, "level") == 0)
-			return getlevel(line);
-	}
-	return grid::getnumber(line, column);
-}
+//int	tree::getnumber(int line, int column) const {
+//	if(columns[column].id) {
+//		if(strcmp(columns[column].id, "image") == 0)
+//			return getimage(line);
+//		else if(strcmp(columns[column].id, "type") == 0)
+//			return gettype(line);
+//		else if(strcmp(columns[column].id, "level") == 0)
+//			return getlevel(line);
+//	}
+//	return grid::getnumber(line, column);
+//}
 
 int tree::getparent(int index) const {
 	int level = getlevel(index);

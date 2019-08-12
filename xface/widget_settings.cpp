@@ -3,7 +3,7 @@
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
-#include "draw_grid.h"
+//#include "draw_grid.h"
 #include "io_plugin.h"
 #include "settings.h"
 
@@ -179,26 +179,19 @@ static struct widget_settings_header : controls::list {
 
 } setting_header;
 
-static struct widget_control_viewer : controls::gridref {
+static struct widget_control_viewer : controls::tableref {
 
 	void initialize() {
 		no_change_order = true;
 		no_change_count = true;
-		addcol("name", "Наименование", "text")->setreadonly();
-		addcol("dock", "Расположение", "ref");
+		addcol("Наименование", "text");
+		addcol("Расположение", "ref");
 		for(auto p = plugin::first; p; p = p->next)
 			add(p);
 	}
 
-	const char*	getname(char* result, const char* result_maximum, int row, int column) const override {
-		auto p = (control::plugin*)get(row);
-		if(strcmp(columns[column].id, "name") == 0)
-			return p->getcontrol().getlabel(result, result_maximum);
-		return gridref::getname(result, result_maximum, row, column);
-	}
-
-	widget_control_viewer() : gridref(bsmeta<draw::controls::control::plugin>::meta) {
-	}
+	//widget_control_viewer() : tableref(bsmeta<draw::controls::control::plugin>::meta) {
+	//}
 
 } control_viewer;
 

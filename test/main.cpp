@@ -1,11 +1,12 @@
 #include "xface/draw_control.h"
-#include "xface/draw_grid.h"
 #include "xface/draw_properties.h"
 #include "xface/markup.h"
 #include "xface/requisit.h"
 #include "xface/stringbuilder.h"
 #include "xface/valuelist.h"
 #include "main.h"
+
+#define TBREQ(c, f) {((unsigned)&((c*)0)->f), sizeof(c::f)}
 
 using namespace draw;
 
@@ -156,34 +157,31 @@ static void many_lines() {
 	}
 }
 
-struct grid_element {
-	const char*		name;
-	gender_s		gender;
-	alignment_s		alignment;
-	char			image;
-	datetime		date;
-};
-const bsreq bsmeta<grid_element>::meta[] = {
-	BSREQ(name),
-	BSREQ(gender),
-	BSREQ(alignment),
-	BSREQ(date),
-	BSREQ(image),
-{}};
-
 static void test_grid() {
-	adat<grid_element, 32> elements;
-	elements.add({"Pavel", Male, ChaoticEvil, 2, datetime::now()});
-	elements.add({"Olga", Female, ChaoticGood, 0, datetime::now() - 5*24*60});
-	elements.add({"Valentin", Male, NeutralGood, 1, datetime::now() - 3 * 24 * 60});
-	elements.add({"Jorgun", Male, LawfulGood, 0, datetime::now() - 4 * 24 * 60});
-	controls::grid test(bsmeta<grid_element>::meta, elements);
-	test.addcol("image", 0, "image");
-	test.addcol("name", "Наименование", "text");
-	test.addcol("gender", "Пол", "ref");
-	test.addcol("alignment", "Мировозрение", "ref");
-	test.addcol("alignment.id", "Мировозрение (англ)", "text");
-	test.addcol("date", "Дата", "datetime");
+	struct element {
+		const char*		name;
+		gender_s		gender;
+		alignment_s		alignment;
+		char			image;
+		char			age;
+		datetime		date;
+	};
+	adat<element, 32> elements;
+	elements.add({"Pavel", Male, ChaoticEvil, 2, 30, datetime::now()});
+	elements.add({"Olga", Female, ChaoticGood, 0, 39, datetime::now() - 5*24*60});
+	elements.add({"Valentin", Male, NeutralGood, 1, 20, datetime::now() - 3 * 24 * 60});
+	elements.add({"Jorgun", Male, LawfulGood, 0, 16, datetime::now() - 4 * 24 * 60});
+	controls::tableref test;
+	test.addcol(0, "image", TBREQ(element, image));
+	test.addcol("Наименование", "text", TBREQ(element, name));
+	test.addcol("Возраст", "number", TBREQ(element, age));
+	test.addcol("Пол", "enum", TBREQ(element, gender));
+	test.addcol("Мировозрение", "enum", TBREQ(element, alignment));
+	test.addcol("Дата", "datetime", TBREQ(element, date));
+	for(auto& e : elements)
+		test.addref(&e);
+	for(auto& e : elements)
+		test.addref(&e);
 	test.no_change_order = false;
 	test.show_grid_lines = true;
 	test.read_only = false;
@@ -191,38 +189,38 @@ static void test_grid() {
 	show_table(test);
 }
 
-static void test_grid_ref() {
-	controls::gridref test(bsmeta<cultivatedi>::meta);
-	test.addcol("name", "Наименование", "text", SizeAuto);
-	test.addcol("cult_land", "Обрабатывается", "number");
-	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-	test.add(bsmeta<cultivatedi>::data.get(0));
-	test.add(bsmeta<cultivatedi>::data.get(1));
-	test.add(bsmeta<cultivatedi>::data.get(1));
-	test.no_change_order = false;
-	test.show_grid_lines = true;
-	test.read_only = false;
-	test.no_change_count = false;
-	show_table(test);
-}
-
-static void test_tree() {
-	struct test_tree_control : controls::tree {
-		void expanding(builder&  e) {
-			e.add((void*)bsmeta<cultivatedi>::data.get(0), 0, 0, false);
-			e.add((void*)bsmeta<cultivatedi>::data.get(1), 1, 0, true);
-			e.add((void*)bsmeta<cultivatedi>::data.get(2), 1, 0, true);
-		}
-		constexpr test_tree_control() : tree(bsmeta<cultivatedi>::meta){}
-	} test;
-	test.select_mode = SelectText;
-	test.addcol("image", 0, "image", SizeInner);
-	test.addcol("name", "Наименование", "text", SizeAuto);
-	test.addcol("cult_land", "Обрабатывается", "number");
-	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-	test.expand(0, 0);
-	show_table(test);
-}
+//static void test_grid_ref() {
+//	controls::gridref test(bsmeta<cultivatedi>::meta);
+//	test.addcol("name", "Наименование", "text", SizeAuto);
+//	test.addcol("cult_land", "Обрабатывается", "number");
+//	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
+//	test.add(bsmeta<cultivatedi>::data.get(0));
+//	test.add(bsmeta<cultivatedi>::data.get(1));
+//	test.add(bsmeta<cultivatedi>::data.get(1));
+//	test.no_change_order = false;
+//	test.show_grid_lines = true;
+//	test.read_only = false;
+//	test.no_change_count = false;
+//	show_table(test);
+//}
+//
+//static void test_tree() {
+//	struct test_tree_control : controls::tree {
+//		void expanding(builder&  e) {
+//			e.add((void*)bsmeta<cultivatedi>::data.get(0), 0, 0, false);
+//			e.add((void*)bsmeta<cultivatedi>::data.get(1), 1, 0, true);
+//			e.add((void*)bsmeta<cultivatedi>::data.get(2), 1, 0, true);
+//		}
+//		constexpr test_tree_control() : tree(bsmeta<cultivatedi>::meta){}
+//	} test;
+//	test.select_mode = SelectText;
+//	test.addcol("image", 0, "image", SizeInner);
+//	test.addcol("name", "Наименование", "text", SizeAuto);
+//	test.addcol("cult_land", "Обрабатывается", "number");
+//	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
+//	test.expand(0, 0);
+//	show_table(test);
+//}
 
 //static void test_widget() {
 //	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
@@ -403,8 +401,8 @@ static void start_menu() {
 	{"Перетаскивание", test_drag_drop},
 	{"Список", test_list},
 	{"Таблица с ячейками", test_grid},
-	{"Таблица ссылок", test_grid_ref},
-	{"Дерево", test_tree},
+	//{"Таблица ссылок", test_grid_ref},
+	//{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
 	{"Приложение", draw::application},

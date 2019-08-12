@@ -1,4 +1,5 @@
 #include "anyval.h"
+#include "anyreq.h"
 #include "bsreq.h"
 #include "draw.h"
 #include "markup.h"
@@ -167,17 +168,19 @@ struct list : control {
 struct visual;
 struct column {
 	const visual*			method;
-	const char*				id;
 	const char*				title;
 	int						width;
-	const char*				tips;
 	column_size_s			size;
 	unsigned				flags;
-	bool operator==(const char* value) const { return value && strcmp(id, value) == 0; }
+	anyreq					value;
+	numproc					getnum;
+	textproc				getstr;
 	explicit operator bool() const { return method != 0; }
+	int						get(const void* object) const;
+	const char*				get(const void* object, char* result, const char* result_end) const;
+	const char*				gete(const void* object, char* result, const char* result_end) const;
 	bool					isvisible() const { return true; }
 	bool					isreadonly() const { return (flags & Disabled) != 0; }
-	column*					setreadonly() { if(!this) return 0; flags |= Disabled; return this; }
 };
 struct table : list {
 	arem<column>			columns;
@@ -190,16 +193,17 @@ struct table : list {
 	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
 		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
 		select_mode(SelectCell) {}
-	virtual column*			addcol(const char* id, const char* name, const char* type, column_size_s size = SizeDefault, int width = 0);
-	void					cell(const rect& rc, int line, int column) const;
+	virtual column*			addcol(const char* name, const char* type, const anyreq& value = anyreq(), column_size_s size = SizeDefault);
 	void					cellbox(const rect& rc, int line, int column);
+	void					celldate(const rect& rc, int line, int column);
+	void					celldatetime(const rect& rc, int line, int column);
+	void					cellenum(const rect& rc, int line, int column);
 	void					cellimage(const rect& rc, int line, int column);
 	void					cellhilite(const rect& rc, int line, int columen, const char* text, image_flag_s aling) const;
 	void					cellnumber(const rect& rc, int line, int column);
 	void					cellpercent(const rect& rc, int line, int column);
 	void					celltext(const rect& rc, int line, int column);
 	bool					change(bool run);
-	virtual bool			changing(int line, int column, const char* name) { return false; }
 	void					changecheck(const rect& rc, int line, int column);
 	bool					changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum);
 	void					changenumber(const rect& rc, int line, int column);
@@ -208,9 +212,7 @@ struct table : list {
 	virtual void			ensurevisible() override;
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
-	virtual aref<column>	getcolumns() const { return aref<column>(); }
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
-	virtual int				getnumber(int line, int column) const { return 0; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	rect					getrect(int row, int column) const;
 	virtual int				gettotal(int column) const { return 0; }
@@ -246,6 +248,7 @@ struct tableref : table, array {
 	};
 	bool					sort_rows_by_name;
 	constexpr tableref(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
+	void					addref(void* object);
 	void					collapse(int index);
 	void					expand(int index, int level);
 	virtual void			expanding(builder& e) {}
@@ -254,8 +257,8 @@ struct tableref : table, array {
 	int						getblockcount(int index) const;
 	int						getimage(int index) const;
 	int						getlevel(int index) const override;
+	virtual int				getmaximum() const override { return array::getcount(); }
 	int						getnext(int index, int increment = 1) const;
-	int						getnumber(int line, int column) const override;
 	int						getparent(int index) const;
 	int						getroot(int index) const;
 	int						gettreecolumn() const;
@@ -267,6 +270,8 @@ struct tableref : table, array {
 	void					open(int max_level);
 	bool					remove(bool run);
 	void					shift(int i1, int i2);
+	bool					sortas(bool run);
+	bool					sortds(bool run);
 	void					toggle(int index);
 	bool					treemarking(bool run) override;
 };

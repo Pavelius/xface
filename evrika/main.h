@@ -68,6 +68,5 @@ struct stamp {
 	short unsigned			counter;
 	constexpr stamp(base_s type = NumberType) : type(type), create_date(0), session(0), counter(0) {}
 	constexpr bool			isnew() const { return create_date != 0; }
-	constexpr base_s		getmeta() const { return type; }
 };
 extern metadata				databases[HeaderType + 1];
