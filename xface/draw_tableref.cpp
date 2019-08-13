@@ -317,3 +317,19 @@ bool tableref::sortds(bool run) {
 //		sort(current_column, false);
 	return true;
 }
+
+//const control::command* tree::getcommands() const {
+//	static command add_elements[] = {{"change", "Изменить", 10, F2, &grid::change},
+//	{"remove", "Удалить", 19, KeyDelete, &tree::remove},
+//	{}};
+//	static command move_elements[] = {{"moveup", "Переместить вверх", 21, 0, &tree::moveup},
+//	{"movedown", "Переместить вверх", 22, 0, &tree::movedown},
+//		//{"sortas", "Сортировать по возрастанию", 11, 0, &grid::sortas},
+//		//{"sortas", "Сортировать по убыванию", 12, 0, &grid::sortds},
+//	{}};
+//	static command elements[] = {{add_elements},
+//	{move_elements},
+//	{"setting", "Настройки", 16, 0, &grid::setting},
+//	{}};
+//	return elements;
+//}

@@ -196,6 +196,7 @@ struct column {
 	column&					setwidth(int v) { width = v; return *this; }
 };
 struct table : list {
+	typedef int				(*proc_compare)(int i1, int i2, void* param);
 	arem<column>			columns;
 	int						current_column, current_hilite_column, current_column_maximum, maximum_width;
 	bool					no_change_count;
@@ -213,6 +214,7 @@ struct table : list {
 	void					celldatetime(const rect& rc, int line, int column);
 	void					cellenum(const rect& rc, int line, int column);
 	void					cellimage(const rect& rc, int line, int column);
+	void					cellrownumber(const rect& rc, int line, int column);
 	void					cellhilite(const rect& rc, int line, int columen, const char* text, image_flag_s aling) const;
 	void					cellnumber(const rect& rc, int line, int column);
 	void					cellpercent(const rect& rc, int line, int column);
@@ -222,7 +224,9 @@ struct table : list {
 	bool					changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum);
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
-	virtual void			clickcolumn(int column) const {}
+	virtual void			clickcolumn(int column) const;
+	static int				comparenum(int i1, int i2, void* param);
+	static int				comparestr(int i1, int i2, void* param);
 	virtual void			ensurevisible() override;
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
@@ -238,6 +242,9 @@ struct table : list {
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
+	void					sort(int i1, int i2, bool ascending, proc_compare comparer, void* param);
+	void					sort(int column, bool ascending);
+	virtual void			swap(int i1, int i2) {}
 	void					view(const rect& rc) override;
 	static const visual		visuals[];
 private:
@@ -296,6 +303,7 @@ struct visual {
 	total_s					total;
 	proc_render				render;
 	proc_render				change;
+	table::proc_compare		comparer;
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };

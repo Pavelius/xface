@@ -182,6 +182,7 @@ static void test_grid() {
 	elements.add({"Valentin", Male, NeutralGood, 1, 20, 0, datetime::now() - 3 * 24 * 60});
 	elements.add({"Jorgun", Male, LawfulGood, 0, 16, 0, datetime::now() - 4 * 24 * 60});
 	controls::tableref test;
+	test.addcol("#", "rownumber");
 	test.addcol(0, "image", ANREQ(element, image));
 	test.addcol("Наименование", "text", ANREQ(element, name)).set(SizeAuto);
 	test.addcol("Норма", "checkbox", ANBIT(element, flags, AreaNormal));

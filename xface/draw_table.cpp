@@ -5,6 +5,68 @@
 using namespace draw;
 using namespace draw::controls;
 
+static int		current_sort_column;
+static bool		current_order;
+static table*	current_element;
+
+struct table_sort_param {
+	table*		element;
+	int			column;
+};
+
+int table::comparestr(int i1, int i2, void* param) {
+	auto ps = (table_sort_param*)param;
+	auto pc = ps->element;
+	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
+	auto n1 = pc->columns[ps->column].gete(pc->get(i1), t1, t1 + sizeof(t1) - 1);
+	auto n2 = pc->columns[ps->column].gete(pc->get(i2), t2, t2 + sizeof(t2) - 1);
+	return strcmp(n1, n2);
+}
+
+int table::comparenum(int i1, int i2, void* param) {
+	auto ps = (table_sort_param*)param;
+	auto pe = ps->element;
+	auto pc = &pe->columns[ps->column];
+	return pc->get(pe->get(i1)) - pc->get(pe->get(i2));
+}
+
+void table::sort(int i1, int i2, bool ascending, proc_compare comparer, void* param) {
+	if(ascending) {
+		for(int i = i2; i > i1; i--) {
+			for(int j = i1; j < i; j++)
+				if(comparer(j, j + 1, param) > 0)
+					swap(j, j + 1);
+		}
+	} else {
+		for(int i = i2; i > i1; i--) {
+			for(int j = i1; j < i; j++)
+				if(comparer(j, j + 1, param) < 0)
+					swap(j, j + 1);
+		}
+	}
+}
+
+void table::sort(int column, bool ascending) {
+	table_sort_param e;
+	e.element = this;
+	e.column = column;
+}
+
+static void table_sort_column() {
+	if(hot.param == current_sort_column)
+		current_order = !current_order;
+	else {
+		current_sort_column = hot.param;
+		current_order = true;
+	}
+	current_element->sort(hot.param, current_order);
+}
+
+void table::clickcolumn(int column) const {
+	current_element = const_cast<table*>(this);
+	draw::execute(table_sort_column, column);
+}
+
 int	column::get(const void* object) const {
 	if(getnum)
 		return getnum(object);
@@ -110,7 +172,7 @@ int table::rowheader(const rect& rc) const {
 	gradv(rch, b1, b2);
 	rectb(rch, colors::border);
 	draw::state push;
-	draw::setclip({rc.x1, rc.y1, rc.x2, rc.y2+1});
+	draw::setclip({rc.x1, rc.y1, rc.x2, rc.y2 + 1});
 	color active = colors::button.mix(colors::edit, 128);
 	color a1 = active.lighten();
 	color a2 = active.darken();
@@ -186,7 +248,7 @@ int	table::gettotal(int column) const {
 	default:
 		for(auto i = 0; i < m; i++)
 			result += c.get(get(i));
-		if(type==TotalAverage)
+		if(type == TotalAverage)
 			result = result / m;
 		break;
 	}
@@ -223,7 +285,7 @@ void table::rowtotal(const rect& rc) const {
 		if(result) {
 			zprint(temp, "%1i", result);
 			auto r2 = r1; r2.offset(4);
-			draw::text(r2, temp, AlignRight|TextSingleLine);
+			draw::text(r2, temp, AlignRight | TextSingleLine);
 		}
 		r1.x1 = r1.x2;
 	}
@@ -491,6 +553,11 @@ void table::cellimage(const rect& rc, int line, int column) {
 		image(rc.x1 + rc.width() / 2, rc.y1 + rc.height() / 2, s, v, 0);
 }
 
+void table::cellrownumber(const rect& rc, int line, int column) {
+	char temp[32]; zprint(temp, "%1i", line + 1);
+	cell(rc, line, column, temp, AlignRight);
+}
+
 void table::cellnumber(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i", columns[column].get(get(line)));
@@ -535,12 +602,13 @@ const visual** table::getvisuals() const {
 	static const visual* elements[] = {visuals, 0};
 	return elements;
 }
-const visual table::visuals[] = {{"number", "Числовое поле", 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber},
+const visual table::visuals[] = {{"number", "Числовое поле", 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, table::comparenum},
+{"rownumber", "Номер рядка", 8, 40, SizeResized, NoTotal, &table::cellrownumber},
 {"checkbox", "Пометка", 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck},
-{"date", "Дата", 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate},
-{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime},
-{"text", "Текстовое поле", 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext},
+{"date", "Дата", 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
+{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
+{"text", "Текстовое поле", 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
 {"enum", "Перечисление", 8, 200, SizeResized, NoTotal, &table::cellenum},
-{"percent", "Процент", 40, 60, SizeResized, NoTotal, &table::cellpercent, &table::changenumber},
-{"image", "Изображение", 20, 20, SizeInner, NoTotal, &table::cellimage},
+{"percent", "Процент", 40, 60, SizeResized, NoTotal, &table::cellpercent, &table::changenumber, table::comparenum},
+{"image", "Изображение", 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
 {}};

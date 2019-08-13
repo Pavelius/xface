@@ -147,9 +147,6 @@
     <ClCompile Include="requisit.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="draw_tree.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
     <ClCompile Include="draw_control.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
