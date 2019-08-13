@@ -25,8 +25,6 @@ struct grid : table, array {
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
 	bsval					getvalue(int row, int column) const;
-	const visual*			getvisuals() const override { return standart_visuals; }
-	visual**				getvisualsparent() const override { return standart_visualsparent; }
 	bool					keyinput(unsigned id) override;
 	bool					movedown(bool run);
 	bool					moveup(bool run);

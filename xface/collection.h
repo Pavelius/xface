@@ -1,10 +1,29 @@
-#include "initializer_list.h"
-
 #pragma once
 
 unsigned					rmoptimal(unsigned need_count);
+void						rmremove(void* data, unsigned size, unsigned index, unsigned& count, int elements_count);
 void*						rmreserve(void* data, unsigned new_size);
-void*						rmreserve(void* data, unsigned count, unsigned& count_maximum, unsigned size);
+void						rmreserve(void** data, unsigned count, unsigned& count_maximum, unsigned size);
+
+namespace std {
+template<class T> class initializer_list {	// list of pointers to elements
+public:
+	typedef T				value_type;
+	typedef const T&		reference;
+	typedef const T&		const_reference;
+	typedef unsigned		size_type;
+	typedef const T*		iterator;
+	typedef const T*		const_iterator;
+	constexpr initializer_list() noexcept : first(0), last(0) {}
+	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
+	constexpr const T*		begin() const noexcept { return first; }
+	constexpr const T*		end() const noexcept { return last; }
+	constexpr unsigned		size() const noexcept { return last - first; }
+private:
+	const T*				first;
+	const T*				last;
+};
+}
 
 // Basic autogrow array
 struct arraydata {
@@ -24,7 +43,7 @@ struct arraydata {
 	void*					add(unsigned size);
 	void*					begin() const { return (char*)this + sizeof(*this); }
 	void					clear();
-	void*					end(unsigned size) { return (char*)this + sizeof(*this) + count*size; }
+	void*					end(unsigned size) { return (char*)this + sizeof(*this) + count * size; }
 	unsigned				getcount() const;
 	void*					get(int index, unsigned size) const;
 	int						indexof(const void* e, unsigned size) const;
@@ -108,19 +127,11 @@ struct arem : aref<T> {
 	constexpr arem() : aref<T>(0, 0), count_maximum(0) {}
 	constexpr arem(T* source, unsigned count) : aref<T>(source, count), count_maximum(0) {}
 	~arem() { if(aref<T>::data && count_maximum) delete aref<T>::data; }
-	T*						add() { reserve(this->count + 1); return &aref<T>::data[aref<T>::count++]; }
+	T*						add() { reserve(aref<T>::count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }
 	void					clear() { aref<T>::count = 0; }
-	void					remove(int index, int elements_count = 1) {
-		if((unsigned)index >= aref<T>::count)
-			return;
-		aref<T>::count -= elements_count;
-		if((unsigned)index >= aref<T>::count)
-			return;
-		memmove(aref<T>::data + index, aref<T>::data + index + elements_count,
-			sizeof(T)*(aref<T>::count - index));
-	}
-	void					reserve(unsigned count) { aref<T>::data = (T*)rmreserve(aref<T>::data, count, count_maximum, sizeof(T)); }
+	void					remove(int index, int elements_count = 1) { rmremove(aref<T>::data, sizeof(T), index, aref<T>::count, elements_count); }
+	void					reserve(unsigned count) { rmreserve((void**)&(aref<T>::data), count, count_maximum, sizeof(T)); }
 };
 // Abstract flag data bazed on enumerator
 template<typename T, typename DT = unsigned>
@@ -208,7 +219,7 @@ struct arrayref {
 	template<typename T, unsigned N> constexpr arrayref(adat<T, N>& e) : data((char**)&e.data), count(e.count), size(sizeof(T)), count_value(), data_value() {}
 	template<typename T, unsigned N> constexpr arrayref(T(&e)[N]) : data(&data_value), count(count_value), size(sizeof(T)), count_value(), data_value((char*)&e) {}
 	void*					get(int index) const { return (char*)(*data) + size * index; }
-	int						indexof(const void* t) const { if(t<(*data) || t>(*data) + count*size) return -1; return ((char*)t - (*data))/size; }
+	int						indexof(const void* t) const { if(t<(*data) || t>(*data) + count * size) return -1; return ((char*)t - (*data)) / size; }
 private:
 	unsigned				count_value;
 	char*					data_value;

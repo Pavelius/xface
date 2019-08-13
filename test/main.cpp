@@ -6,8 +6,6 @@
 #include "xface/valuelist.h"
 #include "main.h"
 
-#define TBREQ(c, f) {((unsigned)&((c*)0)->f), sizeof(c::f)}
-
 using namespace draw;
 
 void logmsg(const char* format, ...);
@@ -157,6 +155,15 @@ static void many_lines() {
 	}
 }
 
+static bool test_switch_anyreq() {
+	switch(ANOFS(anyreq, size)) {
+	case ANOFS(anyreq, offset): return false;
+	case ANOFS(anyreq, bit): return false;
+	case ANOFS(anyreq, size): return true;
+	default: return false;
+	}
+}
+
 static void test_grid() {
 	struct element {
 		const char*		name;
@@ -166,18 +173,20 @@ static void test_grid() {
 		char			age;
 		datetime		date;
 	};
+	if(!test_switch_anyreq())
+		return;
 	adat<element, 32> elements;
 	elements.add({"Pavel", Male, ChaoticEvil, 2, 30, datetime::now()});
 	elements.add({"Olga", Female, ChaoticGood, 0, 39, datetime::now() - 5*24*60});
 	elements.add({"Valentin", Male, NeutralGood, 1, 20, datetime::now() - 3 * 24 * 60});
 	elements.add({"Jorgun", Male, LawfulGood, 0, 16, datetime::now() - 4 * 24 * 60});
 	controls::tableref test;
-	test.addcol(0, "image", TBREQ(element, image));
-	test.addcol("Наименование", "text", TBREQ(element, name));
-	test.addcol("Возраст", "number", TBREQ(element, age));
-	test.addcol("Пол", "enum", TBREQ(element, gender));
-	test.addcol("Мировозрение", "enum", TBREQ(element, alignment));
-	test.addcol("Дата", "datetime", TBREQ(element, date));
+	test.addcol(0, "image", ANREQ(element, image));
+	test.addcol("Наименование", "text", ANREQ(element, name)).set(SizeAuto);
+	test.addcol("Возраст", "number", ANREQ(element, age));
+	test.addcol("Пол", "enum", ANREQ(element, gender));
+	test.addcol("Мировозрение", "enum", ANREQ(element, alignment));
+	test.addcol("Дата", "datetime", ANREQ(element, date));
 	for(auto& e : elements)
 		test.addref(&e);
 	for(auto& e : elements)

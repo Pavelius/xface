@@ -35,6 +35,9 @@ enum dock_s : unsigned char {
 	DockRight, DockRightBottom,
 	DockBottom, DockWorkspace,
 };
+enum column_s : unsigned char {
+	ColumnVisible, ColumnReadOnly,
+};
 struct cmd {
 	eventproc				proc;
 	int						param;
@@ -171,7 +174,7 @@ struct column {
 	const char*				title;
 	int						width;
 	column_size_s			size;
-	unsigned				flags;
+	cflags<column_s>		flags;
 	anyreq					value;
 	numproc					getnum;
 	textproc				getstr;
@@ -179,8 +182,12 @@ struct column {
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
 	const char*				gete(const void* object, char* result, const char* result_end) const;
-	bool					isvisible() const { return true; }
-	bool					isreadonly() const { return (flags & Disabled) != 0; }
+	bool					is(column_s v) const { return flags.is(v); }
+	column&					set(column_size_s v) { size = v; return *this; }
+	column&					set(column_s v) { flags.add(v); return *this; }
+	column&					set(numproc v) { getnum = v; return *this; }
+	column&					set(textproc v) { getstr = v; return *this; }
+	column&					setwidth(int v) { width = v; return *this; }
 };
 struct table : list {
 	arem<column>			columns;
@@ -193,7 +200,8 @@ struct table : list {
 	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
 		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
 		select_mode(SelectCell) {}
-	virtual column*			addcol(const char* name, const char* type, const anyreq& value = anyreq(), column_size_s size = SizeDefault);
+	virtual column&			addcol(const char* name, const char* type, const anyreq& value = anyreq());
+	void					cell(const rect& rc, int line, int column, const char* text, image_flag_s align);
 	void					cellbox(const rect& rc, int line, int column);
 	void					celldate(const rect& rc, int line, int column);
 	void					celldatetime(const rect& rc, int line, int column);
@@ -218,16 +226,15 @@ struct table : list {
 	virtual int				gettotal(int column) const { return 0; }
 	virtual const char*		gettotal(char* result, const char* result_maximum, int column) const { return 0; }
 	int						getvalid(int column, int direction = 1) const;
-	virtual const visual*	getvisuals() const { return standart_visuals; }
-	virtual visual**		getvisualsparent() const { return 0; }
+	virtual const visual**	getvisuals() const;
 	bool					keyinput(unsigned id) override;
 	void					mouseselect(int id, bool pressed) override;
 	virtual void			row(const rect& rc, int index) override; // Draw single row - part of list
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
-	static visual			standart_visuals[];
 	void					view(const rect& rc) override;
+	static const visual		visuals[];
 private:
 	void					update_columns(const rect& rc);
 };

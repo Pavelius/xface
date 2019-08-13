@@ -56,8 +56,8 @@ static void before_application_exit() {
 static struct widget_logging : control::plugin, table {
 
 	void after_initialize() override {
-		auto p1 = addcol("Дата", "text", SizeFixed); p1->width = textw("0") * 15 + 4;
-		addcol("Сообщение", "text", SizeAuto);
+		addcol("Дата", "text").setwidth(textw("0") * 15 + 4).set(SizeFixed);
+		addcol("Сообщение", "text").set(SizeAuto);
 	}
 
 	control& getcontrol() override {

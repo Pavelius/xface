@@ -68,7 +68,7 @@ int	table::getvalid(int column, int direction) const {
 			return current_column;
 		if(column < 0 || (unsigned)column >= columns.count)
 			return current_column;
-		if(!columns[column].isvisible()
+		if(!columns[column].is(ColumnVisible)
 			|| columns[column].size == SizeInner) {
 			if(direction)
 				column += direction;
@@ -120,7 +120,7 @@ int table::rowheader(const rect& rc) const {
 	r1.y1 = rch.y1;
 	r1.y2 = rch.y2;
 	for(unsigned i = 0; i < columns.count; i++) {
-		if(!columns[i].isvisible())
+		if(!columns[i].is(ColumnVisible))
 			continue;
 		if(dragactive(&columns[i])) {
 		}
@@ -179,7 +179,7 @@ void table::rowtotal(const rect& rc) const {
 	r1.y1 = rch.y1;
 	r1.y2 = rch.y2;
 	for(unsigned i = 0; i < columns.count; i++) {
-		if(!columns[i].isvisible())
+		if(!columns[i].is(ColumnVisible))
 			continue;
 		r1.x2 = r1.x2 + columns[i].width;
 		if(columns[i].size == SizeInner)
@@ -210,7 +210,7 @@ void table::row(const rect& rc, int index) {
 	auto level_ident = 0;
 	for(unsigned i = 0; i < columns.count; i++) {
 		auto pc = columns.data + i;
-		if(!pc->isvisible())
+		if(!pc->is(ColumnVisible))
 			continue;
 		if(need_tree) {
 			auto level = getlevel(index);
@@ -261,7 +261,7 @@ rect table::getrect(int row, int column) const {
 	if(column >= columns.getcount())
 		column = columns.getcount() - 1;
 	for(auto i = 0; i <= column; i++) {
-		if(!columns[i].isvisible())
+		if(!columns[i].is(ColumnVisible))
 			continue;
 		rs.x1 = rs.x2;
 		rs.x2 = rs.x1 + columns[i].width;
@@ -277,7 +277,7 @@ void table::view(const rect& rc) {
 	update_columns(rc);
 	maximum_width = 0;
 	for(unsigned i = 0; i < columns.count; i++) {
-		if(!columns[i].isvisible())
+		if(!columns[i].is(ColumnVisible))
 			continue;
 		rt.x1 = rc.x1 - origin_width + maximum_width;
 		rt.x2 = rt.x1 + columns[i].width;
@@ -314,30 +314,28 @@ bool table::keyinput(unsigned id) {
 	return true;
 }
 
-column* table::addcol(const char* name, const char* type, const anyreq& value, draw::column_size_s size) {
-	auto pf = getvisuals()->find(type);
-	if(!pf) {
-		for(auto pp = getvisualsparent(); pp && *pp; pp++) {
-			pf = (*pp)->find(type);
-			if(pf)
-				break;
-		}
-	}
-	if(!pf)
-		return 0;
+column& table::addcol(const char* name, const char* type, const anyreq& value) {
+	const visual* pf = 0;
 	auto p = columns.add();
 	memset(p, 0, sizeof(column));
-	p->method = pf;
+	for(auto pp = getvisuals(); pp && *pp; pp++) {
+		pf = (*pp)->find(type);
+		if(pf)
+			break;
+	}
+	if(pf) {
+		p->method = pf;
+		p->flags.add(ColumnVisible);
+	} else
+		p->method = visuals;
 	p->title = szdup(name);
-	p->size = size;
 	p->value = value;
-	if(p->size == SizeDefault)
-		p->size = p->method->size;
+	p->size = p->method->size;
 	p->width = p->method->default_width;
 	if(!p->width)
 		p->width = 100;
 	current_column = getvalid(current_column, 1);
-	return p;
+	return *p;
 }
 
 bool table::changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum) {
@@ -392,7 +390,7 @@ bool table::change(bool run) {
 		return false;
 	if(current >= getmaximum())
 		return false;
-	if(columns[current_column].isreadonly())
+	if(columns[current_column].is(ColumnReadOnly))
 		return false;
 	auto pv = columns[current_column].method;
 	if(!pv)
@@ -407,11 +405,11 @@ bool table::change(bool run) {
 	return true;
 }
 
-void table::cellbox(const rect& rc, int line, int column) {
-	unsigned flags = 0;
-	if(columns[current_column].get(get(current)))
-		flags |= Checked;
-	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, flags, ":check");
+void table::cell(const rect& rc, int line, int column, const char* ps, image_flag_s align) {
+	if(!ps)
+		return;
+	cellhilite(rc, line, column, ps, align);
+	draw::text(rc, ps, align);
 }
 
 void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {
@@ -439,20 +437,14 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 
 void table::cellenum(const rect& rc, int line, int column) {
 	char temp[260];
-	auto p = columns[column].gete(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
-	if(p) {
-		cellhilite(rc, line, column, p, AlignLeft);
-		draw::text(rc, p, AlignLeft);
-	}
+	auto ps = columns[column].gete(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
+	cell(rc, line, column, ps, AlignLeft);
 }
 
 void table::celltext(const rect& rc, int line, int column) {
 	char temp[260];
-	auto p = columns[column].get(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
-	if(p) {
-		cellhilite(rc, line, column, p, AlignLeft);
-		draw::text(rc, p, AlignLeft);
-	}
+	auto ps = columns[column].get(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
+	cell(rc, line, column, ps, AlignLeft);
 }
 
 void table::cellimage(const rect& rc, int line, int column) {
@@ -465,15 +457,13 @@ void table::cellimage(const rect& rc, int line, int column) {
 void table::cellnumber(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i", columns[column].get(get(line)));
-	cellhilite(rc, line, column, temp, AlignRight);
-	draw::text(rc, temp, AlignRight);
+	cell(rc, line, column, temp, AlignRight);
 }
 
 void table::cellpercent(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i%%", columns[column].get(get(line)));
-	cellhilite(rc, line, column, temp, AlignRight);
-	draw::text(rc, temp, AlignRight);
+	cell(rc, line, column, temp, AlignRight);
 }
 
 void table::celldate(const rect& rc, int line, int column) {
@@ -483,8 +473,7 @@ void table::celldate(const rect& rc, int line, int column) {
 	char temp[260];
 	zprint(temp, "%1.2i.%2.2i.%3.2i",
 		d.day(), d.month(), d.year());
-	cellhilite(rc, line, column, temp, AlignLeft);
-	draw::text(rc, temp, AlignLeft);
+	cell(rc, line, column, temp, AlignLeft);
 }
 
 void table::celldatetime(const rect& rc, int line, int column) {
@@ -494,15 +483,25 @@ void table::celldatetime(const rect& rc, int line, int column) {
 	char temp[260];
 	zprint(temp, "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
 		d.day(), d.month(), d.year(), d.hour(), d.minute());
-	cellhilite(rc, line, column, temp, AlignLeft);
-	draw::text(rc, temp, AlignLeft);
+	cell(rc, line, column, temp, AlignLeft);
 }
 
-visual table::standart_visuals[] = {{"checkbox", "Пометка", 20, 20, SizeFixed, &table::cellbox, &table::changecheck},
+void table::cellbox(const rect& rc, int line, int column) {
+	unsigned flags = 0;
+	if(columns[current_column].get(get(current)))
+		flags |= Checked;
+	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, flags, ":check");
+}
+
+const visual** table::getvisuals() const {
+	static const visual* elements[] = {visuals, 0};
+	return elements;
+}
+const visual table::visuals[] = {{"number", "Числовое поле", 8, 80, SizeResized, &table::cellnumber, &table::changenumber},
+{"checkbox", "Пометка", 20, 20, SizeFixed, &table::cellbox, &table::changecheck},
 {"date", "Дата", 8, 10 * 10 + 4, SizeResized, &table::celldate},
 {"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, &table::celldatetime},
 {"text", "Текстовое поле", 8, 200, SizeResized, &table::celltext, &table::changetext},
-{"number", "Числовое поле", 8, 80, SizeResized, &table::cellnumber, &table::changenumber},
 {"enum", "Перечисление", 8, 200, SizeResized, &table::cellenum},
 {"percent", "Процент", 40, 60, SizeResized, &table::cellpercent, &table::changenumber},
 {"image", "Изображение", 20, 20, SizeInner, &table::cellimage},

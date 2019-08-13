@@ -22,12 +22,20 @@ void* rmreserve(void* data, unsigned new_size) {
 	return malloc(new_size);
 }
 
-void* rmreserve(void* data, unsigned count, unsigned& count_maximum, unsigned size) {
+void rmreserve(void** data, unsigned count, unsigned& count_maximum, unsigned size) {
 	if(count >= count_maximum) {
 		count_maximum = rmoptimal(count + 1);
-		data = rmreserve(data, count_maximum * size);
+		*data = rmreserve(*data, count_maximum * size);
 	}
-	return data;
+}
+
+void rmremove(void* data, unsigned size, unsigned index, unsigned& count, int elements_count) {
+	if(index >= count)
+		return;
+	count -= elements_count;
+	if(index >= count)
+		return;
+	memmove((char*)data + index*size, (char*)data + (index + elements_count)*size, (count - index)*size);
 }
 
 void* arraydata::add(unsigned size) {

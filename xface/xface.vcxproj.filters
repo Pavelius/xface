@@ -248,9 +248,6 @@
     <ClInclude Include="archive.h">
       <Filter>collections</Filter>
     </ClInclude>
-    <ClInclude Include="initializer_list.h">
-      <Filter>collections</Filter>
-    </ClInclude>
     <ClInclude Include="string.h">
       <Filter>strings</Filter>
     </ClInclude>

@@ -1,5 +1,7 @@
 #include "anyreq.h"
 
+static_assert(sizeof(anyreq) == sizeof(int), "Size anyreq class can't be different from integer size");
+
 int anyreq::get(void* object) const {
 	switch(size) {
 	case 1: return *((char*)object);

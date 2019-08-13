@@ -221,7 +221,6 @@
     <ClInclude Include="draw_grid.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="initializer_list.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="pointl.h" />
