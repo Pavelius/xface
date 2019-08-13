@@ -179,6 +179,7 @@ struct column {
 	int						width;
 	column_size_s			size;
 	total_s					total;
+	image_flag_s			align;
 	cflags<column_s>		flags;
 	anyreq					value;
 	numproc					getnum;
@@ -188,6 +189,7 @@ struct column {
 	const char*				get(const void* object, char* result, const char* result_end) const;
 	const char*				gete(const void* object, char* result, const char* result_end) const;
 	bool					is(column_s v) const { return flags.is(v); }
+	column&					set(image_flag_s v) { align = v; return *this; }
 	column&					set(column_size_s v) { size = v; return *this; }
 	column&					set(column_s v) { flags.add(v); return *this; }
 	column&					set(total_s v) { total = v; return *this; }
@@ -208,7 +210,7 @@ struct table : list {
 		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const char* name, const char* type, const anyreq& value = anyreq());
-	void					cell(const rect& rc, int line, int column, const char* text, image_flag_s align);
+	void					cell(const rect& rc, int line, int column, const char* text);
 	void					cellbox(const rect& rc, int line, int column);
 	void					celldate(const rect& rc, int line, int column);
 	void					celldatetime(const rect& rc, int line, int column);
@@ -298,6 +300,7 @@ struct visual {
 	typedef void			(table::*proc_render)(const rect& rc, int line, int column);
 	const char*				id;
 	const char*				name;
+	image_flag_s			align;
 	int						minimal_width, default_width;
 	column_size_s			size;
 	total_s					total;

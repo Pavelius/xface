@@ -424,6 +424,7 @@ column& table::addcol(const char* name, const char* type, const anyreq& value) {
 	p->size = p->method->size;
 	p->width = p->method->default_width;
 	p->total = p->method->total;
+	p->align = p->method->align;
 	if(!p->width)
 		p->width = 100;
 	current_column = getvalid(current_column, 1);
@@ -446,7 +447,7 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 void table::changenumber(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i", columns[column].get(get(line)));
-	if(changefield(rc, AlignRight, temp, zendof(temp))) {
+	if(changefield(rc, columns[column].align, temp, zendof(temp))) {
 		auto& v = columns[current_column].value;
 		v.set(v.ptr(get(line)), sz2num(temp));
 	}
@@ -456,7 +457,7 @@ void table::changetext(const rect& rc, int line, int column) {
 	char temp[8192];
 	auto value = columns[column].value.gets(get(line));
 	zcpy(temp, value, sizeof(temp) - 1);
-	if(changefield(rc, 0, temp, zendof(temp))) {
+	if(changefield(rc, columns[column].align, temp, zendof(temp))) {
 		auto& v = columns[column].value;
 		if(v.size == sizeof(const char*)) {
 			if(temp[0])
@@ -497,9 +498,10 @@ bool table::change(bool run) {
 	return true;
 }
 
-void table::cell(const rect& rc, int line, int column, const char* ps, image_flag_s align) {
+void table::cell(const rect& rc, int line, int column, const char* ps) {
 	if(!ps)
 		return;
+	auto align = columns[column].align;
 	cellhilite(rc, line, column, ps, align);
 	bool clipped = false;
 	textc(rc.x1, rc.y1, rc.width(), ps, -1, align, &clipped);
@@ -537,13 +539,13 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 void table::cellenum(const rect& rc, int line, int column) {
 	char temp[260];
 	auto ps = columns[column].gete(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
-	cell(rc, line, column, ps, AlignLeft);
+	cell(rc, line, column, ps);
 }
 
 void table::celltext(const rect& rc, int line, int column) {
 	char temp[260];
 	auto ps = columns[column].get(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
-	cell(rc, line, column, ps, AlignLeft);
+	cell(rc, line, column, ps);
 }
 
 void table::cellimage(const rect& rc, int line, int column) {
@@ -555,19 +557,19 @@ void table::cellimage(const rect& rc, int line, int column) {
 
 void table::cellrownumber(const rect& rc, int line, int column) {
 	char temp[32]; zprint(temp, "%1i", line + 1);
-	cell(rc, line, column, temp, AlignRight);
+	cell(rc, line, column, temp);
 }
 
 void table::cellnumber(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i", columns[column].get(get(line)));
-	cell(rc, line, column, temp, AlignRight);
+	cell(rc, line, column, temp);
 }
 
 void table::cellpercent(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i%%", columns[column].get(get(line)));
-	cell(rc, line, column, temp, AlignRight);
+	cell(rc, line, column, temp);
 }
 
 void table::celldate(const rect& rc, int line, int column) {
@@ -577,7 +579,7 @@ void table::celldate(const rect& rc, int line, int column) {
 	char temp[260];
 	zprint(temp, "%1.2i.%2.2i.%3.2i",
 		d.day(), d.month(), d.year());
-	cell(rc, line, column, temp, AlignLeft);
+	cell(rc, line, column, temp);
 }
 
 void table::celldatetime(const rect& rc, int line, int column) {
@@ -587,14 +589,14 @@ void table::celldatetime(const rect& rc, int line, int column) {
 	char temp[260];
 	zprint(temp, "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
 		d.day(), d.month(), d.year(), d.hour(), d.minute());
-	cell(rc, line, column, temp, AlignLeft);
+	cell(rc, line, column, temp);
 }
 
 void table::cellbox(const rect& rc, int line, int column) {
 	unsigned flags = 0;
 	if(columns[column].get(get(line)))
 		flags |= Checked;
-	cellhilite(rc, line, column, 0, AlignLeft);
+	cellhilite(rc, line, column, 0, AlignCenter);
 	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, flags, ":check");
 }
 
@@ -602,13 +604,14 @@ const visual** table::getvisuals() const {
 	static const visual* elements[] = {visuals, 0};
 	return elements;
 }
-const visual table::visuals[] = {{"number", "Числовое поле", 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, table::comparenum},
-{"rownumber", "Номер рядка", 8, 40, SizeResized, NoTotal, &table::cellrownumber},
-{"checkbox", "Пометка", 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck},
-{"date", "Дата", 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
-{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
-{"text", "Текстовое поле", 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
-{"enum", "Перечисление", 8, 200, SizeResized, NoTotal, &table::cellenum},
-{"percent", "Процент", 40, 60, SizeResized, NoTotal, &table::cellpercent, &table::changenumber, table::comparenum},
-{"image", "Изображение", 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
+
+const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, table::comparenum},
+{"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
+{"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck},
+{"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
+{"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
+{"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
+{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::cellenum},
+{"percent", "Процент", AlignRight, 40, 60, SizeResized, NoTotal, &table::cellpercent, &table::changenumber, table::comparenum},
+{"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
 {}};
