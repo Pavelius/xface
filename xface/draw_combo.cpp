@@ -10,7 +10,7 @@ static unsigned		combo_time;
 static char			combo_name[32];
 static bsval		combo_value;
 static rect			combo_rect;
-static listproc*	combo_choose;
+static listproc		combo_choose;
 
 static const char* getv(const void* object, const bsreq* type) {
 	if(!object || !type)

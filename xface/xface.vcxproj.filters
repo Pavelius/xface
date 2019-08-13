@@ -135,9 +135,6 @@
     <ClCompile Include="draw_dropdown.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
-    <ClCompile Include="draw_grid.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
     <ClCompile Include="draw_tool.cpp">
       <Filter>draw\simple</Filter>
     </ClCompile>
@@ -280,9 +277,6 @@
     </ClInclude>
     <ClInclude Include="bstream.h">
       <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="draw_grid.h">
-      <Filter>draw\controls</Filter>
     </ClInclude>
     <ClInclude Include="requisit.h">
       <Filter>support</Filter>

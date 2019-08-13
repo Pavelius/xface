@@ -18,8 +18,8 @@ int table::comparestr(int i1, int i2, void* param) {
 	auto ps = (table_sort_param*)param;
 	auto pc = ps->element;
 	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
-	auto n1 = pc->columns[ps->column].gete(pc->get(i1), t1, t1 + sizeof(t1) - 1);
-	auto n2 = pc->columns[ps->column].gete(pc->get(i2), t2, t2 + sizeof(t2) - 1);
+	auto n1 = pc->columns[ps->column].get(pc->get(i1), t1, t1 + sizeof(t1) - 1);
+	auto n2 = pc->columns[ps->column].get(pc->get(i2), t2, t2 + sizeof(t2) - 1);
 	return strcmp(n1, n2);
 }
 
@@ -82,8 +82,17 @@ const char* column::get(const void* object, char* result, const char* result_end
 const char* column::gete(const void* object, char* result, const char* result_end) const {
 	if(getstr)
 		return getstr(object, result, result_end);
+	if(!param)
+		return "Нет типа";
+	if(!getptr)
+		return "Нет смещения";
+	if(!getname)
+		return "Нет имени";
 	auto v = value.get(value.ptr((void*)object));
-	return "";
+	auto p = getptr(v, (void*)param);
+	if(!p)
+		return "";
+	return getname(p, (void*)param);
 }
 
 void table::update_columns(const rect& rc) {
@@ -620,6 +629,6 @@ const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, 
 {"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
 {"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
 {"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::cellenum},
-{"percent", "Процент", AlignRight, 40, 60, SizeResized, NoTotal, &table::cellpercent, &table::changenumber, table::comparenum},
+{"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, table::comparenum},
 {"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
 {}};

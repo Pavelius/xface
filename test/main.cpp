@@ -20,9 +20,9 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 "Soldier", "Heavy Soldier", "Sniper", "Commando"
 };
 
-genderi bsmeta<genderi>::elements[] = {{"Неизвестен"},
-{"Мужчина"},
-{"Женщина"},
+genderi bsmeta<genderi>::elements[] = {{"NoGender", "Неизвестен"},
+{"Male", "Мужчина"},
+{"Female", "Женщина"},
 };
 assert_enum(gender, Female);
 
@@ -189,8 +189,8 @@ static void test_grid() {
 	test.addcol("Пометка", "checkbox", ANBIT(element, flags, AreaHilited));
 	test.addcol("Нажато", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
 	test.addcol("Возраст", "number", ANREQ(element, age));
-	test.addcol("Пол", "enum", ANREQ(element, gender));
-	test.addcol("Мировозрение", "enum", ANREQ(element, alignment));
+	test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
+	test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);
 	test.addcol("Дата", "datetime", ANREQ(element, date));
 	for(auto& e : elements)
 		test.addref(&e);

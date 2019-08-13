@@ -7,7 +7,9 @@
 
 #pragma once
 
-typedef void listproc(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
+typedef void(*listproc)(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
+typedef const char*		(*nameproc)(const void* object, void* type);
+typedef void*			(*getoproc)(int index, void* type);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -182,9 +184,11 @@ struct column {
 	unsigned				param;
 	cflags<column_s>		flags;
 	anyreq					value;
+	image_flag_s			align;
 	numproc					getnum;
 	textproc				getstr;
-	image_flag_s			align;
+	nameproc				getname;
+	getoproc				getptr;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
@@ -196,10 +200,12 @@ struct column {
 	column&					set(total_s v) { total = v; return *this; }
 	column&					set(numproc v) { getnum = v; return *this; }
 	column&					set(textproc v) { getstr = v; return *this; }
+	column&					set(getoproc v, nameproc np, void* p) { getptr = v; getname = np; param = (unsigned)p; return *this; }
+	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
 struct table : list {
-	typedef int				(*proc_compare)(int i1, int i2, void* param);
+	typedef int(*proc_compare)(int i1, int i2, void* param);
 	arem<column>			columns;
 	int						current_column, current_hilite_column, current_column_maximum, maximum_width;
 	bool					no_change_count;

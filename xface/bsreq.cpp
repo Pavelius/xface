@@ -165,6 +165,21 @@ const void* bsdata::find(const bsreq* id, const void* value, unsigned size) cons
 	return 0;
 }
 
+void* bsdata::getptr(int index, void* type) {
+	return (void*)((bsdata*)type)->get(index);
+}
+
+const char* bsdata::getpresent(const void* object, void* type) {
+	if(!object)
+		return "Не заполнено";
+	auto pb = ((bsdata*)type);
+	auto pn = pb->meta->getname();
+	if(!pn)
+		return "Нет представления";
+	auto v = (const char*)pn->get(pn->ptr(object));
+	return v ? v : "";
+}
+
 const char*	bsdata::getstring(const void* object, const bsreq* type, const char* id) {
 	auto pf = type->find(id);
 	if(!pf)
