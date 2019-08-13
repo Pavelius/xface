@@ -38,6 +38,10 @@ enum dock_s : unsigned char {
 enum column_s : unsigned char {
 	ColumnVisible, ColumnReadOnly,
 };
+enum total_s : unsigned char {
+	NoTotal,
+	TotalSummarize, TotalMaximum, TotalMinimum, TotalAverage
+};
 struct cmd {
 	eventproc				proc;
 	int						param;
@@ -174,6 +178,7 @@ struct column {
 	const char*				title;
 	int						width;
 	column_size_s			size;
+	total_s					total;
 	cflags<column_s>		flags;
 	anyreq					value;
 	numproc					getnum;
@@ -185,6 +190,7 @@ struct column {
 	bool					is(column_s v) const { return flags.is(v); }
 	column&					set(column_size_s v) { size = v; return *this; }
 	column&					set(column_s v) { flags.add(v); return *this; }
+	column&					set(total_s v) { total = v; return *this; }
 	column&					set(numproc v) { getnum = v; return *this; }
 	column&					set(textproc v) { getstr = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
@@ -288,18 +294,9 @@ struct visual {
 	const char*				name;
 	int						minimal_width, default_width;
 	column_size_s			size;
+	total_s					total;
 	proc_render				render;
 	proc_render				change;
-	visual() = default;
-	template<typename T, typename U> visual(const char* id, const char* name, int mw, int dw, column_size_s sz,
-		void (T::*pr)(const rect& rc, int line, int column),
-		void (U::*pc)(const rect& rc, int line, int column)) : id(id), name(name),
-		render((proc_render)pr), change((proc_render)pc),
-		size(sz), minimal_width(mw), default_width(dw) {}
-	template<typename T> visual(const char* id, const char* name, int mw, int dw, column_size_s sz,
-		void (T::*pr)(const rect& rc, int line, int column)) : id(id), name(name),
-		render((proc_render)pr), change((proc_render)0),
-		size(sz), minimal_width(mw), default_width(dw) {}
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };

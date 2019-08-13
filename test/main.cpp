@@ -171,18 +171,22 @@ static void test_grid() {
 		alignment_s		alignment;
 		char			image;
 		char			age;
+		unsigned		flags;
 		datetime		date;
 	};
 	if(!test_switch_anyreq())
 		return;
 	adat<element, 32> elements;
-	elements.add({"Pavel", Male, ChaoticEvil, 2, 30, datetime::now()});
-	elements.add({"Olga", Female, ChaoticGood, 0, 39, datetime::now() - 5*24*60});
-	elements.add({"Valentin", Male, NeutralGood, 1, 20, datetime::now() - 3 * 24 * 60});
-	elements.add({"Jorgun", Male, LawfulGood, 0, 16, datetime::now() - 4 * 24 * 60});
+	elements.add({"Pavel", Male, ChaoticEvil, 2, 30, 0, datetime::now()});
+	elements.add({"Olga", Female, ChaoticGood, 0, 39, 0, datetime::now() - 5*24*60});
+	elements.add({"Valentin", Male, NeutralGood, 1, 20, 0, datetime::now() - 3 * 24 * 60});
+	elements.add({"Jorgun", Male, LawfulGood, 0, 16, 0, datetime::now() - 4 * 24 * 60});
 	controls::tableref test;
 	test.addcol(0, "image", ANREQ(element, image));
 	test.addcol("Наименование", "text", ANREQ(element, name)).set(SizeAuto);
+	test.addcol("Норма", "checkbox", ANBIT(element, flags, AreaNormal));
+	test.addcol("Пометка", "checkbox", ANBIT(element, flags, AreaHilited));
+	test.addcol("Нажато", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
 	test.addcol("Возраст", "number", ANREQ(element, age));
 	test.addcol("Пол", "enum", ANREQ(element, gender));
 	test.addcol("Мировозрение", "enum", ANREQ(element, alignment));

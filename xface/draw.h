@@ -310,7 +310,7 @@ void					syscursor(bool enable);
 void					sysredraw();
 void					text(int x, int y, const char* string, int count = -1, unsigned flags = 0);
 int						text(rect rc, const char* string, unsigned state = 0, int* max_width = 0);
-int						textc(int x, int y, int width, const char* string, int count = -1, unsigned flags = 0);
+int						textc(int x, int y, int width, const char* string, int count = -1, unsigned flags = 0, bool* clipped = 0);
 int						textbc(const char* string, int width);
 int						textlb(const char* string, int index, int width, int* line_index = 0, int* line_count = 0);
 int						texte(rect rc, const char* string, unsigned flags, int i1, int i2);

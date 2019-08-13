@@ -409,7 +409,12 @@ void table::cell(const rect& rc, int line, int column, const char* ps, image_fla
 	if(!ps)
 		return;
 	cellhilite(rc, line, column, ps, align);
-	draw::text(rc, ps, align);
+	bool clipped = false;
+	textc(rc.x1, rc.y1, rc.width(), ps, -1, align, &clipped);
+	if(clipped) {
+		if(areb(rc))
+			tooltips(rc.x1, rc.y1, 200, ps);
+	}
 }
 
 void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {
@@ -420,6 +425,8 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 			hilight(rch);
 			break;
 		case SelectText:
+			if(!text)
+				break;
 			switch(aling) {
 			case AlignRight:
 			case AlignRightCenter:
@@ -488,8 +495,9 @@ void table::celldatetime(const rect& rc, int line, int column) {
 
 void table::cellbox(const rect& rc, int line, int column) {
 	unsigned flags = 0;
-	if(columns[current_column].get(get(current)))
+	if(columns[column].get(get(line)))
 		flags |= Checked;
+	cellhilite(rc, line, column, 0, AlignLeft);
 	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, flags, ":check");
 }
 
@@ -497,12 +505,12 @@ const visual** table::getvisuals() const {
 	static const visual* elements[] = {visuals, 0};
 	return elements;
 }
-const visual table::visuals[] = {{"number", "Числовое поле", 8, 80, SizeResized, &table::cellnumber, &table::changenumber},
-{"checkbox", "Пометка", 20, 20, SizeFixed, &table::cellbox, &table::changecheck},
-{"date", "Дата", 8, 10 * 10 + 4, SizeResized, &table::celldate},
-{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, &table::celldatetime},
-{"text", "Текстовое поле", 8, 200, SizeResized, &table::celltext, &table::changetext},
-{"enum", "Перечисление", 8, 200, SizeResized, &table::cellenum},
-{"percent", "Процент", 40, 60, SizeResized, &table::cellpercent, &table::changenumber},
-{"image", "Изображение", 20, 20, SizeInner, &table::cellimage},
+const visual table::visuals[] = {{"number", "Числовое поле", 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber},
+{"checkbox", "Пометка", 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck},
+{"date", "Дата", 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate},
+{"datetime", "Дата и время", 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime},
+{"text", "Текстовое поле", 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext},
+{"enum", "Перечисление", 8, 200, SizeResized, NoTotal, &table::cellenum},
+{"percent", "Процент", 40, 60, SizeResized, NoTotal, &table::cellpercent, &table::changenumber},
+{"image", "Изображение", 20, 20, SizeInner, NoTotal, &table::cellimage},
 {}};

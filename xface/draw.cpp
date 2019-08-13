@@ -1482,10 +1482,13 @@ void draw::text(int x, int y, const char* string, int count, unsigned flags) {
 	}
 }
 
-int draw::textc(int x, int y, int width, const char* string, int count, unsigned flags) {
+int draw::textc(int x, int y, int width, const char* string, int count, unsigned flags, bool* clipped) {
 	state push;
 	setclip({x, y, x + width, y + texth()});
-	text(draw::aligned(x, width, flags, textw(string, count)), y, string, count, flags);
+	auto w = textw(string, count);
+	if(clipped)
+		*clipped = w > width;
+	text(aligned(x, width, flags, w), y, string, count, flags);
 	return texth();
 }
 
