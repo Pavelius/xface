@@ -174,6 +174,7 @@ void table::mouseselect(int id, bool pressed) {
 }
 
 int table::rowheader(const rect& rc) const {
+	static int base_width;
 	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
@@ -197,6 +198,12 @@ int table::rowheader(const rect& rc) const {
 		if(!columns[i].is(ColumnVisible))
 			continue;
 		if(dragactive(&columns[i])) {
+			hot.cursor = CursorLeftRight;
+			auto new_width = base_width + (hot.mouse.x - dragmouse.x);
+			auto pw = columns[i].method;
+			if(new_width < pw->minimal_width)
+				new_width = pw->minimal_width;
+			columns.data[i].width = new_width;
 		}
 		r1.x2 = r1.x2 + columns[i].width;
 		if(columns[i].size == SizeInner)
@@ -226,7 +233,8 @@ int table::rowheader(const rect& rc) const {
 			hot.cursor = CursorLeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
 				dragbegin(&columns[i]);
-				dragmouse.x = hot.mouse.x - r1.x1;
+				base_width = columns[i].width;
+				dragmouse.x = hot.mouse.x;
 			}
 		}
 		r1.x1 = r1.x2;

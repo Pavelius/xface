@@ -164,7 +164,7 @@ static bool test_switch_anyreq() {
 	}
 }
 
-static void test_grid() {
+static void test_tableref() {
 	struct element {
 		const char*		name;
 		gender_s		gender;
@@ -183,8 +183,8 @@ static void test_grid() {
 	elements.add({"Jorgun", Male, LawfulGood, 0, 16, 0, datetime::now() - 4 * 24 * 60});
 	controls::tableref test;
 	test.addcol("#", "rownumber");
-	test.addcol(0, "image", ANREQ(element, image));
-	test.addcol("Наименование", "text", ANREQ(element, name)).set(SizeAuto);
+	test.addcol("Из", "image", ANREQ(element, image));
+	test.addcol("Наименование", "text", ANREQ(element, name))/*.set(SizeAuto)*/;
 	test.addcol("Норма", "checkbox", ANBIT(element, flags, AreaNormal));
 	test.addcol("Пометка", "checkbox", ANBIT(element, flags, AreaHilited));
 	test.addcol("Нажато", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
@@ -414,7 +414,7 @@ static void start_menu() {
 	{"Линии", many_lines},
 	{"Перетаскивание", test_drag_drop},
 	{"Список", test_list},
-	{"Таблица с ячейками", test_grid},
+	{"Таблица с ячейками", test_tableref},
 	//{"Таблица ссылок", test_grid_ref},
 	//{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
