@@ -160,6 +160,39 @@ int table::rowheader(const rect& rc) const {
 	return height;
 }
 
+int	table::gettotal(int column) const {
+	auto& c = columns[column];
+	auto type = c.total;
+	if(!type)
+		return 0;
+	auto m = getmaximum();
+	auto result = 0;
+	switch(type) {
+	case TotalMaximum:
+		for(auto i = 0; i < m; i++) {
+			auto v = c.get(get(i));
+			if(v > result)
+				result = v;
+		}
+		break;
+	case TotalMinimum:
+		result = 0x7FFFFFFF;
+		for(auto i = 0; i < m; i++) {
+			auto v = c.get(get(i));
+			if(v < result)
+				result = v;
+		}
+		break;
+	default:
+		for(auto i = 0; i < m; i++)
+			result += c.get(get(i));
+		if(type==TotalAverage)
+			result = result / m;
+		break;
+	}
+	return result;
+}
+
 void table::rowtotal(const rect& rc) const {
 	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
@@ -185,17 +218,13 @@ void table::rowtotal(const rect& rc) const {
 		if(columns[i].size == SizeInner)
 			continue;
 		line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
+		auto result = gettotal(i);
 		temp[0] = 0;
-		auto p = gettotal(temp, temp + sizeof(temp) - 1, i);
-		if(!p) {
-			auto result = gettotal(i);
-			if(result) {
-				szprint(temp, temp + sizeof(temp) - 1, "%1i", result);
-				p = temp;
-			}
+		if(result) {
+			zprint(temp, "%1i", result);
+			auto r2 = r1; r2.offset(4);
+			draw::text(r2, temp, AlignRight|TextSingleLine);
 		}
-		if(p)
-			draw::text(r1, p, AlignRight);
 		r1.x1 = r1.x2;
 	}
 }
@@ -332,6 +361,7 @@ column& table::addcol(const char* name, const char* type, const anyreq& value) {
 	p->value = value;
 	p->size = p->method->size;
 	p->width = p->method->default_width;
+	p->total = p->method->total;
 	if(!p->width)
 		p->width = 100;
 	current_column = getvalid(current_column, 1);
