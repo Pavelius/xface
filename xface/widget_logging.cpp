@@ -13,14 +13,10 @@ using namespace	draw::controls;
 static bool save_log_file;
 
 struct log_message {
-	unsigned		stamp;
+	datetime		stamp;
 	const char*		text;
 };
 static arem<log_message> messages;
-const bsreq bsmeta<log_message>::meta[] = {
-	BSREQ(stamp),
-	BSREQ(text),
-{}};
 
 void logmsgv(const char* format, const char* arguments) {
 	log_message e = {0};
@@ -56,8 +52,8 @@ static void before_application_exit() {
 static struct widget_logging : control::plugin, table {
 
 	void after_initialize() override {
-		addcol("Дата", "text").setwidth(textw("0") * 15 + 4).set(SizeFixed);
-		addcol("Сообщение", "text").set(SizeAuto);
+		addcol("Дата", "datetime", ANREQ(log_message, stamp)).setwidth(textw("0") * 16 + 4).set(SizeFixed).set(AlignCenter);
+		addcol("Сообщение", "text", ANREQ(log_message, text)).set(SizeAuto);
 	}
 
 	control& getcontrol() override {

@@ -176,14 +176,15 @@ struct visual;
 struct column {
 	const visual*			method;
 	const char*				title;
-	int						width;
+	short					width;
 	column_size_s			size;
 	total_s					total;
-	image_flag_s			align;
+	unsigned				param;
 	cflags<column_s>		flags;
 	anyreq					value;
 	numproc					getnum;
 	textproc				getstr;
+	image_flag_s			align;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
@@ -307,6 +308,7 @@ struct visual {
 	proc_render				render;
 	proc_render				change;
 	table::proc_compare		comparer;
+	bool					change_one_click;
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };

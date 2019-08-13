@@ -151,7 +151,10 @@ void table::select(int index, int column) {
 
 static void proc_mouseselect() {
 	auto p = (table*)draw::hot.param;
-	p->select(p->current_hilite, p->getvalid(p->current_hilite_column));
+	auto i = p->getvalid(p->current_hilite_column);
+	p->select(p->current_hilite, i);
+	if(p->columns[i].method->change_one_click)
+		p->change(true);
 }
 
 void table::mouseselect(int id, bool pressed) {
@@ -469,11 +472,14 @@ void table::changetext(const rect& rc, int line, int column) {
 }
 
 void table::changecheck(const rect& rc, int line, int column) {
-	if(columns[current_column].get(get(current))) {
-
-	} else {
-
-	}
+	auto r = columns[current_column].value;
+	auto p = get(line);
+	auto v = columns[column].get(p);
+	auto b = 1 << r.bit;
+	if((v & b) != 0)
+		r.set(r.ptr(p), v & (~b));
+	else
+		r.set(r.ptr(p), v | b);
 }
 
 bool table::change(bool run) {
@@ -594,7 +600,9 @@ void table::celldatetime(const rect& rc, int line, int column) {
 
 void table::cellbox(const rect& rc, int line, int column) {
 	unsigned flags = 0;
-	if(columns[column].get(get(line)))
+	auto v = columns[column].get(get(line));
+	auto b = 1<<columns[column].value.bit;
+	if(v&b)
 		flags |= Checked;
 	cellhilite(rc, line, column, 0, AlignCenter);
 	clipart(rc.x1 + 2, rc.y1 + imax((rc.height() - 14) / 2, 0), 0, flags, ":check");
@@ -607,7 +615,7 @@ const visual** table::getvisuals() const {
 
 const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, table::comparenum},
 {"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
-{"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck},
+{"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},
 {"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
 {"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
 {"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},

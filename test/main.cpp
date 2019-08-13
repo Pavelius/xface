@@ -494,6 +494,7 @@ static bool test_datetime() {
 
 int main() {
 	logmsg("Test %1i", 12);
+	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();
 	test_requisit();
 	test_array();
