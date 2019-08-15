@@ -102,7 +102,7 @@ static int show_table(controls::table& e) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
 		rc.offset(4 * 2);
-		button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding * 2, 100, 0, cmd(buttoncancel), "Назад", 0, KeyEscape);
+		button(rc.x2 - 100 + metrics::padding, rc.y2 - draw::texth() - metrics::padding - 2 * 4, 100, 0, cmd(buttoncancel), "Назад", 0, KeyEscape);
 		auto y0 = rc.y2 - (draw::texth() + metrics::padding) * 3;
 		auto x1 = rc.x1, y1 = y0, width = 300;
 		y1 += checkbox(x1, y1, width, e.show_grid_lines, "Показывть линии");
@@ -185,9 +185,9 @@ static void test_tableref() {
 	test.addcol("#", "rownumber");
 	test.addcol("Из", "image", ANREQ(element, image));
 	test.addcol("Наименование", "text", ANREQ(element, name))/*.set(SizeAuto)*/;
-	test.addcol("Норма", "checkbox", ANBIT(element, flags, AreaNormal));
-	test.addcol("Пометка", "checkbox", ANBIT(element, flags, AreaHilited));
-	test.addcol("Нажато", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
+	test.addcol("УУ", "checkbox", ANBIT(element, flags, AreaNormal));
+	test.addcol("БУ", "checkbox", ANBIT(element, flags, AreaHilited));
+	test.addcol("МУ", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
 	test.addcol("Возраст", "number", ANREQ(element, age));
 	test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
 	test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);

@@ -257,3 +257,57 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
 }
+
+int draw::combobox(int x, int y, int width, const char* header_label, const void* object, const void* type, const anyreq& cmd, int header_width, const char* tips, nameproc getname, getoproc getptr) {
+	draw::state push;
+	setposition(x, y, width);
+	decortext(0);
+	if(header_label && header_label[0])
+		titletext(x, y, width, 0, header_label, header_width);
+	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	if(rc.width() <= 0)
+		return rc.height() + metrics::padding * 2;
+	auto focused = focusing((int)cmd.offset, rc);
+	auto result = false;
+	auto a = area(rc);
+	if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
+		result = true;
+	color active = colors::button.mix(colors::edit, 128);
+	switch(a) {
+	case AreaHilited: gradv(rc, active.lighten(), active.darken()); break;
+	case AreaHilitedPressed: gradv(rc, active.darken(), active.lighten()); break;
+	default: gradv(rc, colors::button.lighten(), colors::button.darken()); break;
+	}
+	rectb(rc, colors::border);
+	rect rco = rc;
+	auto execute_drop_down = false;
+	if(a == AreaHilited || a == AreaHilitedPressed) {
+		switch(hot.key) {
+		case MouseLeft:
+			if(!hot.pressed)
+				execute_drop_down = true;
+			break;
+		}
+	}
+	if(focused) {
+		switch(hot.key) {
+		case KeyEnter:
+			execute_drop_down = true;
+			break;
+		}
+	}
+	//if(execute_drop_down)
+	//	combobox(rc, cmd, choose, false);
+	rco.offset(2, 2);
+	if(focused)
+		rectx(rco, colors::black);
+	rco.offset(2, 2);
+	auto v = cmd.get(cmd.ptr((void*)object));
+	void* p = 0;
+	if(getptr)
+		p = getptr(v, type);
+	textc(rco.x1, rco.y1, rco.width(), getname(p, type));
+	if(tips && a == AreaHilited)
+		tooltips(tips);
+	return rc.height() + metrics::padding * 2;
+}

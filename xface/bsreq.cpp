@@ -165,11 +165,11 @@ const void* bsdata::find(const bsreq* id, const void* value, unsigned size) cons
 	return 0;
 }
 
-void* bsdata::getptr(int index, void* type) {
+void* bsdata::getptr(int index, const void* type) {
 	return (void*)((bsdata*)type)->get(index);
 }
 
-const char* bsdata::getpresent(const void* object, void* type) {
+const char* bsdata::getpresent(const void* object, const void* type) {
 	if(!object)
 		return "Не заполнено";
 	auto pb = ((bsdata*)type);

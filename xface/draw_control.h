@@ -8,8 +8,8 @@
 #pragma once
 
 typedef void(*listproc)(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
-typedef const char*		(*nameproc)(const void* object, void* type);
-typedef void*			(*getoproc)(int index, void* type);
+typedef const char*		(*nameproc)(const void* object, const void* type);
+typedef void*			(*getoproc)(int index, const void* type);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -385,6 +385,7 @@ int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
 void						combobox(const rect& rc, const bsval& cmd, listproc choose = 0, bool instant = true);
 int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, listproc choose = 0);
+int							combobox(int x, int y, int width, const char* header_label, const void* object, const void* type, const anyreq& cmd, int header_width, const char* tips, nameproc getname, getoproc getptr);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, eventproc choose_proc);

@@ -228,7 +228,7 @@ int table::rowheader(const rect& rc) const {
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)
 			textc(r1.x1 + header_padding, r1.y1 + header_padding, r1.width() - header_padding * 2, p);
-		a = area({r1.x2 - header_padding, r1.y1, r1.x2, r1.y2});
+		a = area({r1.x2 - header_padding, r1.y1, r1.x2 + header_padding, r1.y2});
 		if(a == AreaHilited || a == AreaHilitedPressed) {
 			hot.cursor = CursorLeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
