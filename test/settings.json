@@ -47,9 +47,9 @@
   },
   "window":{
     "x":141,
-    "y":135,
-    "width":1119,
-    "height":511,
+    "y":174,
+    "width":784,
+    "height":472,
     "header_width":138,
     "flags":48
   },
@@ -77,7 +77,7 @@
     },
     "Dock4":{
       "current":0,
-      "size":162
+      "size":214
     },
     "Dock5":{
       "current":0,

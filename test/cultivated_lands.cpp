@@ -13,4 +13,4 @@ const bsreq bsmeta<cultivatedi>::meta[] = {
 	BSREQ(arable_land),
 	BSREQ(arable_land_percent),
 {}};
-bsdatat<cultivatedi> bsmeta<cultivatedi>::data("cultivated_land", bsmeta<cultivatedi>::elements, KindScalar);
+//bsdatat<cultivatedi> bsmeta<cultivatedi>::data("cultivated_land", bsmeta<cultivatedi>::elements, KindScalar);

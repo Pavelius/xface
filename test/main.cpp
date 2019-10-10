@@ -189,8 +189,8 @@ static void test_tableref() {
 	test.addcol("БУ", "checkbox", ANBIT(element, flags, AreaHilited));
 	test.addcol("МУ", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
 	test.addcol("Возраст", "number", ANREQ(element, age));
-	test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
-	test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);
+	//test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
+	//test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);
 	test.addcol("Дата", "datetime", ANREQ(element, date));
 	for(auto& e : elements)
 		test.addref(&e);

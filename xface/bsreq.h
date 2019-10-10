@@ -14,8 +14,9 @@ hint}
 bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
 #define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
 #define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
-const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-bsdatat<e##i> bsmeta<e##i>::data(#e, bsmeta<e##i>::elements, KindEnum);
+const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};
+
+//bsdatat<e##i> bsmeta<e##i>::data(#e, bsmeta<e##i>::elements, KindEnum);
 
 // Basic metadata types
 enum bstype_s : unsigned char {
@@ -121,6 +122,11 @@ struct bsdata {
 	static int			write(const char* url);
 	static int			writetxt(const char* url);
 };
+template<typename T> struct bsmeta {
+	typedef T			data_type;
+	static T			elements[];
+	static const bsreq	meta[];
+};
 template<typename T> struct bsdatat : bsdata {
 	template<unsigned N> constexpr bsdatat(const char* id, T(&source)[N], bstype_s subtype) :
 		bsdata(id, bsmeta<T>::meta, source, sizeof(T),
@@ -130,12 +136,6 @@ template<typename T> struct bsdatat : bsdata {
 	constexpr const T*	begin() const { return (T*)data; }
 	constexpr T*		begin() { return (T*)data; }
 	constexpr const T*	end() const { return (T*)data + count; }
-};
-template<typename T> struct bsmeta {
-	typedef T			data_type;
-	static T			elements[];
-	static const bsreq	meta[];
-	static bsdatat<T>	data;
 };
 template<> struct bsmeta<int> {
 	typedef int			data_type;
