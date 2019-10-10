@@ -4,7 +4,6 @@
 extern "C" int strcmp(const char* s1, const char* s2);
 extern "C" int memcmp(const void* s1, const void* s2, unsigned size);
 
-bsdata*	bsdata::first;
 const bsreq bsmeta<int>::meta[] = {{"number"}, {}};
 const bsreq bsmeta<const char*>::meta[] = {{"text"}, {}};
 const bsreq bsmeta<bsreq>::meta[] = {
@@ -75,30 +74,30 @@ bool bsreq::match(const void* p, const char* name) const {
 	return true;
 }
 
-bsdata::bsdata(const char* id, const bsreq* meta,
-	void* data, unsigned size, unsigned count, unsigned maximum,
-	bstype_s subtype) :
-	id(id), meta(meta), next(0),
-	data(data), count(count), maximum(maximum), size(size),
-	subtype(subtype) {
-	auto pf = &first;
-	while(*pf)
-		pf = &((*pf)->next);
-	*pf = this;
-}
-
-void* bsdata::add() {
-	if(count < maximum)
-		return (char*)data + (count++)*size;
-	return data;
-}
+//bsdata::bsdata(const char* id, const bsreq* meta,
+//	void* data, unsigned size, unsigned count, unsigned maximum,
+//	bstype_s subtype) :
+//	id(id), meta(meta), next(0),
+//	data(data), count(count), maximum(maximum), size(size),
+//	subtype(subtype) {
+//	auto pf = &first;
+//	while(*pf)
+//		pf = &((*pf)->next);
+//	*pf = this;
+//}
+//
+//void* bsdata::add() {
+//	if(count < maximum)
+//		return (char*)data + (count++)*size;
+//	return data;
+//}
 
 bsdata* bsdata::find(const char* v) {
 	if(!v || !v[0])
 		return 0;
-	for(auto p = first; p; p = p->next) {
-		if(strcmp(p->id, v) == 0)
-			return p;
+	for(auto& e : bsmeta<bsdata>()) {
+		if(strcmp(e.id, v) == 0)
+			return &e;
 	}
 	return 0;
 }
@@ -106,89 +105,89 @@ bsdata* bsdata::find(const char* v) {
 bsdata* bsdata::find(const bsreq* v) {
 	if(!v)
 		return 0;
-	for(auto p = first; p; p = p->next) {
-		if(p->meta == v)
-			return p;
+	for(auto& e : bsmeta<bsdata>()) {
+		if(e.meta == v)
+			return &e;
 	}
 	return 0;
 }
 
-bsdata* bsdata::findbyptr(const void* object) {
-	if(!object)
-		return 0;
-	for(auto p = first; p; p = p->next)
-		if(p->has(object))
-			return p;
-	return 0;
-}
-
-int	bsdata::indexof(const void* object) const {
-	if(!has(object))
-		return -1;
-	return ((char*)object - (char*)data) / size;
-}
-
-const void* bsdata::find(const bsreq* id, const char* value) const {
-	if(!id || id->type != bsmeta<const char*>::meta)
-		return 0;
-	if(!value)
-		return find(id, &value, sizeof(value));
-	auto ps = (char*)id->ptr(data);
-	auto pe = ps + size * count;
-	for(; ps < pe; ps += size) {
-		auto ps_value = (const char*)id->get(ps);
-		if(!ps_value)
-			continue;
-		if(strcmp(ps_value, value) == 0) {
-			auto i = indexof(ps);
-			if(i == -1)
-				return 0;
-			return get(i);
-		}
-	}
-	return 0;
-}
-
-const void* bsdata::find(const bsreq* id, const void* value, unsigned size) const {
-	if(!id)
-		return 0;
-	auto ps = (char*)id->ptr(data);
-	auto pe = ps + size * count;
-	for(; ps < pe; ps += size) {
-		if(memcmp(ps, value, size) == 0) {
-			auto i = indexof(ps);
-			if(i == -1)
-				return 0;
-			return get(i);
-		}
-	}
-	return 0;
-}
-
-void* bsdata::getptr(int index, const void* type) {
-	return (void*)((bsdata*)type)->get(index);
-}
-
-const char* bsdata::getpresent(const void* object, const void* type) {
-	if(!object)
-		return "Не заполнено";
-	auto pb = ((bsdata*)type);
-	auto pn = pb->meta->getname();
-	if(!pn)
-		return "Нет представления";
-	auto v = (const char*)pn->get(pn->ptr(object));
-	return v ? v : "";
-}
-
-const char*	bsdata::getstring(const void* object, const bsreq* type, const char* id) {
-	auto pf = type->find(id);
-	if(!pf)
-		return "";
-	auto ps = (const char*)pf->get(pf->ptr(object));
-	if(!ps)
-		ps = "";
-	return ps;
-}
+//bsdata* bsdata::findbyptr(const void* object) {
+//	if(!object)
+//		return 0;
+//	for(auto p = first; p; p = p->next)
+//		if(p->has(object))
+//			return p;
+//	return 0;
+//}
+//
+//int	bsdata::indexof(const void* object) const {
+//	if(!has(object))
+//		return -1;
+//	return ((char*)object - (char*)data) / size;
+//}
+//
+//const void* bsdata::find(const bsreq* id, const char* value) const {
+//	if(!id || id->type != bsmeta<const char*>::meta)
+//		return 0;
+//	if(!value)
+//		return find(id, &value, sizeof(value));
+//	auto ps = (char*)id->ptr(data);
+//	auto pe = ps + size * count;
+//	for(; ps < pe; ps += size) {
+//		auto ps_value = (const char*)id->get(ps);
+//		if(!ps_value)
+//			continue;
+//		if(strcmp(ps_value, value) == 0) {
+//			auto i = indexof(ps);
+//			if(i == -1)
+//				return 0;
+//			return get(i);
+//		}
+//	}
+//	return 0;
+//}
+//
+//const void* bsdata::find(const bsreq* id, const void* value, unsigned size) const {
+//	if(!id)
+//		return 0;
+//	auto ps = (char*)id->ptr(data);
+//	auto pe = ps + size * count;
+//	for(; ps < pe; ps += size) {
+//		if(memcmp(ps, value, size) == 0) {
+//			auto i = indexof(ps);
+//			if(i == -1)
+//				return 0;
+//			return get(i);
+//		}
+//	}
+//	return 0;
+//}
+//
+//void* bsdata::getptr(int index, const void* type) {
+//	return (void*)((bsdata*)type)->get(index);
+//}
+//
+//const char* bsdata::getpresent(const void* object, const void* type) {
+//	if(!object)
+//		return "Не заполнено";
+//	auto pb = ((bsdata*)type);
+//	auto pn = pb->meta->getname();
+//	if(!pn)
+//		return "Нет представления";
+//	auto v = (const char*)pn->get(pn->ptr(object));
+//	return v ? v : "";
+//}
+//
+//const char*	bsdata::getstring(const void* object, const bsreq* type, const char* id) {
+//	auto pf = type->find(id);
+//	if(!pf)
+//		return "";
+//	auto ps = (const char*)pf->get(pf->ptr(object));
+//	if(!ps)
+//		ps = "";
+//	return ps;
+//}
 
 const bsreq* bsreq::getname() const {
 	auto p = find("name", bsmeta<const char*>::meta);

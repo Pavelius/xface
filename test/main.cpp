@@ -60,6 +60,10 @@ const bsreq bsmeta<element>::meta[] = {
 	BSREQ(alignment),
 {}};
 
+bsdata bsmeta<bsdata>::elements[] = {{"alignment",
+	bsmeta<alignmenti>::meta, bsmeta<alignmenti>::elements, bsmeta<alignmenti>::size, bsmeta<alignmenti>::count}};
+unsigned bsmeta<bsdata>::count;
+
 struct testinfo {
 	const char*		name;
 	int				value;
@@ -467,10 +471,6 @@ static void test_requisit() {
 	man.add(p2, "point", man.reference(p2), 2);
 }
 
-static void test_binary_serial() {
-	bsdata::write("test.mtd");
-}
-
 static bool test_map() {
 	amap<const char*, int> map;
 	map.add("Test", 1);
@@ -499,7 +499,6 @@ int main() {
 	test_requisit();
 	test_array();
 	test_map();
-	test_binary_serial();
 	application_initialize();
 	// Создание окна
 	setcaption("X-Face C++ library samples");
