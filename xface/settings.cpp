@@ -1,4 +1,3 @@
-#include "collection.h"
 #include "crt.h"
 #include "settings.h"
 
@@ -23,7 +22,7 @@ settings* settings::find(const char* name) {
 }
 
 static settings& add_element(settings* e, const char* name, settings::types type, void* data) {
-	static agrw<settings, 128>	globals;
+	static agrw<settings, 128> globals;
 	if(e->type != settings::Group)
 		return *e;
 	settings* e1;

@@ -1,6 +1,5 @@
 #include "bsreq.h"
 #include "crt.h"
-#include "collection.h"
 #include "datetime.h"
 #include "draw_grid.h"
 #include "io.h"
@@ -28,7 +27,8 @@ void logmsgv(const char* format, const char* arguments) {
 }
 
 static void add_date(char* result, const char* result_max, const datetime& d) {
-	szprint(result, result_max, "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
+	stringbuilder sb(result, result_max);
+	sb.add("%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
 		d.day(), d.month(), d.year(),
 		d.hour(), d.minute());
 }

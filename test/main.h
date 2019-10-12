@@ -1,6 +1,4 @@
 #include "xface/bsreq.h"
-#include "xface/collection.h"
-#include "xface/crt.h"
 #include "xface/datetime.h"
 
 #pragma once

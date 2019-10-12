@@ -1,9 +1,7 @@
 #include "bsreq.h"
-#include "collection.h"
 #include "crt.h"
 #include "draw.h"
 #include "draw_control.h"
-//#include "draw_grid.h"
 #include "io_plugin.h"
 #include "settings.h"
 

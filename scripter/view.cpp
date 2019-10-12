@@ -76,18 +76,19 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 	}
 
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		if(strcmp(columns[column].id, "type") == 0) {
-			auto bv = getvalue(line, column);
-			if(!bv)
-				return "";
-			result[0] = 0;
-			auto rq = (requisit*)get(line);
-			getname(result, result_max, (struct metadata*)bv.get());
-			if(rq->count > 1)
-				szprint(zend(result), result_max, "[%1i]", rq->count);
-			return result;
-		} else
-			return gridref::getname(result, result_max, line, column);
+		//if(strcmp(columns[column].id, "type") == 0) {
+		//	auto bv = getvalue(line, column);
+		//	if(!bv)
+		//		return "";
+		//	result[0] = 0;
+		//	auto rq = (requisit*)get(line);
+		//	getname(result, result_max, (struct metadata*)bv.get());
+		//	if(rq->count > 1)
+		//		szprint(zend(result), result_max, "[%1i]", rq->count);
+		//	return result;
+		//} else
+		//	return gridref::getname(result, result_max, line, column);
+		return "";
 	}
 
 	control& getcontrol() override {
@@ -150,11 +151,11 @@ static struct properties_control : controls::properties, controls::control::plug
 		for(auto p : config.standart)
 			result.add(p);
 	}
-	listproc* getprocchoose(const bsreq* type) const {
-		if(type->type == bsmeta<metadata>::meta)
-			return choose_metadata;
-		return 0;
-	}
+	//listproc* getprocchoose(const bsreq* type) const {
+	//	if(type->type == bsmeta<metadata>::meta)
+	//		return choose_metadata;
+	//	return 0;
+	//}
 	control& getcontrol() override {
 		return *this;
 	}
@@ -180,8 +181,8 @@ static struct properties_control : controls::properties, controls::control::plug
 } properties_instance;
 
 void run_main() {
-	requisit_instance.addcol("id", "Наименование", "text", SizeAuto);
-	requisit_instance.addcol("type", "Тип", "ref", SizeFixed, 100);
-	metadata_instance.addcol("id", "Наименование", "text", SizeAuto);
+	//requisit_instance.addcol("id", "Наименование", "text", SizeAuto);
+	//requisit_instance.addcol("type", "Тип", "ref", SizeFixed, 100);
+	//metadata_instance.addcol("id", "Наименование", "text", SizeAuto);
 	draw::application("Scripter", false);
 }

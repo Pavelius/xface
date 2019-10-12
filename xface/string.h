@@ -9,7 +9,7 @@ public:
 	constexpr string(const char* pb, const char* pe) : pb(pb), pe(pe) {}
 	constexpr string() : pb(""), pe("") {}
 	constexpr char& operator[] (unsigned pos) { return ((char*)pb)[pos]; }
-	explicit operator bool() const { return pb < pe; }
+	explicit constexpr operator bool() const { return pb < pe; }
 	constexpr const char*	begin() const { return pb; }
 	void					clear() { pb = pb = ""; }
 	constexpr string		get(unsigned pos, unsigned n) const { return string((pb + pos > pe) ? pe : pb + pos, (pb + pos + n > pe) ? pe : pb + pos + n); }

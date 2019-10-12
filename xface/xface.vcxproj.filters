@@ -33,9 +33,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="collection.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="archive.cpp">
       <Filter>collections</Filter>
     </ClCompile>
@@ -168,9 +165,6 @@
     <ClCompile Include="io_plugin.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="crt.cpp">
-      <Filter>strings</Filter>
-    </ClCompile>
     <ClCompile Include="draw_dockbar.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
@@ -234,11 +228,11 @@
     <ClCompile Include="anyreq.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="crt.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="collection.h">
-      <Filter>collections</Filter>
-    </ClInclude>
     <ClInclude Include="archive.h">
       <Filter>collections</Filter>
     </ClInclude>
@@ -287,9 +281,6 @@
     <ClInclude Include="strlib.h">
       <Filter>collections</Filter>
     </ClInclude>
-    <ClInclude Include="crt.h">
-      <Filter>strings</Filter>
-    </ClInclude>
     <ClInclude Include="io.h">
       <Filter>support</Filter>
     </ClInclude>
@@ -318,6 +309,9 @@
       <Filter>strings</Filter>
     </ClInclude>
     <ClInclude Include="anyreq.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="crt.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>

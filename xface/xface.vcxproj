@@ -72,6 +72,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath />
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -139,7 +142,6 @@
     <ClCompile Include="requisit.cpp" />
     <ClCompile Include="bsreq.cpp" />
     <ClCompile Include="bstream.cpp" />
-    <ClCompile Include="collection.cpp" />
     <ClCompile Include="color.cpp" />
     <ClCompile Include="converter.cpp" />
     <ClCompile Include="crt.cpp" />
@@ -205,7 +207,6 @@
     <ClInclude Include="requisit.h" />
     <ClInclude Include="bsreq.h" />
     <ClInclude Include="bstream.h" />
-    <ClInclude Include="collection.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="converter.h" />
     <ClInclude Include="crt.h" />
