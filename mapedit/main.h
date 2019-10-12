@@ -1,5 +1,4 @@
 #include "xface/bsreq.h"
-#include "xface/collection.h"
 #include "xface/crt.h"
 #include "xface/point.h"
 #include "xface/stringbuilder.h"

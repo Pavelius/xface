@@ -475,19 +475,6 @@ static void test_binary_serial() {
 	bsdata::write("test.mtd");
 }
 
-static bool test_map() {
-	amap<const char*, int> map;
-	map.add("Test", 1);
-	map.add("Test", 2);
-	map.add("Color", 3);
-	map.add("Four", 4);
-	auto v4 = map.get("Four");
-	auto k4 = map.getv(4);
-	if(v4 != 4)
-		return false;
-	return true;
-}
-
 static bool test_datetime() {
 	datetime d = datetime::now().daybegin() + 24*60;
 	auto iy = d.year();
@@ -502,7 +489,6 @@ int main() {
 	test_datetime();
 	test_requisit();
 	test_array();
-	test_map();
 	test_binary_serial();
 	application_initialize();
 	// Создание окна

@@ -96,6 +96,8 @@ struct bsdata {
 	unsigned&			count;
 	unsigned			maximum;
 	bstype_s			subtype;
+	bsdata*				next;
+	static bsdata*		first;
 	//
 	void*				add();
 	char*				begin() { return (char*)data; }
