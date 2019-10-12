@@ -250,12 +250,12 @@ int bsdata::writetxt(const char* url) {
 	auto object_count = 0;
 	bsdata_writer_txt bw(*pw);
 	pw->open("records", Array);
-	for(auto ps = bsdata::first; ps; ps = ps->next) {
-		for(unsigned i = 0; i < ps->count; i++) {
-			auto p = ps->get(i);
+	for(auto& ps : bsmeta<bsdata>()) {
+		for(unsigned i = 0; i < ps.count; i++) {
+			auto p = ps.get(i);
 			pw->open("record");
-			pw->set("typeid", ps->id);
-			for(auto pf = ps->meta; *pf; pf++)
+			pw->set("typeid", ps.id);
+			for(auto pf = ps.meta; *pf; pf++)
 				bw.write_field(p, pf, pf->id, true);
 			pw->close("record");
 			object_count++;

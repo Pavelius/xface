@@ -15,7 +15,7 @@ bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
 #define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
 #define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
 const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-bsdatat<e##i> bsmeta<e##i>::data(#e, bsmeta<e##i>::elements, KindEnum);
+unsigned bsmeta<e##i>::count;
 
 // Basic metadata types
 enum bstype_s : unsigned char {
@@ -87,30 +87,25 @@ struct bsreq {
 	constexpr char*		ptr(const void* data, int index) const { return (char*)data + offset + index * size; }
 	void				set(const void* p, int value) const;
 };
+template<typename T> struct bsmeta;
 struct bsdata {
 	const char*			id;
 	const bsreq*		meta;
-	bsdata*				next;
-	unsigned			count;
-	unsigned			maximum;
-	unsigned			size;
 	void*				data;
+	unsigned			size;
+	unsigned&			count;
+	unsigned			maximum;
 	bstype_s			subtype;
-	static bsdata*		first;
-	//
-	bsdata(const char* id, const bsreq* meta,
-		void* data, unsigned size, unsigned count, unsigned maximum,
-		bstype_s subtype);
 	//
 	void*				add();
-	const char*			begin() const { return (char*)data; }
-	const char*			end() const { return (char*)data + size*count; }
+	char*				begin() { return (char*)data; }
+	char*				end() { return (char*)data + count*size; }
 	static bsdata*		find(const char* id);
 	static bsdata*		find(const bsreq* id);
 	const void*			find(const bsreq* id, const char* value) const;
 	const void*			find(const bsreq* id, const void* value, unsigned size) const;
 	static bsdata*		findbyptr(const void* object);
-	const void*			get(int index) const { return (char*)data + size * index; }
+	constexpr const void* get(int index) const { return (char*)data + size * index; }
 	static void*		getptr(int index, const void* type);
 	static const char*	getpresent(const void* object, const void* type);
 	static const char*	getstring(const void* object, const bsreq* type, const char* id);
@@ -121,21 +116,17 @@ struct bsdata {
 	static int			write(const char* url);
 	static int			writetxt(const char* url);
 };
-template<typename T> struct bsdatat : bsdata {
-	template<unsigned N> constexpr bsdatat(const char* id, T(&source)[N], bstype_s subtype) :
-		bsdata(id, bsmeta<T>::meta, source, sizeof(T),
-		((subtype == KindEnum) ? N : 0), N, subtype) {}
-	T& operator[](int index) { return ((T*)data)[index]; }
-	T*					add() { return (T*)bsdata::add(); }
-	constexpr const T*	begin() const { return (T*)data; }
-	constexpr T*		begin() { return (T*)data; }
-	constexpr const T*	end() const { return (T*)data + count; }
-};
 template<typename T> struct bsmeta {
-	typedef T			data_type;
-	static T			elements[];
-	static const bsreq	meta[];
-	static bsdatat<T>	data;
+	typedef T				data_type;
+	static T				elements[];
+	static const bsreq		meta[];
+	static unsigned			count;
+	static const unsigned	count_maximum;
+	static constexpr const unsigned size = sizeof(T);
+	//
+	static T*				add() { return (count >= count_maximum) ? 0 : &elements[count++]; }
+	static T*				begin() { return elements; }
+	static T*				end() { return elements + count; }
 };
 template<> struct bsmeta<int> {
 	typedef int			data_type;

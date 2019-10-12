@@ -54,8 +54,8 @@ static void* find_name(const bsreq* type, const char* name) {
 	auto pf = type->getname();
 	if(!pf)
 		return 0;
-	auto pe = ps->end();
-	for(auto ex = ps->begin(); ex < pe; ex = (char*)ex + ps->size) {
+	auto pe = (char*)ps->data + ps->size * ps->count;
+	for(auto ex = (char*)ps->data; ex < pe; ex = (char*)ex + ps->size) {
 		auto nx = getv(ex, pf);
 		if(nx[0] == 0)
 			continue;
@@ -149,8 +149,8 @@ static void standart_combo_choose(adat<void*, 64>& result, const bsreq** name_re
 	} else if(combo_value.type->type == bsmeta<bsreq>::meta) {
 		if(name_requisit)
 			*name_requisit = bsmeta<bsreq>::meta->find("id");
-		for(auto ps = bsdata::first; ps; ps = ps->next)
-			result.add((void*)ps->meta);
+		for(auto& ps : bsmeta<bsdata>())
+			result.add((void*)ps.meta);
 	}
 }
 

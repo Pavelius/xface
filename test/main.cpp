@@ -60,6 +60,10 @@ const bsreq bsmeta<element>::meta[] = {
 	BSREQ(alignment),
 {}};
 
+bsdata bsmeta<bsdata>::elements[] = {{"alignment",
+	bsmeta<alignmenti>::meta, bsmeta<alignmenti>::elements, bsmeta<alignmenti>::size, bsmeta<alignmenti>::count}};
+unsigned bsmeta<bsdata>::count;
+
 struct testinfo {
 	const char*		name;
 	int				value;
@@ -189,8 +193,8 @@ static void test_tableref() {
 	test.addcol("БУ", "checkbox", ANBIT(element, flags, AreaHilited));
 	test.addcol("МУ", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
 	test.addcol("Возраст", "number", ANREQ(element, age));
-	test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
-	test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);
+	//test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
+	//test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);
 	test.addcol("Дата", "datetime", ANREQ(element, date));
 	for(auto& e : elements)
 		test.addref(&e);
@@ -471,6 +475,19 @@ static void test_binary_serial() {
 	bsdata::write("test.mtd");
 }
 
+static bool test_map() {
+	amap<const char*, int> map;
+	map.add("Test", 1);
+	map.add("Test", 2);
+	map.add("Color", 3);
+	map.add("Four", 4);
+	auto v4 = map.get("Four");
+	auto k4 = map.getv(4);
+	if(v4 != 4)
+		return false;
+	return true;
+}
+
 static bool test_datetime() {
 	datetime d = datetime::now().daybegin() + 24*60;
 	auto iy = d.year();
@@ -485,6 +502,7 @@ int main() {
 	test_datetime();
 	test_requisit();
 	test_array();
+	test_map();
 	test_binary_serial();
 	application_initialize();
 	// Создание окна

@@ -172,13 +172,13 @@ int bsdata::write(const char* url) {
 		return 0;
 	bsdata_bin e(file, true);
 	auto result = 0;
-	for(auto pb = bsdata::first; pb; pb = pb->next) {
-		for(unsigned i = 0; i < pb->count; i++) {
-			if(!e.write_object(pb, pb->get(i)))
-				return result;
-			result++;
-		}
-	}
+	//for(auto& e : bsmeta<bsdata>()) {
+	//	for(unsigned i = 0; i < e.count; i++) {
+	//		if(!e.write_object(pb, pb->get(i)))
+	//			return result;
+	//		result++;
+	//	}
+	//}
 	// Запишем признак конца файла - нулевя строка имя объекта
 	file.stream::write((int)0);
 	return result;
