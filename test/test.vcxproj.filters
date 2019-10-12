@@ -56,8 +56,5 @@
     <ClInclude Include="main.h">
       <Filter>Логика</Filter>
     </ClInclude>
-    <ClInclude Include="metadata.h">
-      <Filter>Логика</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
