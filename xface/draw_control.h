@@ -381,7 +381,7 @@ void						application(const char* name, bool allow_multiply_windows, eventproc s
 inline void					application() { application(true); }
 void						application_initialize();
 int							button(int x, int y, int width, int id, bool& result, const char* label, const char* tips = 0, int key = 0);
-int							button(int x, int y, int width, int id, eventproc proc, const char* label, const char* tips = 0, int key = 0);
+int							button(int x, int y, int width, eventproc proc, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0);
 int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
 void						combobox(const rect& rc, const bsval& cmd, listproc choose = 0, bool instant = true);
