@@ -30,13 +30,13 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 	void before_render() {
 		if(metadata_instance.getcount() != config.types.getcount()) {
 			clear();
-			for(auto& e : config.types) {
-				if(!e)
-					continue;
-				if(e.isreference() || e.isarray())
-					continue;
-				add(&e);
-			}
+			//for(auto& e : config.types) {
+			//	if(!e)
+			//		continue;
+			//	if(e.isreference() || e.isarray())
+			//		continue;
+			//	add(&e);
+			//}
 		}
 		if(getcount() > 0)
 			((metadata*)gridref::get(current))->hilite();
@@ -141,13 +141,13 @@ static struct properties_control : controls::properties, controls::control::plug
 	static void choose_metadata(adat<void*, 64>& result, const bsreq** name_requisit, void* type) {
 		if(name_requisit)
 			*name_requisit = bsmeta<metadata>::meta;
-		for(auto& e : config.types) {
-			if(!e)
-				continue;
-			if(e.isreference() || e.isarray())
-				continue;
-			result.add(&e);
-		}
+		//for(auto& e : config.types) {
+		//	if(!e)
+		//		continue;
+		//	if(e.isreference() || e.isarray())
+		//		continue;
+		//	result.add(&e);
+		//}
 		for(auto p : config.standart)
 			result.add(p);
 	}

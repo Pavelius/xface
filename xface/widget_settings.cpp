@@ -252,8 +252,12 @@ static struct widget_settings : controls::control {
 			y += field(x, y, width, e.name, *((color*)e.data), title);
 			break;
 		case settings::Button:
-			y += button(x, y, width, flags,
-				cmd(callback_button, (int)&e), getname(temp, e), 0);
+			if(true) {
+				auto result = false;
+				y += button(x, y, width, flags, result, getname(temp, e), 0);
+				if(result)
+					draw::execute(callback_button, (int)&e);
+			}
 			break;
 		case settings::TextPtr:
 			y += field(x, y, width, e.name, *((const char**)e.data), title);

@@ -35,19 +35,26 @@ void draw::titletext(int& x, int y, int& width, unsigned flags, const char* labe
 	width -= title;
 }
 
-int	draw::button(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips, int key) {
+int	draw::button(int x, int y, int width, int id, bool& result, const char* label, const char* tips, int key) {
 	setposition(x, y, width);
 	struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
-	auto disabled = isdisabled(flags);
-	auto focus = !disabled && focusing(ev.getid(), rc);
+	auto focus = focusing(id, rc);
 	if(buttonh({x, y, x + width, rc.y2},
-		ischecked(flags), focus, disabled, true, label, key, false, tips)
+		false, focus, false, true, label, key, false, tips)
 		|| (focus && hot.key == KeyEnter)) {
-		ev.execute();
+		result = true;
 	}
 	if(label && label[0] && areb(rc))
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
+}
+
+int	draw::button(int x, int y, int width, int id, eventproc proc, const char* label, const char* tips, int key) {
+	auto result = false;
+	auto dy = button(x, y, width, id, result, label, tips, key);
+	if(result)
+		execute(proc);
+	return dy;
 }
 
 int draw::radio(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips) {

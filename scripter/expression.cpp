@@ -188,13 +188,13 @@ void expression::select(valuelist& v, expression_s t) const {
 			v.add(e.id, (int)&e, Requisit, 0);
 		break;
 	case Metadata:
-		for(auto& e : config.types) {
-			if(!e)
-				continue;
-			if(e.isarray() || e.isreference())
-				continue;
-			v.add(e.id, (int)&e, Metadata, 2);
-		}
+		//for(auto& e : config.types) {
+		//	if(!e)
+		//		continue;
+		//	if(e.isarray() || e.isreference())
+		//		continue;
+		//	v.add(e.id, (int)&e, Metadata, 2);
+		//}
 		for(auto p: config.standart) {
 			v.add(p->id, (int)p, Metadata, 2);
 		}
