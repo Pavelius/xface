@@ -3,6 +3,29 @@
 
 using namespace draw;
 
+static void*		var_source;
+static unsigned		var_size;
+
+static int getvalue(const void* p, unsigned size) {
+	switch(size) {
+	case sizeof(char) : return *((char*)p);
+	case sizeof(short) : return *((short*)p);
+	default: return *((int*)p);
+	}
+}
+
+static void setvalue(void* p, unsigned size, int v) {
+	switch(size) {
+	case sizeof(char) : *((char*)p) = v; break;
+	case sizeof(short) : *((short*)p) = v; break;
+	default: *((int*)p) = v; break;
+	}
+}
+
+static void setvar() {
+	setvalue(var_source, var_size, hot.param);
+}
+
 void draw::setposition(int& x, int& y, int& width, int padding) {
 	if(padding == -1)
 		padding = metrics::padding;
@@ -57,7 +80,7 @@ int	draw::button(int x, int y, int width, eventproc proc, const char* label, con
 	return dy;
 }
 
-int draw::radio(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips) {
+int draw::radio(int x, int y, int width, void* source, unsigned size, int value, const char* label, const char* tips) {
 	draw::state push;
 	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
@@ -67,9 +90,11 @@ int draw::radio(int x, int y, int width, unsigned flags, const cmd& ev, const ch
 	rc.y1 = rc1.y1;
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
-	decortext(flags);
-	if(focusing(ev.getid(), rc))
+	unsigned flags = 0;
+	if(focusing((int)source, rc))
 		flags |= Focused;
+	if(getvalue(source, size) == value)
+		flags |= Checked;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
 	auto a = draw::area(rc);
@@ -82,8 +107,11 @@ int draw::radio(int x, int y, int width, unsigned flags, const cmd& ev, const ch
 		if(!isdisabled(flags) && hot.key == KeySpace)
 			need_select = true;
 	}
-	if(need_select)
-		ev.execute();
+	if(need_select) {
+		var_source = source;
+		var_size = size;
+		execute(setvar, value);
+	}
 	rc = rc1; rc.offset(2);
 	draw::text(rc, label);
 	if(tips && a == AreaHilited)

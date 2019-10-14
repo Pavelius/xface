@@ -352,11 +352,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				cmd ev(cmd::assign, i, {bv.type->ptr(bv.data), size});
-				unsigned flags = 0;
-				if(ev.value.get()==i)
-					flags |= Checked;
-				y += radio(x, y, width, flags, ev, p, 0) + 2;
+				y += radio(x, y, width, bv.type->ptr(bv.data), size, i, p, 0) + 2;
 			}
 		} else {
 			if(!bv.type->is(KindNumber))

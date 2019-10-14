@@ -231,8 +231,7 @@ static struct widget_settings : controls::control {
 		//cmdv ec;
 		switch(e.type) {
 		case settings::Radio:
-			y += radio(x, y, width, flags | ((*((int*)e.data) == e.value) ? Checked : 0),
-				cmd(callback_radio, (int)&e), getname(temp, e), 0);
+			y += radio(x, y, width, e.data, sizeof(int), e.value, getname(temp, e), 0);
 			break;
 		case settings::Bool:
 			y += metrics::padding;

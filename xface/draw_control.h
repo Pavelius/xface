@@ -394,7 +394,7 @@ int							field(int x, int y, int width, const char* label, color& value, int he
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, eventproc choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
 int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
-int							radio(int x, int y, int width, unsigned flags, const cmd& cmd, const char* label, const char* tips = 0);
+int							radio(int x, int y, int width, void* source, unsigned size, int value, const char* label, const char* tips = 0);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
