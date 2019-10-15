@@ -231,15 +231,16 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	unsigned flags = AlignLeft;
 	if(type->is(KindNumber))
 		flags = AlignRight;
-	if(draw::focusing((int)pv, rc))
+	anyval av(pv, type->size, 0);
+	if(draw::isfocused(rc, av))
 		flags |= Focused;
 	if(type->is(KindText))
-		draw::field(rc, flags, anyval(pv, type->size), -1, KindText, 0);
+		draw::field(rc, flags, av, -1, KindText, 0);
 	else if(type->is(KindEnum) || (type->is(KindNumber) && type->hint_type)) {
 		auto hint = type->type;
 		if(type->hint_type)
 			hint = type->hint_type;
-		field_enum(rc, flags, anyval(pv, type->size), hint, ctx.source.data, pri, ppi);
+		field_enum(rc, flags, av, hint, ctx.source.data, pri, ppi);
 	} else if(type->is(KindNumber)) {
 		auto d = param;
 		if(!d)
@@ -249,7 +250,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 			auto we = wn * (d + 1) + (draw::texth() + 8) + 4 * 2;
 			rc.x2 = rc.x1 + we;
 		}
-		draw::field(rc, flags, anyval(pv, type->size), d, KindNumber, 0);
+		draw::field(rc, flags, av, d, KindNumber, 0);
 		if(ctx.right)
 			*ctx.right = rc.x2;
 		if(child) {
@@ -287,11 +288,12 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		return e.proc.custom(x, y, width, pv);
 	} else if(e.cmd.execute) {
 		auto result = false;
-		auto dy = button(x, y, width, (int)ctx.source.data, result, e.title);
-		if(result) {
-			//
-		}
-		return dy;
+		//auto dy = button(x, y, width, (int)ctx.source.data, result, e.title);
+		//if(result) {
+		//	//
+		//}
+		//return dy;
+		return 0;
 	}
 	else if(e.title && e.title[0] == '#') {
 		auto pn = e.title + 1;
@@ -326,13 +328,13 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				cmd ev(cmd::invert, 1<<i, {bv.type->ptr(bv.data), size});
-				unsigned flags = 0;
-				if(ev.ischecked())
-					flags |= Checked;
-				auto y0 = y + checkbox(x, y, wc, flags, ev, p, 0) + 2;
-				if(y1 < y0)
-					y1 = y0;
+				//cmd ev(cmd::invert, 1<<i, {bv.type->ptr(bv.data), size});
+				//unsigned flags = 0;
+				//if(ev.ischecked())
+				//	flags |= Checked;
+				//auto y0 = y + checkbox(x, y, wc, flags, ev, p, 0) + 2;
+				//if(y1 < y0)
+				//	y1 = y0;
 				if(++wi >= columns) {
 					x = x0;
 					y = y0;
@@ -352,7 +354,8 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				y += radio(x, y, width, bv.type->ptr(bv.data), size, i, p, 0) + 2;
+				auto av = anyval(bv.type->ptr(bv.data), size, i);
+				y += radio(x, y, width, av, p, 0) + 2;
 			}
 		} else {
 			if(!bv.type->is(KindNumber))

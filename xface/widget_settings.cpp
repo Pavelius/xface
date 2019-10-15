@@ -119,6 +119,7 @@ static void callback_choose_color() {
 static void callback_edit() {
 	char temp[4196]; temp[0] = 0;
 	auto p = (settings*)hot.param;
+	anyval av(p->data, sizeof(int), 0);
 	switch(p->type) {
 	case settings::TextPtr:
 	case settings::UrlFolderPtr:
@@ -129,9 +130,9 @@ static void callback_edit() {
 		sznum(temp, *((int*)p->data));
 		break;
 	}
-	auto push_focus = getfocus();
+	pushfocus pf;
 	controls::textedit te(temp, sizeof(temp), true);
-	setfocus((int)&te, true);
+	setfocus(av, true);
 	if(te.editing(current_rect)) {
 		switch(p->type) {
 		case settings::TextPtr:
@@ -146,7 +147,6 @@ static void callback_edit() {
 			break;
 		}
 	}
-	setfocus(push_focus, true);
 }
 
 static struct widget_settings_header : controls::list {
@@ -201,7 +201,8 @@ int draw::field(int x, int y, int width, const char* label, color& value, int he
 		titletext(x, y, width, 0, label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
-	auto focused = focusing((int)&value, rc);
+	anyval av(value, 0);
+	auto focused = isfocused(rc, av);
 	if(buttonh(rc,
 		false, focused, false, true, value,
 		temp, KeyEnter, false, tips))
@@ -231,7 +232,7 @@ static struct widget_settings : controls::control {
 		//cmdv ec;
 		switch(e.type) {
 		case settings::Radio:
-			y += radio(x, y, width, e.data, sizeof(int), e.value, getname(temp, e), 0);
+			y += radio(x, y, width, anyval(e.data, sizeof(int), e.value), getname(temp, e), 0);
 			break;
 		case settings::Bool:
 			y += metrics::padding;
@@ -430,10 +431,11 @@ static struct widget_application : draw::controls::control {
 			//		}
 			rc.y1 += dy;
 			unsigned flags = ec->isfocused() ? Focused : 0;
+			anyval av(ec, 0, 0);
 			if(ec->isdisabled())
 				flags |= Disabled;
 			else
-				draw::focusing((int)ec, rc);
+				draw::isfocused(rc, av);
 			ec->view(rc);
 		}
 	}

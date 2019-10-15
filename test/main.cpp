@@ -101,7 +101,7 @@ static int show_control(controls::control& e) {
 }
 
 static int show_table(controls::table& e) {
-	setfocus((int)&e, true);
+	setfocus(e, true);
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
@@ -352,7 +352,7 @@ static void choose_transparent_color() {
 }
 
 static void test_tile_manager() {
-	setfocus(0, true);
+	setfocus(anyval(), true);
 	const char* filename = "";
 	point tile = {};
 	point origin = {};
@@ -387,7 +387,7 @@ static void test_autocomplite() {
 }
 
 static void test_edit_field() {
-	setfocus(0, true);
+	setfocus(anyval(), true);
 	const char* name = "Павел";
 	const char* surname = "Чистяков";
 	const char* lastname = "Валенинович";
@@ -409,17 +409,17 @@ static void test_edit_field() {
 }
 
 static void simple_controls() {
-	setfocus(0, true);
+	pushfocus pf;
 	int value = 10;
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
 		auto h = draw::texth();
 		auto w = 300;
-		y += radio(x, y, 300, &value, sizeof(value), 10, "Первое значение", "Еще имеет подсказку, которая появляется при наведение мышки");
-		y += radio(x, y, 300, &value, sizeof(value), 1, "Второе значение", "Второй элемент также имеет подсказку");
-		y += radio(x, y, 300, &value, sizeof(value), 20, "Третье значение");
-		y += radio(x, y, 300, &value, sizeof(value), 30, "Четвертое значение");
+		y += radio(x, y, 300, {value, 10}, "Первое значение", "Еще имеет подсказку, которая появляется при наведение мышки");
+		y += radio(x, y, 300, {value, 1}, "Второе значение", "Второй элемент также имеет подсказку");
+		y += radio(x, y, 300, {value, 20}, "Третье значение");
+		y += radio(x, y, 300, {value, 30}, "Четвертое значение");
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
 	}

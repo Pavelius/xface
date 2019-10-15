@@ -3,27 +3,8 @@
 
 using namespace draw;
 
-static void*		var_source;
-static unsigned		var_size;
-
-static int getvalue(const void* p, unsigned size) {
-	switch(size) {
-	case sizeof(char) : return *((char*)p);
-	case sizeof(short) : return *((short*)p);
-	default: return *((int*)p);
-	}
-}
-
-static void setvalue(void* p, unsigned size, int v) {
-	switch(size) {
-	case sizeof(char) : *((char*)p) = v; break;
-	case sizeof(short) : *((short*)p) = v; break;
-	default: *((int*)p) = v; break;
-	}
-}
-
 static void setvar() {
-	setvalue(var_source, var_size, hot.param);
+	hot.value.set(hot.value.value);
 }
 
 void draw::setposition(int& x, int& y, int& width, int padding) {
@@ -32,17 +13,6 @@ void draw::setposition(int& x, int& y, int& width, int padding) {
 	x += padding;
 	y += padding;
 	width -= padding * 2;
-}
-
-bool draw::focusing(int id, const rect& rc) {
-	addelement(id, rc);
-	if(!getfocus())
-		setfocus(id, true);
-	else if(area(rc) == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
-		setfocus(id, false);
-		hot.key = MouseLeft;
-	}
-	return getfocus() == id;
 }
 
 void draw::titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator) {
@@ -58,10 +28,10 @@ void draw::titletext(int& x, int y, int& width, unsigned flags, const char* labe
 	width -= title;
 }
 
-int	draw::button(int x, int y, int width, int id, bool& result, const char* label, const char* tips, int key) {
+int	draw::button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips, int key) {
 	setposition(x, y, width);
 	struct rect rc = {x, y, x + width, y + 4 * 2 + draw::texth()};
-	auto focus = focusing(id, rc);
+	auto focus = isfocused(rc, value);
 	if(buttonh({x, y, x + width, rc.y2},
 		false, focus, false, true, label, key, false, tips)
 		|| (focus && hot.key == KeyEnter)) {
@@ -74,13 +44,13 @@ int	draw::button(int x, int y, int width, int id, bool& result, const char* labe
 
 int	draw::button(int x, int y, int width, eventproc proc, const char* label, const char* tips, int key) {
 	auto result = false;
-	auto dy = button(x, y, width, (int)proc, result, label, tips, key);
+	auto dy = button(x, y, width, anyval((void*)proc, 0, 0), result, label, tips, key);
 	if(result)
 		execute(proc);
 	return dy;
 }
 
-int draw::radio(int x, int y, int width, void* source, unsigned size, int value, const char* label, const char* tips) {
+int draw::radio(int x, int y, int width, const anyval& av, const char* label, const char* tips) {
 	draw::state push;
 	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
@@ -91,9 +61,9 @@ int draw::radio(int x, int y, int width, void* source, unsigned size, int value,
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
 	unsigned flags = 0;
-	if(focusing((int)source, rc))
+	if(isfocused(rc, av))
 		flags |= Focused;
-	if(getvalue(source, size) == value)
+	if(av.get() == av.value)
 		flags |= Checked;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
@@ -108,9 +78,8 @@ int draw::radio(int x, int y, int width, void* source, unsigned size, int value,
 			need_select = true;
 	}
 	if(need_select) {
-		var_source = source;
-		var_size = size;
-		execute(setvar, value);
+		hot.value = av;
+		execute(setvar);
 	}
 	rc = rc1; rc.offset(2);
 	draw::text(rc, label);
@@ -128,8 +97,8 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const
 	rc.y1 = rc1.y1;
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
-	if(focusing(ev.getid(), rc))
-		flags |= Focused;
+	//if(isfocused(ev.getid(), rc))
+	//	flags |= Focused;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), 0, flags, ":check");
 	decortext(flags);
 	auto a = draw::area(rc);

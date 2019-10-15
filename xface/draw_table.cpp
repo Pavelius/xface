@@ -452,16 +452,14 @@ column& table::addcol(const char* name, const char* type, const anyreq& value) {
 }
 
 bool table::changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum) {
-	auto push_focus = getfocus();
+	pushfocus pf;
 	textedit te(result, result_maximum - result - 1, true);
 	te.setfocus(true);
 	te.show_border = false;
 	te.post_escape = false;
 	te.align = flags;
 	te.rctext.x2++;
-	auto r = te.editing({current_rect.x1, current_rect.y1, current_rect.x2, current_rect.y2});
-	draw::setfocus(push_focus, true);
-	return r;
+	return te.editing({current_rect.x1, current_rect.y1, current_rect.x2, current_rect.y2});
 }
 
 void table::changenumber(const rect& rc, int line, int column) {

@@ -204,7 +204,8 @@ int	draw::combobox(int x, int y, int width, const char* header_label, const bsva
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
-	auto focused = focusing((int)cmd.getptr(), rc);
+	//auto focused = focusing((int)cmd.getptr(), rc);
+	auto focused = false;
 	auto result = false;
 	auto a = area(rc);
 	if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
@@ -267,7 +268,8 @@ int draw::combobox(int x, int y, int width, const char* header_label, const void
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
-	auto focused = focusing((int)cmd.offset, rc);
+	//auto focused = isfocused((int)cmd.offset, rc);
+	auto focused = false;
 	auto result = false;
 	auto a = area(rc);
 	if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)

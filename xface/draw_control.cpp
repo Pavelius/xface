@@ -50,11 +50,11 @@ bool control::ishilited() const {
 }
 
 bool control::isfocused() const {
-	return (control*)getfocus() == this;
+	return draw::isfocused(anyval(const_cast<control*>(this), 0, 0));
 }
 
 void control::setfocus(bool instant) {
-	draw::setfocus((int)this, instant);
+	draw::setfocus(anyval(this, 0, 0), instant);
 }
 
 void control::mouseinput(unsigned id, point position) {
@@ -140,8 +140,8 @@ void control::execute(control::callback proc, int param) const {
 
 void control::view(const rect& rc) {
 	if(isfocusable()) {
-		addelement((int)this, rc);
-		if(!getfocus())
+		addelement(rc, anyval(const_cast<control*>(this), 0, 0));
+		if(!draw::isfocused())
 			setfocus(true);
 	}
 	if(isfocused())

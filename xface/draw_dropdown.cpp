@@ -3,8 +3,8 @@
 
 bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 	screenshoot screen;
-	auto push_focus = getfocus();
-	setfocus((int)&e, true);
+	pushfocus pf;
+	setfocus(e, true);
 	while(ismodal()) {
 		screen.restore();
 		e.view(rc);
@@ -35,6 +35,5 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 			break;
 		}
 	}
-	setfocus(push_focus, true);
 	return getresult() != 0;
 }

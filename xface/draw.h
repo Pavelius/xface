@@ -1,5 +1,6 @@
-#include "point.h"
+#include "anyval.h"
 #include "color.h"
+#include "point.h"
 
 #pragma once
 
@@ -151,6 +152,7 @@ struct hoti {
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed
 	int					param; // command context or parameters
+	anyval				value;
 	explicit operator bool() const { return key != 0; }
 	void				zero() { key = InputUpdate; }
 };
@@ -197,6 +199,12 @@ private:
 	surface*			canvas;
 	rect				clip;
 };
+class pushfocus {
+	anyval				value;
+public:
+	pushfocus();
+	~pushfocus();
+};
 struct textplugin {
 	typedef int(*proc)(int x, int y, int width, const char* id, int value, const char* label, const char* tips);
 	const char*			name;
@@ -227,7 +235,7 @@ extern color			fore; // Foreground color (curently selected color)
 extern color			fore_stroke; // foreground stroke color
 extern const sprite*	font; // Currently selected font
 //
-void					addelement(int id, const rect& rc);
+void					addelement(const rect& rc, const anyval& value);
 int						aligned(int x, int width, unsigned state, int string_width);
 int						alignedh(const rect& rc, const char* string, unsigned state);
 areas					area(rect rc);
@@ -251,14 +259,11 @@ bool					dragactive();
 void					dragbegin(const void* p);
 extern point			dragmouse;
 void					execute(eventproc proc, int value = 0);
-bool					focusing(int id, const rect& rc);
 rect					getarea();
 int						getbpp();
 color					getcolor(color normal, unsigned flags);
 color					getcolor(rect rc, color normal, color hilite, unsigned flags);
-int						getfocus();
 int						getheight();
-int						getnext(int id, int key);
 int						getresult();
 int						getwidth();
 void					getwindowpos(point& pos, point& size, unsigned* flags);
@@ -270,7 +275,10 @@ int						hittest(int x, int test_x, const char* string, int lenght);
 int						hittest(rect rc, const char* string, unsigned state, point mouse);
 inline bool				ischecked(unsigned flags) { return (flags&Checked) != 0; }
 inline bool				isdisabled(unsigned flags) { return (flags&Disabled) != 0; }
+bool					isfocused();
 inline bool				isfocused(unsigned flags) { return (flags&Focused) != 0; }
+bool					isfocused(const anyval& value);
+bool					isfocused(const rect& rc, const anyval& value);
 bool					ismodal();
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha = 0xFF);
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha, color* pal);
@@ -301,7 +309,7 @@ void					set(void(*proc)(int& x, int& y, int x0, int x2, int* max_width, int& w,
 void					setcaption(const char* string);
 void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
-void					setfocus(int id, bool instant = false);
+void					setfocus(const anyval& value, bool instant = false);
 void					settimer(unsigned milleseconds);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);

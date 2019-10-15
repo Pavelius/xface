@@ -92,8 +92,8 @@ listelement* valuelist::choose(int x, int y, int width, const char* start_filter
 	rect rc = {x, y, x + width, y + 100};
 	autocomplete e;
 	screenshoot screen;
-	auto push_focus = getfocus();
-	setfocus((int)&e, true);
+	pushfocus pf;
+	setfocus(e, true);
 	e.images = images;
 	if(e.images)
 		e.show_images = true;
@@ -148,6 +148,5 @@ listelement* valuelist::choose(int x, int y, int width, const char* start_filter
 			break;
 		}
 	}
-	setfocus(push_focus, true);
 	return (listelement*)getresult();
 }

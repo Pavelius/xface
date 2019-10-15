@@ -64,7 +64,7 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 	auto opened = isopen(ev.type);
 	rect rc = {x, y, x + width, y + dy};
 	gradv(rc, colors::form, colors::border);
-	auto focused = focusing((int)ev.type, rc);
+	auto focused = draw::isfocused(rc, anyval(ev.data,0,0));
 	if(label && label[0])
 		text(x + 4, y + 2, label);
 	auto need_open = false;

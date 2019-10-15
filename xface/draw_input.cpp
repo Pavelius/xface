@@ -4,11 +4,10 @@
 using namespace draw;
 
 struct focusable_element {
-	int			id;
 	rect		rc;
-	operator bool() const { return id != 0; }
+	anyval		value;
 };
-static int		current_focus;
+static anyval	current_focus;
 extern rect		sys_static_area;
 static focusable_element elements[96];
 static focusable_element* render_control;
@@ -19,54 +18,44 @@ initplugin*		draw::initplugin::first;
 eventproc		draw::domodal;
 
 static void setfocus_callback() {
-	setfocus(hot.param, true);
+	setfocus(hot.value, true);
 }
 
-static focusable_element* getby(int id) {
-	if(!id)
+static focusable_element* getby(const anyval& value) {
+	if(!render_control)
 		return 0;
-	for(auto& e : elements) {
-		if(!e)
-			return 0;
-		if(e.id == id)
-			return &e;
+	for(auto p = elements; p < render_control; p++) {
+		if(p->value == value)
+			return p;
 	}
 	return 0;
 }
 
 static focusable_element* getfirst() {
-	for(auto& e : elements) {
-		if(!e)
-			return 0;
-		return &e;
-	}
-	return 0;
+	if(!render_control)
+		return 0;
+	return elements;
 }
 
 static focusable_element* getlast() {
-	auto p = elements;
-	for(auto& e : elements) {
-		if(!e)
-			break;
-		p = &e;
-	}
-	return p;
+	if(!render_control || render_control == elements)
+		return 0;
+	return render_control - 1;
 }
 
-void draw::addelement(int id, const rect& rc) {
-	if(!render_control
-		|| render_control >= elements + sizeof(elements) / sizeof(elements[0]) - 1)
+void draw::addelement(const rect& rc, const anyval& value) {
+	if(!render_control)
 		render_control = elements;
-	render_control[0].id = id;
-	render_control[0].rc = rc;
-	render_control[1].id = 0;
+	else if(render_control >= elements + sizeof(elements) / sizeof(elements[0]))
+		return;
+	render_control->rc = rc;
+	render_control->value = value;
 	render_control++;
 }
 
-int draw::getnext(int id, int key) {
+static const focusable_element* getnext(const focusable_element* pc, int key) {
 	if(!key)
-		return id;
-	auto pc = getby(id);
+		return pc;
 	if(!pc)
 		pc = getfirst();
 	if(!pc)
@@ -83,46 +72,71 @@ int draw::getnext(int id, int key) {
 		else if(pc < elements)
 			pc = pl;
 		if(pe == pc)
-			return pe->id;
+			return pe;
 		switch(key) {
 		case KeyRight:
 			if(pe->rc.y1 >= pc->rc.y1
 				&& pe->rc.y1 <= pc->rc.y2
 				&& pe->rc.x1 < pc->rc.x1)
-				return pc->id;
+				return pc;
 			break;
 		case KeyLeft:
 			if(pe->rc.y1 >= pc->rc.y1
 				&& pe->rc.y1 <= pc->rc.y2
 				&& pe->rc.x1 > pc->rc.x1)
-				return pc->id;
+				return pc;
 			break;
 		case KeyDown:
 			if(pc->rc.y1 >= pe->rc.y2)
-				return pc->id;
+				return pc;
 			break;
 		case KeyUp:
 			if(pc->rc.y2 <= pe->rc.y1)
-				return pc->id;
+				return pc;
 			break;
 		default:
-			return pc->id;
+			return pc;
 		}
 	}
 }
 
-void draw::setfocus(int id, bool instant) {
-	if(id == current_focus)
+bool draw::isfocused() {
+	return static_cast<bool>(current_focus);
+}
+
+bool draw::isfocused(const anyval& v) {
+	return current_focus == v;
+}
+
+bool draw::isfocused(const rect& rc, const anyval& value) {
+	addelement(rc, value);
+	if(!isfocused())
+		setfocus(value, true);
+	else if(area(rc) == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
+		setfocus(value, false);
+		//hot.key = MouseLeft;
+	}
+	return current_focus == value;
+}
+
+pushfocus::pushfocus() : value(current_focus) {
+	current_focus.clear();
+}
+
+pushfocus::~pushfocus() {
+	current_focus = value;
+}
+
+void draw::setfocus(const anyval& value, bool instant) {
+	if(current_focus==value)
 		return;
 	if(instant) {
 		savefocus();
-		current_focus = id;
-	} else
-		execute(setfocus_callback, id);
-}
-
-int draw::getfocus() {
-	return current_focus;
+		current_focus = value;
+	} else {
+		hot.value = value;
+		execute(setfocus_callback);
+	}
 }
 
 void draw::execute(eventproc proc, int param) {
@@ -180,7 +194,6 @@ static void standart_domodal() {
 	hot.key = draw::rawinput();
 	if(control_input())
 		return;
-	int id;
 	switch(hot.key) {
 	case KeyTab:
 	case KeyTab | Shift:
@@ -190,9 +203,11 @@ static void standart_domodal() {
 	case KeyDown:
 	case KeyRight:
 	case KeyLeft:
-		id = getnext(draw::getfocus(), hot.key);
-		if(id)
-			setfocus(id, true);
+		if(true) {
+			auto pc = getnext(getby(current_focus), hot.key);
+			if(pc)
+				setfocus(pc->value, true);
+		}
 		break;
 	case 0:
 		exit(0);

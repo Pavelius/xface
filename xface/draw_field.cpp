@@ -45,7 +45,7 @@ public:
 		return false;
 	}
 	bool isfocused() const override {
-		return getfocus() == (int)value.ptr();
+		return draw::isfocused(value);
 	}
 	void load() {
 		auto p = getvalue(value, type, source, source + sizeof(source) / sizeof(source[0]) - 1);
@@ -144,7 +144,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 		titletext(x, y, width, 0, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignRight;
-	if(focusing((int)ev.ptr(), rc))
+	if(isfocused(rc, ev))
 		flags |= Focused;
 	field(rc, flags | TextSingleLine, ev, digits, KindNumber, 0);
 	return rc.height() + metrics::padding * 2;
@@ -157,8 +157,9 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 		titletext(x, y, width, 0, header_label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	unsigned flags = AlignLeft;
-	if(focusing((int)&sev, rc))
+	anyval av = sev;
+	if(isfocused(rc, av))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, anyval(sev), -1, KindText, pchoose);
+	field(rc, flags | TextSingleLine, av, -1, KindText, pchoose);
 	return rc.height() + metrics::padding * 2;
 }
