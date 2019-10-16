@@ -5,6 +5,8 @@
 
 using namespace draw;
 
+static eventproc choose_proc;
+
 static const char* getvalue(const anyval& v, bstype_s t, char* result, const char* result_end) {
 	if(!v)
 		return "";
@@ -81,7 +83,11 @@ void draw::savefocus() {
 	}
 }
 
-void draw::loadfocus() {
+static void execute_choose() {
+	if(!choose_proc)
+		return;
+	auto value = hot.value;
+	choose_proc();
 	cedit.load();
 	cedit.invalidate();
 }
@@ -98,7 +104,7 @@ static void field_down() {
 	cedit.invalidate();
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, eventproc pchoose) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, eventproc pchoose) {
 	if(rco.width() <= 0)
 		return;
 	rect rc = rco;
@@ -106,7 +112,7 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 	draw::rectf(rc, colors::window);
 	draw::rectb(rc, colors::border);
 	auto focused = isfocused(flags);
-	if(type == KindNumber) {
+	if(increment) {
 		auto result = addbutton(rc, focused,
 			"+", Ctrl + KeyUp, "Увеличить",
 			"-", Ctrl + KeyDown, "Уменьшить");
@@ -122,8 +128,11 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 		}
 	}
 	if(pchoose) {
-		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать"))
-			draw::execute(pchoose, (int)ev.data);
+		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать")) {
+			hot.value = ev;
+			choose_proc = pchoose;
+			draw::execute(execute_choose);
+		}
 	}
 	auto a = area(rc);
 	if(focused) {
@@ -146,7 +155,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	unsigned flags = AlignRight;
 	if(isfocused(rc, ev))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, ev, digits, KindNumber, 0);
+	field(rc, flags | TextSingleLine, ev, digits, true, KindNumber, 0);
 	return rc.height() + metrics::padding * 2;
 }
 
@@ -160,6 +169,6 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	anyval av = sev;
 	if(isfocused(rc, av))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, av, -1, KindText, pchoose);
+	field(rc, flags | TextSingleLine, av, -1, false, KindText, pchoose);
 	return rc.height() + metrics::padding * 2;
 }

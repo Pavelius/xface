@@ -235,7 +235,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	if(draw::isfocused(rc, av))
 		flags |= Focused;
 	if(type->is(KindText))
-		draw::field(rc, flags, av, -1, KindText, 0);
+		draw::field(rc, flags, av, -1, false, KindText, 0);
 	else if(type->is(KindEnum) || (type->is(KindNumber) && type->hint_type)) {
 		auto hint = type->type;
 		if(type->hint_type)
@@ -250,7 +250,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 			auto we = wn * (d + 1) + (draw::texth() + 8) + 4 * 2;
 			rc.x2 = rc.x1 + we;
 		}
-		draw::field(rc, flags, av, d, KindNumber, 0);
+		draw::field(rc, flags, av, d, true, KindNumber, 0);
 		if(ctx.right)
 			*ctx.right = rc.x2;
 		if(child) {

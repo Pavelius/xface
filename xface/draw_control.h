@@ -375,7 +375,7 @@ int							combobox(int x, int y, int width, const char* header_label, const bsva
 int							combobox(int x, int y, int width, const char* header_label, const void* object, const void* type, const anyreq& cmd, int header_width, const char* tips, nameproc getname, getoproc getptr);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bstype_s type, eventproc choose_proc);
+void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, eventproc choose_proc);
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, eventproc choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);

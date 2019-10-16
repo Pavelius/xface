@@ -327,11 +327,10 @@ static void test_drag_drop() {
 
 static void choose_folder() {
 	char temp[260] = {};
-	auto pv = (const char**)hot.param;
+	auto value = hot.value;
 	if(!dialog::folder("Выбирайте папку", temp))
 		return;
-	*pv = szdup(temp);
-	loadfocus();
+	value.set((int)szdup(temp));
 }
 
 static int point_input(int x, int y, point& result, int width, int title, const char* t1, const char* t2) {
@@ -342,7 +341,6 @@ static int point_input(int x, int y, point& result, int width, int title, const 
 }
 
 static void choose_transparent_color() {
-
 }
 
 static void test_tile_manager() {
