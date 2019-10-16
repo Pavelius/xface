@@ -334,7 +334,7 @@ void arraydata::iterator::increment(unsigned size) {
 
 void* array::add() {
 	if(count >= count_maximum) {
-		if(can_grow)
+		if(isgrowable())
 			reserve(count + 1);
 		else
 			return (char*)data;
@@ -349,13 +349,13 @@ void* array::add(const void* element) {
 }
 
 array::~array() {
-	if(can_grow)
+	if(isgrowable())
 		clear();
 }
 
 void array::clear() {
 	count = 0;
-	if(!can_grow)
+	if(!isgrowable())
 		return;
 	count_maximum = 0;
 	if(data)
@@ -364,14 +364,14 @@ void array::clear() {
 }
 
 void array::setup(unsigned size) {
-	if(!can_grow)
+	if(!isgrowable())
 		return;
 	clear();
 	this->size = size;
 }
 
 void array::reserve(unsigned count) {
-	if(!can_grow)
+	if(!isgrowable())
 		return;
 	if(!size)
 		return;

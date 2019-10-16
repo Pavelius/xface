@@ -13,7 +13,7 @@ void* tableref::builder::add(void* object, unsigned char image, unsigned char ty
 	e.flags = group ? TIGroup : 0;
 	e.type = type;
 	e.level = level + 1;
-	if(pc->count == 0 || (unsigned)index > pc->count)
+	if(pc->getcount() == 0 || (unsigned)index > pc->getcount())
 		return pc->array::add(&e);
 	return pc->array::insert(++index, &e);
 }

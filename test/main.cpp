@@ -450,6 +450,13 @@ static void start_menu() {
 	}
 }
 
+static void test_static_array() {
+	char temp[200]; array a2(temp);
+	for(auto& e : a2) {
+
+	}
+}
+
 static void test_array() {
 	array a1(sizeof(testinfo));
 	auto p1 = (testinfo*)a1.add();
@@ -502,6 +509,7 @@ int main() {
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();
 	test_requisit();
+	test_static_array();
 	test_array();
 	test_binary_serial();
 	application_initialize();

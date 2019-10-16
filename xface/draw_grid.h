@@ -9,7 +9,6 @@ struct grid : table, array {
 	const bsreq*			type;
 	constexpr grid(const bsreq* type, unsigned size) : type(type), array(size) {}
 	constexpr grid(const bsreq* type, void* data, unsigned size, unsigned count_maximum) : type(type), array(data, size, count_maximum) {}
-	constexpr grid(const bsreq* type, void* data, unsigned size, unsigned count_maximum, unsigned& count) : type(type),  array(data, size, count_maximum, count) {}
 	template<typename T, unsigned N> constexpr grid(const bsreq* type, adat<T, N>& e) : grid(type, e.data, sizeof(T), N, e.count) {}
 	template<typename T, unsigned N> constexpr grid(const bsreq* type, T(&e)[N]) : grid(type, e.data, sizeof(T), N) {}
 	bool					add(bool run);
