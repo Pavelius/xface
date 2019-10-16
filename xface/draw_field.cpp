@@ -87,13 +87,13 @@ void draw::loadfocus() {
 }
 
 static void field_up() {
-	cmd::ctx.value.set(cmd::ctx.value.get() + 1);
+	hot.value.set(hot.value.get() + 1);
 	cedit.load();
 	cedit.invalidate();
 }
 
 static void field_down() {
-	cmd::ctx.value.set(cmd::ctx.value.get() - 1);
+	hot.value.set(hot.value.get() - 1);
 	cedit.load();
 	cedit.invalidate();
 }
@@ -112,11 +112,11 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 			"-", Ctrl + KeyDown, "Уменьшить");
 		switch(result) {
 		case 1:
-			cmd::ctx.value = ev;
+			hot.value = ev;
 			execute(field_up); 
 			break;
 		case 2:
-			cmd::ctx.value = ev;
+			hot.value = ev;
 			execute(field_down);
 			break;
 		}

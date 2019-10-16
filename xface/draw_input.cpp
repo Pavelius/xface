@@ -19,6 +19,7 @@ eventproc		draw::domodal;
 
 static void setfocus_callback() {
 	setfocus(hot.value, true);
+	hot.key = 0;
 }
 
 static focusable_element* getby(const anyval& value) {
@@ -114,7 +115,7 @@ bool draw::isfocused(const rect& rc, const anyval& value) {
 		setfocus(value, true);
 	else if(area(rc) == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
 		setfocus(value, false);
-		//hot.key = MouseLeft;
+		hot.key = MouseLeft;
 	}
 	return current_focus == value;
 }
