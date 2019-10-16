@@ -7,6 +7,15 @@ static void setvar() {
 	hot.value.set(hot.value.value);
 }
 
+static void xorvar() {
+	auto m = hot.value.get();
+	auto v = hot.value.value;
+	if(!v)
+		v = 1;
+	m ^= v;
+	hot.value.set(m);
+}
+
 void draw::setposition(int& x, int& y, int& width, int padding) {
 	if(padding == -1)
 		padding = metrics::padding;
@@ -88,7 +97,7 @@ int draw::radio(int x, int y, int width, const anyval& av, const char* label, co
 	return rc1.height() + 2;
 }
 
-int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips) {
+int draw::checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips) {
 	draw::state push;
 	setposition(x, y, width, 1);
 	rect rc = {x, y, x + width, y};
@@ -97,8 +106,14 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const
 	rc.y1 = rc1.y1;
 	rc.y2 = rc1.y2;
 	rc.x2 = rc1.x2;
-	//if(isfocused(ev.getid(), rc))
-	//	flags |= Focused;
+	unsigned flags = 0;
+	if(isfocused(rc, value))
+		flags |= Focused;
+	auto v1 = value.value;
+	if(!v1)
+		v1 = 1;
+	if((value.get()&v1)!=0)
+		flags |= Checked;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), 0, flags, ":check");
 	decortext(flags);
 	auto a = draw::area(rc);
@@ -112,8 +127,10 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const
 		if(hot.key == KeySpace)
 			need_value = true;
 	}
-	if(need_value)
-		ev.execute();
+	if(need_value) {
+		hot.value = value;
+		execute(xorvar);
+	}
 	draw::text(rc1, label);
 	if(tips && a == AreaHilited)
 		tooltips(tips);
@@ -123,9 +140,4 @@ int draw::checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const
 static void change_checkbox() {
 	auto pv = (bool*)hot.param;
 	*pv = !*pv;
-}
-
-int	draw::checkbox(int x, int y, int width, bool& value, const char* label, const char* tips) {
-	unsigned flags = value ? Checked : 0;
-	return checkbox(x, y, width, flags, cmd(change_checkbox, (int)&value), label, tips);
 }

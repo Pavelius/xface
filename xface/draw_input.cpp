@@ -1,5 +1,5 @@
 #include "crt.h"
-#include "draw.h"
+#include "draw_control.h"
 
 using namespace draw;
 

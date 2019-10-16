@@ -236,8 +236,7 @@ static struct widget_settings : controls::control {
 			break;
 		case settings::Bool:
 			y += metrics::padding;
-			y += checkbox(x, y, width, flags | (*((bool*)e.data) ? Checked : 0),
-				cmd(callback_bool, (int)&e, &e, sizeof(bool)), getname(temp, e), 0);
+			y += checkbox(x, y, width, {e.data, sizeof(bool), 1}, getname(temp, e), 0);
 			break;
 		case settings::Int:
 			// Есть максимум

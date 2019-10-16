@@ -69,12 +69,6 @@ struct testinfo {
 	int				value;
 };
 
-static int checkbox(int x, int y, int width, bool& value, const char* title, const char* tips = 0) {
-	return checkbox(x, y, width,
-		value ? Checked : 0, cmd(cmd::invert, 1, value), title)
-		+ metrics::padding;
-}
-
 static int buttonx(int x, int y, int width, eventproc proc, const char* title, const char* tips = 0) {
 	auto result = button(x, y, width, proc, title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
@@ -411,6 +405,8 @@ static void test_edit_field() {
 static void simple_controls() {
 	pushfocus pf;
 	int value = 10;
+	auto v1 = false;
+	auto v2 = true;
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
@@ -420,6 +416,8 @@ static void simple_controls() {
 		y += radio(x, y, 300, {value, 1}, "Второе значение", "Второй элемент также имеет подсказку");
 		y += radio(x, y, 300, {value, 20}, "Третье значение");
 		y += radio(x, y, 300, {value, 30}, "Четвертое значение");
+		y += checkbox(x, y, 300, v1, "Просто галочка") + metrics::padding;
+		y += checkbox(x, y, 300, v2, "Еще одна галочка, но уже с подсказкой, которая появится при наведении мышки. И эта галочка имеет несолько строк.", "Просто подсказка для примера.") + metrics::padding;
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
 	}

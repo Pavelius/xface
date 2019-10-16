@@ -199,12 +199,6 @@ private:
 	surface*			canvas;
 	rect				clip;
 };
-class pushfocus {
-	anyval				value;
-public:
-	pushfocus();
-	~pushfocus();
-};
 struct textplugin {
 	typedef int(*proc)(int x, int y, int width, const char* id, int value, const char* label, const char* tips);
 	const char*			name;
@@ -235,7 +229,6 @@ extern color			fore; // Foreground color (curently selected color)
 extern color			fore_stroke; // foreground stroke color
 extern const sprite*	font; // Currently selected font
 //
-void					addelement(const rect& rc, const anyval& value);
 int						aligned(int x, int width, unsigned state, int string_width);
 int						alignedh(const rect& rc, const char* string, unsigned state);
 areas					area(rect rc);
@@ -277,8 +270,6 @@ inline bool				ischecked(unsigned flags) { return (flags&Checked) != 0; }
 inline bool				isdisabled(unsigned flags) { return (flags&Disabled) != 0; }
 bool					isfocused();
 inline bool				isfocused(unsigned flags) { return (flags&Focused) != 0; }
-bool					isfocused(const anyval& value);
-bool					isfocused(const rect& rc, const anyval& value);
 bool					ismodal();
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha = 0xFF);
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha, color* pal);
@@ -309,7 +300,6 @@ void					set(void(*proc)(int& x, int& y, int x0, int x2, int* max_width, int& w,
 void					setcaption(const char* string);
 void					setclip(rect rc);
 inline void				setclip() { clipping.set(0, 0, getwidth(), getheight()); }
-void					setfocus(const anyval& value, bool instant = false);
 void					settimer(unsigned milleseconds);
 const char*				skiptr(const char* string);
 void					spline(point* points, int n);

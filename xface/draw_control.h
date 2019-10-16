@@ -1,4 +1,3 @@
-#include "anyval.h"
 #include "anyreq.h"
 #include "bsreq.h"
 #include "draw.h"
@@ -43,6 +42,12 @@ enum column_s : unsigned char {
 enum total_s : unsigned char {
 	NoTotal,
 	TotalSummarize, TotalMaximum, TotalMinimum, TotalAverage
+};
+class pushfocus {
+	anyval					value;
+public:
+	pushfocus();
+	~pushfocus();
 };
 struct cmd {
 	eventproc				proc;
@@ -376,14 +381,14 @@ private:
 	int						p1, p2;
 };
 }
+void						addelement(const rect& rc, const anyval& value);
 void						application(bool allow_multiply_windows);
 void						application(const char* name, bool allow_multiply_windows, eventproc showproc = 0);
 inline void					application() { application(true); }
 void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
 int							button(int x, int y, int width, eventproc proc, const char* label, const char* tips = 0, int key = 0);
-int							checkbox(int x, int y, int width, unsigned flags, const cmd& ev, const char* label, const char* tips = 0);
-int							checkbox(int x, int y, int width, bool& value, const char* label, const char* tips);
+int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
 void						combobox(const rect& rc, const bsval& cmd, listproc choose = 0, bool instant = true);
 int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, listproc choose = 0);
 int							combobox(int x, int y, int width, const char* header_label, const void* object, const void* type, const anyreq& cmd, int header_width, const char* tips, nameproc getname, getoproc getptr);
@@ -394,7 +399,10 @@ int							field(int x, int y, int width, const char* label, color& value, int he
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, eventproc choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
 int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
+bool						isfocused(const anyval& value);
+bool						isfocused(const rect& rc, const anyval& value);
 int							radio(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
+void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
