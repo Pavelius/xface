@@ -11,30 +11,25 @@ static anyval	cmb_var;
 static getnamep	cmb_getname;
 
 struct combolist : controls::list, adat<void*, 64> {
-
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
 		return cmb_getname(data[line]);
 	}
-
-	int compare_by_order(void* v1, void* v2) {
+	static int compare_by_order(const void* v1, const void* v2) {
 		auto p1 = *((void**)v1);
 		auto p2 = *((void**)v2);
 		auto n1 = cmb_getname(p1);
 		auto n2 = cmb_getname(p2);
 		return strcmp(n1, n2);
 	}
-
 	int	getmaximum() const {
 		return getcount();
 	}
-
 	void mouseselect(int id, bool pressed) override {
 		if(pressed)
 			list::mouseselect(id, pressed);
 		else
 			draw::execute(buttonok);
 	}
-
 	bool keyinput(unsigned id) override {
 		switch(id) {
 		case KeyEnter:
@@ -45,7 +40,6 @@ struct combolist : controls::list, adat<void*, 64> {
 		}
 		return true;
 	}
-
 	int find(const void* object) const {
 		for(auto p : *this) {
 			if(p == object)
@@ -53,23 +47,12 @@ struct combolist : controls::list, adat<void*, 64> {
 		}
 		return -1;
 	}
-
 	void sort() {
-		for(auto step = count / 2; step > 0; step /= 2) {
-			for(auto i = step; i < count; i++) {
-				for(int j = i - step; j >= 0 && compare_by_order(data + j, data + (j + step)); j -= step) {
-					auto temp = data[j];
-					data[j] = data[j + step];
-					data[j + step] = temp;
-				}
-			}
-		}
+		qsort(data, getcount(), sizeof(data[0]), compare_by_order);
 	}
-
 	void choose(const void* value) {
 		current = find(value);
 	}
-
 	void update() {
 		clear();
 		auto pe = cmb_source.end();
@@ -77,7 +60,6 @@ struct combolist : controls::list, adat<void*, 64> {
 			add(pb);
 		current = cmb_var.get();
 	}
-
 };
 
 static void show_combolist() {
