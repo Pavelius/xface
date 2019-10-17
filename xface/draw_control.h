@@ -9,6 +9,7 @@
 typedef void(*listproc)(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
 typedef const char*		(*nameproc)(const void* object, const void* type);
 typedef void*			(*getoproc)(int index, const void* type);
+typedef const char*		(*getnamep)(const void* object);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -370,9 +371,7 @@ void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
 int							button(int x, int y, int width, eventproc proc, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
-void						combobox(const rect& rc, const bsval& cmd, listproc choose = 0, bool instant = true);
-int							combobox(int x, int y, int width, const char* header_label, const bsval& cmd, int header_width, const char* tips, listproc choose = 0);
-int							combobox(int x, int y, int width, const char* header_label, const void* object, const void* type, const anyreq& cmd, int header_width, const char* tips, nameproc getname, getoproc getptr);
+int							combobox(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const acol& source, getnamep getname, const char* tips);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, eventproc choose_proc);

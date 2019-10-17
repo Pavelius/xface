@@ -115,8 +115,7 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 	} else if(ev.type->is(KindText)) {
 		h = field(x, y, width, gettitle(temp, zendof(temp), ev), *((const char**)ev.type->ptr(ev.data)), title);
 	} else if(ev.type->is(KindReference)) {
-		h = combobox(x, y, width, gettitle(temp, zendof(temp), ev), ev, title, 0,
-			getprocchoose(ev.type));
+		//h = combobox(x, y, width, gettitle(temp, zendof(temp), ev), ev, title, 0, getprocchoose(ev.type));
 	} else if(ev.type->is(KindScalar))
 		h = group(x, y, width, gettitle(temp, zendof(temp), ev), ev);
 	if(!h)

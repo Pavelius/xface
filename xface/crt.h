@@ -223,6 +223,18 @@ struct cflags {
 	constexpr bool			is(const T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
 };
+struct acol {
+	void*					data;
+	unsigned				count;
+	unsigned				size;
+	constexpr acol() : data(0), count(0), size(0) {}
+	constexpr acol(void* data, unsigned count, unsigned size) : data(data), count(count), size(size) {}
+	constexpr char*			begin() const { return (char*)data; }
+	constexpr char*			end() const { return (char*)data + size*count; }
+	constexpr int			indexof(const void* v) const { return (size && v >= data && v <= (char*)data + size*count) ? ((char*)v - (char*)data) / size : -1; }
+	static void*			getptr(int index, const void* type) { return ((acol*)type)->ptr(index); }
+	constexpr char*			ptr(int v) const { return (char*)data + size*v; }
+};
 // Abstract array vector
 class array {
 	void*					data;
@@ -250,7 +262,7 @@ public:
 	constexpr unsigned		getsize() const { return size; }
 	int						indexof(const void* element) const;
 	void*					insert(int index, const void* element);
-	constexpr bool			isgrowable() const { return count_maximum>=count; }
+	constexpr bool			isgrowable() const { return count_maximum >= count; }
 	void					remove(int index, int elements_count);
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);

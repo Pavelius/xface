@@ -2,8 +2,8 @@
 #include "screenshoot.h"
 
 bool draw::dropdown(const rect& rc, draw::controls::control& e) {
-	screenshoot screen;
 	pushfocus pf;
+	screenshoot screen;
 	setfocus(e, true);
 	while(ismodal()) {
 		screen.restore();

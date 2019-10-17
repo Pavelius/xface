@@ -50,7 +50,7 @@ bool control::ishilited() const {
 }
 
 bool control::isfocused() const {
-	return draw::isfocused(anyval(const_cast<control*>(this), 0, 0));
+	return draw::isfocused(*const_cast<control*>(this));
 }
 
 void control::setfocus(bool instant) {
@@ -140,7 +140,7 @@ void control::execute(control::callback proc, int param) const {
 
 void control::view(const rect& rc) {
 	if(isfocusable()) {
-		addelement(rc, anyval(const_cast<control*>(this), 0, 0));
+		addelement(rc, *this);
 		if(!draw::isfocused())
 			setfocus(true);
 	}

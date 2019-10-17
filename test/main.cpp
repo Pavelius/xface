@@ -20,10 +20,19 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 "Soldier", "Heavy Soldier", "Sniper", "Commando"
 };
 
+struct nameable {
+	const char*		id;
+	const char*		name;
+	static const char* getname(const void* p) {
+		return ((nameable*)p)->name;
+	}
+};
+
 genderi bsmeta<genderi>::elements[] = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
+const unsigned bsmeta<genderi>::count_maximum = sizeof(bsmeta<genderi>::elements) / sizeof(bsmeta<genderi>::elements[0]);
 assert_enum(gender, Female);
 
 alignmenti bsmeta<alignmenti>::elements[] = {{"Neutral", "Нейтральный"},
@@ -378,13 +387,19 @@ static void test_autocomplite() {
 	auto p = e.choose(10, 10, 200, "M");
 }
 
+static const char* getname2(const void* p, const void* type) {
+	return ((nameable*)p)->name;
+}
+
 static void test_edit_field() {
-	setfocus(anyval(), true);
+	pushfocus pf;
 	const char* name = "Павел";
 	const char* surname = "Чистяков";
 	const char* lastname = "Валенинович";
 	const char* anystr = "Любая строка";
 	int number = 10;
+	auto combo = 1;
+	acol combo_source = {bsmeta<genderi>::elements, bsmeta<genderi>::count_maximum, bsmeta<genderi>::size};
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
@@ -394,6 +409,7 @@ static void test_edit_field() {
 		y += field(x, y, 300, "Еще тест", surname, 100);
 		y += field(x, y, 300, "Еще поле", lastname, 100);
 		y += field(x, y, 300, "Путь к папке", anystr, 100);
+		y += combobox(x, y, 300, "Пол", combo, 100, combo_source, nameable::getname, 0);
 		y += field(x, y, 300, "Скорость", number, 100, 4);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
