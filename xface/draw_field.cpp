@@ -86,9 +86,9 @@ void draw::savefocus() {
 static void execute_choose() {
 	if(!choose_proc)
 		return;
-	auto value = hot.value;
 	choose_proc();
 	cedit.load();
+	cedit.select_all(true);
 	cedit.invalidate();
 }
 
