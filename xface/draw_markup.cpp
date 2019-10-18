@@ -54,9 +54,9 @@ static const char* getpresent(const void* p, const bsreq* type) {
 
 static void choose_enum() {
 	struct enum_view : controls::list, adat<int, 512> {
-		markup::proci	proc;
-		markup::propi	prop;
-		const bsdata&	source;
+		markup::proci proc;
+		markup::propi prop;
+		const bsdata& source;
 		const char*	getname(char* result, const char* result_max, int line, int column) const {
 			if(prop.getname)
 				return prop.getname(source.get(data[line]), result, result_max);

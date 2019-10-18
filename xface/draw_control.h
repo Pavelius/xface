@@ -9,7 +9,7 @@
 typedef void(*listproc)(adat<void*, 64>& result, const bsreq** name_requisit, void* source);
 typedef const char*		(*nameproc)(const void* object, const void* type);
 typedef void*			(*getoproc)(int index, const void* type);
-typedef const char*		(*getnamep)(const void* object);
+typedef const char*		(*pgetname)(const void* object);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -371,7 +371,6 @@ void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
 int							button(int x, int y, int width, eventproc proc, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
-int							combobox(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const acol& source, getnamep getname, const char* tips);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, eventproc choose_proc);
@@ -379,6 +378,7 @@ int							field(int x, int y, int width, const char* label, color& value, int he
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, eventproc choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
 int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
+int							field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const acol& source, pgetname getname, const char* tips = 0);
 bool						isfocused(const anyval& value);
 bool						isfocused(const rect& rc, const anyval& value);
 int							radio(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
