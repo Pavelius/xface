@@ -5,7 +5,7 @@
 
 using namespace draw;
 
-static eventproc	choose_proc;
+static pchoose		proc_choose;
 static rect			cmb_rect;
 static acol			cmb_source;
 static anyval		cmb_var;
@@ -74,6 +74,9 @@ public:
 		load();
 		select_all(true);
 	}
+	void* getsource() {
+		return value.data;
+	}
 	void clear() {
 		textedit::clear();
 		value.clear();
@@ -88,9 +91,9 @@ void draw::savefocus() {
 }
 
 static void execute_choose() {
-	if(!choose_proc)
+	if(!proc_choose)
 		return;
-	choose_proc();
+	proc_choose(cmb_var);
 	cedit.load();
 	cedit.select_all(true);
 	cedit.invalidate();
@@ -108,7 +111,7 @@ static void field_down() {
 	cedit.invalidate();
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, eventproc pchoose) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, pchoose pchoose) {
 	if(rco.width() <= 0)
 		return;
 	rect rc = rco;
@@ -134,7 +137,7 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 	if(pchoose) {
 		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать")) {
 			cmb_var = ev;
-			choose_proc = pchoose;
+			proc_choose = pchoose;
 			draw::execute(execute_choose);
 		}
 	}
@@ -163,7 +166,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	return rc.height() + metrics::padding * 2;
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, eventproc pchoose) {
+int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, pchoose choosep) {
 	draw::state push;
 	setposition(x, y, width);
 	if(header_label && header_label[0])
@@ -173,7 +176,7 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	anyval av = sev;
 	if(isfocused(rc, av))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, av, -1, false, KindText, pchoose);
+	field(rc, flags | TextSingleLine, av, -1, false, KindText, choosep);
 	return rc.height() + metrics::padding * 2;
 }
 
