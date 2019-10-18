@@ -3,17 +3,19 @@
 
 using namespace draw;
 
+static anyval cmd_value;
+
 static void setvar() {
-	hot.value.set(hot.value.value);
+	cmd_value.set(cmd_value.value);
 }
 
 static void xorvar() {
-	auto m = hot.value.get();
-	auto v = hot.value.value;
+	auto m = cmd_value.get();
+	auto v = cmd_value.value;
 	if(!v)
 		v = 1;
 	m ^= v;
-	hot.value.set(m);
+	cmd_value.set(m);
 }
 
 void draw::setposition(int& x, int& y, int& width, int padding) {
@@ -87,7 +89,7 @@ int draw::radio(int x, int y, int width, const anyval& av, const char* label, co
 			need_select = true;
 	}
 	if(need_select) {
-		hot.value = av;
+		cmd_value = av;
 		execute(setvar);
 	}
 	rc = rc1; rc.offset(2);
@@ -128,7 +130,7 @@ int draw::checkbox(int x, int y, int width, const anyval& value, const char* lab
 			need_value = true;
 	}
 	if(need_value) {
-		hot.value = value;
+		cmd_value = value;
 		execute(xorvar);
 	}
 	draw::text(rc1, label);

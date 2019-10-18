@@ -97,13 +97,13 @@ static void execute_choose() {
 }
 
 static void field_up() {
-	hot.value.set(hot.value.get() + 1);
+	cmb_var.set(cmb_var.get() + 1);
 	cedit.load();
 	cedit.invalidate();
 }
 
 static void field_down() {
-	hot.value.set(hot.value.get() - 1);
+	cmb_var.set(cmb_var.get() - 1);
 	cedit.load();
 	cedit.invalidate();
 }
@@ -122,18 +122,18 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 			"-", Ctrl + KeyDown, "Уменьшить");
 		switch(result) {
 		case 1:
-			hot.value = ev;
+			cmb_var = ev;
 			execute(field_up); 
 			break;
 		case 2:
-			hot.value = ev;
+			cmb_var = ev;
 			execute(field_down);
 			break;
 		}
 	}
 	if(pchoose) {
 		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать")) {
-			hot.value = ev;
+			cmb_var = ev;
 			choose_proc = pchoose;
 			draw::execute(execute_choose);
 		}

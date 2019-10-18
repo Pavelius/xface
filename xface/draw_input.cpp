@@ -8,6 +8,7 @@ struct focusable_element {
 	anyval		value;
 };
 static anyval	current_focus;
+static anyval	cmd_value;
 extern rect		sys_static_area;
 static focusable_element elements[96];
 static focusable_element* render_control;
@@ -18,7 +19,7 @@ initplugin*		draw::initplugin::first;
 eventproc		draw::domodal;
 
 static void setfocus_callback() {
-	setfocus(hot.value, true);
+	setfocus(cmd_value, true);
 	hot.key = 0;
 }
 
@@ -135,7 +136,7 @@ void draw::setfocus(const anyval& value, bool instant) {
 		savefocus();
 		current_focus = value;
 	} else {
-		hot.value = value;
+		cmd_value = value;
 		execute(setfocus_callback);
 	}
 }

@@ -1,4 +1,5 @@
 #include "anyreq.h"
+#include "anyval.h"
 #include "bsreq.h"
 #include "draw.h"
 #include "markup.h"
@@ -10,6 +11,7 @@ typedef void(*listproc)(adat<void*, 64>& result, const bsreq** name_requisit, vo
 typedef const char*		(*nameproc)(const void* object, const void* type);
 typedef void*			(*getoproc)(int index, const void* type);
 typedef const char*		(*pgetname)(const void* object);
+typedef void			(*pchoose)(const void* object);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);

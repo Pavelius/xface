@@ -336,10 +336,10 @@ static void test_drag_drop() {
 
 static void choose_folder() {
 	char temp[260] = {};
-	auto value = hot.value;
+	//auto value = cmd_value;
 	if(!dialog::folder("Выбирайте папку", temp))
 		return;
-	value.set((int)szdup(temp));
+	//value.set((int)szdup(temp));
 }
 
 static int point_input(int x, int y, point& result, int width, int title, const char* t1, const char* t2) {

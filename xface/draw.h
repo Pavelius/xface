@@ -1,4 +1,3 @@
-#include "anyval.h"
 #include "color.h"
 #include "point.h"
 
@@ -152,7 +151,7 @@ struct hoti {
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed
 	int					param; // command context or parameters
-	anyval				value;
+	//anyval			value;
 	explicit operator bool() const { return key != 0; }
 	void				zero() { key = InputUpdate; }
 };
