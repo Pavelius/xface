@@ -4,8 +4,8 @@ typedef bool(*allowproc)(const void* object, int index); // Is allow some proper
 typedef void(*changeproc)(void* object, const void* previous_object); // Change object
 typedef void(*commandproc)(void* object); // Object's actions
 typedef int(*drawproc)(int x, int y, int width, const void* object); // Custom draw
-typedef int(*numproc)(const void* object); // Get object numeric properties
-typedef const char* (*textproc)(const void* object, char* result, const char* result_maximum);
+typedef int(*pnum)(const void* object, const void* type); // Get object numeric properties
+typedef const char* (*ptext)(const void* object, char* result, const char* result_maximum, const void* type);
 
 // Standart markup
 struct markup {
@@ -27,11 +27,11 @@ struct markup {
 		drawproc		custom;
 	};
 	struct propi {
-		textproc		getname;
-		numproc			getvalue;
+		ptext		getname;
+		pnum			getvalue;
 		constexpr propi() : getname(0), getvalue(0) {}
-		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((textproc)v), getvalue(0) {}
-		template<class T> constexpr propi(int(*v)(const T*)) : getname(0), getvalue((numproc)v) {}
+		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((ptext)v), getvalue(0) {}
+		template<class T> constexpr propi(int(*v)(const T*)) : getname(0), getvalue((pnum)v) {}
 	};
 	constexpr explicit operator bool() const { return title || value.id || value.child; }
 	int					width;

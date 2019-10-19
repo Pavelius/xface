@@ -41,12 +41,12 @@ docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock
 assert_enum(dock, DockWorkspace);
 DECLENUM(dock);
 
-const bsreq bsmeta<draw::controls::control::plugin>::meta[] = {
-	BSREQ(id),
-	BSREQ(dock),
-{}};
+//const bsreq bsmeta<draw::controls::control::plugin>::meta[] = {
+//	BSREQ(id),
+//	BSREQ(dock),
+//{}};
 
-static const char* get_setting_name(const void* p, char* result, const char* result_maximum) {
+static const char* get_setting_name(const void* p, char* result, const char* result_maximum, const void* type) {
 	return szprint(result, result_maximum, ((settings*)p)->name);
 }
 
@@ -360,7 +360,7 @@ static struct widget_settings : controls::control {
 
 } widget_settings_control;
 
-static const char* get_control_name(const void* object, char* result, const char* result_maximum) {
+static const char* get_control_name(const void* object, char* result, const char* result_maximum, const void* type) {
 	auto p = ((controls::control*)object)->getlabel(result, result_maximum);
 	if(!p)
 		return "No label";

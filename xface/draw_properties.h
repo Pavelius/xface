@@ -1,3 +1,4 @@
+#include "bsreq.h"
 #include "draw_control.h"
 
 #pragma once

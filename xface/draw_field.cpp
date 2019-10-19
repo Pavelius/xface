@@ -9,43 +9,40 @@ static pchoose		proc_choose;
 static rect			cmb_rect;
 static acol			cmb_source;
 static anyval		cmb_var;
-static pgetname		cmb_getname;
+static ptext		cmb_getname;
 
-static const char* getvalue(const anyval& v, bstype_s t, char* result, const char* result_end) {
+static const char* getvalue(const anyval& v, bool istext, char* result, const char* result_end) {
 	if(!v)
 		return "";
 	const char* p;
-	switch(t) {
-	case KindNumber:
-		return szprint(result, result_end, "%1i", v.get());
-	case KindText:
+	if(istext) {
 		p = (const char*)v.get();
 		if(p)
 			return szprint(result, result_end, p);
 		result[0] = 0;
-		return result;
-	default: return "";
-	}
+	} else
+		return szprint(result, result_end, "%1i", v.get());
+	return result;
 }
 
-static void setvalue(const anyval& v, bstype_s t, const char* result) {
+static void setvalue(const anyval& v, bool istext, const char* result) {
 	if(!v)
 		return;
 	int value = 0;
-	switch(t) {
-	case KindNumber: value = sz2num(result); break;
-	case KindText: value = (int)szdup(result); break;
-	}
+	if(istext)
+		value = (int)szdup(result);
+	else
+		value = sz2num(result);
 	v.set(value);
 }
 
 static class edit_driver : public controls::textedit {
 	char			source[2048];
 	anyval			value;
-	bstype_s		type;
+	bool			istext;
 public:
 	constexpr edit_driver() : textedit(source, sizeof(source) / sizeof(source), false),
-		value(), source(), type(KindNumber) {
+		value(), source(), istext(false) {
 	}
 	bool isfocusable() const override {
 		return false;
@@ -54,19 +51,19 @@ public:
 		return draw::isfocused(value);
 	}
 	void load() {
-		auto p = getvalue(value, type, source, source + sizeof(source) / sizeof(source[0]) - 1);
+		auto p = getvalue(value, istext, source, source + sizeof(source) / sizeof(source[0]) - 1);
 		if(p != source)
 			zcpy(source, p, sizeof(source));
 		invalidate();
 	}
 	void save() {
-		setvalue(value, type, source);
+		setvalue(value, istext, source);
 	}
-	void update(const anyval& ev, bstype_s et, int digits = -1) {
-		if(value == ev)
+	void update(const anyval& ev, bool istext, int digits = -1) {
+		if(this->value == ev)
 			return;
-		value = ev;
-		type = et;
+		this->value = ev;
+		this->istext = istext;
 		if(digits == -1)
 			setcount(sizeof(source) / sizeof(source[0]) - 1);
 		else
@@ -111,7 +108,7 @@ static void field_down() {
 	cedit.invalidate();
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, pchoose pchoose) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, pchoose pchoose) {
 	if(rco.width() <= 0)
 		return;
 	rect rc = rco;
@@ -126,7 +123,7 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 		switch(result) {
 		case 1:
 			cmb_var = ev;
-			execute(field_up); 
+			execute(field_up);
 			break;
 		case 2:
 			cmb_var = ev;
@@ -144,11 +141,11 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 	auto a = area(rc);
 	if(focused) {
 		cedit.align = flags & edit_mask;
-		cedit.update(ev, type, digits);
+		cedit.update(ev, istext, digits);
 		cedit.view(rc);
 	} else {
 		char temp[260];
-		auto p = getvalue(ev, type, temp, temp + sizeof(temp) / sizeof(temp[0]));
+		auto p = getvalue(ev, istext, temp, temp + sizeof(temp) / sizeof(temp[0]));
 		draw::text(rc + metrics::edit, p, flags & edit_mask);
 	}
 }
@@ -162,7 +159,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	unsigned flags = AlignRight;
 	if(isfocused(rc, ev))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, ev, digits, true, KindNumber, 0);
+	field(rc, flags | TextSingleLine, ev, digits, true, false, 0);
 	return rc.height() + metrics::padding * 2;
 }
 
@@ -176,19 +173,21 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	anyval av = sev;
 	if(isfocused(rc, av))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, av, -1, false, KindText, choosep);
+	field(rc, flags | TextSingleLine, av, -1, false, true, choosep);
 	return rc.height() + metrics::padding * 2;
 }
 
 struct combolist : controls::list, adat<void*, 64> {
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		return cmb_getname(data[line]);
+		return cmb_getname(data[line], result, result_max, 0);
 	}
 	static int compare_by_order(const void* v1, const void* v2) {
+		char t1[256];
+		char t2[256];
 		auto p1 = *((void**)v1);
 		auto p2 = *((void**)v2);
-		auto n1 = cmb_getname(p1);
-		auto n2 = cmb_getname(p2);
+		auto n1 = cmb_getname(p1, t1, t1 + sizeof(t1) - 1, 0);
+		auto n2 = cmb_getname(p2, t2, t2 + sizeof(t2) - 1, 0);
 		return strcmp(n1, n2);
 	}
 	int	getmaximum() const {
@@ -261,12 +260,13 @@ static void show_combolist() {
 	}
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const acol& source, pgetname getname, const char* tips) {
+int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const acol& source, ptext getname, const char* tips) {
 	draw::state push;
-	setposition(x, y, width);
-	decortext(0);
-	if(header_label && header_label[0])
+	if(header_label && header_label[0]) {
+		setposition(x, y, width);
+		decortext(0);
 		titletext(x, y, width, 0, header_label, header_width);
+	}
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
@@ -312,7 +312,8 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	rco.offset(2, 2);
 	auto v = av.get();
 	auto p = source.ptr(v);
-	textc(rco.x1, rco.y1, rco.width(), getname(p));
+	char temp[260];
+	textc(rco.x1, rco.y1, rco.width(), getname(p, temp, temp + sizeof(temp) - 1, 0));
 	if(tips && a == AreaHilited)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;

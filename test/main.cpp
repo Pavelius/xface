@@ -23,7 +23,7 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 struct nameable {
 	const char*		id;
 	const char*		name;
-	static const char* getname(const void* p) {
+	static const char* getname(const void* p, char* result, const char* result_max, const void* type) {
 		return ((nameable*)p)->name;
 	}
 };

@@ -59,7 +59,7 @@ static void choose_enum() {
 		const bsdata& source;
 		const char*	getname(char* result, const char* result_max, int line, int column) const {
 			if(prop.getname)
-				return prop.getname(source.get(data[line]), result, result_max);
+				return prop.getname(source.get(data[line]), result, result_max, 0);
 			switch(column) {
 			case 0: return getpresent(source.get(data[line]), source.meta);
 			}
@@ -198,7 +198,7 @@ void field_enum(const rect& rc, unsigned flags, const anyval& ev, const bsreq* m
 	auto pn = "";
 	auto pv = pb->get(ev.get());
 	if(ppi && ppi->getname)
-		pn = ppi->getname(pv, temp, zendof(temp));
+		pn = ppi->getname(pv, temp, zendof(temp), meta_type);
 	else
 		pn = getpresent(pb->get(ev.get()), pb->meta);
 	textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 4 * 2, pn);
@@ -235,7 +235,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	if(draw::isfocused(rc, av))
 		flags |= Focused;
 	if(type->is(KindText))
-		draw::field(rc, flags, av, -1, false, KindText, 0);
+		draw::field(rc, flags, av, -1, false, true, 0);
 	else if(type->is(KindEnum) || (type->is(KindNumber) && type->hint_type)) {
 		auto hint = type->type;
 		if(type->hint_type)
@@ -418,15 +418,15 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		return 0;
 }
 
-int draw::field(int x, int y, int width, const markup* elements, const bsval& source, int title_width) {
-	if(!elements)
-		return 0;
-	contexti ctx;
-	ctx.title = title_width;
-	ctx.source = source;
-	ctx.show_missed_requisit = true;
-	if(elements->width)
-		return group_horizontal(x, y, width, ctx, elements);
-	else
-		return group_vertial(x, y, width, ctx, elements);
-}
+//int draw::field(int x, int y, int width, const markup* elements, const bsval& source, int title_width) {
+//	if(!elements)
+//		return 0;
+//	contexti ctx;
+//	ctx.title = title_width;
+//	ctx.source = source;
+//	ctx.show_missed_requisit = true;
+//	if(elements->width)
+//		return group_horizontal(x, y, width, ctx, elements);
+//	else
+//		return group_vertial(x, y, width, ctx, elements);
+//}

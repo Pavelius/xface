@@ -1,6 +1,6 @@
 #include "anyreq.h"
 #include "anyval.h"
-#include "bsreq.h"
+#include "crt.h"
 #include "draw.h"
 #include "markup.h"
 #include "pointl.h"
@@ -9,7 +9,6 @@
 
 typedef const char*		(*nameproc)(const void* object, const void* type);
 typedef void*			(*getoproc)(int index, const void* type);
-typedef const char*		(*pgetname)(const void* object);
 typedef void			(*pchoose)(const anyval value);
 
 namespace clipboard {
@@ -173,27 +172,23 @@ struct column {
 	cflags<column_s>		flags;
 	anyreq					value;
 	image_flag_s			align;
-	numproc					getnum;
-	textproc				getstr;
-	nameproc				getname;
-	getoproc				getptr;
+	pnum					getnum;
+	ptext					getstr;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
-	const char*				gete(const void* object, char* result, const char* result_end) const;
 	bool					is(column_s v) const { return flags.is(v); }
 	column&					set(image_flag_s v) { align = v; return *this; }
 	column&					set(column_size_s v) { size = v; return *this; }
 	column&					set(column_s v) { flags.add(v); return *this; }
 	column&					set(total_s v) { total = v; return *this; }
-	column&					set(numproc v) { getnum = v; return *this; }
-	column&					set(textproc v) { getstr = v; return *this; }
-	column&					set(getoproc v, nameproc np, void* p) { getptr = v; getname = np; param = (unsigned)p; return *this; }
+	column&					set(pnum v) { getnum = v; return *this; }
+	column&					set(ptext v) { getstr = v; return *this; }
 	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
 struct table : list {
-	typedef int(*proc_compare)(int i1, int i2, void* param);
+	typedef int(*fncompare)(int i1, int i2, void* param);
 	arem<column>			columns;
 	int						current_column, current_hilite_column, current_column_maximum, maximum_width;
 	bool					no_change_count;
@@ -209,7 +204,6 @@ struct table : list {
 	void					cellbox(const rect& rc, int line, int column);
 	void					celldate(const rect& rc, int line, int column);
 	void					celldatetime(const rect& rc, int line, int column);
-	void					cellenum(const rect& rc, int line, int column);
 	void					cellimage(const rect& rc, int line, int column);
 	void					cellrownumber(const rect& rc, int line, int column);
 	void					cellhilite(const rect& rc, int line, int columen, const char* text, image_flag_s aling) const;
@@ -239,7 +233,7 @@ struct table : list {
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
-	void					sort(int i1, int i2, bool ascending, proc_compare comparer, void* param);
+	void					sort(int i1, int i2, bool ascending, fncompare comparer, void* param);
 	void					sort(int column, bool ascending);
 	virtual void			swap(int i1, int i2) {}
 	void					view(const rect& rc) override;
@@ -301,7 +295,7 @@ struct visual {
 	total_s					total;
 	proc_render				render;
 	proc_render				change;
-	table::proc_compare		comparer;
+	table::fncompare		comparer;
 	bool					change_one_click;
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
@@ -374,12 +368,12 @@ int							button(int x, int y, int width, eventproc proc, const char* label, con
 int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-void						field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bstype_s type, pchoose choose_proc);
+void						field(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, pchoose choose_proc);
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, pchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
-int							field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
-int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const acol& source, pgetname getname, const char* tips = 0);
+//int						field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
+int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const acol& source, ptext getname, const char* tips = 0);
 bool						isfocused(const anyval& value);
 bool						isfocused(const rect& rc, const anyval& value);
 int							radio(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
@@ -387,7 +381,7 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
-template<> struct bsmeta<draw::controls::control::plugin> {
-	typedef draw::controls::control::plugin	data_type;
-	static const bsreq		meta[];
-};
+//template<> struct bsmeta<draw::controls::control::plugin> {
+//	typedef draw::controls::control::plugin	data_type;
+//	static const bsreq		meta[];
+//};

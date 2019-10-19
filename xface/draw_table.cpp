@@ -30,7 +30,7 @@ int table::comparenum(int i1, int i2, void* param) {
 	return pc->get(pe->get(i1)) - pc->get(pe->get(i2));
 }
 
-void table::sort(int i1, int i2, bool ascending, proc_compare comparer, void* param) {
+void table::sort(int i1, int i2, bool ascending, fncompare comparer, void* param) {
 	if(ascending) {
 		for(int i = i2; i > i1; i--) {
 			for(int j = i1; j < i; j++)
@@ -69,30 +69,14 @@ void table::clickcolumn(int column) const {
 
 int	column::get(const void* object) const {
 	if(getnum)
-		return getnum(object);
+		return getnum(object, this);
 	return value.get(value.ptr((void*)object));
 }
 
 const char* column::get(const void* object, char* result, const char* result_end) const {
 	if(getstr)
-		return getstr(object, result, result_end);
+		return getstr(object, result, result_end, this);
 	return value.gets(value.ptr((void*)object));
-}
-
-const char* column::gete(const void* object, char* result, const char* result_end) const {
-	if(getstr)
-		return getstr(object, result, result_end);
-	if(!param)
-		return "Нет типа";
-	if(!getptr)
-		return "Нет смещения";
-	if(!getname)
-		return "Нет имени";
-	auto v = value.get(value.ptr((void*)object));
-	auto p = getptr(v, (void*)param);
-	if(!p)
-		return "";
-	return getname(p, (void*)param);
 }
 
 void table::update_columns(const rect& rc) {
@@ -557,12 +541,6 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 	}
 }
 
-void table::cellenum(const rect& rc, int line, int column) {
-	char temp[260];
-	auto ps = columns[column].gete(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
-	cell(rc, line, column, ps);
-}
-
 void table::celltext(const rect& rc, int line, int column) {
 	char temp[260];
 	auto ps = columns[column].get(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
@@ -634,7 +612,7 @@ const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, 
 {"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
 {"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
 {"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
-{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::cellenum},
+{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext},
 {"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, table::comparenum},
 {"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
 {}};

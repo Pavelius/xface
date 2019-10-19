@@ -4,7 +4,7 @@
 #pragma once
 
 typedef void(*eventproc)();
-typedef const char* (*textproc)(const void* object, char* result, const char* result_maximum);
+typedef const char* (*ptext)(const void* object, char* result, const char* result_maximum, const void* type);
 extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 
 enum draw_event_s {
@@ -336,8 +336,8 @@ void					splith(int x, int y, int width, int& value, int size, int minimum, int 
 void					statusbar(const char* format, ...);
 void					statusbarv(const char* format, const char* format_param);
 int						statusbardw();
-int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, textproc gtext = 0, rect position = {0, 0, 0, 0});
-int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, textproc gtext, rect position = {0, 0, 0, 0});
+int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, ptext gtext = 0, rect position = {0, 0, 0, 0});
+int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, ptext gtext, rect position = {0, 0, 0, 0});
 bool					tool(const rect& rc, bool disabled, bool checked, bool press, bool focused = false, int key = 0);
 void					tooltips(const char* format, ...);
 void					tooltips(int x, int y, int width, const char* format, ...);
