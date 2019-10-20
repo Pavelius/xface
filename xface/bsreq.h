@@ -2,20 +2,19 @@
 
 #pragma once
 
-#define	BSHIN(fn,hint) {#fn, (unsigned)&((data_type*)0)->fn,\
+#define	BSREQ(fn) {#fn, (unsigned)&((data_type*)0)->fn,\
 sizeof(bsreq::decoy<decltype(data_type::fn)>::value),\
 sizeof(data_type::fn),\
 bsreq::icount<decltype(data_type::fn)>::value,\
 bsmeta<bsreq::decoy<decltype(data_type::fn)>::value>::meta,\
 bsreq::isubtype<decltype(data_type::fn)>::value,\
-hint}
-#define	BSREQ(fn) BSHIN(fn,0)
+bsmeta<bsreq::decoy<decltype(data_type::fn)>::value>::source_ptr}
 #define BSDATA(c, i) c bsmeta<c>::elements[i];\
 bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
 #define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
 #define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
 const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-unsigned bsmeta<e##i>::count;
+array bsmeta<e##i>::source(bsmeta<e##i>::elements);
 
 // Basic metadata types
 enum bstype_s : unsigned char {
@@ -68,7 +67,7 @@ struct bsreq {
 	unsigned			count; // count of elements
 	const bsreq*		type; // metadata of element
 	bstype_s			subtype; // metadata subtype
-	const bsreq*		hint_type; // type for user defined algoritm
+	array*				source;
 	//
 	operator bool() const { return id != 0; }
 	//
@@ -82,7 +81,6 @@ struct bsreq {
 	bool				is(bstype_s v) const { return subtype == v; }
 	bool				issimple() const { return is(KindNumber) || is(KindText); }
 	bool				match(const void* p, const char* name) const;
-	static const bsreq	metadata[];
 	constexpr char*		ptr(const void* data) const { return (char*)data + offset; }
 	constexpr char*		ptr(const void* data, int index) const { return (char*)data + offset + index * size; }
 	void				set(const void* p, int value) const;
@@ -122,21 +120,27 @@ template<typename T> struct bsmeta {
 	typedef T				data_type;
 	static T				elements[];
 	static const bsreq		meta[];
-	static unsigned			count;
-	static const unsigned	count_maximum;
-	static constexpr const unsigned size = sizeof(T);
+	static array			source;
+	static constexpr array*	source_ptr = &source;
 	//
-	static T*				add() { return (count >= count_maximum) ? 0 : &elements[count++]; }
-	static T*				begin() { return elements; }
-	static T*				end() { return elements + count; }
+	static T*				add() { return source.add(); }
+	static T*				begin() { return (T*)source.begin(); }
+	static T*				end() { return (T*)source.end(); }
 };
 template<> struct bsmeta<int> {
 	typedef int			data_type;
 	static const bsreq	meta[];
+	static constexpr array*	source_ptr = 0;
 };
 template<> struct bsmeta<const char*> {
 	typedef const char*	data_type;
 	static const bsreq	meta[];
+	static constexpr array*	source_ptr = 0;
+};
+template<> struct bsmeta<bsreq> {
+	typedef bsreq		data_type;
+	static const bsreq	meta[];
+	static constexpr array*	source_ptr = 0;
 };
 struct bsval {
 	void*				data;

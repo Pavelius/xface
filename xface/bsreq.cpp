@@ -88,6 +88,8 @@ bsdata* bsdata::first;
 //	*pf = this;
 //}
 
+array bsmeta<bsdata>::source;
+
 void* bsdata::add() {
 	if(count < maximum)
 		return (char*)data + (count++)*size;
@@ -215,14 +217,14 @@ const char* bsreq::gets(const void* p) const {
 			return "";
 		return pf->gets(pf->ptr(v));
 	} else if(is(KindEnum)) {
-		auto pb = bsdata::find(type);
+		auto pb = source;
 		if(!pb)
 			return "";
-		auto pf = pb->meta->getname();
+		auto pf = type->getname();
 		if(!pf)
 			return "";
 		auto vi = get(p);
-		auto v = (void*)pb->get(vi);
+		auto v = (void*)pb->ptr(vi);
 		return pf->gets(pf->ptr(v));
 	}
 	return "";

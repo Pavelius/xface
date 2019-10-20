@@ -182,8 +182,8 @@ static struct widget_control_viewer : controls::tableref {
 	void initialize() {
 		no_change_order = true;
 		no_change_count = true;
-		addcol("Наименование", "text");
-		addcol("Расположение", "ref");
+		addcol(bsmeta<docki>::meta, "text", "Наименование");
+		addcol(bsmeta<docki>::meta, "ref", "Расположение");
 		for(auto p = plugin::first; p; p = p->next)
 			add(p);
 	}

@@ -1,5 +1,4 @@
 #include "crt.h"
-#include "datetime.h"
 #include "draw_control.h"
 
 using namespace draw;
@@ -68,15 +67,21 @@ void table::clickcolumn(int column) const {
 }
 
 int	column::get(const void* object) const {
-	if(getnum)
-		return getnum(object, this);
-	return value.get(value.ptr((void*)object));
+	if(!type)
+		return 0;
+	return type->get(type->ptr(object));
+}
+
+void column::set(const void* object, int v) {
+	if(!type)
+		return;
+	type->set(type->ptr(object), v);
 }
 
 const char* column::get(const void* object, char* result, const char* result_end) const {
-	if(getstr)
-		return getstr(object, result, result_end, this);
-	return value.gets(value.ptr((void*)object));
+	if(!type)
+		return result;
+	return type->gets(type->ptr(object));
 }
 
 void table::update_columns(const rect& rc) {
@@ -409,14 +414,31 @@ bool table::keyinput(unsigned id) {
 	return true;
 }
 
-column& table::addcol(const char* name, const char* type, const anyreq& value) {
+static const char* get_visual_default(const bsreq* type) {
+	if(!type)
+		return 0;
+	if(type->type == bsmeta<int>::meta)
+		return "number";
+	else if(type->type == bsmeta<const char*>::meta)
+		return "text";
+	else if(type->type == bsmeta<datetime>::meta)
+		return "datetime";
+	return "enum";
+}
+
+column& table::addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id) {
 	const visual* pf = 0;
 	auto p = columns.add();
 	memset(p, 0, sizeof(column));
-	for(auto pp = getvisuals(); pp && *pp; pp++) {
-		pf = (*pp)->find(type);
-		if(pf)
-			break;
+	p->type = metadata->find(id);
+	if(!visual_id)
+		visual_id = get_visual_default(p->type);
+	if(visual_id) {
+		for(auto pp = getvisuals(); pp && *pp; pp++) {
+			pf = (*pp)->find(visual_id);
+			if(pf)
+				break;
+		}
 	}
 	if(pf) {
 		p->method = pf;
@@ -424,7 +446,6 @@ column& table::addcol(const char* name, const char* type, const anyreq& value) {
 	} else
 		p->method = visuals;
 	p->title = szdup(name);
-	p->value = value;
 	p->size = p->method->size;
 	p->width = p->method->default_width;
 	p->total = p->method->total;
@@ -449,36 +470,26 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 void table::changenumber(const rect& rc, int line, int column) {
 	char temp[32];
 	zprint(temp, "%1i", columns[column].get(get(line)));
-	if(changefield(rc, columns[column].align, temp, zendof(temp))) {
-		auto& v = columns[current_column].value;
-		v.set(v.ptr(get(line)), sz2num(temp));
-	}
+	if(changefield(rc, columns[column].align, temp, zendof(temp)))
+		columns[column].set(get(line), sz2num(temp));
 }
 
 void table::changetext(const rect& rc, int line, int column) {
 	char temp[8192];
-	auto value = columns[column].value.gets(get(line));
+	auto value = columns[column].type->gets(get(line));
 	zcpy(temp, value, sizeof(temp) - 1);
-	if(changefield(rc, columns[column].align, temp, zendof(temp))) {
-		auto& v = columns[column].value;
-		if(v.size == sizeof(const char*)) {
-			if(temp[0])
-				v.set(v.ptr(get(line)), (int)szdup(temp));
-			else
-				v.set(v.ptr(get(line)), 0);
-		}
-	}
+	if(changefield(rc, columns[column].align, temp, zendof(temp)))
+		columns[column].set(get(line), (int)szdup(temp));
 }
 
 void table::changecheck(const rect& rc, int line, int column) {
-	auto r = columns[current_column].value;
 	auto p = get(line);
 	auto v = columns[column].get(p);
-	auto b = 1 << r.bit;
+	auto b = 1 << columns[column].param;
 	if((v & b) != 0)
-		r.set(r.ptr(p), v & (~b));
+		columns[column].set(p, v & (~b));
 	else
-		r.set(r.ptr(p), v | b);
+		columns[column].set(p, v | b);
 }
 
 bool table::change(bool run) {
@@ -594,7 +605,7 @@ void table::celldatetime(const rect& rc, int line, int column) {
 void table::cellbox(const rect& rc, int line, int column) {
 	unsigned flags = 0;
 	auto v = columns[column].get(get(line));
-	auto b = 1<<columns[column].value.bit;
+	auto b = 1<<columns[column].param;
 	if(v&b)
 		flags |= Checked;
 	cellhilite(rc, line, column, 0, AlignCenter);

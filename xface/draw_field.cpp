@@ -5,11 +5,11 @@
 
 using namespace draw;
 
-static pchoose		proc_choose;
+static fnchoose		proc_choose;
 static rect			cmb_rect;
-static acol			cmb_source;
+static array		cmb_source;
 static anyval		cmb_var;
-static ptext		cmb_getname;
+static fntext		cmb_getname;
 
 static const char* getvalue(const anyval& v, bool istext, char* result, const char* result_end) {
 	if(!v)
@@ -108,7 +108,7 @@ static void field_down() {
 	cedit.invalidate();
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, pchoose pchoose) {
+void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose pchoose) {
 	if(rco.width() <= 0)
 		return;
 	rect rc = rco;
@@ -163,7 +163,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	return rc.height() + metrics::padding * 2;
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, pchoose choosep) {
+int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, fnchoose choosep) {
 	draw::state push;
 	setposition(x, y, width);
 	if(header_label && header_label[0])
@@ -225,7 +225,7 @@ struct combolist : controls::list, adat<void*, 64> {
 	void update() {
 		clear();
 		auto pe = cmb_source.end();
-		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.size)
+		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize())
 			add(pb);
 		current = cmb_var.get();
 	}
@@ -260,7 +260,7 @@ static void show_combolist() {
 	}
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const acol& source, ptext getname, const char* tips) {
+int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips) {
 	draw::state push;
 	if(header_label && header_label[0]) {
 		setposition(x, y, width);

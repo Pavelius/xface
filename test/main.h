@@ -34,6 +34,5 @@ struct cultivatedi {
 	unsigned		total;
 	unsigned		year;
 };
-template<> struct bsmeta<datetime> : bsmeta<int> {};
 DECLENUM(alignment);
 DECLENUM(gender);

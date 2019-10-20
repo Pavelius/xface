@@ -27,26 +27,26 @@ void tableref::addref(void* object) {
 int	tableref::find(const void* value) const {
 	auto count = getcount();
 	for(unsigned i = 0; i < count; i++) {
-		if(((element*)array::get(i))->object == value)
+		if(((element*)array::ptr(i))->object == value)
 			return i;
 	}
 	return -1;
 }
 
 void* tableref::get(int index) const {
-	return (void*)((element*)array::get(index))->object;
+	return (void*)((element*)array::ptr(index))->object;
 }
 
 int tableref::getlevel(int index) const {
-	return ((element*)array::get(index))->level;
+	return ((element*)array::ptr(index))->level;
 }
 
 int	tableref::getimage(int index) const {
-	return ((element*)array::get(index))->image;
+	return ((element*)array::ptr(index))->image;
 }
 
 int	tableref::gettype(int index) const {
-	return ((element*)array::get(index))->type;
+	return ((element*)array::ptr(index))->type;
 }
 
 int tableref::getroot(int index) const {
@@ -95,7 +95,7 @@ int tableref::getblockcount(int index) const {
 }
 
 bool tableref::isgroup(int index) const {
-	return (((element*)array::get(index))->flags&TIGroup) != 0;
+	return (((element*)array::ptr(index))->flags&TIGroup) != 0;
 }
 
 void tableref::toggle(int index) {
@@ -165,14 +165,14 @@ void tableref::expand(int index, int level) {
 	builder e(this, index, level);
 	expanding(e);
 	if(e.index != index) {
-		auto p = (element*)array::get(index);
+		auto p = (element*)array::ptr(index);
 		p->flags |= TIGroup;
 	}
 	// Remove unused rows
 	unsigned i1 = e.index + 1;
 	unsigned i2 = i1;
 	while(i2 < array::getcount()) {
-		auto p2 = (element*)array::get(i2);
+		auto p2 = (element*)array::ptr(i2);
 		if(p2->level >= (level + 1))
 			i2++;
 		else

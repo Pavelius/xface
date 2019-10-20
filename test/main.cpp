@@ -28,11 +28,12 @@ struct nameable {
 	}
 };
 
+const bsreq bsmeta<datetime>::meta[] = {{"datetime"}, {}};
+
 genderi bsmeta<genderi>::elements[] = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
-const unsigned bsmeta<genderi>::count_maximum = sizeof(bsmeta<genderi>::elements) / sizeof(bsmeta<genderi>::elements[0]);
 assert_enum(gender, Female);
 
 alignmenti bsmeta<alignmenti>::elements[] = {{"Neutral", "Нейтральный"},
@@ -59,19 +60,31 @@ static struct element {
 {"Petrov", "Peter", 0, 0, 25, Male, ChaoticNeutral},
 {"Ludina", "Iren", 0, 0, 25, Female, LawfulGood},
 };
-const bsreq bsmeta<element>::meta[] = {
-	BSREQ(mark),
-	BSREQ(radio),
-	BSREQ(name),
-	BSREQ(surname),
-	BSREQ(age),
-	BSREQ(gender),
-	BSREQ(alignment),
+const bsreq bsmeta<element>::meta[] = {BSREQ(mark),
+BSREQ(radio),
+BSREQ(name),
+BSREQ(surname),
+BSREQ(age),
+BSREQ(gender),
+BSREQ(alignment),
 {}};
-
-bsdata bsmeta<bsdata>::elements[] = {{"alignment",
-	bsmeta<alignmenti>::meta, bsmeta<alignmenti>::elements, bsmeta<alignmenti>::size, bsmeta<alignmenti>::count}};
-unsigned bsmeta<bsdata>::count;
+struct rowelement {
+	const char*		name;
+	gender_s		gender;
+	alignment_s		alignment;
+	char			image;
+	char			age;
+	unsigned		flags;
+	datetime		date;
+};
+const bsreq bsmeta<rowelement>::meta[] = {BSREQ(name),
+BSREQ(gender),
+BSREQ(alignment),
+BSREQ(image),
+BSREQ(age),
+BSREQ(flags),
+BSREQ(date),
+{}};
 
 struct testinfo {
 	const char*		name;
@@ -162,43 +175,24 @@ static void many_lines() {
 	}
 }
 
-static bool test_switch_anyreq() {
-	switch(ANOFS(anyreq, size)) {
-	case ANOFS(anyreq, offset): return false;
-	case ANOFS(anyreq, bit): return false;
-	case ANOFS(anyreq, size): return true;
-	default: return false;
-	}
-}
-
 static void test_tableref() {
-	struct element {
-		const char*		name;
-		gender_s		gender;
-		alignment_s		alignment;
-		char			image;
-		char			age;
-		unsigned		flags;
-		datetime		date;
-	};
-	if(!test_switch_anyreq())
-		return;
-	adat<element, 32> elements;
+	adat<rowelement, 32> elements;
 	elements.add({"Pavel", Male, ChaoticEvil, 2, 30, 0, datetime::now()});
-	elements.add({"Olga", Female, ChaoticGood, 0, 39, 0, datetime::now() - 5*24*60});
+	elements.add({"Olga", Female, ChaoticGood, 0, 39, 0, datetime::now() - 5 * 24 * 60});
 	elements.add({"Valentin", Male, NeutralGood, 1, 20, 0, datetime::now() - 3 * 24 * 60});
 	elements.add({"Jorgun", Male, LawfulGood, 0, 16, 0, datetime::now() - 4 * 24 * 60});
 	controls::tableref test;
-	test.addcol("#", "rownumber");
-	test.addcol("Из", "image", ANREQ(element, image));
-	test.addcol("Наименование", "text", ANREQ(element, name))/*.set(SizeAuto)*/;
-	test.addcol("УУ", "checkbox", ANBIT(element, flags, AreaNormal));
-	test.addcol("БУ", "checkbox", ANBIT(element, flags, AreaHilited));
-	test.addcol("МУ", "checkbox", ANBIT(element, flags, AreaHilitedPressed));
-	test.addcol("Возраст", "number", ANREQ(element, age));
-	//test.addcol("Пол", "enum", ANREQ(element, gender)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<gender_s>::data);
-	//test.addcol("Мировозрение", "enum", ANREQ(element, alignment)).set(bsdata::getptr, bsdata::getpresent, &bsmeta<alignment_s>::data);
-	test.addcol("Дата", "datetime", ANREQ(element, date));
+	auto pm = bsmeta<rowelement>::meta;
+	test.addcol(pm, "#", "rownumber");
+	test.addcol(pm, "image", "Из", "image");
+	test.addcol(pm, "name", "Наименование")/*.set(SizeAuto)*/;
+	test.addcol(pm, "flags", "УУ", "checkbox").setparam(AreaNormal);
+	test.addcol(pm, "flags", "БУ", "checkbox").setparam(AreaHilited);
+	test.addcol(pm, "flags", "МУ", "checkbox").setparam(AreaHilitedPressed);
+	test.addcol(pm, "age", "Возраст");
+	test.addcol(pm, "gender", "Пол");
+	test.addcol(pm, "alignment", "Мировозрение");
+	test.addcol(pm, "date", "Дата", "datetime");
 	for(auto& e : elements)
 		test.addref(&e);
 	for(auto& e : elements)
@@ -398,7 +392,6 @@ static void test_edit_field() {
 	const char* anystr = "Любая строка";
 	int number = 10;
 	auto combo = 1;
-	acol combo_source = {bsmeta<genderi>::elements, bsmeta<genderi>::count_maximum, bsmeta<genderi>::size};
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
@@ -408,7 +401,7 @@ static void test_edit_field() {
 		y += field(x, y, 300, "Еще тест", surname, 100);
 		y += field(x, y, 300, "Еще поле", lastname, 100);
 		y += field(x, y, 300, "Путь к папке", anystr, 100);
-		y += field(x, y, 300, "Пол", combo, 100, combo_source, nameable::getname, 0);
+		y += field(x, y, 300, "Пол", combo, 100, bsmeta<genderi>::source, nameable::getname, 0);
 		y += field(x, y, 300, "Скорость", number, 100, 4);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
@@ -448,8 +441,8 @@ static void start_menu() {
 	{"Простые элементы", simple_controls},
 	{"Список", test_list},
 	{"Таблица с ячейками", test_tableref},
-	//{"Таблица ссылок", test_grid_ref},
-	//{"Дерево", test_tree},
+		//{"Таблица ссылок", test_grid_ref},
+		//{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
 	{"Приложение", draw::application},
@@ -512,7 +505,7 @@ static void test_binary_serial() {
 }
 
 static bool test_datetime() {
-	datetime d = datetime::now().daybegin() + 24*60;
+	datetime d = datetime::now().daybegin() + 24 * 60;
 	auto iy = d.year();
 	auto im = d.month();
 	auto id = d.day();

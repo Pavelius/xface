@@ -186,41 +186,41 @@ static int error(int x, int y, int width, contexti& ctx, const markup& e, const 
 	return rc.height() + metrics::padding * 2;
 }
 
-void field_enum(const rect& rc, unsigned flags, const anyval& ev, const bsreq* meta_type, const void* object, const markup::proci* pri, const markup::propi* ppi) {
-	auto pb = bsdata::find(meta_type);
-	if(!pb)
-		return;
-	char temp[128];
-	auto focused = isfocused(flags);
-	auto result = focused && (hot.key == KeyEnter || hot.key == F2);
-	if(buttonh(rc, false, focused, false, true, 0, 0, false, 0))
-		result = true;
-	auto pn = "";
-	auto pv = pb->get(ev.get());
-	if(ppi && ppi->getname)
-		pn = ppi->getname(pv, temp, zendof(temp), meta_type);
-	else
-		pn = getpresent(pb->get(ev.get()), pb->meta);
-	textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 4 * 2, pn);
-	if(focused)
-		rectx({rc.x1 + 2, rc.y1 + 2, rc.x2 - 2, rc.y2 - 2}, colors::border);
-	if(result) {
-		command.clear();
-		command.rc = rc;
-		command.value = ev;
-		command.data = pb;
-		command.object = (void*)object;
-		if(pri) {
-			//if(pri->command) {
-			//	cmd(pri->command, (void*)pv).execute();
-			//	return;
-			//}
-			command.proc = *pri;
-			command.prop = *ppi;
-		}
-		execute(choose_enum);
-	}
-}
+//void field_enum(const rect& rc, unsigned flags, const anyval& ev, const array* meta_type, const void* object, const markup::proci* pri, const markup::propi* ppi) {
+//	auto pb = bsdata::find(meta_type);
+//	if(!pb)
+//		return;
+//	char temp[128];
+//	auto focused = isfocused(flags);
+//	auto result = focused && (hot.key == KeyEnter || hot.key == F2);
+//	if(buttonh(rc, false, focused, false, true, 0, 0, false, 0))
+//		result = true;
+//	auto pn = "";
+//	auto pv = pb->get(ev.get());
+//	if(ppi && ppi->getname)
+//		pn = ppi->getname(pv, temp, zendof(temp), meta_type);
+//	else
+//		pn = getpresent(pb->get(ev.get()), pb->meta);
+//	textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 4 * 2, pn);
+//	if(focused)
+//		rectx({rc.x1 + 2, rc.y1 + 2, rc.x2 - 2, rc.y2 - 2}, colors::border);
+//	if(result) {
+//		command.clear();
+//		command.rc = rc;
+//		command.value = ev;
+//		command.data = pb;
+//		command.object = (void*)object;
+//		if(pri) {
+//			//if(pri->command) {
+//			//	cmd(pri->command, (void*)pv).execute();
+//			//	return;
+//			//}
+//			command.proc = *pri;
+//			command.prop = *ppi;
+//		}
+//		execute(choose_enum);
+//	}
+//}
 
 static int field_main(int x, int y, int width, contexti& ctx, const char* title_text, void* pv, const bsreq* type, int param, const markup* child, const markup::proci* pri, const markup::propi* ppi) {
 	auto xe = x + width;
@@ -236,11 +236,11 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 		flags |= Focused;
 	if(type->is(KindText))
 		draw::field(rc, flags, av, -1, false, true, 0);
-	else if(type->is(KindEnum) || (type->is(KindNumber) && type->hint_type)) {
-		auto hint = type->type;
-		if(type->hint_type)
-			hint = type->hint_type;
-		field_enum(rc, flags, av, hint, ctx.source.data, pri, ppi);
+	else if(type->is(KindEnum) || (type->is(KindNumber) && type->source)) {
+		//auto hint = type->type;
+		//if(type->hint_type)
+		//	hint = type->hint_type;
+		//field_enum(rc, flags, av, hint, ctx.source.data, pri, ppi);
 	} else if(type->is(KindNumber)) {
 		auto d = param;
 		if(!d)
@@ -387,8 +387,8 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		// Вначале найдем целую форму объекта
 		if(bv.type->is(KindScalar)) {
 			auto hint_type = bv.type->type;
-			if(bv.type->hint_type)
-				hint_type = bv.type->hint_type;
+			//if(bv.type->hint_type)
+			//	hint_type = bv.type->hint_type;
 			auto pm = e.value.child;
 			if(!pm)
 				pm = getmarkup(hint_type);

@@ -1,15 +1,14 @@
-#include "anyreq.h"
 #include "anyval.h"
+#include "bsreq.h"
 #include "crt.h"
+#include "datetime.h"
 #include "draw.h"
 #include "markup.h"
 #include "pointl.h"
 
 #pragma once
 
-typedef const char*		(*nameproc)(const void* object, const void* type);
-typedef void*			(*getoproc)(int index, const void* type);
-typedef void			(*pchoose)(const anyval value);
+typedef void			(*fnchoose)(const anyval value);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -168,22 +167,19 @@ struct column {
 	short					width;
 	column_size_s			size;
 	total_s					total;
-	unsigned				param;
 	cflags<column_s>		flags;
-	anyreq					value;
 	image_flag_s			align;
-	pnum					getnum;
-	ptext					getstr;
+	const bsreq*			type;
+	unsigned				param;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
 	bool					is(column_s v) const { return flags.is(v); }
+	void					set(const void* object, int v);
 	column&					set(image_flag_s v) { align = v; return *this; }
 	column&					set(column_size_s v) { size = v; return *this; }
 	column&					set(column_s v) { flags.add(v); return *this; }
 	column&					set(total_s v) { total = v; return *this; }
-	column&					set(pnum v) { getnum = v; return *this; }
-	column&					set(ptext v) { getstr = v; return *this; }
 	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
@@ -199,7 +195,7 @@ struct table : list {
 	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
 		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
 		select_mode(SelectCell) {}
-	virtual column&			addcol(const char* name, const char* type, const anyreq& value = anyreq());
+	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
 	void					cell(const rect& rc, int line, int column, const char* text);
 	void					cellbox(const rect& rc, int line, int column);
 	void					celldate(const rect& rc, int line, int column);
@@ -368,12 +364,12 @@ int							button(int x, int y, int width, eventproc proc, const char* label, con
 int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
-void						field(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, pchoose choose_proc);
+void						field(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose choose_proc);
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
-int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, pchoose choose_proc = 0);
+int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
 //int						field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
-int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const acol& source, ptext getname, const char* tips = 0);
+int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips = 0);
 bool						isfocused(const anyval& value);
 bool						isfocused(const rect& rc, const anyval& value);
 int							radio(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
@@ -381,6 +377,11 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
+template<> struct bsmeta<datetime> {
+	typedef int				data_type;
+	static const bsreq		meta[];
+	static constexpr array*	source_ptr = 0;
+};
 //template<> struct bsmeta<draw::controls::control::plugin> {
 //	typedef draw::controls::control::plugin	data_type;
 //	static const bsreq		meta[];

@@ -18,7 +18,7 @@ struct grid : table, array {
 	void					celldatetime(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
 	void					clickcolumn(int column) const override;
-	virtual void*			get(int index) const { return array::get(index); }
+	virtual void*			get(int index) const { return array::ptr(index); }
 	const control::command* getcommands() const override;
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }

@@ -1,4 +1,3 @@
-#include "bsreq.h"
 #include "crt.h"
 #include "datetime.h"
 #include "draw_grid.h"
@@ -11,14 +10,21 @@ using namespace	draw::controls;
 
 static bool save_log_file;
 
-struct log_message {
+namespace {
+struct logi {
 	datetime		stamp;
 	const char*		text;
 };
-static arem<log_message> messages;
+}
+const bsreq bsmeta<logi>::meta[] = {
+	BSREQ(stamp),
+	BSREQ(text),
+{}};
+
+static arem<logi> messages;
 
 void logmsgv(const char* format, const char* arguments) {
-	log_message e = {0};
+	logi e = {0};
 	char temp[8192]; stringbuilder sb(temp);
 	sb.addv(format, arguments);
 	e.stamp = datetime::now();
@@ -52,8 +58,8 @@ static void before_application_exit() {
 static struct widget_logging : control::plugin, table {
 
 	void after_initialize() override {
-		addcol("Дата", "datetime", ANREQ(log_message, stamp)).setwidth(textw("0") * 16 + 4).set(SizeFixed).set(AlignCenter);
-		addcol("Сообщение", "text", ANREQ(log_message, text)).set(SizeAuto);
+		addcol(bsmeta<logi>::meta, "stamp", "Дата").setwidth(textw("0") * 16 + 4).set(SizeFixed).set(AlignCenter);
+		addcol(bsmeta<logi>::meta, "text", "Сообщение").set(SizeAuto);
 	}
 
 	control& getcontrol() override {

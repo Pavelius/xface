@@ -223,18 +223,6 @@ struct cflags {
 	constexpr bool			is(const T id) const { return (data & (1 << id)) != 0; }
 	constexpr void			remove(T id) { data &= ~(1 << id); }
 };
-struct acol {
-	void*					data;
-	unsigned				count;
-	unsigned				size;
-	constexpr acol() : data(0), count(0), size(0) {}
-	constexpr acol(void* data, unsigned count, unsigned size) : data(data), count(count), size(size) {}
-	constexpr char*			begin() const { return (char*)data; }
-	constexpr char*			end() const { return (char*)data + size*count; }
-	constexpr int			indexof(const void* v) const { return (size && v >= data && v <= (char*)data + size*count) ? ((char*)v - (char*)data) / size : -1; }
-	static void*			getptr(int index, const void* type) { return ((acol*)type)->ptr(index); }
-	constexpr char*			ptr(int v) const { return (char*)data + size*v; }
-};
 // Abstract array vector
 class array {
 	void*					data;
@@ -245,8 +233,11 @@ public:
 	constexpr array() : data(0), size(0), count_maximum(0), count(0) {}
 	constexpr array(unsigned size) : data(0), size(size), count_maximum(0), count(0) {}
 	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count_maximum(0), count(count) {}
+	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum) {}
 	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
-	template<typename T> constexpr array(T(&e)[]) : array(e, sizeof(T), 1) {}
+	template<typename T> constexpr array(T& e) : array(&e, sizeof(T), 1) {}
+	template<> constexpr array(array& e) : data(e.data), size(e.size), count(e.count), count_maximum(e.count_maximum) {}
+	template<> constexpr array(const array& e) : data(e.data), size(e.size), count(e.count), count_maximum(e.count_maximum) {}
 	~array();
 	void*					add();
 	void*					add(const void* element);
@@ -256,13 +247,13 @@ public:
 	char*					end() { return (char*)data + size * count; }
 	constexpr const char*	end() const { return (char*)data + size * count; }
 	int						find(const char* value, unsigned offset) const;
-	constexpr void*			get(int index) const { return (char*)data + size * index; }
 	constexpr unsigned		getmaxcount() const { return count_maximum; }
 	constexpr unsigned		getcount() const { return count; }
 	constexpr unsigned		getsize() const { return size; }
 	int						indexof(const void* element) const;
 	void*					insert(int index, const void* element);
 	constexpr bool			isgrowable() const { return count_maximum >= count; }
+	constexpr void*			ptr(int index) const { return (char*)data + size * index; }
 	void					remove(int index, int elements_count);
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);
