@@ -234,26 +234,24 @@ public:
 	constexpr array(unsigned size) : data(0), size(size), count_maximum(0), count(0) {}
 	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count_maximum(0), count(count) {}
 	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum) {}
-	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
 	template<typename T> constexpr array(T& e) : array(&e, sizeof(T), 1) {}
-	template<> constexpr array(array& e) : data(e.data), size(e.size), count(e.count), count_maximum(e.count_maximum) {}
-	template<> constexpr array(const array& e) : data(e.data), size(e.size), count(e.count), count_maximum(e.count_maximum) {}
+	template<> constexpr array(array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
+	template<> constexpr array(const array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
+	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
 	~array();
 	void*					add();
 	void*					add(const void* element);
-	char*					begin() { return (char*)data; }
-	constexpr const char*	begin() const { return (char*)data; }
+	char*					begin() const { return (char*)data; }
 	void					clear();
-	char*					end() { return (char*)data + size * count; }
-	constexpr const char*	end() const { return (char*)data + size * count; }
+	char*					end() const { return (char*)data + size * count; }
 	int						find(const char* value, unsigned offset) const;
-	constexpr unsigned		getmaxcount() const { return count_maximum; }
-	constexpr unsigned		getcount() const { return count; }
-	constexpr unsigned		getsize() const { return size; }
+	unsigned				getmaximum() const { return count_maximum; }
+	unsigned				getcount() const { return count; }
+	unsigned				getsize() const { return size; }
 	int						indexof(const void* element) const;
 	void*					insert(int index, const void* element);
-	constexpr bool			isgrowable() const { return count_maximum >= count; }
-	constexpr void*			ptr(int index) const { return (char*)data + size * index; }
+	bool					isgrowable() const { return count_maximum >= count; }
+	void*					ptr(int index) const { return (char*)data + size * index; }
 	void					remove(int index, int elements_count);
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);
@@ -275,4 +273,16 @@ struct arrayref {
 private:
 	unsigned				count_value;
 	char*					data_value;
+};
+struct bsreq;
+template<typename T> struct bsmeta {
+	typedef T				data_type;
+	static T				elements[];
+	static const bsreq		meta[];
+	static array			source;
+	static constexpr array*	source_ptr = &source;
+	//
+	static T*				add() { return source.add(); }
+	static T*				begin() { return (T*)source.begin(); }
+	static T*				end() { return (T*)source.end(); }
 };

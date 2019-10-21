@@ -85,7 +85,6 @@ struct bsreq {
 	constexpr char*		ptr(const void* data, int index) const { return (char*)data + offset + index * size; }
 	void				set(const void* p, int value) const;
 };
-template<typename T> struct bsmeta;
 struct bsdata {
 	const char*			id;
 	const bsreq*		meta;
@@ -116,32 +115,24 @@ struct bsdata {
 	static int			write(const char* url);
 	static int			writetxt(const char* url);
 };
-template<typename T> struct bsmeta {
-	typedef T				data_type;
-	static T				elements[];
-	static const bsreq		meta[];
-	static array			source;
-	static constexpr array*	source_ptr = &source;
-	//
-	static T*				add() { return source.add(); }
-	static T*				begin() { return (T*)source.begin(); }
-	static T*				end() { return (T*)source.end(); }
-};
 template<> struct bsmeta<int> {
 	typedef int			data_type;
 	static const bsreq	meta[];
 	static constexpr array*	source_ptr = 0;
 };
-template<> struct bsmeta<const char*> {
+template<> struct bsmeta<const char*> : bsmeta<int> {
 	typedef const char*	data_type;
 	static const bsreq	meta[];
-	static constexpr array*	source_ptr = 0;
 };
-template<> struct bsmeta<bsreq> {
+template<> struct bsmeta<bsreq> : bsmeta<int> {
 	typedef bsreq		data_type;
 	static const bsreq	meta[];
-	static constexpr array*	source_ptr = 0;
 };
+template<> struct bsmeta<unsigned char> : bsmeta<int> {};
+template<> struct bsmeta<char> : bsmeta<int> {};
+template<> struct bsmeta<unsigned short> : bsmeta<int> {};
+template<> struct bsmeta<short> : bsmeta<int> {};
+template<> struct bsmeta<unsigned> : bsmeta<int> {};
 struct bsval {
 	void*				data;
 	const bsreq*		type;
@@ -155,9 +146,4 @@ struct bsval {
 	bsval				ptr(const char* url) const;
 	void				set(int value) const { type->set(type->ptr(data), value); }
 };
-template<> struct bsmeta<unsigned char> : bsmeta<int> {};
-template<> struct bsmeta<char> : bsmeta<int> {};
-template<> struct bsmeta<unsigned short> : bsmeta<int> {};
-template<> struct bsmeta<short> : bsmeta<int> {};
-template<> struct bsmeta<unsigned> : bsmeta<int> {};
 template<class T> const char* getstr(const T e) { return bsmeta<T>::elements[e].name; }

@@ -501,7 +501,7 @@ static void test_requisit() {
 }
 
 static void test_binary_serial() {
-	bsdata::write("test.mtd");
+	//bsdata::write("test.mtd");
 }
 
 static bool test_datetime() {
