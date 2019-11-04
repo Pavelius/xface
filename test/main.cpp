@@ -141,8 +141,6 @@ static int show_table(controls::table& e) {
 }
 
 static void basic_drawing() {
-	static int tick = 10;
-	settimer(100);
 	while(ismodal()) {
 		auto pf = fore;
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -152,10 +150,8 @@ static void basic_drawing() {
 		circlef(140, 140, 60, colors::red, 128);
 		circle(140, 140, 60, colors::border);
 		button(10, 10, 100, buttoncancel, "Отмена", 0, KeyEscape);
-		tick++;
 		domodal();
 	}
-	settimer(0);
 }
 
 static void many_lines() {
