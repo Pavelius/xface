@@ -242,7 +242,7 @@ void					buttonok();
 extern surface*			canvas;
 void					circle(int x, int y, int radius);
 void					circle(int x, int y, int radius, const color c1);
-void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
+void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 extern eventproc		domodal;

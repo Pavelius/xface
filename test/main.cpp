@@ -145,10 +145,10 @@ static void basic_drawing() {
 	settimer(100);
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
-		auto x = 100 + tick % 100;
-		auto y = 100 + tick % 200;
-		circlef(x, y, 50 + tick % 40, colors::form);
-		circle(x, y, 50 + tick % 40, colors::border);
+		rectf({100, 100, 300, 200}, colors::yellow, 196);
+		rectb({100, 100, 300, 200}, colors::red);
+		circlef(140, 140, 60, colors::red, 128);
+		circle(140, 140, 60, colors::border);
 		button(10, 10, 100, buttoncancel, "Отмена", 0, KeyEscape);
 		tick++;
 		domodal();
