@@ -225,6 +225,9 @@
     <ClCompile Include="crt.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="argw.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
@@ -306,6 +309,9 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="crt.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="agrw.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>

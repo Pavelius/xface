@@ -128,6 +128,7 @@
     <ClCompile Include="anyreq.cpp" />
     <ClCompile Include="anyval.cpp" />
     <ClCompile Include="archive.cpp" />
+    <ClCompile Include="argw.cpp" />
     <ClCompile Include="bsreq_bin.cpp" />
     <ClCompile Include="bsreq_txt.cpp" />
     <ClCompile Include="datetime.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="win_menu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="agrw.h" />
     <ClInclude Include="anyreq.h" />
     <ClInclude Include="anyval.h" />
     <ClInclude Include="archive.h" />
