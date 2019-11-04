@@ -1171,9 +1171,22 @@ static void triangle_top(point v1, point v2, point v3) {
 }
 
 void draw::triangle(point v1, point v2, point v3, color c1) {
-	auto pf = fore;
-	fore = c1;
-	triangle_bottom(v1, v2, v3);
+	auto pf = fore; fore = c1;
+	if(v2.y < v1.y)
+		iswap(v1, v2);
+	if(v3.y < v1.y)
+		iswap(v1, v3);
+	if(v3.y < v2.y)
+		iswap(v2, v3);
+	if(v2.y == v3.y)
+		triangle_bottom(v1, v2, v3);
+	else if(v1.y == v2.y)
+		triangle_top(v1, v2, v3);
+	else {
+		point v4 = {(short)(v1.x + ((float)(v2.y - v1.y) / (float)(v3.y - v1.y)) * (v3.x - v1.x)), (short)v2.y};
+		triangle_bottom(v1, v2, v4);
+		triangle_top(v2, v4, v3);
+	}
 	fore = pf;
 }
 
