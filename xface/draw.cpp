@@ -1146,6 +1146,37 @@ void draw::linet(int x0, int y0, int x1, int y1) {
 	}
 }
 
+static void triangle_bottom(point v1, point v2, point v3) {
+	auto invslope1 = float(v2.x - v1.x) / float(v2.y - v1.y);
+	auto invslope2 = float(v3.x - v1.x) / float(v3.y - v1.y);
+	float curx1 = v1.x;
+	float curx2 = v1.x;
+	for(int scanlineY = v1.y; scanlineY <= v2.y; scanlineY++) {
+		line((int)curx1, scanlineY, (int)curx2, scanlineY);
+		curx1 += invslope1;
+		curx2 += invslope2;
+	}
+}
+
+static void triangle_top(point v1, point v2, point v3) {
+	float invslope1 = float(v3.x - v1.x) / float(v3.y - v1.y);
+	float invslope2 = float(v3.x - v2.x) / float(v3.y - v2.y);
+	float curx1 = v3.x;
+	float curx2 = v3.x;
+	for(int scanlineY = v3.y; scanlineY > v1.y; scanlineY--) {
+		line((int)curx1, scanlineY, (int)curx2, scanlineY);
+		curx1 -= invslope1;
+		curx2 -= invslope2;
+	}
+}
+
+void draw::triangle(point v1, point v2, point v3, color c1) {
+	auto pf = fore;
+	fore = c1;
+	triangle_bottom(v1, v2, v3);
+	fore = pf;
+}
+
 void draw::rectb(rect rc) {
 	line(rc.x1, rc.y1, rc.x2, rc.y1);
 	line(rc.x2, rc.y1 + 1, rc.x2, rc.y2);

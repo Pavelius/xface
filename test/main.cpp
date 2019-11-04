@@ -144,7 +144,9 @@ static void basic_drawing() {
 	static int tick = 10;
 	settimer(100);
 	while(ismodal()) {
+		auto pf = fore;
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		triangle({360, 20}, {50, 400}, {500, 400}, colors::gray);
 		rectf({100, 100, 300, 200}, colors::yellow, 196);
 		rectb({100, 100, 300, 200}, colors::red);
 		circlef(140, 140, 60, colors::red, 128);
