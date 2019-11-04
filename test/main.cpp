@@ -27,9 +27,7 @@ struct nameable {
 		return ((nameable*)p)->name;
 	}
 };
-
 const bsreq bsmeta<datetime>::meta[] = {{"datetime"}, {}};
-
 genderi bsmeta<genderi>::elements[] = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
