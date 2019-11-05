@@ -260,6 +260,17 @@ static void show_combolist() {
 	}
 }
 
+void draw::field(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant) {
+	cmb_var = av;
+	cmb_rect = rc;
+	cmb_source = source;
+	cmb_getname = getname;
+	if(instant)
+		show_combolist();
+	else
+		execute(show_combolist);
+}
+
 int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips) {
 	draw::state push;
 	if(header_label && header_label[0]) {
@@ -299,13 +310,8 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 			break;
 		}
 	}
-	if(execute_drop_down) {
-		cmb_var = av;
-		cmb_rect = rc;
-		cmb_source = source;
-		cmb_getname = getname;
-		execute(show_combolist);
-	}
+	if(execute_drop_down)
+		field(rc, av, source, getname, false);
 	rco.offset(2, 2);
 	if(focused)
 		rectx(rco, colors::black);

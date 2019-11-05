@@ -171,6 +171,7 @@ struct column {
 	image_flag_s			align;
 	const bsreq*			type;
 	unsigned				param;
+	array*					source;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
@@ -180,6 +181,7 @@ struct column {
 	column&					set(column_size_s v) { size = v; return *this; }
 	column&					set(column_s v) { flags.add(v); return *this; }
 	column&					set(total_s v) { total = v; return *this; }
+	column&					set(array* v) { source = v; return *this; }
 	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
@@ -211,6 +213,7 @@ struct table : list {
 	bool					changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum);
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
+	void					changeref(const rect& rc, int line, int column);
 	virtual void			clickcolumn(int column) const;
 	static int				comparenum(int i1, int i2, void* param);
 	static int				comparestr(int i1, int i2, void* param);
@@ -365,6 +368,7 @@ int							checkbox(int x, int y, int width, const anyval& value, const char* lab
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
 void						field(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose choose_proc);
+void						field(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant = false);
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);

@@ -177,8 +177,8 @@ static void test_tableref() {
 	test.addcol(pm, "flags", "БУ", "checkbox").setparam(AreaHilited);
 	test.addcol(pm, "flags", "МУ", "checkbox").setparam(AreaHilitedPressed);
 	test.addcol(pm, "age", "Возраст");
-	test.addcol(pm, "gender", "Пол");
-	test.addcol(pm, "alignment", "Мировозрение");
+	test.addcol(pm, "gender", "Пол").set(bsmeta<genderi>::source_ptr);
+	test.addcol(pm, "alignment", "Мировозрение").set(bsmeta<alignmenti>::source_ptr);
 	test.addcol(pm, "date", "Дата", "datetime");
 	for(auto& e : elements)
 		test.addref(&e);
@@ -500,7 +500,7 @@ static bool test_array_ref() {
 	char t1[100];
 	array a1(t1);
 	array a2(a1);
-	return a2.begin() != a1.begin();
+	return a2.begin() == a1.begin();
 }
 
 int main() {

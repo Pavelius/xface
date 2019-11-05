@@ -482,6 +482,25 @@ void table::changetext(const rect& rc, int line, int column) {
 		columns[column].set(get(line), (int)szdup(temp));
 }
 
+static const char* get_enum_name(const void* object, char* result, const char* result_maximum, const void* type) {
+	struct element {
+		const char*		id;
+		const char*		name;
+	};
+	return ((element*)object)->name;
+}
+
+void table::changeref(const rect& rc, int line, int column) {
+	if(!columns[column].source)
+		return;
+	auto p = get(line);
+	anyval av;
+	av.size = columns[column].type->size;
+	av.data = (char*)p + columns[column].type->offset;
+	av.value = 0;
+	field(rc, av, *columns[column].source, get_enum_name, true);
+}
+
 void table::changecheck(const rect& rc, int line, int column) {
 	auto p = get(line);
 	auto v = columns[column].get(p);
@@ -623,7 +642,7 @@ const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, 
 {"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
 {"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
 {"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
-{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext},
+{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changeref},
 {"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, table::comparenum},
 {"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
 {}};
