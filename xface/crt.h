@@ -9,6 +9,7 @@
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
 #define lenghtof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
+#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
 
 extern "C" int						atexit(void(*func)(void));
 extern "C" void*					bsearch(const void* key, const void *base, unsigned num, unsigned size, int(*compar)(const void *, const void *));
@@ -94,6 +95,9 @@ template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < co
 template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
 template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
 
+// Untility structures
+template<typename T, T v> struct static_value { static constexpr T value = v; };
+template<int v> struct static_int : static_value<int, v> {};
 namespace std {
 template<class T> class initializer_list {	// list of pointers to elements
 public:
@@ -113,9 +117,6 @@ private:
 	const T*				last;
 };
 }
-// Untility structures
-template<typename T, T v> struct static_value { static constexpr T value = v; };
-template<int v> struct static_int : static_value<int, v> {};
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
@@ -193,13 +194,13 @@ class array {
 	unsigned				count;
 	unsigned				count_maximum;
 public:
-	constexpr array() : data(0), size(0), count_maximum(0), count(0) {}
-	constexpr array(unsigned size) : data(0), size(size), count_maximum(0), count(0) {}
-	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count_maximum(0), count(count) {}
+	constexpr array() : data(0), size(0), count(0), count_maximum(0) {}
+	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0) {}
+	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0) {}
 	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum) {}
 	template<typename T> constexpr array(T& e) : array(&e, sizeof(T), 1) {}
-	template<> constexpr array(array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
 	template<> constexpr array(const array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
+	template<> constexpr array(array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
 	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
 	~array();
 	void*					add();
@@ -228,7 +229,7 @@ struct arrayref {
 	unsigned&				count;
 	unsigned				size;
 	template<typename T> constexpr arrayref(aref<T>& e) : data((char**)&e.data), count(e.count), size(sizeof(T)), count_value(), data_value() {}
-	template<typename T> constexpr arrayref(T(&e)[]) : data(&data_value), count(count_value), size(sizeof(T)), count_value(1), data_value((char*)&e) {}
+	//template<typename T> constexpr arrayref(T(&e)[]) : data(&data_value), count(count_value), size(sizeof(T)), count_value(1), data_value((char*)&e) {}
 	template<typename T, unsigned N> constexpr arrayref(adat<T, N>& e) : data((char**)&e.data), count(e.count), size(sizeof(T)), count_value(), data_value() {}
 	template<typename T, unsigned N> constexpr arrayref(T(&e)[N]) : data(&data_value), count(count_value), size(sizeof(T)), count_value(), data_value((char*)&e) {}
 	void*					get(int index) const { return (char*)(*data) + size * index; }
@@ -249,3 +250,21 @@ template<typename T> struct bsmeta {
 	static T*				begin() { return (T*)source.begin(); }
 	static T*				end() { return (T*)source.end(); }
 };
+template<> struct bsmeta<int> {
+	typedef int				data_type;
+	static const bsreq		meta[];
+	static constexpr array*	source_ptr = 0;
+};
+template<> struct bsmeta<const char*> : bsmeta<int> {
+	typedef const char*		data_type;
+	static const bsreq		meta[];
+};
+template<> struct bsmeta<bsreq> : bsmeta<int> {
+	typedef bsreq			data_type;
+	static const bsreq		meta[];
+};
+template<> struct bsmeta<unsigned char> : bsmeta<int> {};
+template<> struct bsmeta<char> : bsmeta<int> {};
+template<> struct bsmeta<unsigned short> : bsmeta<int> {};
+template<> struct bsmeta<short> : bsmeta<int> {};
+template<> struct bsmeta<unsigned> : bsmeta<int> {};

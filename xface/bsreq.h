@@ -11,7 +11,6 @@ bsreq::isubtype<decltype(data_type::fn)>::value,\
 bsmeta<bsreq::decoy<decltype(data_type::fn)>::value>::source_ptr}
 #define BSDATA(c, i) c bsmeta<c>::elements[i];\
 bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
-#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
 #define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
 const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
 array bsmeta<e##i>::source(bsmeta<e##i>::elements);
@@ -115,24 +114,6 @@ struct bsdata {
 	static int			write(const char* url);
 	static int			writetxt(const char* url);
 };
-template<> struct bsmeta<int> {
-	typedef int			data_type;
-	static const bsreq	meta[];
-	static constexpr array*	source_ptr = 0;
-};
-template<> struct bsmeta<const char*> : bsmeta<int> {
-	typedef const char*	data_type;
-	static const bsreq	meta[];
-};
-template<> struct bsmeta<bsreq> : bsmeta<int> {
-	typedef bsreq		data_type;
-	static const bsreq	meta[];
-};
-template<> struct bsmeta<unsigned char> : bsmeta<int> {};
-template<> struct bsmeta<char> : bsmeta<int> {};
-template<> struct bsmeta<unsigned short> : bsmeta<int> {};
-template<> struct bsmeta<short> : bsmeta<int> {};
-template<> struct bsmeta<unsigned> : bsmeta<int> {};
 struct bsval {
 	void*				data;
 	const bsreq*		type;

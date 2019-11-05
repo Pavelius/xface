@@ -283,7 +283,7 @@ void array::clear() {
 		return;
 	count_maximum = 0;
 	if(data)
-		delete data;
+		delete (char*)data;
 	data = 0;
 }
 

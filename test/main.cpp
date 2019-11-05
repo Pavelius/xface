@@ -147,15 +147,6 @@ static void basic_drawing() {
 		rectb({100, 100, 300, 200}, colors::red);
 		circlef(140, 140, 60, colors::red, 128);
 		circle(140, 140, 60, colors::border);
-		button(10, 10, 100, buttoncancel, "Отмена", 0, KeyEscape);
-		domodal();
-	}
-}
-
-static void many_lines() {
-	draw::state push;
-	while(ismodal()) {
-		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto x = 100;
 		auto y = 100;
 		linw = 1;
@@ -165,7 +156,7 @@ static void many_lines() {
 		line(x, y, x + 100, y + 100); y += 40; linw = 5;
 		line(x, y, x + 60, y + 100);
 		rectb({300, 100, 500, 300}, colors::green);
-		linw = 1.0;
+		linw = 1;
 		button(10, 10, 100, buttoncancel, "Отмена", 0, KeyEscape);
 		domodal();
 	}
@@ -432,13 +423,10 @@ static void start_menu() {
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
-	{"Линии", many_lines},
 	{"Перетаскивание", test_drag_drop},
 	{"Простые элементы", simple_controls},
 	{"Список", test_list},
 	{"Таблица с ячейками", test_tableref},
-		//{"Таблица ссылок", test_grid_ref},
-		//{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
 	{"Приложение", draw::application},
@@ -508,7 +496,16 @@ static bool test_datetime() {
 	return true;
 }
 
+static bool test_array_ref() {
+	char t1[100];
+	array a1(t1);
+	array a2(a1);
+	return a2.begin() != a1.begin();
+}
+
 int main() {
+	if(!test_array_ref())
+		return 0;
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();
