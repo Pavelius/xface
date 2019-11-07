@@ -224,11 +224,21 @@ static void test_tableref() {
 //	show_table(test);
 //}
 
+static void test_markup() {
+	element source = {};
+	static markup elements_left[] = {{0, "Samsung", {"radio"}},
+	{0, "Nokia", {"radio"}},
+	{0, "Apple", {"radio"}},
+	{}};
+	while(ismodal()) {
+		rect rc = {0, 0, getwidth(), getheight()};
+		rectf(rc, colors::form);
+		field(10, 10, 500, elements_left, bsmeta<element>::meta, &source);
+		domodal();
+	}
+}
+
 //static void test_widget() {
-//	static widget elements_left[] = {{Radio, "radio", "Samsung", 0},
-//	{Radio, "radio", "Nokia", 1},
-//	{Radio, "radio", "Google", 2},
-//	{}};
 //	static widget elements_right[] = {{Radio, "radio", "Noobie", 3},
 //	{Radio, "radio", "Glass", 4},
 //	{Radio, "radio", "Keeps", 5},
