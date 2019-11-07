@@ -69,7 +69,7 @@ void archive::setpointer(void** value) {
 		if(pid != -1) {
 			auto bi = pid >> 24;
 			auto ii = pid & 0xFFFFFF;
-			*value = pointers[bi].get(ii);
+			*value = pointers[bi][ii];
 		}
 	}
 }

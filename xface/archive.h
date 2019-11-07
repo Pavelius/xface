@@ -5,6 +5,7 @@
 
 // Fast and simple driver for streaming binary data
 struct archive {
+	typedef aref<void*> arrayref;
 	io::stream&			source;
 	bool				writemode;
 	aref<arrayref>		pointers;
