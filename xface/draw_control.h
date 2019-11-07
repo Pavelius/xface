@@ -372,7 +372,7 @@ void						field(const rect& rc, const anyval& av, const array& source, fntext ge
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
-//int						field(int x, int y, int width, const markup* elements, const bsval& source, int title_width = 80);
+int							field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width = 80);
 int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips = 0);
 bool						isfocused(const anyval& value);
 bool						isfocused(const rect& rc, const anyval& value);

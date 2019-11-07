@@ -328,13 +328,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				if(!ctx.isallow(e, i))
 					continue;
 				auto p = getpresent(pb->get(i), pb->meta);
-				//cmd ev(cmd::invert, 1<<i, {bv.type->ptr(bv.data), size});
-				//unsigned flags = 0;
-				//if(ev.ischecked())
-				//	flags |= Checked;
-				//auto y0 = y + checkbox(x, y, wc, flags, ev, p, 0) + 2;
-				//if(y1 < y0)
-				//	y1 = y0;
+				auto av = anyval(bv.type->ptr(bv.data), size, i);
+				auto y0 = y + checkbox(x, y, wc, av, p, 0) + 2;
+				if(y1 < y0)
+					y1 = y0;
 				if(++wi >= columns) {
 					x = x0;
 					y = y0;
@@ -387,8 +384,6 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		// Вначале найдем целую форму объекта
 		if(bv.type->is(KindScalar)) {
 			auto hint_type = bv.type->type;
-			//if(bv.type->hint_type)
-			//	hint_type = bv.type->hint_type;
 			auto pm = e.value.child;
 			if(!pm)
 				pm = getmarkup(hint_type);
