@@ -1,4 +1,5 @@
 #include "xface/crt.h"
+#include "xface/agrw.h"
 #include "xface/point.h"
 #include "xface/stringbuilder.h"
 #include "xface/valuelist.h"

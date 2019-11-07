@@ -14,9 +14,6 @@ enum wound_s : unsigned char {
 	NoWound, LightWound, HeavyWound, FatalWound
 };
 
-template<typename T> struct bsmeta {
-	static T			elements[];
-};
 struct combati {
 	char				miss, light, heavy, fatal;
 	wound_s				shoot(char bonus = 0) const;
