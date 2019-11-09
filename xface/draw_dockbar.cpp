@@ -3,6 +3,7 @@
 #include "draw.h"
 #include "draw_control.h"
 #include "io_plugin.h"
+#include "stringbuilder.h"
 
 using namespace draw;
 using namespace draw::controls;
@@ -151,9 +152,9 @@ static struct dockbar_settings_strategy : io::strategy {
 	}
 
 	void write(io::writer& file, void* param) override {
-		char temp[32];
 		for(auto i = DockLeft; i <= DockWorkspace; i = (dock_s)(i + 1)) {
-			szprint(temp, zendof(temp), "Dock%1i", i);
+			char temp[32]; stringbuilder sb(temp);
+			sb.add("Dock%1i", i);
 			file.open(temp);
 			file.set("current", dock_data[i].current);
 			file.set("size", dock_data[i].size);

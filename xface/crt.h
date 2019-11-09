@@ -1,5 +1,3 @@
-#include <initialize_list>
-
 #pragma once
 
 #ifdef _DEBUG
@@ -9,7 +7,7 @@
 #endif
 #define maptbl(t, id) (t[imax((unsigned)0, imin((unsigned)id, (sizeof(t)/sizeof(t[0])-1)))])
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
-#define lenghtof(t) (sizeof(t)/sizeof(t[0]))
+#define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
 #define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
 
@@ -100,25 +98,25 @@ template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '
 // Untility structures
 template<typename T, T v> struct static_value { static constexpr T value = v; };
 template<int v> struct static_int : static_value<int, v> {};
-//namespace std {
-//template<class T> class initializer_list {	// list of pointers to elements
-//public:
-//	typedef T				value_type;
-//	typedef const T&		reference;
-//	typedef const T&		const_reference;
-//	typedef unsigned		size_type;
-//	typedef const T*		iterator;
-//	typedef const T*		const_iterator;
-//	constexpr initializer_list() noexcept : first(0), last(0) {}
-//	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
-//	constexpr const T*		begin() const noexcept { return first; }
-//	constexpr const T*		end() const noexcept { return last; }
-//	constexpr unsigned		size() const noexcept { return last - first; }
-//private:
-//	const T*				first;
-//	const T*				last;
-//};
-//}
+namespace std {
+template<class T> class initializer_list {	// list of pointers to elements
+public:
+	typedef T				value_type;
+	typedef const T&		reference;
+	typedef const T&		const_reference;
+	typedef unsigned		size_type;
+	typedef const T*		iterator;
+	typedef const T*		const_iterator;
+	constexpr initializer_list() noexcept : first(0), last(0) {}
+	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
+	constexpr const T*		begin() const noexcept { return first; }
+	constexpr const T*		end() const noexcept { return last; }
+	constexpr unsigned		size() const noexcept { return last - first; }
+private:
+	const T*				first;
+	const T*				last;
+};
+}
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
@@ -254,3 +252,4 @@ template<> struct bsmeta<char> : bsmeta<int> {};
 template<> struct bsmeta<unsigned short> : bsmeta<int> {};
 template<> struct bsmeta<short> : bsmeta<int> {};
 template<> struct bsmeta<unsigned> : bsmeta<int> {};
+template<class T> const char* getstr(const T e) { return bsmeta<T>::elements[e].name; }

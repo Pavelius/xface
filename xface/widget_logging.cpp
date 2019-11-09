@@ -32,8 +32,7 @@ void logmsgv(const char* format, const char* arguments) {
 	messages.add(e);
 }
 
-static void add_date(char* result, const char* result_max, const datetime& d) {
-	stringbuilder sb(result, result_max);
+static void addsb(stringbuilder& sb, const datetime& d) {
 	sb.add("%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
 		d.day(), d.month(), d.year(),
 		d.hour(), d.minute());
@@ -45,7 +44,8 @@ static void write_log_file() {
 		return;
 	file.seek(0, SeekEnd);
 	for(auto& e : messages) {
-		char temp[64]; add_date(temp, zendof(temp), e.stamp);
+		char temp[64]; stringbuilder sb(temp);
+		addsb(sb, e.stamp);
 		file << temp << " " << e.text << "\r\n";
 	}
 }

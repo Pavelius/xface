@@ -127,4 +127,3 @@ struct bsval {
 	bsval				ptr(const char* url) const;
 	void				set(int value) const { type->set(type->ptr(data), value); }
 };
-template<class T> const char* getstr(const T e) { return bsmeta<T>::elements[e].name; }

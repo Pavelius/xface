@@ -499,8 +499,8 @@ typedef void(CALLBACK *PIMAGE_TLS_CALLBACK)(void* DllHandle, unsigned long Reaso
 #define OPEN_ALWAYS               4
 #define TRUNCATE_EXISTING         5
 
-#define FILE_ATTRIBUTE_READONLY   0x00000001  
-#define FILE_ATTRIBUTE_NORMAL     0x00000080  
+#define FILE_ATTRIBUTE_READONLY   0x00000001
+#define FILE_ATTRIBUTE_NORMAL     0x00000080
 #define FILE_ATTRIBUTE_TEMPORARY  0x00000100
 
 #define FILE_BEGIN			0
@@ -877,7 +877,7 @@ DLL void WINAPI				ExitProcess(unsigned uExitCode);
 DLL int WINAPI				FindClose(void* hFindFile);
 DLL void* WINAPI			FindFirstFileA(const char* lpFileName, WIN32_FIND_DATA* lpFindFileData);
 DLL int WINAPI				FindNextFileA(void* hFindFile, WIN32_FIND_DATA* lpFindFileData);
-DLL unsigned WINAPI			FlsAlloc(void (_stdcall *lpCallback)(void* pfd));
+//DLL unsigned WINAPI		FlsAlloc(void (_stdcall *lpCallback)(void* pfd));
 DLL int WINAPI				FlsFree(unsigned dwFlsIndex);
 DLL void* WINAPI			FlsGetValue(unsigned dwFlsIndex);
 DLL int WINAPI				FlsSetValue(unsigned dwFlsIndex, void* lpFlsData);

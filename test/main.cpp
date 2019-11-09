@@ -307,8 +307,9 @@ static void test_drag_drop() {
 			rc.y1 = y + (hot.mouse.y - dragmouse.y);
 			rc.x2 = rc.x1 + sx;
 			rc.y2 = rc.y1 + sy;
-			char temp[260];
-			text(10, 42, szprint(temp, zendof(temp), "Начинаем тягать %1i, %2i", rc.x1, rc.y1));
+			char temp[260]; stringbuilder sb(temp);
+			sb.add("Начинаем тягать %1i, %2i", rc.x1, rc.y1);
+			text(10, 42, sb);
 		} else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
 			dragbegin(test_drag_drop);
 		if(dragactive(test_drag_drop)) {
