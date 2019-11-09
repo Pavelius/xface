@@ -315,4 +315,9 @@
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="initialize_list">
+      <Filter>support</Filter>
+    </None>
+  </ItemGroup>
 </Project>

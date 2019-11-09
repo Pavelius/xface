@@ -13,7 +13,7 @@ bsmeta<bsreq::decoy<decltype(data_type::fn)>::value>::source_ptr}
 bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
 #define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
 const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-array bsmeta<e##i>::source(bsmeta<e##i>::elements);
+array bsmeta<e##i>::source(bsmeta<e##i>::elements, sizeof(bsmeta<e##i>::elements[0]), sizeof(bsmeta<e##i>::elements)/sizeof(bsmeta<e##i>::elements[0]));
 
 // Basic metadata types
 enum bstype_s : unsigned char {

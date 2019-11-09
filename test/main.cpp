@@ -1,9 +1,9 @@
-#include "xface/draw_control.h"
-#include "xface/draw_properties.h"
-#include "xface/markup.h"
-#include "xface/requisit.h"
-#include "xface/stringbuilder.h"
-#include "xface/valuelist.h"
+#include "draw_control.h"
+#include "draw_properties.h"
+#include "markup.h"
+#include "requisit.h"
+#include "stringbuilder.h"
+#include "valuelist.h"
 #include "main.h"
 
 using namespace draw;
@@ -27,7 +27,6 @@ struct nameable {
 		return ((nameable*)p)->name;
 	}
 };
-const bsreq bsmeta<datetime>::meta[] = {{"datetime"}, {}};
 genderi bsmeta<genderi>::elements[] = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},

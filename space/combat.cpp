@@ -2,7 +2,7 @@
 
 wound_s combati::shoot(char bonus) const {
 	auto i = rand() % 100;
-	auto n = miss + bonus;
+	auto n = miss - bonus;
 	if(i < n)
 		return NoWound;
 	n += light;

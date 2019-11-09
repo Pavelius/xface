@@ -1,3 +1,5 @@
+#include <initialize_list>
+
 #pragma once
 
 #ifdef _DEBUG
@@ -98,25 +100,25 @@ template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '
 // Untility structures
 template<typename T, T v> struct static_value { static constexpr T value = v; };
 template<int v> struct static_int : static_value<int, v> {};
-namespace std {
-template<class T> class initializer_list {	// list of pointers to elements
-public:
-	typedef T				value_type;
-	typedef const T&		reference;
-	typedef const T&		const_reference;
-	typedef unsigned		size_type;
-	typedef const T*		iterator;
-	typedef const T*		const_iterator;
-	constexpr initializer_list() noexcept : first(0), last(0) {}
-	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
-	constexpr const T*		begin() const noexcept { return first; }
-	constexpr const T*		end() const noexcept { return last; }
-	constexpr unsigned		size() const noexcept { return last - first; }
-private:
-	const T*				first;
-	const T*				last;
-};
-}
+//namespace std {
+//template<class T> class initializer_list {	// list of pointers to elements
+//public:
+//	typedef T				value_type;
+//	typedef const T&		reference;
+//	typedef const T&		const_reference;
+//	typedef unsigned		size_type;
+//	typedef const T*		iterator;
+//	typedef const T*		const_iterator;
+//	constexpr initializer_list() noexcept : first(0), last(0) {}
+//	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
+//	constexpr const T*		begin() const noexcept { return first; }
+//	constexpr const T*		end() const noexcept { return last; }
+//	constexpr unsigned		size() const noexcept { return last - first; }
+//private:
+//	const T*				first;
+//	const T*				last;
+//};
+//}
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
@@ -194,14 +196,12 @@ class array {
 	unsigned				count;
 	unsigned				count_maximum;
 public:
+	constexpr array(const array& e) = default;
 	constexpr array() : data(0), size(0), count(0), count_maximum(0) {}
 	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0) {}
 	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0) {}
 	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum) {}
-	template<typename T> constexpr array(T& e) : array(&e, sizeof(T), 1) {}
-	template<> constexpr array(const array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
-	template<> constexpr array(array& e) : array(e.data, e.size, e.count, e.count_maximum) {}
-	template<typename T, unsigned N> constexpr array(T(&e)[N]) : array(e, sizeof(T), N) {}
+	template<typename T, unsigned N> constexpr array(T (&e)[N]) : array(e, sizeof(T), N) {}
 	~array();
 	void*					add();
 	void*					add(const void* element);

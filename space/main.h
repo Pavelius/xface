@@ -31,7 +31,6 @@ struct uniti : combati { // One unit have 10 people
 	unit_s				type;
 	constexpr uniti(unit_s v) : type(v), combati{10, 0, 0, 0} {}
 	void				apply(wound_s w);
-	//void				create(unit_s v);
 	constexpr int		getalive() const { return miss - fatal; }
 	constexpr int		getlight() const { return light; }
 	constexpr int		getready() const { return getalive() - heavy; }
