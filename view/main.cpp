@@ -196,9 +196,10 @@ int main(int argc, char *argv[]) {
 	correct_font();
 	set_light_theme();
 	if(argc > 1 && argv[1][0])
-		return mainview(argv[1]);
+		mainview(argv[1]);
 	else {
 		//dlgmsg("PMA view", "Show sprites in PMA format. Pass to command line path to file wich you want to see.")
+		return -1;
 	}
 	return 0;
 }
