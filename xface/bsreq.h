@@ -70,36 +70,6 @@ struct bsreq {
 	void				set(const void* p, int value) const;
 	bool				write(const char* url, void* object) const;
 };
-struct bsdata {
-	const char*			id;
-	const bsreq*		meta;
-	void*				data;
-	unsigned			size;
-	unsigned&			count;
-	unsigned			maximum;
-	bstype_s			subtype;
-	bsdata*				next;
-	static bsdata*		first;
-	//
-	void*				add();
-	char*				begin() { return (char*)data; }
-	char*				end() { return (char*)data + count*size; }
-	static bsdata*		find(const char* id);
-	static bsdata*		find(const bsreq* id);
-	const void*			find(const bsreq* id, const char* value) const;
-	const void*			find(const bsreq* id, const void* value, unsigned size) const;
-	static bsdata*		findbyptr(const void* object);
-	constexpr const void* get(int index) const { return (char*)data + size * index; }
-	static void*		getptr(int index, const void* type);
-	static const char*	getpresent(const void* object, const void* type);
-	static const char*	getstring(const void* object, const bsreq* type, const char* id);
-	bool				has(const void* object) const { return object >= data && object < ((char*)data + maximum * size); }
-	int					indexof(const void* object) const;
-	static int			read(const char* url);
-	static int			readtxt(const char* url);
-	static int			write(const char* url);
-	static int			writetxt(const char* url);
-};
 struct bsval {
 	void*				data;
 	const bsreq*		type;

@@ -12,7 +12,8 @@ namespace {
 enum title_s : unsigned char { TitleNormal, TitleShort, NoTitle };
 struct commandi {
 	void*			object;
-	bsdata*			data;
+	array*			data;
+	const bsreq*	meta;
 	markup::proci	proc;
 	markup::propi	prop;
 	rect			rc;
@@ -54,14 +55,15 @@ static const char* getpresent(const void* p, const bsreq* type) {
 
 static void choose_enum() {
 	struct enum_view : controls::list, adat<int, 512> {
-		markup::proci proc;
-		markup::propi prop;
-		const bsdata& source;
+		markup::proci	proc;
+		markup::propi	prop;
+		const array&	source;
+		const bsreq*	meta;
 		const char*	getname(char* result, const char* result_max, int line, int column) const {
 			if(prop.getname)
-				return prop.getname(source.get(data[line]), result, result_max, 0);
+				return prop.getname(source.ptr(data[line]), result, result_max, 0);
 			switch(column) {
-			case 0: return getpresent(source.get(data[line]), source.meta);
+			case 0: return getpresent(source.ptr(data[line]), meta);
 			}
 			return "";
 		}
@@ -71,13 +73,13 @@ static void choose_enum() {
 				return 0;
 			return data[current];
 		}
-		constexpr enum_view(const bsdata& source) : source(source), proc() {}
+		constexpr enum_view(const bsreq* meta, const array& source) : source(source), proc(), meta(meta) {}
 	};
-	enum_view ev(*command.data);
+	enum_view ev(command.meta, *command.data);
 	ev.hilite_odd_lines = false;
 	ev.proc = command.proc;
 	auto i1 = 0;
-	auto i2 = command.data->count - 1;
+	auto i2 = command.data->getcount() - 1;
 	for(unsigned i = i1; i <= i2; i++) {
 		if(command.proc.isallow) {
 			if(!command.proc.isallow(command.object, i))
@@ -309,10 +311,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		if(!bv.data || !bv.type)
 			return 0;
 		if(strcmp(pn, "checkboxes") == 0 && (bv.type->is(KindEnum) || bv.type->is(KindCFlags))) {
-			auto pb = bsdata::find(bv.type->type);
+			auto pb = bv.type->source;
 			if(!pb)
 				return error(x, y, width, ctx, e, "Не найдена база");
-			if(pb->count == 0)
+			if(pb->getcount() == 0)
 				return 0;
 			auto size = bv.type->size;
 			if(bv.type->is(KindCFlags))
@@ -324,10 +326,10 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			auto wi = 0;
 			auto x0 = x;
 			auto y1 = y;
-			for(unsigned i = 0; i < pb->count; i++) {
+			for(unsigned i = 0; i < pb->getcount(); i++) {
 				if(!ctx.isallow(e, i))
 					continue;
-				auto p = getpresent(pb->get(i), pb->meta);
+				auto p = getpresent(pb->ptr(i), bv.type->type);
 				auto av = anyval(bv.type->ptr(bv.data), size, i);
 				auto y0 = y + checkbox(x, y, wc, av, p, 0) + 2;
 				if(y1 < y0)
@@ -341,35 +343,35 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			}
 			y = y1;
 		} else if(strcmp(pn, "radiobuttons") == 0 && bv.type->is(KindEnum)) {
-			auto pb = bsdata::find(bv.type->type);
+			auto pb = bv.type->source;
 			if(!pb)
 				return error(x, y, width, ctx, e, "Не найдена база");
-			if(pb->count == 0)
+			if(pb->getcount() == 0)
 				return 0;
 			auto size = bv.type->size;
-			for(unsigned i = 0; i < pb->count; i++) {
+			for(unsigned i = 0; i < pb->getcount(); i++) {
 				if(!ctx.isallow(e, i))
 					continue;
-				auto p = getpresent(pb->get(i), pb->meta);
+				auto p = getpresent(pb->ptr(i), bv.type->type);
 				auto av = anyval(bv.type->ptr(bv.data), size, i);
 				y += radio(x, y, width, av, p, 0) + 2;
 			}
 		} else {
 			if(!bv.type->is(KindNumber))
 				return error(x, y, width, ctx, e, bv.type->id);
-			auto pb = bsdata::find(pn);
+			auto pb = bv.type->source;
 			if(!pb)
 				return error(x, y, width, ctx, e, pn);
-			if(pb->count == 0)
+			auto count = pb->getcount();
+			if(count)
 				return 0;
-			auto count = pb->count;
 			if(count > bv.type->count)
 				count = bv.type->count;
-			for(unsigned i = 0; i < pb->count; i++) {
+			for(unsigned i = 0; i < count; i++) {
 				auto pv = bv.type->ptr(bv.data, i);
 				if(!ctx.isallow(e, i))
 					continue;
-				y += field_main(x, y, width, ctx, getpresent(pb->get(i), pb->meta), pv, bv.type, e.param, 0, &e.proc, &e.prop);
+				y += field_main(x, y, width, ctx, getpresent(pb->ptr(i), bv.type->type), pv, bv.type, e.param, 0, &e.proc, &e.prop);
 			}
 		}
 		return y - y0;

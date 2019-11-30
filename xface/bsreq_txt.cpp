@@ -8,10 +8,6 @@ struct bsdata_writer_txt {
 	writer&	ew;
 	bsdata_writer_txt(writer& ew) : ew(ew) {}
 
-	static bsdata* find_base(const bsreq* type) {
-		return bsdata::find(type);
-	}
-
 	bool write_object(const void* pv, const bsreq* pf, const char* id, bool run) {
 		if(run) {
 			if(!write_object(pv, pf, id, false))
@@ -55,34 +51,26 @@ struct bsdata_writer_txt {
 					ew.set(id, value);
 				return false;
 			}
-			auto pb = bsdata::findbyptr((void*)value);
-			if(!pb)
-				return false;
-			return write_field((void*)value, pb->meta, id, run);
+			return write_field((void*)value, pf->type, id, run);
 		} else if(pf->is(KindEnum)) {
 			auto value = pf->get(pf->ptr(pv, index));
-			auto pb = find_base(pf->type);
-			if(!pb)
-				return false;
 			if(!value && skip_zero)
 				return false;
-			return write_field(pb->get(value), pf->type, id, run);
+			return write_field(pf->source->ptr(value), pf->type, id, run);
 		} else if(pf->is(KindCFlags)) {
 			unsigned value = pf->get(pf->ptr(pv, index));
 			if(!value && skip_zero)
 				return false;
-			auto pb = find_base(pf->type);
-			if(!pb)
-				return false;
-			auto pk = pb->meta;
+			auto pk = pf->type;
 			if(!pk)
 				return false;
 			if(run) {
+				auto pb = pf->source;
 				ew.open(id, io::Array);
-				for(unsigned i = 0; i < pb->count; i++) {
+				for(unsigned i = 0; i < pb->getcount(); i++) {
 					if((value & (1 << i)) == 0)
 						continue;
-					auto pv1 = pb->get(i);
+					auto pv1 = pb->ptr(i);
 					auto nm = (const char*)pk->get(pk->ptr(pv1));
 					if(!nm)
 						continue;
@@ -125,17 +113,19 @@ struct bsdata_writer_txt {
 
 struct bsdata_reader_txt : reader {
 	enum param_s : unsigned char { Meta, Object, Database };
-	void* findvalue(const char* value, bsdata* pd) const {
+	bsinf* findbase(const char* id) const {
+		return 0;
+	}
+	void* findvalue(const char* value, const bsreq* pk, array* pd) const {
 		void* pv = 0;
-		auto pk = pd->meta;
 		if(pk->is(KindText))
-			pv = (void*)pd->find(pk, value);
+			pv = (void*)pd->find(value, pk->offset);
 		else if(pk->is(KindNumber)) {
 			auto number = sz2num(value);
 			auto size = pk->size;
 			if(size > sizeof(number))
 				size = sizeof(number);
-			pv = (void*)pd->find(pk, &number, size);
+			pv = (void*)pd->find(&number, pk->offset, pk->size);
 		} else
 			return 0;
 		if(!pv) {
@@ -151,13 +141,10 @@ struct bsdata_reader_txt : reader {
 		else if(pf->is(KindNumber))
 			return sz2num(value);
 		else if(pf->is(KindReference) || pf->is(KindEnum) || pf->is(KindCFlags)) {
-			auto pd = bsdata::find(pf->type);
-			if(!pd)
-				return 0;
-			auto pv = findvalue(value, pd);
+			auto pv = findvalue(value, pf->type, pf->source);
 			if(pf->is(KindReference))
 				return (int)pv;
-			return pd->indexof(pv);
+			return pf->source->indexof(pv);
 		}
 		return 0;
 	}
@@ -209,8 +196,8 @@ struct bsdata_reader_txt : reader {
 			if(!e.parent)
 				return;
 			// Это идентификатор типа
-			auto pd = bsdata::find(value);
-			e.parent->set(Database, (int)pd);
+			auto pd = findbase(value);
+			e.parent->set(Database, (int)pd->source);
 			e.parent->set(Meta, (int)pd->meta);
 			return;
 		}
@@ -225,11 +212,11 @@ struct bsdata_reader_txt : reader {
 			return;
 		auto pv = (void*)e.get(Object);
 		if(!pv) {
-			auto pd = (bsdata*)e.get(Database);
+			auto pd = (array*)e.get(Database);
 			if(!pd)
 				return;
 			// Допускаются только простые ключи
-			pv = findvalue(value, pd);
+			pv = findvalue(value, pf, pd);
 			if(e.parent)
 				e.parent->set(Object, (int)pv);
 		} else
@@ -237,41 +224,41 @@ struct bsdata_reader_txt : reader {
 	};
 };
 
-int bsdata::writetxt(const char* url) {
-	io::plugin* pp = plugin::find(szext(url));
-	if(!pp)
-		return 0;
-	io::file file(url, StreamWrite | StreamText);
-	if(!file)
-		return 0;
-	io::writer* pw = pp->write(file);
-	if(!pw)
-		return 0;
-	auto object_count = 0;
-	bsdata_writer_txt bw(*pw);
-	pw->open("records", Array);
-	for(auto& ps : bsmeta<bsdata>()) {
-		for(unsigned i = 0; i < ps.count; i++) {
-			auto p = ps.get(i);
-			pw->open("record");
-			pw->set("typeid", ps.id);
-			for(auto pf = ps.meta; *pf; pf++)
-				bw.write_field(p, pf, pf->id, true);
-			pw->close("record");
-			object_count++;
-		}
-	}
-	pw->close("records", Array);
-	return object_count;
-}
+//int bsdata::writetxt(const char* url) {
+//	io::plugin* pp = plugin::find(szext(url));
+//	if(!pp)
+//		return 0;
+//	io::file file(url, StreamWrite | StreamText);
+//	if(!file)
+//		return 0;
+//	io::writer* pw = pp->write(file);
+//	if(!pw)
+//		return 0;
+//	auto object_count = 0;
+//	bsdata_writer_txt bw(*pw);
+//	pw->open("records", Array);
+//	for(auto& ps : bsmeta<bsdata>()) {
+//		for(unsigned i = 0; i < ps.count; i++) {
+//			auto p = ps.get(i);
+//			pw->open("record");
+//			pw->set("typeid", ps.id);
+//			for(auto pf = ps.meta; *pf; pf++)
+//				bw.write_field(p, pf, pf->id, true);
+//			pw->close("record");
+//			object_count++;
+//		}
+//	}
+//	pw->close("records", Array);
+//	return object_count;
+//}
 
-int bsdata::readtxt(const char* url) {
-	io::plugin* pp = plugin::find(szext(url));
-	if(!pp)
-		return 0;
-	auto p = loadt(url);
-	bsdata_reader_txt ev;
-	pp->read(p, ev);
-	delete p;
-	return 1;
-}
+//int bsdata::readtxt(const char* url) {
+//	io::plugin* pp = plugin::find(szext(url));
+//	if(!pp)
+//		return 0;
+//	auto p = loadt(url);
+//	bsdata_reader_txt ev;
+//	pp->read(p, ev);
+//	delete p;
+//	return 1;
+//}

@@ -225,6 +225,12 @@ public:
 	void					reserve(unsigned count);
 };
 struct bsreq;
+// Abstract data source descriptor
+struct bsinf {
+	const char*				id;
+	const bsreq*			meta;
+	array*					source;
+};
 template<typename T> struct bsmeta {
 	typedef T				data_type;
 	static T				elements[];
