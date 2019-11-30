@@ -513,7 +513,22 @@ static bool test_array_ref() {
 	return a2.begin() == a1.begin();
 }
 
+static bool test_write_bin() {
+	element e1 = {0};
+	element e2;
+	e1.age = 17;
+	e1.name = szdup("Kristian");
+	e1.surname = szdup("Lang");
+	e1.gender = Male;
+	e1.alignment = LawfulNeutral;
+	bsmeta<element>::meta->write("element.bin", &e1);
+	bsmeta<element>::meta->read("element.bin", &e2);
+	return memcmp(&e1, &e2, sizeof(e1))==0;
+}
+
 int main() {
+	if(!test_write_bin())
+		return 0;
 	if(!test_array_ref())
 		return 0;
 	logmsg("Test %1i", 12);

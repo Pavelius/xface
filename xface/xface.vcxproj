@@ -129,7 +129,10 @@
     <ClCompile Include="anyval.cpp" />
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="argw.cpp" />
-    <ClCompile Include="bsreq_bin.cpp" />
+    <ClCompile Include="bsreq_bin.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="bsreq_bin_v2.cpp" />
     <ClCompile Include="bsreq_txt.cpp" />
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_autocomplete.cpp" />

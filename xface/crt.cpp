@@ -320,6 +320,15 @@ int array::find(const char* value, unsigned offset) const {
 	return -1;
 }
 
+int array::find(void* value, unsigned offset, unsigned size) const {
+	auto m = getcount();
+	for(unsigned i = 0; i < m; i++) {
+		if(memcmp(data, (char*)ptr(i) + offset, size) == 0)
+			return i;
+	}
+	return -1;
+}
+
 void array::sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param) {
 	for(int i = i2; i > i1; i--) {
 		for(int j = i1; j < i; j++) {

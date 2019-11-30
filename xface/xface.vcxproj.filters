@@ -228,6 +228,9 @@
     <ClCompile Include="argw.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="bsreq_bin_v2.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

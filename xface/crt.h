@@ -118,7 +118,6 @@ template<unsigned N> inline char*	zprint(char(&result)[N], const char* format, .
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
 template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
 template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
-
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
@@ -209,6 +208,7 @@ public:
 	void					clear();
 	char*					end() const { return (char*)data + size * count; }
 	int						find(const char* value, unsigned offset) const;
+	int						find(void* value, unsigned offset, unsigned size) const;
 	unsigned				getmaximum() const { return count_maximum; }
 	unsigned				getcount() const { return count; }
 	unsigned				getsize() const { return size; }
@@ -272,5 +272,6 @@ template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
 template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
 template<class T> struct meta_decoy<const T*> : meta_decoy<T> {};
 template<class T> struct meta_decoy<aref<T>> : meta_decoy<T> {};
+template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
 template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
 template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};

@@ -49,9 +49,9 @@ struct bsreq {
 	unsigned			count; // count of elements
 	const bsreq*		type; // metadata of element
 	bstype_s			subtype; // metadata subtype
-	array*				source;
+	array*				source; // data source for enumerators
 	//
-	operator bool() const { return id != 0; }
+	constexpr explicit operator bool() const { return id != 0; }
 	//
 	const bsreq*		find(const char* name) const;
 	const bsreq*		find(const char* name, unsigned count) const;
@@ -60,12 +60,15 @@ struct bsreq {
 	const char*			get(const void* p, char* result, const char* result_max) const;
 	const char*			gets(const void* p) const;
 	const bsreq*		getname() const;
+	const char*			getmetaname() const; // Extern function
 	bool				is(bstype_s v) const { return subtype == v; }
 	bool				issimple() const { return is(KindNumber) || is(KindText); }
 	bool				match(const void* p, const char* name) const;
-	constexpr char*		ptr(const void* data) const { return (char*)data + offset; }
-	constexpr char*		ptr(const void* data, int index) const { return (char*)data + offset + index * size; }
+	char*				ptr(const void* data) const { return (char*)data + offset; }
+	char*				ptr(const void* data, int index) const { return (char*)data + offset + index * size; }
+	bool				read(const char* url, const void* object) const;
 	void				set(const void* p, int value) const;
+	bool				write(const char* url, void* object) const;
 };
 struct bsdata {
 	const char*			id;
