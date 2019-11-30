@@ -11,13 +11,13 @@ const markup* getmarkup(const bsreq* type);
 namespace {
 enum title_s : unsigned char { TitleNormal, TitleShort, NoTitle };
 struct commandi {
-	void*			object;
-	array*			data;
-	const bsreq*	meta;
-	markup::proci	proc;
-	markup::propi	prop;
-	rect			rc;
-	anyval			value;
+	void*				object;
+	array*				data;
+	const bsreq*		meta;
+	markup::proci		proc;
+	markup::propi		prop;
+	rect				rc;
+	anyval				value;
 	void clear() { memset(this, 0, sizeof(commandi)); }
 };
 static commandi	command;
@@ -25,16 +25,17 @@ static void set_command_value() {
 	command.value.set(hot.param);
 }
 struct contexti {
-	int				title;
-	const char*		title_text;
-	title_s			title_state;
-	int*			right;
-	bsval			source;
-	bool			show_missed_requisit;
+	int					title;
+	const char*			title_text;
+	title_s				title_state;
+	int*				right;
+	void*				object;
+	const bsreq*		type;
+	bool				show_missed_requisit;
 	contexti() { memset(this, 0, sizeof(*this)); }
 	bool isallow(const markup& e, int index) const {
 		if(e.proc.isallow) {
-			if(!e.proc.isallow(source.data, index))
+			if(!e.proc.isallow(object, index))
 				return false;
 		}
 		return true;
@@ -99,12 +100,13 @@ static void choose_enum() {
 		command.value.set(ev.getcurrent());
 }
 
-static bsval getvalue(const bsval& source, const markup& e) {
+static bsval getvalue(contexti& ctx, const markup& e) {
 	bsval result;
-	result.type = source.type->find(e.value.id);
-	result.data = source.data;
+	result.type = ctx.type->find(e.value.id);
+	result.data = ctx.object;
 	return result;
 }
+
 static rect start_group(int& x, int& y, int& width) {
 	setposition(x, y, width);
 	rect rc = {x, y, x + width, y + texth() + 4 * 2};
@@ -252,7 +254,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 			auto we = wn * (d + 1) + (draw::texth() + 8) + 4 * 2;
 			rc.x2 = rc.x1 + we;
 		}
-		draw::field(rc, flags, av, d, true, KindNumber, 0);
+		draw::field(rc, flags, av, d, true, false, 0);
 		if(ctx.right)
 			*ctx.right = rc.x2;
 		if(child) {
@@ -267,15 +269,15 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 }
 
 static int element(int x, int y, int width, contexti& ctx, const markup& e) {
-	if(e.proc.isvisible && !e.proc.isvisible(ctx.source.data, e.value.index))
+	if(e.proc.isvisible && !e.proc.isvisible(ctx.object, e.value.index))
 		return 0;
 	else if(e.value.id && e.value.id[0] == '#')
 		// Страницы, команды, любые другие управляющие структуры.
 		return 0;
 	else if(e.proc.custom) {
-		auto pv = ctx.source.data;
+		auto pv = ctx.object;
 		if(e.value.id) {
-			auto bv = getvalue(ctx.source, e);
+			auto bv = getvalue(ctx, e);
 			if(bv.type)
 				pv = bv.type->ptr(bv.data, e.value.index);
 		}
@@ -307,7 +309,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		if(!e.value.id)
 			return 0;
 		// Теперь специальные элементы с заполненными данными
-		auto bv = getvalue(ctx.source, e);
+		auto bv = getvalue(ctx, e);
 		if(!bv.data || !bv.type)
 			return 0;
 		if(strcmp(pn, "checkboxes") == 0 && (bv.type->is(KindEnum) || bv.type->is(KindCFlags))) {
@@ -376,7 +378,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		}
 		return y - y0;
 	} else if(e.value.id) {
-		auto bv = getvalue(ctx.source, e);
+		auto bv = getvalue(ctx, e);
 		if(!bv.data || !bv.type) {
 			if(ctx.show_missed_requisit)
 				return error(x, y, width, ctx, e, "Не найден реквизит");
@@ -393,7 +395,8 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				return error(x, y, width, ctx, e, "Не найдена разметка");
 			auto ctx1 = ctx;
 			ctx1.title_text = e.title;
-			ctx1.source = bsval(pv, hint_type);
+			ctx1.object = pv;
+			ctx1.type = hint_type;
 			return group_vertial(x, y, width, ctx1, pm);
 		} else
 			return field_main(x, y, width, ctx, e.title, pv, bv.type, e.param, e.value.child, &e.proc, &e.prop);
@@ -415,15 +418,16 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		return 0;
 }
 
-//int draw::field(int x, int y, int width, const markup* elements, const bsval& source, int title_width) {
-//	if(!elements)
-//		return 0;
-//	contexti ctx;
-//	ctx.title = title_width;
-//	ctx.source = source;
-//	ctx.show_missed_requisit = true;
-//	if(elements->width)
-//		return group_horizontal(x, y, width, ctx, elements);
-//	else
-//		return group_vertial(x, y, width, ctx, elements);
-//}
+int draw::field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width) {
+	if(!elements)
+		return 0;
+	contexti ctx;
+	ctx.title = title_width;
+	ctx.object = object;
+	ctx.type = type;
+	ctx.show_missed_requisit = true;
+	if(elements->width)
+		return group_horizontal(x, y, width, ctx, elements);
+	else
+		return group_vertial(x, y, width, ctx, elements);
+}

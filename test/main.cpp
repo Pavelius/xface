@@ -83,6 +83,14 @@ BSREQ(flags),
 BSREQ(date),
 {}};
 
+static bsinf data_bases[] = {BSINF(gender),
+BSINF(alignment)
+};
+
+const markup* getmarkup(const bsreq* type) {
+	return 0;
+}
+
 struct testinfo {
 	const char*		name;
 	int				value;
@@ -225,9 +233,9 @@ static void test_tableref() {
 
 static void test_markup() {
 	element source = {};
-	static markup elements_left[] = {{0, "Samsung", {"radio"}},
-	{0, "Nokia", {"radio"}},
-	{0, "Apple", {"radio"}},
+	static markup elements_left[] = {{0, "Имя", {"name"}},
+	{0, "Фамилия", {"surname"}},
+	{0, "Возраст", {"age"}},
 	{}};
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
@@ -439,6 +447,7 @@ static void start_menu() {
 	{"Таблица с ячейками", test_tableref},
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
+	{"Разметка", test_markup},
 	{"Приложение", draw::application},
 	{"Автосписок", test_autocomplite},
 	{0}};

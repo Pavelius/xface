@@ -34,6 +34,7 @@ private:
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
 #define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
+#define BSINF(e) {#e, bsmeta<e##i>::meta, bsmeta<e##i>::source}
 
 extern "C" int						atexit(void(*func)(void));
 extern "C" void*					bsearch(const void* key, const void *base, unsigned num, unsigned size, int(*compar)(const void *, const void *));
@@ -227,9 +228,9 @@ public:
 struct bsreq;
 // Abstract data source descriptor
 struct bsinf {
-	const char*				id;
-	const bsreq*			meta;
-	array*					source;
+	const char*				id; // Identifier of data source
+	const bsreq*			meta; // Type descriptor of data source
+	array&					source; // Data source content
 };
 template<typename T> struct bsmeta {
 	typedef T				data_type;

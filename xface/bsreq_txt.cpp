@@ -197,7 +197,7 @@ struct bsdata_reader_txt : reader {
 				return;
 			// Это идентификатор типа
 			auto pd = findbase(value);
-			e.parent->set(Database, (int)pd->source);
+			e.parent->set(Database, (int)&pd->source);
 			e.parent->set(Meta, (int)pd->meta);
 			return;
 		}
