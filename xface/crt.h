@@ -1,6 +1,28 @@
-//#include <initializer_list>
-
 #pragma once
+
+#ifdef _MSC_VER
+namespace std {
+template<class T> class initializer_list {	// list of pointers to elements
+public:
+	typedef T				value_type;
+	typedef const T&		reference;
+	typedef const T&		const_reference;
+	typedef unsigned		size_type;
+	typedef const T*		iterator;
+	typedef const T*		const_iterator;
+	constexpr initializer_list() noexcept : first(0), last(0) {}
+	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
+	constexpr const T*		begin() const noexcept { return first; }
+	constexpr const T*		end() const noexcept { return last; }
+	constexpr unsigned		size() const noexcept { return last - first; }
+private:
+	const T*				first;
+	const T*				last;
+};
+}
+#else
+#include <initializer_list>
+#endif
 
 #ifdef _DEBUG
 #define assert(e) if(!(e)) {exit(255);}
@@ -97,28 +119,6 @@ template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < co
 template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
 template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
 
-// Untility structures
-template<typename T, T v> struct static_value { static constexpr T value = v; };
-template<int v> struct static_int : static_value<int, v> {};
-namespace std {
-template<class T> class initializer_list {	// list of pointers to elements
-public:
-	typedef T				value_type;
-	typedef const T&		reference;
-	typedef const T&		const_reference;
-	typedef unsigned		size_type;
-	typedef const T*		iterator;
-	typedef const T*		const_iterator;
-	constexpr initializer_list() noexcept : first(0), last(0) {}
-	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
-	constexpr const T*		begin() const noexcept { return first; }
-	constexpr const T*		end() const noexcept { return last; }
-	constexpr unsigned		size() const noexcept { return last - first; }
-private:
-	const T*				first;
-	const T*				last;
-};
-}
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
@@ -255,3 +255,22 @@ template<> struct bsmeta<unsigned short> : bsmeta<int> {};
 template<> struct bsmeta<short> : bsmeta<int> {};
 template<> struct bsmeta<unsigned> : bsmeta<int> {};
 template<class T> const char* getstr(const T e) { return bsmeta<T>::elements[e].name; }
+// Untility structures
+template<typename T, T v> struct static_value { static constexpr T value = v; };
+template<int v> struct static_int : static_value<int, v> {};
+// Get array elments
+template<class T> struct meta_count : static_int<1> {};
+template<class T, unsigned N> struct meta_count<T[N]> : static_int<N> {};
+template<class T> struct meta_count<T[]> : static_int<0> {};
+template<class T, unsigned N> struct meta_count<adat<T, N>> : static_int<N> {};
+// Get base type
+template<class T> struct meta_decoy { typedef T value; };
+template<> struct meta_decoy<const char*> { typedef const char* value; };
+template<class T> struct meta_decoy<T*> : meta_decoy<T> {};
+template<class T, unsigned N> struct meta_decoy<T[N]> : meta_decoy<T> {};
+template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
+template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
+template<class T> struct meta_decoy<const T*> : meta_decoy<T> {};
+template<class T> struct meta_decoy<aref<T>> : meta_decoy<T> {};
+template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
+template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};

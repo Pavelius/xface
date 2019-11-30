@@ -88,7 +88,7 @@ bsdata* bsdata::first;
 //	*pf = this;
 //}
 
-array bsmeta<bsdata>::source;
+template<> array bsmeta<bsdata>::source;
 
 void* bsdata::add() {
 	if(count < maximum)
@@ -231,11 +231,11 @@ const char* bsreq::gets(const void* p) const {
 }
 
 const char* bsreq::get(const void* p, char* result, const char* result_max) const {
-	if(is(KindNumber)) {
-		auto v = get(p);
-		szprint(result, result_max, "%1i", v);
-		return result;
-	}
+//	if(is(KindNumber)) {
+//		auto v = get(p);
+//		szprint(result, result_max, "%1i", v);
+//		return result;
+//	}
 	return gets(p);
 }
 
