@@ -125,7 +125,7 @@ void metadata::hilite() {
 static struct properties_control : controls::properties, controls::control::plugin {
 
 	void view(const rect& rc) override {
-		auto focus = (controls::control*)getfocus();
+		auto focus = (controls::control*)isfocused();
 		bsval v;
 		if(focus == &requisit_instance) {
 			v.data = requisit_instance.getcurrent();

@@ -204,9 +204,6 @@
     <ClCompile Include="anyval.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="bsreq_bin.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="bsreq_txt.cpp">
       <Filter>collections</Filter>
     </ClCompile>
@@ -228,7 +225,7 @@
     <ClCompile Include="argw.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="bsreq_bin_v2.cpp">
+    <ClCompile Include="bsreq_bin.cpp">
       <Filter>collections</Filter>
     </ClCompile>
   </ItemGroup>
