@@ -1,7 +1,7 @@
-﻿#include "xface/crt.h"
-#include "xface/draw.h"
-#include "xface/draw_control.h"
-#include "xface/io.h"
+﻿#include "crt.h"
+#include "draw.h"
+#include "draw_control.h"
+#include "io.h"
 
 using namespace draw;
 
@@ -182,7 +182,16 @@ static void correct_font() {
 		pc[-1] = 0;
 	else
 		pc[0] = 0;
-	metrics::font = (sprite*)loadb(szurl(furl, temp, "font", "pma"));
+	szurl(furl, temp, "font", "pma");
+	metrics::font = (sprite*)loadb(furl);
+	if(!metrics::font) {
+		szurl(furl, temp, "art/font", "pma");
+		metrics::font = (sprite*)loadb(furl);
+	}
+	if(!metrics::font) {
+		szurl(furl, temp, "art/fonts/font", "pma");
+		metrics::font = (sprite*)loadb(furl);
+	}
 }
 
 static void test_directory() {
