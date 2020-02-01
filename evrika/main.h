@@ -1,7 +1,7 @@
-#include "xface/datetime.h"
-#include "xface/point.h"
-#include "xface/crt.h"
-#include "xface/valuelist.h"
+#include "datetime.h"
+#include "point.h"
+#include "crt.h"
+#include "valuelist.h"
 
 #pragma once
 

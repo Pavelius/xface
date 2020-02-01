@@ -1,4 +1,4 @@
-#include "xface/draw_control.h"
+#include "draw_control.h"
 #include "main.h"
 
 using namespace draw;

@@ -80,7 +80,7 @@ void* datalist::add() {
 	if(count >= maximum) {
 		if(!size)
 			return 0;
-		maximum = rmoptimal(maximum+1);
+		maximum = rmoptimal(maximum + 1);
 		auto new_size = maximum * size;
 		elements = rmreserve(elements, new_size);
 	}
