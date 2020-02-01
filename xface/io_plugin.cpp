@@ -3,15 +3,13 @@
 
 io::plugin* io::plugin::first;
 
-static char* add_filter(char* result, const char* result_maximum, const char* name, const char* filter) {
+static void add_filter(stringbuilder& sb, const char* name, const char* filter) {
 	if(!filter)
-		return result;
-	szprint(result, result_maximum, "%1 (%2)", name, filter);
-	szupper(result, 1);
-	result += zlen(result); *result++ = 0; *result = 0;
-	zcat(result, filter);
-	result += zlen(result); *result++ = 0; *result = 0;
-	return result;
+		return;
+	sb.add("%+1 (%2)", name, filter);
+	sb.addsz();
+	sb.add(filter);
+	sb.addsz();
 }
 
 io::plugin::plugin() : name(0), fullname(0), filter(0) {
@@ -28,14 +26,12 @@ io::plugin* io::plugin::find(const char* name) {
 	return 0;
 }
 
-char* io::plugin::getfilter(char* result, const char* result_maximum) {
-	result[0] = 0;
+void io::plugin::getfilter(stringbuilder& sb) {
 	for(auto p = first; p; p = p->next) {
 		if(!p->name)
 			continue;
-		result = add_filter(result, result_maximum, p->fullname, p->filter);
+		add_filter(sb, p->fullname, p->filter);
 	}
-	return result;
 }
 
 io::strategy* io::strategy::first;

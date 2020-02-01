@@ -1,4 +1,5 @@
 #include "io.h"
+#include "stringbuilder.h"
 
 #pragma once
 
@@ -49,7 +50,7 @@ struct plugin {
 	//
 	plugin();
 	static plugin*		find(const char* name);
-	static char*		getfilter(char* result, const char* result_maximum);
+	static void			getfilter(stringbuilder& sb);
 	virtual const char*	read(const char* source, reader& r) = 0;
 	virtual writer*		write(stream& e) = 0;
 };
