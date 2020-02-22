@@ -1,7 +1,8 @@
 #include "io.h"
 #include "main.h"
 
-struct database_serial_bin {
+namespace {
+struct serializer {
 	io::stream&	file;
 	bool		writemode;
 	const char* read_string() {
@@ -75,7 +76,7 @@ struct database_serial_bin {
 		stamp* p = (stamp*)databases[e.type].find(0, &e, sizeof(e));
 		if(p)
 			return p;
-		p = (stamp*)databases->add();
+		p = (stamp*)databases[e.type].add();
 		memcpy(p, &e, sizeof(e));
 		return p;
 	}
@@ -85,23 +86,29 @@ struct database_serial_bin {
 			return false;
 		auto& bs = databases[pv->type];
 		return serial(pv,
-			((requisit*)bs.requisits.begin()) + 2,
+			(requisit*)bs.requisits.begin() + 2,
 			(requisit*)bs.requisits.end());
 	}
 	bool write_object(stamp* pv) {
 		write_reference(pv);
 		auto& bs = databases[pv->type];
 		return serial(pv,
-			((requisit*)bs.requisits.begin()) + 2,
+			(requisit*)bs.requisits.begin() + 2,
 			(requisit*)bs.requisits.end());
 	}
-	constexpr database_serial_bin(io::stream& file, bool writemode) : file(file), writemode(writemode) {}
+	constexpr serializer(io::stream& file, bool writemode) : file(file), writemode(writemode) {}
 };
+}
 
-bool metadata_readfile(const char* url) {
+bool metadata::readfile(const char* url) {
 	io::file file(url, StreamRead);
 	if(!file)
 		return 0;
+	serializer sb(file, false);
+	while(true) {
+		if(!sb.read_object())
+			break;
+	};
 	return 0;
 }
 
@@ -109,7 +116,7 @@ bool metadata::writefile(const char* url) {
 	io::file file(url, StreamWrite);
 	if(!file)
 		return 0;
-	database_serial_bin sb(file, true);
+	serializer sb(file, true);
 	for(auto& e : databases) {
 		if(!e)
 			continue;

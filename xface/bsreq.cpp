@@ -114,7 +114,8 @@ const char* bsreq::gets(const void* p) const {
 const char* bsreq::get(const void* p, char* result, const char* result_max) const {
 	if(is(KindNumber)) {
 		auto v = get(p);
-		szprint(result, result_max, "%1i", v);
+		stringbuilder sb(result, result_max);
+		sb.add("%1i", v);
 		return result;
 	}
 	return gets(p);
