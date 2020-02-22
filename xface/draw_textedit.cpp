@@ -202,7 +202,7 @@ void textedit::redraw(const rect& rcorigin) {
 					right(true, true);
 					break;
 				default:
-					select(index, (hot.key&Shift) != 0);
+					//select(index, (hot.key&Shift) != 0);
 					break;
 				}
 			}
@@ -404,20 +404,20 @@ unsigned textedit::select_all(bool run) {
 	return 0;
 }
 
-unsigned textedit::copy(bool run) {
+bool textedit::copy(bool run) {
 	if(p2 == -1 || p1 == p2)
-		return Disabled;
+		return false;
 	if(run) {
 		char* s1 = string + imin(p1, p2);
 		char* s2 = string + imax(p1, p2);
 		clipboard::copy(s1, s2 - s1);
 	}
-	return 0;
+	return true;
 }
 
-unsigned textedit::paste(bool run) {
+bool textedit::paste(bool run) {
 	if(p1 == -1 || readonly)
-		return Disabled;
+		return false;
 	if(run) {
 		clear();
 		auto p = clipboard::paste();
@@ -425,7 +425,39 @@ unsigned textedit::paste(bool run) {
 			paste(p);
 		delete p;
 	}
-	return 0;
+	return true;
+}
+
+void textedit::mouseinput(unsigned id, point position) {
+	switch(id) {
+	case MouseLeft:
+		if(hot.pressed) {
+			auto i = hittest(rcclient, position, 0);
+			if(i == -2)
+				select(0, false);
+			else if(i == -3)
+				select(zlen(string), false);
+			else if(i >= 0)
+				select(i, false);
+		}
+		break;
+	default:
+		scrollable::mouseinput(id, position);
+		break;
+	}
+}
+
+bool textedit::cut(bool run) {
+	return true;
+}
+
+control::command* textedit::getcommands() const {
+	static command commands[] = {{"cut", "Вырезать", -1, Ctrl + Alpha + 'X', &textedit::cut},
+	{"copy", "Копировать", -1, Ctrl + Alpha + 'C', &textedit::copy},
+	{"paste", "Вставить", -1, Ctrl + Alpha + 'V', &textedit::paste},
+	{}
+	};
+	return commands;
 }
 
 //	case Ctrl + Alpha + 'X':

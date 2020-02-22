@@ -310,7 +310,14 @@ struct scrollable : control {
 	virtual void			redraw(const rect& rc) {}
 	void					view(const rect& rc) override;
 };
-struct textedit : scrollable {
+class textedit : public scrollable {
+	char*					string;
+	unsigned				maxlenght;
+	int						cashed_width;
+	int						cashed_string;
+	int						cashed_origin;
+	int						p1, p2;
+public:
 	rect					rctext, rcclient;
 	list*					records;
 	unsigned				align;
@@ -323,10 +330,15 @@ struct textedit : scrollable {
 	//
 	void					clear();
 	virtual void			cashing(rect rc);
-	unsigned				copy(bool run);
+	bool					copy(bool run);
 	void					correct();
+	bool					cut(bool run);
 	bool					editing(rect rc);
 	void					ensurevisible(int linenumber);
+	int						getbegin() const;
+	command*				getcommands() const override;
+	int						getend() const;
+	point					getpos(rect rc, int index, unsigned state) const;
 	int						getrecordsheight() const;
 	int						hittest(rect rc, point pt, unsigned state) const;
 	void					invalidate() override;
@@ -336,10 +348,8 @@ struct textedit : scrollable {
 	int						linee(int index) const;
 	int						linen(int index) const;
 	void					left(bool shift, bool ctrl);
-	int						getbegin() const;
-	int						getend() const;
-	point					getpos(rect rc, int index, unsigned state) const;
-	unsigned				paste(bool run);
+	void					mouseinput(unsigned id, point position);
+	bool					paste(bool run);
 	void					paste(const char* string);
 	void					redraw(const rect& rc) override;
 	void					right(bool shift, bool ctrl);
@@ -348,13 +358,6 @@ struct textedit : scrollable {
 	void					setcount(int value) {}
 	void					setrecordlist(const char* string);
 	void					updaterecords(bool setfilter);
-private:
-	char*					string;
-	unsigned				maxlenght;
-	int						cashed_width;
-	int						cashed_string;
-	int						cashed_origin;
-	int						p1, p2;
 };
 }
 void						addelement(const rect& rc, const anyval& value);
