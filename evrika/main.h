@@ -10,6 +10,21 @@ enum base_s : unsigned char {
 	ReferenceType, DocumentType, UserType,
 	HeaderType,
 };
+class datastore {
+	struct element {
+		void*				data;
+		unsigned			count;
+		unsigned			count_maximum;
+		element*			next;
+		constexpr void*		ptr(int index, unsigned size) const { return (char*)data + index*size; }
+	};
+	element*				first;
+	unsigned				size;
+public:
+	constexpr datastore() : first(0), size(0) {}
+	void*					add();
+	void*					ptr(unsigned index) const;
+};
 struct datalist {
 	void*					elements;
 	unsigned				count;
@@ -20,7 +35,16 @@ struct datalist {
 	void*					add();
 	char*					begin() const { return (char*)elements; }
 	char*					end() const { return (char*)elements + size * count; }
+	void*					find(const void* object, unsigned size) const;
 	void*					get(unsigned index) { return (char*)elements + index * size; }
+};
+template<class T>
+struct datalistc : datalist {
+	constexpr datalistc() : datalist(sizeof(T)) {}
+	T*						add() { return static_cast<T*>(datalist::add()); }
+	T*						begin() const { return (T*)elements; }
+	T*						end() const { return (T*)elements + count; }
+	T*						ptr(unsigned index) { return (T*)elements + index; }
 };
 struct requisit {
 	const char*				id;
@@ -35,18 +59,22 @@ struct requisit {
 	constexpr unsigned		getsize() const { return 4; }
 	bool					isreference() const { return type >= ReferenceType; }
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
-	void*					ptr(void* object, const char* url, const requisit** result = 0) const;
 	void					set(void* object, int value) const { *((int*)object) = value; }
+};
+struct requisita : datalistc<requisit> {
+	const requisit*			find(const char* id, unsigned size) const;
+	const char*				gets(const void* p, const char* url) const;
+	void*					ptr(void* object, const char* url, const requisit** result = 0) const;
 	void					set(void* object, const char* id, int v) const;
 	void					set(void* object, const char* id, const char* v) const;
 };
 struct metadata : datalist {
 	const char*				id;
 	const char*				name;
-	datalist				requisits;
+	requisita				requisits;
 	explicit operator bool() const { return elements != 0; }
-	constexpr metadata() : id(0), name(0), requisits(sizeof(requisit)) {}
-	constexpr metadata(const char* id, const char* name) : id(id), name(name), requisits(sizeof(requisit)) {}
+	constexpr metadata() : id(0), name(0), requisits() {}
+	constexpr metadata(const char* id, const char* name) : id(id), name(name), requisits() {}
 	~metadata();
 	void*					add() { return datalist::add(); }
 	void					add(const requisit* type);
@@ -70,4 +98,10 @@ struct stamp {
 	constexpr stamp(base_s type = NumberType) : type(type), create_date(0), session(0), counter(0) {}
 	metadata&				getmeta() const { return databases[type]; }
 	constexpr bool			isnew() const { return create_date != 0; }
+};
+struct object : stamp {
+	void*					pointer;
+	unsigned char			reserved[128 * 4];
+	void					read();
+	void					write();
 };

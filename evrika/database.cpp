@@ -17,7 +17,7 @@ static void add_name(base_s type) {
 }
 static void add_stamp(base_s type) {
 	auto& e = databases[type];
-	e.add("create_date", "Дата создания", DateTimeType);
+	e.add("create_date", "Создано", DateTimeType);
 	e.add("identifier", "Идентификатор", NumberType);
 }
 static void add_change(base_s type) {
@@ -28,8 +28,8 @@ static void add_change(base_s type) {
 }
 static void add_reference(base_s type) {
 	add_stamp(type);
-	add_name(type);
 	add_change(type);
+	add_name(type);
 }
 static void add_number(base_s type, const char* id, const char* name) {
 	auto& e = databases[type];
@@ -124,7 +124,15 @@ const requisit* requisit::find(const char* id, unsigned size) const {
 	return 0;
 }
 
-void* requisit::ptr(void* object, const char* url, const requisit** result) const {
+const requisit* requisita::find(const char* id, unsigned size) const {
+	for(auto& e : *this) {
+		if(memcmp(e.id, id, size) == 0)
+			return &e;
+	}
+	return 0;
+}
+
+void* requisita::ptr(void* object, const char* url, const requisit** result) const {
 	while(object) {
 		auto p1 = findurl(url);
 		auto pf = find(url, p1 - url);
@@ -144,18 +152,58 @@ void* requisit::ptr(void* object, const char* url, const requisit** result) cons
 	return 0;
 }
 
-void requisit::set(void* object, const char* id, int v) const {
-	const requisit* type = this;
+void requisita::set(void* object, const char* id, int v) const {
+	const requisit* type;
 	object = ptr(object, id, &type);
 	if(!object)
 		return;
 	type->set(object, v);
 }
 
-void requisit::set(void* object, const char* id, const char* v) const {
-	const requisit* type = this;
+void requisita::set(void* object, const char* id, const char* v) const {
+	const requisit* type;
 	object = ptr(object, id, &type);
 	if(!object)
 		return;
 	type->set(object, (int)szdup(v));
+}
+
+const char* requisita::gets(const void* p, const char* url) const {
+	const requisit* type;
+	p = ptr((void*)p, url, &type);
+	if(!p)
+		return "";
+	auto pv = *((const char**)p);
+	if(!pv)
+		pv = "";
+	return pv;
+}
+
+void* datalist::find(const void* object, unsigned size) const {
+	return 0;
+}
+
+void* datastore::ptr(unsigned index) const {
+	for(auto p = first; p; p = p->next) {
+		if(index > p->count)
+			index -= p->count;
+		else
+			return (unsigned char*)p + size*index;
+	}
+	return 0;
+}
+
+void* datastore::add() {
+	if(!first)
+		first = (element*)new char[sizeof(element) + size * 32];
+	auto p = first;
+	while(true) {
+		if(p->count < p->count_maximum)
+			return p->ptr(size, p->count++);
+		if(!p->next)
+			break;
+		p = p->next;
+	}
+	p->next = (element*)new char[sizeof(element) + size * (p->count_maximum * 2)];
+	return p->ptr(size, p->count++);
 }
