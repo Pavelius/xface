@@ -18,31 +18,37 @@ static void add_name(base_s type) {
 static void add_stamp(base_s type) {
 	auto& e = databases[type];
 	e.add("create_date", "Дата создания", DateTimeType);
-	e.add("counter", "Токен", NumberType);
+	e.add("identifier", "Идентификатор", NumberType);
 }
 static void add_change(base_s type) {
 	auto& e = databases[type];
-	e.add("create_user", "Автор", UserType);
+	e.add("create_user", "Создал", UserType);
 	e.add("change_user", "Изменил", UserType);
-	e.add("change_date", "Дата изменения", DateTimeType);
+	e.add("change_date", "Изменено", DateTimeType);
 }
 static void add_reference(base_s type) {
 	add_stamp(type);
 	add_name(type);
 	add_change(type);
 }
+static void add_number(base_s type, const char* id, const char* name) {
+	auto& e = databases[type];
+	e.add(id, name, NumberType);
+}
+static void add_text(base_s type, const char* id, const char* name) {
+	auto& e = databases[type];
+	e.add(id, name, TextType);
+}
 static void add_document(base_s type) {
 	add_stamp(type);
 	add_change(type);
-	auto& e = databases[type];
-	e.add("number", "Номер", NumberType);
+	add_number(type, "number", "Номер");
 }
 static void add_fio(base_s type) {
 	add_reference(type);
-	auto& e = databases[type];
-	e.add("firstname", "Имя", TextType);
-	e.add("surname", "Фамилия", TextType);
-	e.add("lastname", "Отчество", TextType);
+	add_text(type, "firstname", "Имя");
+	add_text(type, "surname", "Фамилия");
+	add_text(type, "lastname", "Отчество");
 }
 
 void initialize_metadata() {
@@ -130,9 +136,26 @@ void* requisit::ptr(void* object, const char* url, const requisit** result) cons
 				*result = pf;
 			return object;
 		}
-		if(!pf->isreference())
-			return 0;
-		object = *((void**)object);
+		if(pf->isreference())
+			object = *((void**)object);
+		else
+			break;
 	}
 	return 0;
+}
+
+void requisit::set(void* object, const char* id, int v) const {
+	const requisit* type = this;
+	object = ptr(object, id, &type);
+	if(!object)
+		return;
+	type->set(object, v);
+}
+
+void requisit::set(void* object, const char* id, const char* v) const {
+	const requisit* type = this;
+	object = ptr(object, id, &type);
+	if(!object)
+		return;
+	type->set(object, (int)szdup(v));
 }

@@ -36,13 +36,19 @@ static struct header_control : controls::tableref, controls::control::plugin {
 static void pass_verification() {
 }
 
-static void test_database() {
-}
-
 void initialize_metadata();
+
+static void test_database() {
+	auto p = databases[UserType].add();
+	auto r = (requisit*)databases[UserType].requisits.get(0);
+	r->set(p, "firstname", "Павел");
+	r->set(p, "surname", "Чистяков");
+	r->set(p, "lastname", "Валентинович");
+}
 
 int main() {
 	initialize_metadata();
+	test_database();
 	metadata::writefile("test.edb");
 	draw::application("Evrika", true, pass_verification);
 }

@@ -10,7 +10,6 @@ enum base_s : unsigned char {
 	ReferenceType, DocumentType, UserType,
 	HeaderType,
 };
-
 struct datalist {
 	void*					elements;
 	unsigned				count;
@@ -38,6 +37,8 @@ struct requisit {
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, const char* url, const requisit** result = 0) const;
 	void					set(void* object, int value) const { *((int*)object) = value; }
+	void					set(void* object, const char* id, int v) const;
+	void					set(void* object, const char* id, const char* v) const;
 };
 struct metadata : datalist {
 	const char*				id;
@@ -60,12 +61,13 @@ struct metadata : datalist {
 	static bool				readfile(const char* file);
 	static bool				writefile(const char* file);
 };
+extern metadata				databases[HeaderType + 1];
 struct stamp {
 	datetime				create_date;
 	base_s					type;
 	unsigned char			session;
 	short unsigned			counter;
 	constexpr stamp(base_s type = NumberType) : type(type), create_date(0), session(0), counter(0) {}
+	metadata&				getmeta() const { return databases[type]; }
 	constexpr bool			isnew() const { return create_date != 0; }
 };
-extern metadata				databases[HeaderType + 1];
