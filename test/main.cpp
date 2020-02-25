@@ -350,6 +350,16 @@ static int point_input(int x, int y, point& result, int width, int title, const 
 static void choose_transparent_color() {
 }
 
+static int run_wizard(eventproc proc) {
+	setfocus(anyval(), true);
+	while(ismodal()) {
+		rectf({0, 0, getwidth(), getheight()}, colors::window);
+		auto x = 20, y = 20;
+		y += button(x, y, 300, buttonok, "Принять");
+		domodal();
+	}
+}
+
 static void test_tile_manager() {
 	setfocus(anyval(), true);
 	const char* filename = "";
