@@ -41,7 +41,6 @@ template<class T> struct meta_kind<aref<T>> : static_value<bstype_s, KindARef> {
 template<class T, class DT> struct meta_kind<cflags<T, DT>> : static_value<bstype_s, KindCFlags> {};
 // Metadata field descriptor
 struct bsreq {
-	//
 	const char*			id; // field identifier
 	unsigned			offset; // offset from begin of class or object
 	unsigned			size; // size of single element
