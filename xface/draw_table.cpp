@@ -8,47 +8,46 @@ static int		current_sort_column;
 static bool		current_order;
 static table*	current_element;
 
-struct table_sort_param {
-	table*		element;
-	int			column;
-};
-
-int table::comparestr(int i1, int i2, void* param) {
-	auto ps = (table_sort_param*)param;
-	auto pc = ps->element;
+int table::comparest(int i1, int i2, int column) const {
 	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
-	auto n1 = pc->columns[ps->column].get(pc->get(i1), t1, t1 + sizeof(t1) - 1);
-	auto n2 = pc->columns[ps->column].get(pc->get(i2), t2, t2 + sizeof(t2) - 1);
+	auto n1 = columns[column].get(get(i1), t1, t1 + sizeof(t1) - 1);
+	auto n2 = columns[column].get(get(i2), t2, t2 + sizeof(t2) - 1);
 	return strcmp(n1, n2);
 }
 
-int table::comparenum(int i1, int i2, void* param) {
-	auto ps = (table_sort_param*)param;
-	auto pe = ps->element;
-	auto pc = &pe->columns[ps->column];
-	return pc->get(pe->get(i1)) - pc->get(pe->get(i2));
+int table::comparenm(int i1, int i2, int column) const {
+	auto pc = &columns[column];
+	return pc->get(get(i1)) - pc->get(get(i2));
 }
 
-void table::sort(int i1, int i2, bool ascending, fncompare comparer, void* param) {
-	if(ascending) {
-		for(int i = i2; i > i1; i--) {
-			for(int j = i1; j < i; j++)
-				if(comparer(j, j + 1, param) > 0)
-					swap(j, j + 1);
-		}
-	} else {
-		for(int i = i2; i > i1; i--) {
-			for(int j = i1; j < i; j++)
-				if(comparer(j, j + 1, param) < 0)
-					swap(j, j + 1);
-		}
+int table::comparer(int i1, int i2, const sortparam* param, int count) const {
+	for(auto i = 0; i < count; i++) {
+		auto pc = columns[param[i].column].method->comparer;
+		if(!pc)
+			continue;
+		auto r = (this->*pc)(i1, i2, param[i].column);
+		if(r == 0)
+			continue;
+		return r * param[i].multiplier;
+	}
+	return 0;
+}
+
+void table::sort(int i1, int i2, sortparam* ps, int count) {
+	if(i2 <= i1)
+		return;
+	for(int i = i2; i > i1; i--) {
+		for(int j = i1; j < i; j++)
+			if(comparer(j, j + 1, ps, count) > 0)
+				swap(j, j + 1);
 	}
 }
 
 void table::sort(int column, bool ascending) {
-	table_sort_param e;
-	e.element = this;
+	sortparam e;
 	e.column = column;
+	e.multiplier = ascending ? 1 : -1;
+	sort(0, getmaximum() - 1, &e, 1);
 }
 
 static void table_sort_column() {
@@ -636,13 +635,13 @@ const visual** table::getvisuals() const {
 	return elements;
 }
 
-const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, table::comparenum},
+const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, &table::comparenm},
 {"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
 {"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},
-{"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, table::comparenum},
-{"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, table::comparenum},
-{"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, table::comparestr},
+{"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, &table::comparenm},
+{"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, &table::comparenm},
+{"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, &table::comparest},
 {"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changeref},
-{"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, table::comparenum},
-{"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, table::comparenum},
+{"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, &table::comparenm},
+{"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, &table::comparenm},
 {}};

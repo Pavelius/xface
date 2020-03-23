@@ -186,7 +186,11 @@ struct column {
 	column&					setwidth(int v) { width = v; return *this; }
 };
 struct table : list {
-	typedef int(*fncompare)(int i1, int i2, void* param);
+	typedef int				(table::*fncompare)(int i1, int i2, int column) const;
+	struct sortparam {
+		int					column;
+		int					multiplier; // 1 - ascending, -1 - descending
+	};
 	arem<column>			columns;
 	int						current_column, current_hilite_column, current_column_maximum, maximum_width;
 	bool					no_change_count;
@@ -214,9 +218,10 @@ struct table : list {
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
+	int						comparenm(int i1, int i2, int column) const;
+	int						comparest(int i1, int i2, int column) const;
+	int						comparer(int i1, int i2, const sortparam* param, int count) const;
 	virtual void			clickcolumn(int column) const;
-	static int				comparenum(int i1, int i2, void* param);
-	static int				comparestr(int i1, int i2, void* param);
 	virtual void			ensurevisible() override;
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
@@ -232,7 +237,7 @@ struct table : list {
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
-	void					sort(int i1, int i2, bool ascending, fncompare comparer, void* param);
+	void					sort(int i1, int i2, sortparam* ps, int count);
 	void					sort(int column, bool ascending);
 	virtual void			swap(int i1, int i2) {}
 	void					view(const rect& rc) override;
