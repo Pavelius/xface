@@ -52,6 +52,7 @@ struct bsreq {
 	//
 	constexpr explicit operator bool() const { return id != 0; }
 	//
+	void*				dereference(const void* data, const bsreq** result) const;
 	const bsreq*		find(const char* name) const;
 	const bsreq*		find(const char* name, unsigned count) const;
 	const bsreq*		find(const char* name, const bsreq* type) const;
@@ -65,6 +66,7 @@ struct bsreq {
 	bool				match(const void* p, const char* name) const;
 	char*				ptr(const void* data) const { return (char*)data + offset; }
 	char*				ptr(const void* data, int index) const { return (char*)data + offset + index * size; }
+	void*				ptr(const void* data, const char* url, const bsreq** result) const;
 	bool				read(const char* url, const void* object) const;
 	void				set(const void* p, int value) const;
 	bool				write(const char* url, void* object) const;

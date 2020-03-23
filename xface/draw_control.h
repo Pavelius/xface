@@ -9,6 +9,11 @@
 #pragma once
 
 typedef void			(*fnchoose)(const anyval value);
+template<> struct bsmeta<datetime> {
+	typedef int				data_type;
+	static const bsreq		meta[];
+	static constexpr array*	source_ptr = 0;
+};
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -53,7 +58,9 @@ namespace controls {
 struct control {
 	typedef bool			(control::*callback)(bool run);
 	struct command {
-		struct builder {
+		class builder {
+			void			render(const control::command* commands, bool& separator, int& count);
+		public:
 			builder() = default;
 			virtual ~builder() {}
 			virtual void	add(const control::command& cmd) = 0;
@@ -61,8 +68,6 @@ struct control {
 			virtual const command* finish() const { return 0; }
 			void			render(const control::command* commands);
 			virtual void	start() const {}
-		private:
-			void			render(const control::command* commands, bool& separator, int& count);
 		};
 		const char*			id;
 		const char*			name;
@@ -291,15 +296,15 @@ struct tableref : table, array {
 	bool					treemarking(bool run) override;
 };
 struct visual {
-	typedef void			(table::*proc_render)(const rect& rc, int line, int column);
+	typedef void			(table::*fnrender)(const rect& rc, int line, int column);
 	const char*				id;
 	const char*				name;
 	image_flag_s			align;
 	int						minimal_width, default_width;
 	column_size_s			size;
 	total_s					total;
-	proc_render				render;
-	proc_render				change;
+	fnrender				render;
+	fnrender				change;
 	table::fncompare		comparer;
 	bool					change_one_click;
 	explicit operator bool() const { return render != 0; }
@@ -390,12 +395,3 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
-template<> struct bsmeta<datetime> {
-	typedef int				data_type;
-	static const bsreq		meta[];
-	static constexpr array*	source_ptr = 0;
-};
-//template<> struct bsmeta<draw::controls::control::plugin> {
-//	typedef draw::controls::control::plugin	data_type;
-//	static const bsreq		meta[];
-//};

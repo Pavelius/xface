@@ -6,14 +6,13 @@ extern "C" int memcmp(const void* s1, const void* s2, unsigned size);
 
 const bsreq bsmeta<int>::meta[] = {{"number"}, {}};
 const bsreq bsmeta<const char*>::meta[] = {{"text"}, {}};
-const bsreq bsmeta<bsreq>::meta[] = {
-	BSREQ(id),
-	BSREQ(offset),
-	BSREQ(size),
-	BSREQ(lenght),
-	BSREQ(count),
-	BSREQ(type),
-	{}};
+const bsreq bsmeta<bsreq>::meta[] = {BSREQ(id),
+BSREQ(offset),
+BSREQ(size),
+BSREQ(lenght),
+BSREQ(count),
+BSREQ(type),
+{}};
 
 const bsreq* bsreq::find(const char* name) const {
 	if(!this || !name || name[0] == 0)
@@ -121,6 +120,51 @@ const char* bsreq::get(const void* p, char* result, const char* result_max) cons
 	return gets(p);
 }
 
+void* bsreq::dereference(const void* data, const bsreq** result) const {
+	auto r = data;
+	auto t = this;
+	while(true) {
+		if(t->is(KindReference)) {
+			r = *((void**)t->type->ptr(r));
+			t = t->type;
+		} else if(t->is(KindEnum)) {
+			if(!t->source) {
+				r = 0;
+				t = 0;
+				break;
+			}
+			r = t->source->ptr(t->get(t->ptr(r)));
+			t = t->type;
+		} else {
+			t = t->type;
+			break;
+		}
+	}
+	if(result)
+		*result = t;
+	return (void*)r;
+}
+
+void* bsreq::ptr(const void* data, const char* url, const bsreq** result) const {
+	auto t = this;
+	auto r = data;
+	for(auto i = 0; url[i]; i++) {
+		if(url[i] == '.') {
+			auto t1 = t->find(url, i);
+			if(!t1) {
+				if(result)
+					*result = 0;
+				return 0;
+			}
+			r = t1->dereference(r, &t);
+			url += i; i = 0;
+		}
+	}
+	if(result)
+		*result = t;
+	return (void*)r;
+}
+
 bsval bsval::ptr(const char* url) const {
 	bsval r(data, type);
 	for(auto i = 0; url[i]; i++) {
@@ -156,7 +200,7 @@ bsval bsval::dereference() const {
 }
 
 const char*	bsval::getname() const {
-	auto pf = type->find("name");
+	auto pf = type->getname();
 	if(!pf)
 		return "";
 	auto pv = (const char*)pf->get(pf->ptr(data));
