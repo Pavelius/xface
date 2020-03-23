@@ -333,3 +333,7 @@ bool tableref::sortds(bool run) {
 //	{}};
 //	return elements;
 //}
+
+void tableref::swap(int i1, int i2) {
+	array::swap(i1, i2);
+}

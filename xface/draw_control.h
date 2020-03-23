@@ -286,6 +286,7 @@ struct tableref : table, array {
 	void					shift(int i1, int i2);
 	bool					sortas(bool run);
 	bool					sortds(bool run);
+	void					swap(int i1, int i2) override;
 	void					toggle(int index);
 	bool					treemarking(bool run) override;
 };
