@@ -207,6 +207,8 @@ struct table : list {
 		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
+	virtual void*			addrow() { return 0; } // Need override
+	virtual bool			addrow(bool run);
 	void					cell(const rect& rc, int line, int column, const char* text);
 	void					cellbox(const rect& rc, int line, int column);
 	void					celldate(const rect& rc, int line, int column);
@@ -223,6 +225,8 @@ struct table : list {
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
+	static command			commands_add[];
+	static command			commands_move[];
 	int						comparenm(int i1, int i2, int column) const;
 	int						comparest(int i1, int i2, int column) const;
 	int						comparer(int i1, int i2, const sortparam* param, int count) const;
@@ -230,6 +234,7 @@ struct table : list {
 	virtual void			ensurevisible() override;
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
+	const command*			getcommands() const override;
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	rect					getrect(int row, int column) const;
@@ -237,14 +242,21 @@ struct table : list {
 	int						getvalid(int column, int direction = 1) const;
 	virtual const visual**	getvisuals() const;
 	bool					keyinput(unsigned id) override;
+	bool					movedown(bool run);
+	bool					moveup(bool run);
 	void					mouseselect(int id, bool pressed) override;
+	virtual void			remove(int index) {} // Need override
+	virtual bool			removerow(bool);
 	virtual void			row(const rect& rc, int index) override; // Draw single row - part of list
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
+	bool					setting(bool run);
 	void					sort(int i1, int i2, sortparam* ps, int count);
 	void					sort(int column, bool ascending);
-	virtual void			swap(int i1, int i2) {}
+	bool					sortas(bool run);
+	bool					sortds(bool run);
+	virtual void			swap(int i1, int i2) {} // Need override
 	void					view(const rect& rc) override;
 	static const visual		visuals[];
 private:
@@ -289,8 +301,6 @@ struct tableref : table, array {
 	void					open(int max_level);
 	bool					remove(bool run);
 	void					shift(int i1, int i2);
-	bool					sortas(bool run);
-	bool					sortds(bool run);
 	void					swap(int i1, int i2) override;
 	void					toggle(int index);
 	bool					treemarking(bool run) override;

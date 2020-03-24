@@ -635,6 +635,95 @@ const visual** table::getvisuals() const {
 	return elements;
 }
 
+bool table::sortas(bool run) {
+	if(no_change_order)
+		return false;
+	if(getmaximum() <= 1)
+		return false;
+	if(run)
+		sort(current_column, true);
+	return true;
+}
+
+bool table::sortds(bool run) {
+	if(no_change_order)
+		return false;
+	if(getmaximum() <= 1)
+		return false;
+	if(run)
+		sort(current_column, false);
+	return true;
+}
+
+bool table::moveup(bool run) {
+	if(no_change_order)
+		return false;
+	if(current <= 0)
+		return false;
+	if(getmaximum() == 1)
+		return false;
+	if(run) {
+		swap(current - 1, current);
+		select(current - 1, getcolumn());
+	}
+	return true;
+}
+
+bool table::movedown(bool run) {
+	if(no_change_order)
+		return false;
+	if(current >= int(getmaximum() - 1))
+		return false;
+	if(run) {
+		swap(current + 1, current);
+		select(current + 1, getcolumn());
+	}
+	return true;
+}
+
+bool table::addrow(bool run) {
+	if(no_change_count)
+		return false;
+	if(run) {
+		auto p = addrow();
+		if(p) {
+			select(current + 1, getcolumn());
+			change(true);
+		}
+	}
+	return true;
+}
+
+bool table::removerow(bool run) {
+	if(no_change_count)
+		return false;
+	if(run)
+		remove(current);
+	return true;
+}
+
+bool table::setting(bool run) {
+	return true;
+}
+
+control::command table::commands_add[] = {{"add", "Добавить", 9, 0, &table::addrow},
+{"change", "Изменить", 10, F2, &table::change},
+{"remove", "Удалить", 19, KeyDelete, &table::removerow},
+{}};
+control::command table::commands_move[] = {{"moveup", "Переместить вверх", 21, 0, &table::moveup},
+{"movedown", "Переместить вниз", 22, 0, &table::movedown},
+{"sortas", "Сортировать по возрастанию", 11, 0, &table::sortas},
+{"sortds", "Сортировать по убыванию", 12, 0, &table::sortds},
+{}};
+
+const control::command* table::getcommands() const {
+	static command elements[] = {{commands_add},
+	{commands_move},
+	{"setting", "Настройки", 16, 0, &table::setting},
+	{}};
+	return elements;
+}
+
 const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, &table::comparenm},
 {"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
 {"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},

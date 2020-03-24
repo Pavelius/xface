@@ -250,42 +250,6 @@ void tableref::shift(int i1, int i2) {
 		select(i2 + c1, current_column);
 }
 
-bool tableref::moveup(bool run) {
-	if(no_change_order)
-		return false;
-	if(current <= 0)
-		return false;
-	if(getmaximum() == 1)
-		return false;
-	if(run) {
-		auto new_current = getnext(current, -1);
-		if(new_current == current)
-			return false;
-		if(run)
-			shift(new_current, current);
-		//swap(current - 1, current);
-		//select(current - 1, getcolumn());
-	}
-	return true;
-}
-
-bool tableref::movedown(bool run) {
-	if(no_change_order)
-		return false;
-	if(current >= int(getmaximum() - 1))
-		return false;
-	if(run) {
-		auto new_current = getnext(current, 1);
-		if(new_current == current)
-			return false;
-		if(run)
-			shift(new_current, current);
-		//swap(current + 1, current);
-		//select(current + 1, getcolumn());
-	}
-	return true;
-}
-
 bool tableref::remove(bool run) {
 	if(read_only)
 		return false;
@@ -295,26 +259,6 @@ bool tableref::remove(bool run) {
 		return false;
 	if(run)
 		array::remove(current, 1);
-	return true;
-}
-
-bool tableref::sortas(bool run) {
-	if(no_change_order)
-		return false;
-	if(getmaximum() <= 1)
-		return false;
-//	if(run)
-//		sort(current_column, true);
-	return true;
-}
-
-bool tableref::sortds(bool run) {
-	if(no_change_order)
-		return false;
-	if(getmaximum() <= 1)
-		return false;
-//	if(run)
-//		sort(current_column, false);
 	return true;
 }
 
