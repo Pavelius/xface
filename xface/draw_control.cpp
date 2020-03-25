@@ -66,21 +66,10 @@ void control::mouseinput(unsigned id, point position) {
 			setfocus(true);
 		break;
 	case MouseRight:
-		if(hot.pressed) {
+		if(!hot.pressed) {
 			redraw();
 			updatewindow();
-			auto cm = getcommands();
-			if(cm) {
-				auto pm = createmenu();
-				if(pm) {
-					pm->start();
-					pm->render(getcommands());
-					auto cmd = pm->finish();
-					delete pm;
-					if(cmd)
-						(this->*cmd->proc)(true);
-				}
-			}
+			contextmenu(getcommands());
 		}
 		break;
 	}
@@ -161,4 +150,50 @@ bool control::keyinput(unsigned key) {
 	if(!pn)
 		return false;
 	return (this->*pn->proc)(true);
+}
+
+void control::command::builder::render(const control* parent, const control::command* commands, bool& separator, int& count) {
+	if(!commands)
+		return;
+	for(auto p = commands; *p; p++) {
+		if(p->view == NoView)
+			continue;
+		if(p->visible && !(parent->*p->visible)())
+			continue;
+		if(p->isgroup()) {
+			separator = true;
+			render(parent, p->child, separator, count);
+			separator = true;
+		} else {
+			if(separator) {
+				if(count>0)
+					addseparator();
+				separator = false;
+			}
+			add(parent, *p);
+			count++;
+		}
+	}
+}
+
+bool control::command::isallow(const control* parent) const {
+	if(!proc)
+		return true;
+	return (const_cast<control*>(parent)->*proc)(false);
+}
+
+void control::command::builder::render(const control* parent, const control::command* commands) {
+	bool separator = false;
+	auto count = 0;
+	render(parent, commands, separator, count);
+}
+
+void control::contextmenu(const command* source, command::builder& pm) {
+	if(!source)
+		return;
+	pm.start();
+	pm.render(this, source);
+	auto cmd = pm.finish();
+	if(cmd)
+		(this->*cmd->proc)(true);
 }

@@ -179,7 +179,7 @@ static void test_tableref() {
 	auto pm = bsmeta<rowelement>::meta;
 	test.addcol(pm, "#", "rownumber");
 	test.addcol(pm, "image", "Из", "image");
-	test.addcol(pm, "name", "Наименование")/*.set(SizeAuto)*/;
+	test.addcol(pm, "name", "Наименование").set(SizeAuto);
 	test.addcol(pm, "flags", "УУ", "checkbox").setparam(AreaNormal);
 	test.addcol(pm, "flags", "БУ", "checkbox").setparam(AreaHilited);
 	test.addcol(pm, "flags", "МУ", "checkbox").setparam(AreaHilitedPressed);

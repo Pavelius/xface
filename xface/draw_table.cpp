@@ -718,7 +718,7 @@ control::command table::commands_move[] = {{"moveup", "Переместить вверх", 21, 0
 
 const control::command* table::getcommands() const {
 	static command elements[] = {{commands_add},
-	{commands_move},
+	{commands_move, &table::ismoveable},
 	{"setting", "Настройки", 16, 0, &table::setting},
 	{}};
 	return elements;

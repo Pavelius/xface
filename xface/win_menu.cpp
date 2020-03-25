@@ -7,11 +7,10 @@ using namespace draw::controls;
 
 struct menu_builder : control::command::builder {
 
-	control*	parent;
 	void*		hMenu;
 	int			count;
 	
-	menu_builder(control* parent) : hMenu(0), parent(parent), count(0) {
+	menu_builder() : hMenu(0), count(0) {
 		hMenu = CreatePopupMenu();
 	}
 
@@ -43,7 +42,7 @@ struct menu_builder : control::command::builder {
 		return (control::command*)result;
 	}
 
-	void add(const control::command& cmd) override {
+	void add(const control* source, const control::command& cmd) override {
 		MENUITEMINFO mi = {0};
 		mi.cbSize = sizeof(mi);
 		mi.fMask = MIIM_STRING | MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_SUBMENU | MIIM_DATA;
@@ -56,7 +55,7 @@ struct menu_builder : control::command::builder {
 			draw::key2str(zend(temp), cmd.key);
 		}
 		szupper(temp, 1);
-		if((parent->*cmd.proc)(false))
+		if(cmd.isallow(source))
 			mi.fState = MFS_ENABLED;
 		else
 			mi.fState = MFS_DISABLED | MFS_GRAYED;
@@ -72,6 +71,7 @@ struct menu_builder : control::command::builder {
 
 };
 
-control::command::builder* control::createmenu() {
-	return new menu_builder(this);
+void control::contextmenu(const control::command* source) {
+	menu_builder pm;
+	contextmenu(source, pm);
 }

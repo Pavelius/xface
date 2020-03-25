@@ -57,31 +57,34 @@ public:
 namespace controls {
 struct control {
 	typedef bool			(control::*callback)(bool run);
+	typedef bool			(control::*fnvisible)() const;
 	struct command {
 		class builder {
-			void			render(const control::command* commands, bool& separator, int& count);
+			void			render(const control* parent, const control::command* commands, bool& separator, int& count);
 		public:
 			builder() = default;
 			virtual ~builder() {}
-			virtual void	add(const control::command& cmd) = 0;
+			virtual void	add(const control* parent, const control::command& cmd) = 0;
 			virtual void	addseparator() = 0;
 			virtual const command* finish() const { return 0; }
-			void			render(const control::command* commands);
+			void			render(const control* parent, const control::command* commands);
 			virtual void	start() const {}
 		};
 		const char*			id;
 		const char*			name;
-		union {
-			callback		proc;
-			const command*	child;
-		};
+		callback			proc;
+		fnvisible			visible;
+		const command*		child;
 		unsigned			key;
 		int					image;
 		show_s				view;
-		constexpr command() : id(0), name(0), proc(0), key(0), image(0), view(ViewIcon) {}
-		constexpr command(const command* child) : id("*"), name(0), child(child), key(0), image(0), view(ViewIcon) {}
-		template<class T> command(const char* id, const char* name, int image, unsigned key, bool (T::*proc)(bool run)) : id(id), name(name), proc((callback)proc), key(key), image(image), view(ViewIcon) {}
+		constexpr command() : id(0), name(0), visible(0), proc(0), child(0), key(0), image(0), view(ViewIcon) {}
+		constexpr command(const command* child) : id("*"), visible(0), name(0), proc(0), child(child), key(0), image(0), view(ViewIcon) {}
+		template<class T> constexpr command(const command* child, bool (T::*proc)() const) : id("*"), name(0), visible((fnvisible)proc), proc(0), child(child), key(0), image(0), view(ViewIcon) {}
+		template<class T> constexpr command(const char* id, const char* name, int image, unsigned key, bool (T::*proc)(bool run)) : id(id), name(name), visible(0), proc((callback)proc), key(key), image(image), view(ViewIcon) {}
 		explicit operator bool() const { return id != 0; }
+		bool				isallow(const control* parent) const;
+		constexpr bool		isgroup() const { return id[0] == '*'; }
 		const command*		find(const char* id) const;
 		const command*		find(unsigned key) const;
 	};
@@ -103,7 +106,8 @@ struct control {
 	static const sprite*	standart_tree;
 	constexpr control() : show_border(true), show_background(true), show_toolbar(true) {}
 	virtual ~control() {}
-	command::builder*		createmenu();
+	void					contextmenu(const command* source);
+	void					contextmenu(const command* source, command::builder& builder);
 	void					execute(callback proc, int param = 0) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
@@ -232,6 +236,7 @@ struct table : list {
 	int						comparer(int i1, int i2, const sortparam* param, int count) const;
 	virtual void			clickcolumn(int column) const;
 	virtual void			ensurevisible() override;
+	bool					ismoveable() const { return !no_change_order; }
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
 	const command*			getcommands() const override;
