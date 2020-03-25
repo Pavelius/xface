@@ -706,20 +706,20 @@ bool table::setting(bool run) {
 	return true;
 }
 
-control::command table::commands_add[] = {{"add", "Добавить", 9, 0, &table::addrow},
-{"change", "Изменить", 10, F2, &table::change},
-{"remove", "Удалить", 19, KeyDelete, &table::removerow},
+control::command table::commands_add[] = {{"add", "Добавить", 0, &table::addrow, 9},
+{"change", "Изменить", 0, &table::change, 10, F2},
+{"remove", "Удалить", 0, &table::removerow, 19, KeyDelete},
 {}};
-control::command table::commands_move[] = {{"moveup", "Переместить вверх", 21, 0, &table::moveup},
-{"movedown", "Переместить вниз", 22, 0, &table::movedown},
-{"sortas", "Сортировать по возрастанию", 11, 0, &table::sortas},
-{"sortds", "Сортировать по убыванию", 12, 0, &table::sortds},
+control::command table::commands_move[] = {{"moveup", "Переместить вверх", 0, &table::moveup, 21},
+{"movedown", "Переместить вниз", 0, &table::movedown, 22},
+{"sortas", "Сортировать по возрастанию", 0, &table::sortas, 11},
+{"sortds", "Сортировать по убыванию", 0, &table::sortds, 12},
 {}};
 
 const control::command* table::getcommands() const {
-	static command elements[] = {{commands_add},
-	{commands_move, &table::ismoveable},
-	{"setting", "Настройки", 16, 0, &table::setting},
+	static command elements[] = {{"*", "", commands_add, &table::isaddable},
+	{"*", "", commands_move, &table::ismoveable},
+	{"setting", "Настройки", 0, &table::setting, 16, 0},
 	{}};
 	return elements;
 }

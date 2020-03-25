@@ -27,7 +27,7 @@ extern bool				padding, statusbar;
 }
 namespace draw {
 enum show_s : unsigned char {
-	NoView, ViewIcon, ViewText, ViewIconAndText
+	ViewIcon, ViewText, ViewIconAndText
 };
 enum column_size_s : unsigned char {
 	SizeDefault,
@@ -56,8 +56,15 @@ public:
 };
 namespace controls {
 struct control {
-	typedef bool			(control::*callback)(bool run);
+	typedef bool			(control::*fncmd)(bool run);
 	typedef bool			(control::*fnvisible)() const;
+	struct proci {
+		fncmd				cmd;
+		fnvisible			visible;
+		constexpr proci() : cmd(0), visible(0) {}
+		template<class T> constexpr proci(bool (T::*p)() const) : cmd(0), visible((fnvisible)p) {}
+		template<class T> constexpr proci(bool (T::*p)(bool run)) : cmd((fncmd)p), visible(0) {}
+	};
 	struct command {
 		class builder {
 			void			render(const control* parent, const control::command* commands, bool& separator, int& count);
@@ -72,16 +79,11 @@ struct control {
 		};
 		const char*			id;
 		const char*			name;
-		callback			proc;
-		fnvisible			visible;
-		const command*		child;
-		unsigned			key;
+		command*			child;
+		proci				proc;
 		int					image;
+		unsigned			key;
 		show_s				view;
-		constexpr command() : id(0), name(0), visible(0), proc(0), child(0), key(0), image(0), view(ViewIcon) {}
-		constexpr command(const command* child) : id("*"), visible(0), name(0), proc(0), child(child), key(0), image(0), view(ViewIcon) {}
-		template<class T> constexpr command(const command* child, bool (T::*proc)() const) : id("*"), name(0), visible((fnvisible)proc), proc(0), child(child), key(0), image(0), view(ViewIcon) {}
-		template<class T> constexpr command(const char* id, const char* name, int image, unsigned key, bool (T::*proc)(bool run)) : id(id), name(name), visible(0), proc((callback)proc), key(key), image(image), view(ViewIcon) {}
 		explicit operator bool() const { return id != 0; }
 		bool				isallow(const control* parent) const;
 		constexpr bool		isgroup() const { return id[0] == '*'; }
@@ -108,7 +110,7 @@ struct control {
 	virtual ~control() {}
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);
-	void					execute(callback proc, int param = 0) const;
+	void					execute(fncmd proc, int param = 0) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
@@ -236,6 +238,7 @@ struct table : list {
 	int						comparer(int i1, int i2, const sortparam* param, int count) const;
 	virtual void			clickcolumn(int column) const;
 	virtual void			ensurevisible() override;
+	bool					isaddable() const { return !no_change_count; }
 	bool					ismoveable() const { return !no_change_order; }
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }

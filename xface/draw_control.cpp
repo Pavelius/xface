@@ -6,7 +6,7 @@ using namespace draw::controls;
 
 static control*	current_hilite;
 static control*	current_focus;
-static control::callback current_execute;
+static control::fncmd current_execute;
 static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
@@ -123,7 +123,7 @@ void control::icon(int x, int y, bool disabled, const command& cmd) const {
 	image(x, y, getimages(), cmd.image, 0, disabled ? 0x80 : 0xFF);
 }
 
-void control::execute(control::callback proc, int param) const {
+void control::execute(control::fncmd proc, int param) const {
 	current_execute = proc;
 	current_execute_control = const_cast<control*>(this);
 	draw::execute(control_execute, param);
@@ -149,16 +149,14 @@ bool control::keyinput(unsigned key) {
 	auto pn = getcommands()->find(key);
 	if(!pn)
 		return false;
-	return (this->*pn->proc)(true);
+	return (this->*pn->proc.cmd)(true);
 }
 
 void control::command::builder::render(const control* parent, const control::command* commands, bool& separator, int& count) {
 	if(!commands)
 		return;
 	for(auto p = commands; *p; p++) {
-		if(p->view == NoView)
-			continue;
-		if(p->visible && !(parent->*p->visible)())
+		if(p->proc.visible && !(parent->*p->proc.visible)())
 			continue;
 		if(p->isgroup()) {
 			separator = true;
@@ -177,9 +175,9 @@ void control::command::builder::render(const control* parent, const control::com
 }
 
 bool control::command::isallow(const control* parent) const {
-	if(!proc)
+	if(!proc.cmd)
 		return true;
-	return (const_cast<control*>(parent)->*proc)(false);
+	return (const_cast<control*>(parent)->*proc.cmd)(false);
 }
 
 void control::command::builder::render(const control* parent, const control::command* commands) {
@@ -195,5 +193,5 @@ void control::contextmenu(const command* source, command::builder& pm) {
 	pm.render(this, source);
 	auto cmd = pm.finish();
 	if(cmd)
-		(this->*cmd->proc)(true);
+		(this->*cmd->proc.cmd)(true);
 }

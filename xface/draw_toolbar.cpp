@@ -37,7 +37,7 @@ struct toolbar_builder : control::command::builder {
 		}
 		auto disabled = !cmd.isallow(source);
 		if(draw::tool(rc, disabled, false, true))
-			source->execute(cmd.proc);
+			source->execute(cmd.proc.cmd);
 		if(cmd.view == ViewIcon || cmd.view == ViewIconAndText)
 			source->icon(x + size.x / 2, y + size.y / 2, disabled, cmd);
 		if(cmd.view == ViewText || cmd.view == ViewIconAndText)

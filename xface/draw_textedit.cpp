@@ -452,11 +452,10 @@ bool textedit::cut(bool run) {
 }
 
 control::command* textedit::getcommands() const {
-	static command commands[] = {{"cut", "Вырезать", -1, Ctrl + Alpha + 'X', &textedit::cut},
-	{"copy", "Копировать", -1, Ctrl + Alpha + 'C', &textedit::copy},
-	{"paste", "Вставить", -1, Ctrl + Alpha + 'V', &textedit::paste},
-	{}
-	};
+	static command commands[] = {{"cut", "Вырезать", 0, &textedit::cut, -1, Ctrl + Alpha + 'X'},
+	{"copy", "Копировать", 0, &textedit::copy, -1, Ctrl + Alpha + 'C'},
+	{"paste", "Вставить", 0, &textedit::paste, -1, Ctrl + Alpha + 'V'},
+	{}};
 	return commands;
 }
 

@@ -48,7 +48,7 @@ void properties::treemark(int x, int y, int width, void* object, bool isopen) co
 	areas a = area(rc);
 	if(a == AreaHilitedPressed) {
 		if(hot.key == MouseLeft)
-			execute((callback)&properties::cmdopen, (int)object);
+			execute((fncmd)&properties::cmdopen, (int)object);
 	}
 	color c1 = fore;
 	circle(x1, y1, 6, c1);
@@ -89,7 +89,7 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 		y += vertical(x, y, width, ob);
 	}
 	if(need_open)
-		execute((callback)&properties::cmdopen, (int)ev.type);
+		execute((fncmd)&properties::cmdopen, (int)ev.type);
 	return y - y1;
 }
 

@@ -108,7 +108,7 @@ void list::treemark(rect rc, int index, int level) const {
 	areas a = area(rc);
 	if(a == AreaHilitedPressed) {
 		if(hot.key == MouseLeft)
-			execute((callback)&list::treemarking, index);
+			execute((fncmd)&list::treemarking, index);
 	}
 	circle(x, y, 6, c1);
 	line(x - 4, y, x + 4, y, c1);
