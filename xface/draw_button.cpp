@@ -6,7 +6,7 @@ bool draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char*
 	const int width = 18;
 	rc.x2 -= width;
 	auto result = draw::buttonh({rc.x2, rc.y1, rc.x2 + width, rc.y2},
-		false, focused, false, false,
+		false, false, false, false,
 		t1, k1, false, tt1);
 	draw::line(rc.x2, rc.y1, rc.x2, rc.y2, colors::border);
 	return result;
@@ -18,11 +18,11 @@ int draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* 
 	auto height = rc.height() / 2;
 	auto result = 0;
 	if(draw::buttonh({rc.x2, rc.y1, rc.x2 + width, rc.y1 + height},
-		false, focused, false, false,
+		false, false, false, false,
 		t1, k1, true, tt1))
 		result = 1;
-	if(draw::buttonh({rc.x2, rc.y1 + height, rc.x2 + width, rc.y1 + height * 2},
-		false, focused, false, false,
+	if(draw::buttonh({rc.x2, rc.y1 + height, rc.x2 + width, rc.y1 + height*2},
+		false, false, false, false,
 		t2, k2, true, tt2))
 		result = 2;
 	if((hot.key == k2 || hot.key == k1) && !focused)

@@ -715,15 +715,10 @@ control::command table::commands_move[] = {{"moveup", "Переместить вверх", 0, &t
 {"sortas", "Сортировать по возрастанию", 0, &table::sortas, 11},
 {"sortds", "Сортировать по убыванию", 0, &table::sortds, 12},
 {}};
-
-const control::command* table::getcommands() const {
-	static command elements[] = {{"*", "", commands_add, &table::isaddable},
-	{"*", "", commands_move, &table::ismoveable},
-	{"setting", "Настройки", 0, &table::setting, 16, 0},
-	{}};
-	return elements;
-}
-
+control::command table::commands[] = {{"*", "", commands_add, &table::isaddable},
+{"*", "", commands_move, &table::ismoveable},
+{"setting", "Настройки", 0, &table::setting, 16, 0},
+{}};
 const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, &table::comparenm},
 {"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
 {"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},

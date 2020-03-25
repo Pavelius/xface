@@ -57,4 +57,9 @@
       <Filter>Логика</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="test_svg.xml">
+      <Filter>Плагины\Сериализаторы</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

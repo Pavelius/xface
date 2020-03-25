@@ -116,12 +116,14 @@ struct control {
 	virtual const sprite*	getimages() const { return standart_toolbar; }
 	virtual const char*		getlabel(char* result, const char* result_maximum) const { return 0; }
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
+	static bool				is(const char* s1, const char* s2);
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool			isdisabled() const { return false; }
 	virtual bool			isfocusable() const { return true; }
 	virtual bool			isfocused() const;
 	bool					ishilited() const;
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
+	virtual void			notify(const char* id, void* param) {} // Global control notifier
 	virtual void			mouseinput(unsigned id, point mouse); // Default behaivor set focus
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
 	virtual void			redraw() {}
@@ -231,6 +233,7 @@ struct table : list {
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
+	static command			commands[];
 	static command			commands_add[];
 	static command			commands_move[];
 	int						comparenm(int i1, int i2, int column) const;
@@ -242,7 +245,7 @@ struct table : list {
 	bool					ismoveable() const { return !no_change_order; }
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
-	const command*			getcommands() const override;
+	const command*			getcommands() const override { return commands; }
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	rect					getrect(int row, int column) const;

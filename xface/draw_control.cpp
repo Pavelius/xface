@@ -37,15 +37,19 @@ bool control_input() {
 }
 
 static struct control_plugin : draw::plugin {
-
 	void before() override {
 		current_hilite = 0;
 		current_focus = 0;
 		for(auto p = controls::control::plugin::first; p; p = p->next)
 			p->before_render();
 	}
-
 } plugin_instance;
+
+bool control::is(const char* s1, const char* s2) {
+	if(!s1 || !s2)
+		return false;
+	return strcmp(s1, s2) == 0;
+}
 
 bool control::ishilited() const {
 	return current_hilite == this;
