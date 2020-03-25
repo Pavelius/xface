@@ -132,12 +132,12 @@ struct list : control {
 	int						origin, current, current_hilite, origin_width;
 	int						lines_per_page, pixels_per_line, pixels_per_width;
 	bool					show_grid_lines, show_selection, show_header;
-	bool					hilite_odd_lines;
+	bool					hilite_odd_lines, drop_shadow;
 	rect					current_rect, view_rect;
 	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
 		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true),
-		current_rect(), view_rect() {}
+		current_rect(), view_rect(), drop_shadow(false) {}
 	void					correction();
 	void					correction_width();
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line

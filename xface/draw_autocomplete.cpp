@@ -95,6 +95,7 @@ listelement* valuelist::choose(int x, int y, int width, const char* start_filter
 	pushfocus pf;
 	setfocus(e, true);
 	e.images = images;
+	e.drop_shadow = true;
 	if(e.images)
 		e.show_images = true;
 	e.update(filter, *this, rc);

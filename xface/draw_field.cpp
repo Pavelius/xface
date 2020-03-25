@@ -233,6 +233,7 @@ struct combolist : controls::list, adat<void*, 64> {
 
 static void show_combolist() {
 	combolist list;
+	list.drop_shadow = true;
 	list.update();
 	if(list.getcount() == 0)
 		return;
@@ -241,6 +242,7 @@ static void show_combolist() {
 	list.pixels_per_line = list.getrowheight();
 	list.lines_per_page = imin(list.getcount(), 7);
 	rect rc = cmb_rect;
+	rc.x1 = rc.x1 - 1;
 	rc.y1 = rc.y2;
 	rc.y2 = rc.y1 + list.lines_per_page*list.pixels_per_line + 1;
 	if(rc.y2 > getheight() - 2) {

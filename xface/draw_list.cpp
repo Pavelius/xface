@@ -177,6 +177,10 @@ void list::view(const rect& rcorigin) {
 	if(enable_scrollh)
 		draw::scrollh({rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
 			origin_width, pixels_per_width, maximum_width, isfocused());
+	if(drop_shadow) {
+		rectf({rcorigin.x2 + 1, rcorigin.y1 + 4, rcorigin.x2 + 5, rcorigin.y2}, colors::black, 64);
+		rectf({rcorigin.x1 + 4, rcorigin.y2, rcorigin.x2 + 5, rcorigin.y2 + 5}, colors::black, 64);
+	}
 }
 
 void list::redraw() {
@@ -247,7 +251,9 @@ void list::mouseinput(unsigned id, point position) {
 	case MouseLeftDBL:
 		keyinput(KeyEnter);
 		break;
-	default: control::mouseinput(id, position);
+	default:
+		control::mouseinput(id, position);
+		break;
 	}
 }
 
