@@ -13,9 +13,6 @@ const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 
 const bsreq bsmeta<datetime>::meta[] = {{"datetime"},
 {}};
-const bsreq bsmeta<guiplugin>::meta[] = {BSREQ(id),
-BSREQ(dock),
-{}};
 
 bool control_input() {
 	if(current_hilite) {

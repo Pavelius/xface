@@ -6,6 +6,7 @@
 #include "settings.h"
 
 using namespace	draw;
+using namespace	draw::controls;
 
 struct application_window {
 	int						x, y, width, height;
@@ -33,6 +34,10 @@ docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock
 {"На рабочем столе", "dock_workspace"}
 };
 assert_enum(dock, DockWorkspace);
+
+const bsreq bsmeta<guiplugin>::meta[] = {BSREQ(id),
+BSREQ(dock),
+{}};
 
 static const char* get_setting_name(const void* p, char* result, const char* result_maximum, const void* type) {
 	return szprint(result, result_maximum, ((settings*)p)->name);
@@ -164,8 +169,8 @@ static struct widget_control_viewer : controls::tableref {
 	void initialize() {
 		no_change_order = true;
 		no_change_count = true;
-		addcol(bsmeta<controls::guiplugin>::meta, "id", "Наименование");
-		addcol(bsmeta<controls::guiplugin>::meta, "dock", "Расположение");
+		addcol(bsmeta<guiplugin>::meta, "id", "Наименование");
+		addcol(bsmeta<guiplugin>::meta, "dock", "Расположение");
 		for(auto p = plugin::first; p; p = p->next)
 			add(p);
 	}
