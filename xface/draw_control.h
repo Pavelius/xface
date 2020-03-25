@@ -14,7 +14,6 @@ template<> struct bsmeta<datetime> {
 	static const bsreq		meta[];
 	static constexpr array*	source_ptr = 0;
 };
-
 namespace clipboard {
 void					copy(const void* string, int lenght);
 char*					paste();
@@ -54,6 +53,11 @@ public:
 	pushfocus();
 	~pushfocus();
 };
+struct docki {
+	const char*	name;
+	const char*	id;
+};
+DECLENUM(dock);
 namespace controls {
 struct control {
 	typedef bool			(control::*fncmd)(bool run);
@@ -90,17 +94,6 @@ struct control {
 		const command*		find(const char* id) const;
 		const command*		find(unsigned key) const;
 	};
-	struct plugin {
-		const char*			id;
-		dock_s				dock;
-		plugin*				next;
-		static plugin*		first;
-		plugin(const char* id, dock_s dock);
-		virtual void		after_initialize() {}
-		virtual void		before_render() {}
-		static const plugin* find(const char* id);
-		virtual control&	getcontrol() = 0;
-	};
 	bool					show_border;
 	bool					show_background;
 	bool					show_toolbar;
@@ -130,6 +123,22 @@ struct control {
 	virtual void			setfocus(bool instant);
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
+};
+struct guiplugin {
+	const char*				id;
+	dock_s					dock;
+	guiplugin*				next;
+	static guiplugin*		first;
+	guiplugin(const char* id, dock_s dock);
+	virtual void			after_initialize() {}
+	virtual void			before_render() {}
+	static const guiplugin*	find(const char* id);
+	virtual control&		getcontrol() = 0;
+};
+template<> struct bsmeta<guiplugin> {
+	typedef guiplugin		data_type;
+	static const bsreq		meta[];
+	static constexpr array*	source_ptr = 0;
 };
 // Analog of listbox element
 struct list : control {

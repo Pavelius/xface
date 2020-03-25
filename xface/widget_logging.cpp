@@ -55,7 +55,7 @@ static void before_application_exit() {
 		write_log_file();
 }
 
-static struct widget_logging : control::plugin, table {
+static struct widget_logging : guiplugin, table {
 
 	void after_initialize() override {
 		addcol(bsmeta<logi>::meta, "stamp", "Дата").setwidth(textw("0") * 16 + 4).set(SizeFixed).set(AlignCenter);
@@ -83,7 +83,7 @@ static struct widget_logging : control::plugin, table {
 		return messages.getcount();
 	}
 
-	widget_logging() : plugin("logging", DockBottom) {
+	widget_logging() : guiplugin("logging", DockBottom) {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;

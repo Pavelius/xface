@@ -25,12 +25,6 @@ static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
-namespace {
-struct docki {
-	const char*	name;
-	const char*	id;
-};
-}
 docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
 {"Присоединить слева и снизу", "dock_left_bottom"},
 {"Присоединить справа", "dock_right"},
@@ -39,12 +33,6 @@ docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock
 {"На рабочем столе", "dock_workspace"}
 };
 assert_enum(dock, DockWorkspace);
-DECLENUM(dock);
-
-//const bsreq bsmeta<draw::controls::control::plugin>::meta[] = {
-//	BSREQ(id),
-//	BSREQ(dock),
-//{}};
 
 static const char* get_setting_name(const void* p, char* result, const char* result_maximum, const void* type) {
 	return szprint(result, result_maximum, ((settings*)p)->name);
@@ -152,7 +140,6 @@ static void callback_edit() {
 static struct widget_settings_header : controls::list {
 	settings*	rows[128];
 	int			maximum;
-
 	void initialize() {
 		getsiblings(rows, sizeof(rows) / sizeof(rows[0]), &settings::root);
 		maximum = zlen(rows);
@@ -161,36 +148,27 @@ static struct widget_settings_header : controls::list {
 		if(current < 0)
 			current = 0;
 	}
-
 	void row(const rect& rc, int index) override {
 		list::row({rc.x1 + 1, rc.y1 + 1, rc.x2 - 1, rc.y2}, index);
 		textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 8, rows[index]->name);
 	}
-
 	settings* getcurrent() {
 		return rows[current];
 	}
-
 	int getmaximum() const override {
 		return maximum;
 	}
-
 } setting_header;
 
 static struct widget_control_viewer : controls::tableref {
-
 	void initialize() {
 		no_change_order = true;
 		no_change_count = true;
-		addcol(bsmeta<docki>::meta, "text", "Наименование");
-		addcol(bsmeta<docki>::meta, "ref", "Расположение");
+		addcol(bsmeta<controls::guiplugin>::meta, "id", "Наименование");
+		addcol(bsmeta<controls::guiplugin>::meta, "dock", "Расположение");
 		for(auto p = plugin::first; p; p = p->next)
 			add(p);
 	}
-
-	//widget_control_viewer() : tableref(bsmeta<draw::controls::control::plugin>::meta) {
-	//}
-
 } control_viewer;
 
 int draw::field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips) {
@@ -441,7 +419,7 @@ static struct widget_application : draw::controls::control {
 
 	void view(const rect& rc) override {
 		auto rct = rc;
-		for(auto p = control::plugin::first; p; p = p->next)
+		for(auto p = controls::guiplugin::first; p; p = p->next)
 			p->getcontrol().show_border = metrics::show::padding;
 		dockbar(rct);
 		workspace(rct, allow_multiply_window);
@@ -584,7 +562,7 @@ void set_light_theme();
 void draw::application_initialize() {
 	set_light_theme();
 	initialize();
-	for(auto p = controls::control::plugin::first; p; p = p->next)
+	for(auto p = controls::guiplugin::first; p; p = p->next)
 		p->after_initialize();
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
@@ -705,7 +683,7 @@ static struct window_settings_strategy : io::strategy {
 static struct controls_settings_strategy : io::strategy {
 
 	void write(io::writer& file, void* param) override {
-		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
+		for(auto pp = controls::guiplugin::first; pp; pp = pp->next) {
 			auto& e = pp->getcontrol();
 			auto id = pp->id;
 			if(!id || id[0] == 0)
@@ -740,7 +718,7 @@ static struct controls_settings_strategy : io::strategy {
 	void set(io::reader::node& n, const char* value) override {
 		if(!n.parent || !n.parent->parent)
 			return;
-		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));
+		auto e = const_cast<controls::guiplugin*>(controls::guiplugin::find(n.parent->name));
 		if(!e)
 			return;
 		else if(szcmpi(n.name, "Docking") == 0)

@@ -1,13 +1,12 @@
 #include "crt.h"
 #include "draw.h"
 #include "io.h"
-#include "resources.h"
 
 using namespace draw;
 
-static arem<res::element> source;
+static arem<resei> source;
 
-static res::element* find(const char* name, const char* folder) {
+static resei* find(const char* name, const char* folder) {
 	for(auto& e : source) {
 		if(e.name == name && e.folder == folder)
 			return &e;

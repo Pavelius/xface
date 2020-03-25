@@ -11,7 +11,11 @@ static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 
-const bsreq bsmeta<datetime>::meta[] = {{"datetime"}, {}};
+const bsreq bsmeta<datetime>::meta[] = {{"datetime"},
+{}};
+const bsreq bsmeta<guiplugin>::meta[] = {BSREQ(id),
+BSREQ(dock),
+{}};
 
 bool control_input() {
 	if(current_hilite) {
@@ -40,7 +44,7 @@ static struct control_plugin : draw::plugin {
 	void before() override {
 		current_hilite = 0;
 		current_focus = 0;
-		for(auto p = controls::control::plugin::first; p; p = p->next)
+		for(auto p = controls::guiplugin::first; p; p = p->next)
 			p->before_render();
 	}
 } plugin_instance;
@@ -117,7 +121,7 @@ const control::command* control::command::find(unsigned key) const {
 			if(p1)
 				return p1;
 		}
-		if(p->key==key)
+		if(p->key == key)
 			return p;
 	}
 	return 0;
@@ -168,7 +172,7 @@ void control::command::builder::render(const control* parent, const control::com
 			separator = true;
 		} else {
 			if(separator) {
-				if(count>0)
+				if(count > 0)
 					addseparator();
 				separator = false;
 			}
