@@ -10,6 +10,7 @@
 
 NOBSDATA(datetime);
 typedef void			(*fnchoose)(const anyval value);
+
 namespace clipboard {
 void					copy(const void* string, int lenght);
 char*					paste();
@@ -74,7 +75,7 @@ struct control {
 		virtual void		after_initialize() {}
 		virtual void		before_render() {}
 		static const plugin* find(const char* id);
-		virtual control&	getcontrol() { static control e; return e; }
+		virtual control&	getcontrol() = 0;
 	};
 	struct command {
 		class builder {

@@ -27,13 +27,13 @@ struct nameable {
 		return ((nameable*)p)->name;
 	}
 };
-genderi bsmeta<genderi>::elements[] = {{"NoGender", "Неизвестен"},
+genderi bsdata<genderi>::elements[] = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
 assert_enum(gender, Female);
 
-alignmenti bsmeta<alignmenti>::elements[] = {{"Neutral", "Нейтральный"},
+alignmenti bsdata<alignmenti>::elements[] = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
 {"Neutral Good", "Нейтрально добрый"},
 {"Chaotic Good", "Хаотично добрый"},

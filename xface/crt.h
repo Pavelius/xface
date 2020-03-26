@@ -235,8 +235,13 @@ struct bsinf {
 	array&					source; // Data source content
 };
 template<typename T> struct bsdata {
+	static T				elements[];
 	static array			source;
 	static constexpr array*	source_ptr = &source;
+	//
+	static T*				add() { return source.add(); }
+	static constexpr T*		begin() { return elements; }
+	static T*				end() { return source.end(); }
 };
 template<> struct bsdata<int> {
 	static constexpr array*	source_ptr = 0;
@@ -249,11 +254,6 @@ NOBSDATA(bsreq);
 template<typename T> struct bsmeta {
 	typedef T				data_type;
 	static const bsreq		meta[];
-	static T				elements[];
-	//
-	static T*				add() { return bsdata<T>::source.add(); }
-	static T*				begin() { return (T*)bsdata<T>::source.begin(); }
-	static T*				end() { return (T*)bsdata<T>::source.end(); }
 };
 template<> struct bsmeta<unsigned char> : bsmeta<int> {};
 template<> struct bsmeta<char> : bsmeta<int> {};

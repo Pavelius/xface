@@ -40,6 +40,14 @@ io::strategy::strategy(const char* id, const char* type) : id(id), type(type) {
 	seqlink(this);
 }
 
+bool io::strategy::istrue(const char* value) {
+	return value[0] == 't'
+		&& value[1] == 'r'
+		&& value[2] == 'u'
+		&& value[3] == 'e'
+		&& value[4] == 0;
+}
+
 io::strategy* io::strategy::find(const char* name) {
 	for(auto n = first; n; n = n->next) {
 		if(strcmp(n->id, name) == 0)

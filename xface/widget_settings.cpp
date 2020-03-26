@@ -26,7 +26,7 @@ static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
-docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
+docki bsdata<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
 {"Присоединить слева и снизу", "dock_left_bottom"},
 {"Присоединить справа", "dock_right"},
 {"Присоединить справа и снизу", "dock_right_bottom"},
@@ -485,7 +485,6 @@ static void setting_appearance_controls() {
 }
 
 static struct application_plugin : draw::initplugin {
-
 	void initialize() override {
 		setting_appearance_general_metrics();
 		setting_appearance_forms();
@@ -494,7 +493,6 @@ static struct application_plugin : draw::initplugin {
 		// Make header
 		setting_header.initialize();
 	}
-
 	static void exit_application() {
 		point pos, size;
 		getwindowpos(pos, size, &window.flags);
@@ -506,14 +504,11 @@ static struct application_plugin : draw::initplugin {
 		}
 		io::write(settings_file_name, "settings", 0);
 	}
-
 	void after_initialize() override {
 		atexit(exit_application);
 		io::read(settings_file_name, "settings", 0);
 	}
-
 	application_plugin() : initplugin(3) {}
-
 } application_plugin_instance;
 
 static controls::control* layouts[] = {&widget_application_control, &widget_settings_control};
@@ -582,7 +577,6 @@ void draw::application(const char* name, bool allow_multiply_window, eventproc s
 }
 
 static struct settings_settings_strategy : io::strategy {
-
 	void write(io::writer& file, settings& e) {
 		switch(e.type) {
 		case settings::Group:
@@ -608,11 +602,9 @@ static struct settings_settings_strategy : io::strategy {
 			break;
 		}
 	}
-
 	void write(io::writer& file, void* param) override {
 		write(file, settings::root);
 	}
-
 	settings* find(io::reader::node& n) {
 		auto result = (settings*)settings::root.data;
 		if(n.parent && strcmp(n.parent->name, "Root") != 0) {
@@ -625,11 +617,9 @@ static struct settings_settings_strategy : io::strategy {
 		}
 		return result->find(szdup(n.name));
 	}
-
 	int getnum(const char* value) const {
 		return sz2num(value);
 	}
-
 	void set(io::reader::node& n, const char* value) override {
 		auto e = find(n);
 		if(!e)
@@ -651,13 +641,10 @@ static struct settings_settings_strategy : io::strategy {
 			break;
 		}
 	}
-
 	settings_settings_strategy() : strategy("settings", "settings") {}
-
 } settings_settings_strategy_instance;
 
 static struct window_settings_strategy : io::strategy {
-
 	void write(io::writer& file, void* param) override {
 		file.set("x", window.x);
 		file.set("y", window.y);
@@ -666,7 +653,6 @@ static struct window_settings_strategy : io::strategy {
 		file.set("header_width", window.header_width);
 		file.set("flags", window.flags);
 	}
-
 	void set(io::reader::node& n, const char* value) override {
 		if(n == "x")
 			window.x = sz2num(value);
@@ -681,13 +667,10 @@ static struct window_settings_strategy : io::strategy {
 		else if(n == "flags")
 			window.flags = sz2num(value);
 	}
-
 	window_settings_strategy() : strategy("window", "settings") {}
-
 } window_settings_strategy_instance;
 
 static struct controls_settings_strategy : io::strategy {
-
 	void write(io::writer& file, void* param) override {
 		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
 			auto& e = pp->getcontrol();
@@ -699,7 +682,6 @@ static struct controls_settings_strategy : io::strategy {
 			file.close(id);
 		}
 	}
-
 	settings* find(io::reader::node& n) {
 		settings* result = (settings*)settings::root.data;
 		if(n.parent && szcmpi(n.parent->name, "Root") != 0) {
@@ -712,15 +694,6 @@ static struct controls_settings_strategy : io::strategy {
 		}
 		return result->find(szdup(n.name));
 	}
-
-	bool istrue(const char* value) const {
-		return value[0] == 't'
-			&& value[1] == 'r'
-			&& value[2] == 'u'
-			&& value[3] == 'e'
-			&& value[4] == 0;
-	}
-
 	void set(io::reader::node& n, const char* value) override {
 		if(!n.parent || !n.parent->parent)
 			return;
@@ -730,7 +703,5 @@ static struct controls_settings_strategy : io::strategy {
 		else if(szcmpi(n.name, "Docking") == 0)
 			e->dock = (dock_s)sz2num(value);
 	}
-
 	controls_settings_strategy() : strategy("controls", "settings") {}
-
 } controls_settings_strategy_instance;

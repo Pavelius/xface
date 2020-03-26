@@ -62,6 +62,7 @@ struct strategy : public reader {
 	//
 	strategy(const char* id, const char* type);
 	static strategy*	find(const char* name);
+	static bool			istrue(const char* name);
 	virtual void		write(io::writer& e, void* param) = 0;
 };
 struct address {
