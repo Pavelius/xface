@@ -27,13 +27,14 @@ struct nameable {
 		return ((nameable*)p)->name;
 	}
 };
-genderi bsdata<genderi>::elements[] = {{"NoGender", "Неизвестен"},
+
+INSTDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
 assert_enum(gender, Female);
 
-alignmenti bsdata<alignmenti>::elements[] = {{"Neutral", "Нейтральный"},
+INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
 {"Neutral Good", "Нейтрально добрый"},
 {"Chaotic Good", "Хаотично добрый"},
@@ -471,13 +472,6 @@ static void start_menu() {
 	}
 }
 
-static void test_static_array() {
-	char temp[200]; array a2(temp);
-	for(auto& e : a2) {
-
-	}
-}
-
 static void test_array() {
 	array a1(sizeof(testinfo));
 	auto p1 = (testinfo*)a1.add();
@@ -525,13 +519,6 @@ static bool test_datetime() {
 	return true;
 }
 
-static bool test_array_ref() {
-	char t1[100];
-	array a1(t1);
-	array a2(a1);
-	return a2.begin() == a1.begin();
-}
-
 static bool test_write_bin() {
 	element e1 = {0};
 	element e2;
@@ -549,13 +536,10 @@ int main() {
 	auto type = bsmeta<bsreq>::meta;
 	if(!test_write_bin())
 		return 0;
-	if(!test_array_ref())
-		return 0;
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();
 	test_requisit();
-	test_static_array();
 	test_array();
 	test_binary_serial();
 	application_initialize();

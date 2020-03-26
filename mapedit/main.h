@@ -1,7 +1,7 @@
-#include "xface/bsreq.h"
-#include "xface/crt.h"
-#include "xface/point.h"
-#include "xface/stringbuilder.h"
+#include "bsreq.h"
+#include "crt.h"
+#include "point.h"
+#include "stringbuilder.h"
 
 #pragma once
 
@@ -21,7 +21,7 @@ struct answer : stringbuilder {
 	};
 	typedef void(*tips_proc)(stringbuilder& sb, const element& e);
 	adat<element, 8>	elements;
-	constexpr explicit operator bool() const { return elements.count != 0; }
+	explicit operator bool() const { return elements.count != 0; }
 	answer();
 	void				add(int param, const char* format, ...);
 	void				addv(int param, int priority, const char* format, const char* format_param);
@@ -40,4 +40,3 @@ struct mapi {
 struct tileset {
 	void				import();
 };
-DECLENUM(map_type);

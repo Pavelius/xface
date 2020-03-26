@@ -33,6 +33,7 @@ private:
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
+#define INSTDATA(e) template<> e bsdata<e>::elements[]
 #define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {};\
 template<> struct bsdata<e##_s> : bsdata<e##i> {}
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
@@ -198,12 +199,10 @@ class array {
 	unsigned				count;
 	unsigned				count_maximum;
 public:
-	constexpr array(const array& e) = default;
 	constexpr array() : data(0), size(0), count(0), count_maximum(0) {}
 	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0) {}
 	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0) {}
 	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum) {}
-	template<typename T, unsigned N> constexpr array(T (&e)[N]) : array(e, sizeof(T), N) {}
 	~array();
 	void*					add();
 	void*					add(const void* element);
@@ -261,7 +260,7 @@ template<> struct bsmeta<unsigned short> : bsmeta<int> {};
 template<> struct bsmeta<short> : bsmeta<int> {};
 template<> struct bsmeta<unsigned> : bsmeta<int> {};
 // Get object presentation
-template<class T> const char* getstr(const T e) { return bsmeta<T>::elements[e].name; }
+template<class T> const char* getstr(const T e) { return bsdata<T>::elements[e].name; }
 // Untility structures
 template<typename T, T v> struct static_value { static constexpr T value = v; };
 template<int v> struct static_int : static_value<int, v> {};
