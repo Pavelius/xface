@@ -8,12 +8,12 @@ sizeof(data_type::fn),\
 meta_count<decltype(data_type::fn)>::value,\
 bsmeta<meta_decoy<decltype(data_type::fn)>::value>::meta,\
 meta_kind<decltype(data_type::fn)>::value,\
-bsmeta<meta_decoy<decltype(data_type::fn)>::value>::source_ptr}
+bsdata<meta_decoy<decltype(data_type::fn)>::value>::source_ptr}
 #define BSDATA(c, i) c bsmeta<c>::elements[i];\
 bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
 #define assert_enum(e, last) static_assert(sizeof(bsmeta<e##i>::elements) / sizeof(bsmeta<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
 template<> const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-template<> array bsmeta<e##i>::source(bsmeta<e##i>::elements, sizeof(bsmeta<e##i>::elements[0]), sizeof(bsmeta<e##i>::elements)/sizeof(bsmeta<e##i>::elements[0]));
+template<> array bsdata<e##i>::source(bsmeta<e##i>::elements, sizeof(bsmeta<e##i>::elements[0]), sizeof(bsmeta<e##i>::elements)/sizeof(bsmeta<e##i>::elements[0]));
 
 // Basic metadata types
 enum bstype_s : unsigned char {

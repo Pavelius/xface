@@ -449,6 +449,8 @@ column& table::addcol(const bsreq* metadata, const char* id, const char* name, c
 	p->width = p->method->default_width;
 	p->total = p->method->total;
 	p->align = p->method->align;
+	if(p->type)
+		p->source = p->type->source;
 	if(!p->width)
 		p->width = 100;
 	current_column = getvalid(current_column, 1);

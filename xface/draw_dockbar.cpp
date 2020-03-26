@@ -18,13 +18,13 @@ bool metrics::show::top;
 bool metrics::show::left;
 bool metrics::show::right;
 
-guiplugin* guiplugin::first;
+control::plugin* control::plugin::first;
 
-guiplugin::guiplugin(const char* id, dock_s dock) : id(id), dock(dock), next(0) {
+control::plugin::plugin(const char* id, dock_s dock) : id(id), dock(dock), next(0) {
 	seqlink(this);
 }
 
-const guiplugin* guiplugin::find(const char* id) {
+const control::plugin* control::plugin::find(const char* id) {
 	for(auto p = first; p; p = p->next) {
 		if(strcmp(p->id, id) == 0)
 			return p;
@@ -43,7 +43,7 @@ static const char* get_control_name(const void* p, char* result, const char* res
 aref<control*> getdocked(aref<control*> result, dock_s type) {
 	auto ps = result.data;
 	auto pe = result.data + result.count;
-	for(auto p = guiplugin::first; p; p = p->next) {
+	for(auto p = control::plugin::first; p; p = p->next) {
 		if(p->getcontrol().isdisabled())
 			continue;
 		if(p->dock == type) {

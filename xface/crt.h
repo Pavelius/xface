@@ -33,8 +33,10 @@ private:
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
-#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}
-#define BSINF(e) {#e, bsmeta<e##i>::meta, bsmeta<e##i>::source}
+#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {};\
+template<> struct bsdata<e##_s> : bsdata<e##i> {}
+#define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
+#define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};
 
 extern "C" int						atexit(void(*func)(void));
 extern "C" void*					bsearch(const void* key, const void *base, unsigned num, unsigned size, int(*compar)(const void *, const void *));
@@ -232,35 +234,33 @@ struct bsinf {
 	const bsreq*			meta; // Type descriptor of data source
 	array&					source; // Data source content
 };
-template<typename T> struct bsmeta {
-	typedef T				data_type;
-	static T				elements[];
-	static const bsreq		meta[];
+template<typename T> struct bsdata {
 	static array			source;
 	static constexpr array*	source_ptr = &source;
-	//
-	static T*				add() { return source.add(); }
-	static T*				begin() { return (T*)source.begin(); }
-	static T*				end() { return (T*)source.end(); }
 };
-template<> struct bsmeta<int> {
-	typedef int				data_type;
-	static const bsreq		meta[];
+template<> struct bsdata<int> {
 	static constexpr array*	source_ptr = 0;
 };
-template<> struct bsmeta<const char*> : bsmeta<int> {
-	typedef const char*		data_type;
+NOBSDATA(unsigned);
+NOBSDATA(char);
+NOBSDATA(unsigned char);
+NOBSDATA(const char*);
+NOBSDATA(bsreq);
+template<typename T> struct bsmeta {
+	typedef T				data_type;
 	static const bsreq		meta[];
-};
-template<> struct bsmeta<bsreq> : bsmeta<int> {
-	typedef bsreq			data_type;
-	static const bsreq		meta[];
+	static T				elements[];
+	//
+	static T*				add() { return bsdata<T>::source.add(); }
+	static T*				begin() { return (T*)bsdata<T>::source.begin(); }
+	static T*				end() { return (T*)bsdata<T>::source.end(); }
 };
 template<> struct bsmeta<unsigned char> : bsmeta<int> {};
 template<> struct bsmeta<char> : bsmeta<int> {};
 template<> struct bsmeta<unsigned short> : bsmeta<int> {};
 template<> struct bsmeta<short> : bsmeta<int> {};
 template<> struct bsmeta<unsigned> : bsmeta<int> {};
+// Get object presentation
 template<class T> const char* getstr(const T e) { return bsmeta<T>::elements[e].name; }
 // Untility structures
 template<typename T, T v> struct static_value { static constexpr T value = v; };

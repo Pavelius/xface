@@ -8,12 +8,8 @@
 
 #pragma once
 
+NOBSDATA(datetime);
 typedef void			(*fnchoose)(const anyval value);
-template<> struct bsmeta<datetime> {
-	typedef int				data_type;
-	static const bsreq		meta[];
-	static constexpr array*	source_ptr = 0;
-};
 namespace clipboard {
 void					copy(const void* string, int lenght);
 char*					paste();
@@ -47,17 +43,17 @@ enum total_s : unsigned char {
 	NoTotal,
 	TotalSummarize, TotalMaximum, TotalMinimum, TotalAverage
 };
+struct docki {
+	const char*				name;
+	const char*				id;
+};
+DECLENUM(dock);
 class pushfocus {
 	anyval					value;
 public:
 	pushfocus();
 	~pushfocus();
 };
-struct docki {
-	const char*	name;
-	const char*	id;
-};
-DECLENUM(dock);
 namespace controls {
 struct control {
 	typedef bool			(control::*fncmd)(bool run);
@@ -68,6 +64,17 @@ struct control {
 		constexpr proci() : cmd(0), visible(0) {}
 		template<class T> constexpr proci(bool (T::*p)() const) : cmd(0), visible((fnvisible)p) {}
 		template<class T> constexpr proci(bool (T::*p)(bool run)) : cmd((fncmd)p), visible(0) {}
+	};
+	struct plugin {
+		const char*			id;
+		dock_s				dock;
+		plugin*				next;
+		static plugin*		first;
+		plugin(const char* id, dock_s dock);
+		virtual void		after_initialize() {}
+		virtual void		before_render() {}
+		static const plugin* find(const char* id);
+		virtual control&	getcontrol() { static control e; return e; }
 	};
 	struct command {
 		class builder {
@@ -123,22 +130,6 @@ struct control {
 	virtual void			setfocus(bool instant);
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
-};
-struct guiplugin {
-	const char*				id;
-	dock_s					dock;
-	guiplugin*				next;
-	static guiplugin*		first;
-	guiplugin(const char* id, dock_s dock);
-	virtual void			after_initialize() {}
-	virtual void			before_render() {}
-	static const guiplugin*	find(const char* id);
-	virtual control&		getcontrol() = 0;
-};
-template<> struct bsmeta<guiplugin> {
-	typedef guiplugin		data_type;
-	static const bsreq		meta[];
-	static constexpr array*	source_ptr = 0;
 };
 // Analog of listbox element
 struct list : control {
@@ -282,7 +273,7 @@ struct table : list {
 private:
 	void					update_columns(const rect& rc);
 };
-struct tableref : table, array {
+struct tableref : table, private array {
 	struct element {
 		unsigned char		level;
 		unsigned char		flags;

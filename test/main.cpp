@@ -184,8 +184,8 @@ static void test_tableref() {
 	test.addcol(pm, "flags", "БУ", "checkbox").setparam(AreaHilited);
 	test.addcol(pm, "flags", "МУ", "checkbox").setparam(AreaHilitedPressed);
 	test.addcol(pm, "age", "Возраст");
-	test.addcol(pm, "gender", "Пол").set(bsmeta<genderi>::source_ptr);
-	test.addcol(pm, "alignment", "Мировозрение").set(bsmeta<alignmenti>::source_ptr);
+	test.addcol(pm, "gender", "Пол").set(bsdata<genderi>::source_ptr);
+	test.addcol(pm, "alignment", "Мировозрение").set(bsdata<alignmenti>::source_ptr);
 	test.addcol(pm, "date", "Дата", "datetime");
 	for(auto& e : elements)
 		test.addref(&e);
@@ -416,7 +416,7 @@ static void test_edit_field() {
 		y += field(x, y, 300, "Еще тест", surname, 100);
 		y += field(x, y, 300, "Еще поле", lastname, 100);
 		y += field(x, y, 300, "Путь к папке", anystr, 100);
-		y += field(x, y, 300, "Пол", combo, 100, bsmeta<genderi>::source, nameable::getname, 0);
+		y += field(x, y, 300, "Пол", combo, 100, bsdata<genderi>::source, nameable::getname, 0);
 		y += field(x, y, 300, "Скорость", number, 100, 4);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
@@ -546,6 +546,7 @@ static bool test_write_bin() {
 }
 
 int main() {
+	auto type = bsmeta<bsreq>::meta;
 	if(!test_write_bin())
 		return 0;
 	if(!test_array_ref())

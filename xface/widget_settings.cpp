@@ -35,7 +35,7 @@ docki bsmeta<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock
 };
 assert_enum(dock, DockWorkspace);
 
-const bsreq bsmeta<guiplugin>::meta[] = {BSREQ(id),
+template<> const bsreq bsmeta<control::plugin>::meta[] = {BSREQ(id),
 BSREQ(dock),
 {}};
 
@@ -167,12 +167,13 @@ static struct widget_settings_header : controls::list {
 
 static struct widget_control_viewer : controls::tableref {
 	void initialize() {
+		auto type = bsmeta<control::plugin>::meta;
 		no_change_order = true;
 		no_change_count = true;
-		addcol(bsmeta<guiplugin>::meta, "id", "Наименование");
-		addcol(bsmeta<guiplugin>::meta, "dock", "Расположение");
+		addcol(type, "id", "Наименование").set(ColumnReadOnly);
+		addcol(type, "dock", "Расположение");
 		for(auto p = plugin::first; p; p = p->next)
-			add(p);
+			addref(p);
 	}
 } control_viewer;
 
@@ -424,7 +425,7 @@ static struct widget_application : draw::controls::control {
 
 	void view(const rect& rc) override {
 		auto rct = rc;
-		for(auto p = controls::guiplugin::first; p; p = p->next)
+		for(auto p = controls::control::plugin::first; p; p = p->next)
 			p->getcontrol().show_border = metrics::show::padding;
 		dockbar(rct);
 		workspace(rct, allow_multiply_window);
@@ -478,7 +479,7 @@ static void setting_appearance_general_view() {
 
 static void setting_appearance_controls() {
 	control_viewer.initialize();
-	if(!control_viewer.getcount())
+	if(!control_viewer.getmaximum())
 		return;
 	settings& e1 = settings::root.gr("Расширения").add("Элементы", control_viewer);
 }
@@ -567,7 +568,7 @@ void set_light_theme();
 void draw::application_initialize() {
 	set_light_theme();
 	initialize();
-	for(auto p = controls::guiplugin::first; p; p = p->next)
+	for(auto p = controls::control::plugin::first; p; p = p->next)
 		p->after_initialize();
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
@@ -688,7 +689,7 @@ static struct window_settings_strategy : io::strategy {
 static struct controls_settings_strategy : io::strategy {
 
 	void write(io::writer& file, void* param) override {
-		for(auto pp = controls::guiplugin::first; pp; pp = pp->next) {
+		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
 			auto& e = pp->getcontrol();
 			auto id = pp->id;
 			if(!id || id[0] == 0)
@@ -723,7 +724,7 @@ static struct controls_settings_strategy : io::strategy {
 	void set(io::reader::node& n, const char* value) override {
 		if(!n.parent || !n.parent->parent)
 			return;
-		auto e = const_cast<controls::guiplugin*>(controls::guiplugin::find(n.parent->name));
+		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));
 		if(!e)
 			return;
 		else if(szcmpi(n.name, "Docking") == 0)
