@@ -19,11 +19,13 @@ struct requisit {
 	unsigned		count;
 	unsigned		size;
 	unsigned		offset;
-	unsigned getlenght() const {
-		return size * count;
-	}
+	constexpr unsigned getlenght() const { return size * count; }
 };
-struct manager {
+class manager {
+	strlib			strings;
+	arem<classtype>	classes;
+	arem<requisit>	requisits;
+public:
 	unsigned		add(unsigned parent, const char* name, unsigned type, unsigned count = 1, unsigned size = 0);
 	unsigned		create(const char* id);
 	unsigned		dereference(unsigned v) const;
@@ -32,9 +34,5 @@ struct manager {
 	bool			ispredefined(unsigned v) const { return v >= Number; }
 	bool			isreference(unsigned v) const;
 	unsigned		reference(unsigned v);
-private:
-	strlib			strings;
-	arem<classtype>	classes;
-	arem<requisit>	requisits;
 };
 }
