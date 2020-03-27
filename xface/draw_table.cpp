@@ -443,6 +443,8 @@ column& table::addcol(const bsreq* metadata, const char* id, const char* name, c
 	p->title = szdup(name);
 	p->size = p->method->size;
 	p->width = p->method->default_width;
+	if(p->width < 0)
+		p->width = -p->width * draw::textw('0') + 4;
 	p->total = p->method->total;
 	p->align = p->method->align;
 	if(p->type)
@@ -719,8 +721,8 @@ control::command table::commands[] = {{"*", "", commands_add, &table::isaddable}
 const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, &table::comparenm},
 {"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
 {"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},
-{"date", "Дата", AlignLeft, 8, 10 * 10 + 4, SizeResized, NoTotal, &table::celldate, 0, &table::comparenm},
-{"datetime", "Дата и время", AlignLeft, 8, 10 * 15 + 4, SizeResized, NoTotal, &table::celldatetime, 0, &table::comparenm},
+{"date", "Дата", AlignLeft, 8, -12, SizeResized, NoTotal, &table::celldate, 0, &table::comparenm},
+{"datetime", "Дата и время", AlignLeft, 8, -16, SizeResized, NoTotal, &table::celldatetime, 0, &table::comparenm},
 {"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, &table::comparest},
 {"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changeref},
 {"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, &table::comparenm},

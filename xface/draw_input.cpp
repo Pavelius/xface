@@ -121,7 +121,7 @@ bool draw::isfocused(const rect& rc, const anyval& value) {
 	return current_focus == value;
 }
 
-pushfocus::pushfocus() : value(current_focus) {
+pushfocus::pushfocus() : value(const_cast<const anyval&>(current_focus)) {
 	current_focus.clear();
 }
 

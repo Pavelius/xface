@@ -21,7 +21,7 @@ INSTMETA(logi) = {
 	BSREQ(text),
 {}};
 
-static arem<logi> messages;
+static arem<logi>	messages;
 
 void logmsgv(const char* format, const char* arguments) {
 	logi e = {0};
@@ -59,7 +59,7 @@ static struct widget_logging : control::plugin, table {
 
 	void after_initialize() override {
 		auto meta = bsmeta<logi>::meta;
-		addcol(meta, "stamp", "Дата").setwidth(textw("0") * 16 + 4).set(SizeFixed).set(AlignCenter);
+		addcol(meta, "stamp", "Дата").set(SizeFixed).set(AlignCenter);
 		addcol(meta, "text", "Сообщение").set(SizeAuto);
 	}
 
@@ -88,6 +88,7 @@ static struct widget_logging : control::plugin, table {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;
+		show_toolbar = false;
 		setting_common();
 		atexit(before_application_exit);
 	}
