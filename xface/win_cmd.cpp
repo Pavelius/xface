@@ -7,7 +7,7 @@ char** szcmdargv(int& argc) {
 	argc = 0;
 	const char* p = GetCommandLineA();
 	while(*p) {
-		if(argc >= sizeof(argv) / sizeof(argv[0]))
+		if((unsigned)argc >= sizeof(argv) / sizeof(argv[0]))
 			break;
 		p = szskipcr(p);
 		const char* pe = 0;

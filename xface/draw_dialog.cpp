@@ -138,8 +138,3 @@ int draw::checkbox(int x, int y, int width, const anyval& value, const char* lab
 		tooltips(tips);
 	return rc1.height() + 2;
 }
-
-static void change_checkbox() {
-	auto pv = (bool*)hot.param;
-	*pv = !*pv;
-}

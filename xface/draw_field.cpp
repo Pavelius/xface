@@ -37,8 +37,8 @@ static void setvalue(const anyval& v, bool istext, const char* result) {
 }
 
 static class edit_driver : public controls::textedit {
-	char			source[2048];
 	anyval			value;
+	char			source[2048];
 	bool			istext;
 public:
 	edit_driver() : textedit(source, sizeof(source) / sizeof(source), false), value(), source(), istext(false) {}
@@ -136,7 +136,6 @@ void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, 
 			draw::execute(execute_choose);
 		}
 	}
-	auto a = area(rc);
 	if(focused) {
 		cedit.align = flags & edit_mask;
 		cedit.update(ev, istext, digits);
@@ -282,10 +281,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
 	auto focused = isfocused(rc, av);
-	auto result = false;
 	auto a = area(rc);
-	if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
-		result = true;
 	color active = colors::button.mix(colors::edit, 128);
 	switch(a) {
 	case AreaHilited: gradv(rc, active.lighten(), active.darken()); break;

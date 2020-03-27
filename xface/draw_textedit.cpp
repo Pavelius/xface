@@ -13,12 +13,9 @@ textedit::textedit(char* string, unsigned maxlenght, bool select_text) : string(
 maxlenght(maxlenght),
 p1(0), p2(-1),
 align(0),
-readonly(false),
 rctext(metrics::edit),
 records(0),
-update_records(true),
-show_records(true),
-post_escape(true),
+readonly(false), update_records(true), show_records(true), post_escape(true),
 cashed_width(-1),
 cashed_string(0),
 cashed_origin(0) {

@@ -46,7 +46,7 @@ static bool sheet(rect& rc, rect& rct, const char* string, areas* area_result, b
 int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite,
 	fntext gtext, rect position) {
 	draw::state push;
-	rect rco = rc + position;
+	//rect rco = rc + position;
 	setclip(rc);
 	char temp[260];
 	auto result = 0;
@@ -54,7 +54,7 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 	if(hilite)
 		*hilite = -1;
 	// Получим выравнивание
-	int ox1 = rc.x1;
+	//int ox1 = rc.x1;
 	for(int i = start; i < count; i++) {
 		if(rc.x1 >= rc.x2 || rc.x2 <= rc.x1)
 			break;

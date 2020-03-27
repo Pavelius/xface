@@ -61,7 +61,7 @@ bool io::reader::node::operator==(const char* name) const {
 }
 
 int io::reader::node::get(int n) const {
-	if(n >= sizeof(params) / sizeof(params[0]))
+	if((unsigned)n >= sizeof(params) / sizeof(params[0]))
 		return 0;
 	auto p = this;
 	while(p->parent) {
@@ -73,7 +73,7 @@ int io::reader::node::get(int n) const {
 }
 
 void io::reader::node::set(int n, int v) {
-	if(n >= sizeof(params) / sizeof(params[0]))
+	if((unsigned)n >= sizeof(params) / sizeof(params[0]))
 		return;
 	params[n] = v;
 }

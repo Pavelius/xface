@@ -101,7 +101,6 @@ void list::treemark(rect rc, int index, int level) const {
 	if(!isgroup(index))
 		return;
 	color c1 = colors::text;
-	auto count = getmaximum();
 	auto isopen = list::isopen(index);
 	int x = rc.x1 + rc.width() / 2;
 	int y = rc.y1 + rc.height() / 2 - 1;

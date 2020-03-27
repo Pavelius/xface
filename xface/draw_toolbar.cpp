@@ -54,8 +54,6 @@ int	draw::controls::control::toolbar(int x, int y, int width) const {
 	auto images = getimages();
 	if(!images)
 		return 0;
-	bool separator = false;
-	int x2 = x + width - 6;
 	short height = images->get(0).getrect(0, 0, 0).height() + 8;
 	toolbar_builder e(x, y, width, {height, height});
 	e.render(this, getcommands());

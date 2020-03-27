@@ -213,16 +213,16 @@ struct textplugin {
 	static textplugin*	find(const char* name);
 };
 struct initplugin {
-	int					priority;
 	initplugin*			next;
+	int					priority;
 	static initplugin*	first;
 	initplugin(int priority = 10);
 	virtual void		initialize() {}
 	virtual void		after_initialize() {}
 };
 struct plugin {
-	int					priority;
 	plugin*				next;
+	int					priority;
 	static plugin*		first;
 	plugin(int priority = 10);
 	virtual void		after() {}

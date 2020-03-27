@@ -128,7 +128,7 @@ int io::file::seek(int pos, int rel) {
 }
 
 bool io::file::exist(const char* url) {
-	auto f = GetFileAttributesA(url);
+	unsigned f = GetFileAttributesA(url);
 	return f != 0xFFFFFFFF;
 }
 

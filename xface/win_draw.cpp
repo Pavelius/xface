@@ -19,8 +19,8 @@ extern rect		sys_static_area;
 static bool		use_mouse = true;
 
 static struct sys_key_mapping {
-	int			key;
-	int			id;
+	unsigned    key;
+	unsigned    id;
 } sys_key_mapping_data[] = {{VK_CONTROL, Ctrl},
 {VK_MENU, Alt},
 {VK_SHIFT, Shift},
@@ -64,14 +64,6 @@ static int tokey(unsigned key) {
 			return e.id;
 	}
 	return Alpha + key;
-}
-
-static int tovkey(unsigned id) {
-	for(auto& e : sys_key_mapping_data) {
-		if(e.id == id)
-			return e.key;
-	}
-	return id - Alpha;
 }
 
 static void set_cursor(cursors e) {

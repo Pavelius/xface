@@ -233,7 +233,7 @@ void color::convert(void* output, int width, int height, int output_bpp, const v
 		ip += isc;
 	}
 	if(input_static)
-		delete input;
+		delete (char*)input;
 }
 
 void color::flipv(unsigned char* bits, unsigned scanline, int height) {

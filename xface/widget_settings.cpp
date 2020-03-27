@@ -22,7 +22,6 @@ static settings*			current_header;
 static controls::control*	active_workspace_tab;
 static application_window	window = {0, 0, 0, 0, 160, WFMinmax|WFResize};
 static const char*			settings_file_name = "settings.json";
-static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
@@ -77,26 +76,6 @@ static void callback_button() {
 		p->e_execute();
 }
 
-static void callback_bool() {
-	auto p = (settings*)hot.param;
-	*((bool*)p->data) = !*((bool*)p->data);
-}
-
-static void callback_radio() {
-	auto p = (settings*)hot.param;
-	*((int*)p->data) = p->value;
-}
-
-static void callback_up() {
-	auto p = (settings*)hot.param;
-	(*((int*)p->data))--;
-}
-
-static void callback_down() {
-	auto p = (settings*)hot.param;
-	(*((int*)p->data))++;
-}
-
 //static void callback_choose_folder(const storage& ev) {
 //	char temp[260];
 //	ev.getf(temp, zendof(temp));
@@ -109,38 +88,42 @@ static void callback_choose_color() {
 	draw::dialog::color(*p);
 }
 
-static void callback_edit() {
-	char temp[4196]; temp[0] = 0;
-	auto p = (settings*)hot.param;
-	anyval av(p->data, sizeof(int), 0);
-	switch(p->type) {
-	case settings::TextPtr:
-	case settings::UrlFolderPtr:
-		if(*((const char**)p->data))
-			zcpy(temp, *((const char**)p->data), sizeof(temp) - 1);
-		break;
-	case settings::Int:
-		sznum(temp, *((int*)p->data));
-		break;
-	}
-	pushfocus pf;
-	controls::textedit te(temp, sizeof(temp), true);
-	setfocus(av, true);
-	if(te.editing(current_rect)) {
-		switch(p->type) {
-		case settings::TextPtr:
-		case settings::UrlFolderPtr:
-			if(temp[0])
-				*((const char**)p->data) = szdup(temp);
-			else
-				*((const char**)p->data) = 0;
-			break;
-		case settings::Int:
-			*((int*)p->data) = sz2num(temp);
-			break;
-		}
-	}
-}
+//static void callback_edit() {
+//	char temp[4196]; temp[0] = 0;
+//	auto p = (settings*)hot.param;
+//	anyval av(p->data, sizeof(int), 0);
+//	switch(p->type) {
+//	case settings::TextPtr:
+//	case settings::UrlFolderPtr:
+//		if(*((const char**)p->data))
+//			zcpy(temp, *((const char**)p->data), sizeof(temp) - 1);
+//		break;
+//	case settings::Int:
+//		sznum(temp, *((int*)p->data));
+//		break;
+//    default:
+//        break;
+//	}
+//	pushfocus pf;
+//	controls::textedit te(temp, sizeof(temp), true);
+//	setfocus(av, true);
+//	if(te.editing(current_rect)) {
+//		switch(p->type) {
+//		case settings::TextPtr:
+//		case settings::UrlFolderPtr:
+//			if(temp[0])
+//				*((const char**)p->data) = szdup(temp);
+//			else
+//				*((const char**)p->data) = 0;
+//			break;
+//		case settings::Int:
+//			*((int*)p->data) = sz2num(temp);
+//			break;
+//        default:
+//            break;
+//		}
+//	}
+//}
 
 static struct widget_settings_header : controls::list {
 	settings*	rows[128];
@@ -380,7 +363,7 @@ static struct widget_application : draw::controls::control {
 			active_workspace_tab = p1[0];
 			active_workspace_tab->view(rc);
 		} else if(c1) {
-			auto last_active_workspace_tab = active_workspace_tab;
+			//auto last_active_workspace_tab = active_workspace_tab;
 			auto current_select = find(p1, active_workspace_tab);
 			if(current_select == -1)
 				current_select = 0;
@@ -481,7 +464,7 @@ static void setting_appearance_controls() {
 	control_viewer.initialize();
 	if(!control_viewer.getmaximum())
 		return;
-	settings& e1 = settings::root.gr("Расширения").add("Элементы", control_viewer);
+	settings::root.gr("Расширения").add("Элементы", control_viewer);
 }
 
 static struct application_plugin : draw::initplugin {
@@ -524,7 +507,6 @@ void draw::application(bool allow_multiply_window) {
 	while(ismodal()) {
 		auto pc = layouts[current_tab];
 		auto tb = pc->getimages();
-		auto commands = pc->getcommands();
 		draw::fore = colors::text;
 		rect rc = {0, 0, draw::getwidth(), draw::getheight()};
 		draw::rectf(rc, colors::form);
@@ -600,6 +582,8 @@ static struct settings_settings_strategy : io::strategy {
 		case settings::UrlFolderPtr:
 			file.set(e.name, *((const char**)e.data));
 			break;
+        default:
+            break;
 		}
 	}
 	void write(io::writer& file, void* param) override {
@@ -639,6 +623,8 @@ static struct settings_settings_strategy : io::strategy {
 		case settings::UrlFolderPtr:
 			*((const char**)e->data) = szdup(value);
 			break;
+        default:
+            break;
 		}
 	}
 	settings_settings_strategy() : strategy("settings", "settings") {}
@@ -673,7 +659,6 @@ static struct window_settings_strategy : io::strategy {
 static struct controls_settings_strategy : io::strategy {
 	void write(io::writer& file, void* param) override {
 		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
-			auto& e = pp->getcontrol();
 			auto id = pp->id;
 			if(!id || id[0] == 0)
 				continue;

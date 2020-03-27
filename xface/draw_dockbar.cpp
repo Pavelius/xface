@@ -163,8 +163,8 @@ static struct dockbar_settings_strategy : io::strategy {
 	}
 
 	void set(io::reader::node& n, const char* value) override {
-		auto i = getindex(n, "Dock");
-		if(i == -1 || i >= sizeof(dock_data) / sizeof(dock_data[0]))
+		unsigned i = getindex(n, "Dock");
+		if(i == 0xFFFFFFFF || i >= sizeof(dock_data) / sizeof(dock_data[0]))
 			return;
 		if(n == "current")
 			dock_data[i].current = sz2num(value);

@@ -1596,7 +1596,6 @@ int	draw::text(rect rc, const char* string, unsigned state, int* max_width) {
 }
 
 int draw::textlb(const char* string, int index, int width, int* line_index, int* line_count) {
-	auto dy = texth();
 	auto p = string;
 	if(line_index)
 		*line_index = 0;
@@ -1726,7 +1725,6 @@ int draw::hittest(rect rc, const char* string, unsigned state, point pt) {
 }
 
 void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha) {
-	const int cbd = 1;
 	int x2, y2;
 	color* pal;
 	if(!e)
@@ -2026,7 +2024,6 @@ const char* pma::getstring(int id) const {
 }
 
 int pma::find(const char* name) const {
-	auto p = getheader("STR");
 	for(int i = 1; i <= count; i++) {
 		if(strcmp(getstring(i), name) == 0)
 			return i;

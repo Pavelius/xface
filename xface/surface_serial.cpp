@@ -57,7 +57,6 @@ void draw::write(const char* url, unsigned char* bits, int width, int height, in
 	if(!scanline)
 		scanline = color::scanline(bmi.width, bmi.bpp);
 	int wscn = color::scanline(bmi.width, bmi.bpp);
-	int size = height * scanline;
 	io::file file(url, StreamWrite);
 	if(!file)
 		return;
@@ -71,10 +70,8 @@ void draw::write(const char* url, unsigned char* bits, int width, int height, in
 		int w = pixbytes * width;
 		unsigned char* p0 = (unsigned char*)bits + (height - y - 1)*scanline;
 		file.write(p0, w);
-		if(w < wscn) {
-			char temp[16] = {0};
+		if(w < wscn)
 			file.write(p0, wscn - w);
-		}
 	}
 }
 
@@ -141,7 +138,6 @@ static struct bmp_bitmap_plugin : public draw::surface::plugin {
 	bool inspect(int& width, int& height, int& bpp, const unsigned char* input, unsigned size) override {
 		if(input[1] != 0x4D || input[0] != 0x42)
 			return false;
-		auto ph = (bmp::header*)input;
 		auto pi = (bmp::info*)(input + sizeof(bmp::header));
 		width = pi->width;
 		height = pi->height;

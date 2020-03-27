@@ -205,6 +205,8 @@ int table::rowheader(const rect& rc) const {
 			case AreaHilitedPressed:
 				gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a2, a1);
 				break;
+            default:
+                break;
 			}
 			if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
 				clickcolumn(i);
@@ -264,7 +266,6 @@ int	table::gettotal(int column) const {
 }
 
 void table::rowtotal(const rect& rc) const {
-	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
 	color b1 = colors::button.lighten();
@@ -273,9 +274,6 @@ void table::rowtotal(const rect& rc) const {
 	rectb(rch, colors::border);
 	draw::state push;
 	draw::setclip({rc.x1, rc.y1, rc.x2, rc.y2 + 1});
-	color active = colors::button.mix(colors::edit, 128);
-	color a1 = active.lighten();
-	color a2 = active.darken();
 	rect r1;
 	r1.x1 = rch.x1 - origin_width;
 	r1.x2 = r1.x1;
@@ -303,7 +301,6 @@ void table::row(const rect& rc, int index) {
 	area(rc);
 	if(select_mode == SelectRow)
 		rowhilite(rc, index);
-	auto current_column = getcolumn();
 	auto x1 = rc.x1;
 	auto need_tree = true;
 	auto level_ident = 0;
@@ -344,7 +341,6 @@ void table::ensurevisible() {
 	correction_width();
 	auto rc = getrect(current, current_column);
 	auto x1 = rc.x1 - (view_rect.x1 - origin_width);
-	auto x2 = rc.x2 - (view_rect.x1 - origin_width);
 	if(rc.x2 > view_rect.x2)
 		origin_width = origin_width + rc.width();
 	if(rc.x1 < view_rect.x1)
@@ -565,6 +561,8 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 				break;
 			}
 			break;
+        default:
+            break;
 		}
 	}
 }

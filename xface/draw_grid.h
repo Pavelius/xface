@@ -49,9 +49,9 @@ struct tree : grid {
 		void*				object;
 	};
 	struct builder {
+		tree*				pc;
 		int					index;
 		unsigned char		level;
-		tree*				pc;
 		constexpr builder(tree* pc, int index, unsigned char level) : pc(pc), index(index), level(level) {}
 		void*				add(void* object, unsigned char image, unsigned char type, bool group);
 	};

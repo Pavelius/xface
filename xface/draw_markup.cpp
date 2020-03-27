@@ -21,9 +21,6 @@ struct commandi {
 	void clear() { memset(this, 0, sizeof(commandi)); }
 };
 static commandi	command;
-static void set_command_value() {
-	command.value.set(hot.param);
-}
 struct contexti {
 	int					title;
 	const char*			title_text;
@@ -54,51 +51,51 @@ static const char* getpresent(const void* p, const bsreq* type) {
 	return (const char*)pf->get(pf->ptr(p));
 }
 
-static void choose_enum() {
-	struct enum_view : controls::list, adat<int, 512> {
-		markup::proci	proc;
-		markup::propi	prop;
-		const array&	source;
-		const bsreq*	meta;
-		const char*	getname(char* result, const char* result_max, int line, int column) const {
-			if(prop.getname)
-				return prop.getname(source.ptr(data[line]), result, result_max, 0);
-			switch(column) {
-			case 0: return getpresent(source.ptr(data[line]), meta);
-			}
-			return "";
-		}
-		int getmaximum() const override { return count; }
-		int getcurrent() const {
-			if(!count)
-				return 0;
-			return data[current];
-		}
-		constexpr enum_view(const bsreq* meta, const array& source) : source(source), proc(), meta(meta) {}
-	};
-	enum_view ev(command.meta, *command.data);
-	ev.hilite_odd_lines = false;
-	ev.proc = command.proc;
-	auto i1 = 0;
-	auto i2 = command.data->getcount() - 1;
-	for(unsigned i = i1; i <= i2; i++) {
-		if(command.proc.isallow) {
-			if(!command.proc.isallow(command.object, i))
-				continue;
-		}
-		ev.add(i);
-	}
-	auto mc = imin(12, ev.getmaximum());
-	auto rc = command.rc;
-	auto ci = ev.indexof(command.value.get());
-	if(ci != -1)
-		ev.current = ci;
-	rc.y1 = rc.y2;
-	rc.y2 = rc.y1 + ev.getrowheight() * mc + 1;
-	rectf(rc, colors::form);
-	if(dropdown(rc, ev))
-		command.value.set(ev.getcurrent());
-}
+//static void choose_enum() {
+//	struct enum_view : controls::list, adat<int, 512> {
+//		const array&	source;
+//		markup::proci	proc;
+//		markup::propi	prop;
+//		const bsreq*	meta;
+//		const char*	getname(char* result, const char* result_max, int line, int column) const {
+//			if(prop.getname)
+//				return prop.getname(source.ptr(data[line]), result, result_max, 0);
+//			switch(column) {
+//			case 0: return getpresent(source.ptr(data[line]), meta);
+//			}
+//			return "";
+//		}
+//		int getmaximum() const override { return count; }
+//		int getcurrent() const {
+//			if(!count)
+//				return 0;
+//			return data[current];
+//		}
+//		constexpr enum_view(const bsreq* meta, const array& source) : source(source), proc(), meta(meta) {}
+//	};
+//	enum_view ev(command.meta, *command.data);
+//	ev.hilite_odd_lines = false;
+//	ev.proc = command.proc;
+//	auto i1 = 0;
+//	auto i2 = command.data->getcount() - 1;
+//	for(unsigned i = i1; i <= i2; i++) {
+//		if(command.proc.isallow) {
+//			if(!command.proc.isallow(command.object, i))
+//				continue;
+//		}
+//		ev.add(i);
+//	}
+//	auto mc = imin(12, ev.getmaximum());
+//	auto rc = command.rc;
+//	auto ci = ev.indexof(command.value.get());
+//	if(ci != -1)
+//		ev.current = ci;
+//	rc.y1 = rc.y2;
+//	rc.y2 = rc.y1 + ev.getrowheight() * mc + 1;
+//	rectf(rc, colors::form);
+//	if(dropdown(rc, ev))
+//		command.value.set(ev.getcurrent());
+//}
 
 static bsval getvalue(contexti& ctx, const markup& e) {
 	bsval result;
@@ -291,7 +288,6 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		}
 		return e.proc.custom(x, y, width, pv);
 	} else if(e.cmd.execute) {
-		auto result = false;
 		//auto dy = button(x, y, width, (int)ctx.source.data, result, e.title);
 		//if(result) {
 		//	//

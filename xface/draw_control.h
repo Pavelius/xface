@@ -350,10 +350,7 @@ public:
 	rect					rctext, rcclient;
 	list*					records;
 	unsigned				align;
-	bool					readonly;
-	bool					update_records;
-	bool					show_records;
-	bool					post_escape;
+	bool					readonly, update_records, show_records, post_escape;
 	//
 	textedit(char* string, unsigned maximum_lenght, bool select_text);
 	//
