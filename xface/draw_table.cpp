@@ -495,10 +495,7 @@ void table::changeref(const rect& rc, int line, int column) {
 	if(!columns[column].source)
 		return;
 	auto p = get(line);
-	anyval av;
-	av.size = columns[column].type->size;
-	av.data = (char*)p + columns[column].type->offset;
-	av.value = 0;
+	const anyval av((char*)p + columns[column].type->offset, columns[column].type->size, 0);
 	field(rc, av, *columns[column].source, get_enum_name, true);
 }
 

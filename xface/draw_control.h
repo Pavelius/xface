@@ -48,7 +48,6 @@ struct docki {
 	const char*				id;
 	const char*				name;
 };
-DECLENUM(dock);
 class pushfocus {
 	anyval					value;
 public:
@@ -141,8 +140,8 @@ struct list : control {
 	rect					current_rect, view_rect;
 	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
-		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true),
-		current_rect(), view_rect(), drop_shadow(false) {}
+		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true), drop_shadow(false),
+		current_rect(), view_rect() {}
 	void					correction();
 	void					correction_width();
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
@@ -206,14 +205,11 @@ struct table : list {
 		int					multiplier; // 1 - ascending, -1 - descending
 	};
 	arem<column>			columns;
-	int						current_column, current_hilite_column, current_column_maximum, maximum_width;
-	bool					no_change_count;
-	bool					no_change_order;
-	bool					read_only;
+	int						current_column, current_column_maximum, current_hilite_column, maximum_width;
+	bool					no_change_order, no_change_count, read_only, show_totals;
 	select_mode_s			select_mode;
-	bool					show_totals;
 	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
-		show_totals(false), no_change_order(false), no_change_count(false), read_only(false),
+		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
 	virtual void*			addrow() { return 0; } // Need override
@@ -283,9 +279,9 @@ struct tableref : table, private array {
 		void*				object;
 	};
 	struct builder {
+		tableref*			pc;
 		int					index;
 		unsigned char		level;
-		tableref*			pc;
 		constexpr builder(tableref* pc, int index, unsigned char level) : pc(pc), index(index), level(level) {}
 		void*				add(void* object, unsigned char image, unsigned char type, bool group);
 	};
@@ -417,3 +413,4 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
+DECLENUM(draw::dock);

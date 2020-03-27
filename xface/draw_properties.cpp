@@ -108,9 +108,7 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 	int h = 0;
 	char temp[260];
 	if(ev.type->is(KindNumber)) {
-		anyval st;
-		st.data = ev.type->ptr(ev.data);
-		st.size = ev.type->size;
+		const anyval st(ev.type->ptr(ev.data), ev.type->size, 0);
 		h = field(x, y, width, gettitle(temp, zendof(temp), ev), st, title, 4);
 	} else if(ev.type->is(KindText)) {
 		h = field(x, y, width, gettitle(temp, zendof(temp), ev), *((const char**)ev.type->ptr(ev.data)), title);

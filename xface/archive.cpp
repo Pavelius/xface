@@ -66,7 +66,7 @@ void archive::setpointer(void** value) {
 	} else {
 		*value = 0;
 		source.read(&pid, sizeof(pid));
-		if(pid != -1) {
+		if(pid != 0xFFFFFFFF) {
 			auto bi = pid >> 24;
 			auto ii = pid & 0xFFFFFF;
 			*value = pointers[bi][ii];

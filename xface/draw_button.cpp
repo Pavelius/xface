@@ -2,7 +2,7 @@
 
 char* key2str(char* result, int key);
 
-bool draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1) {
+bool draw::addbutton(rect& rc, bool focused, const char* t1, unsigned k1, const char* tt1) {
 	const int width = 18;
 	rc.x2 -= width;
 	auto result = draw::buttonh({rc.x2, rc.y1, rc.x2 + width, rc.y2},
@@ -12,7 +12,7 @@ bool draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char*
 	return result;
 }
 
-int draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1, const char* t2, int k2, const char* tt2) {
+int draw::addbutton(rect& rc, bool focused, const char* t1, unsigned k1, const char* tt1, const char* t2, unsigned k2, const char* tt2) {
 	const int width = 20;
 	rc.x2 -= width;
 	auto height = rc.height() / 2;
@@ -31,7 +31,7 @@ int draw::addbutton(rect& rc, bool focused, const char* t1, int k1, const char* 
 	return result;
 }
 
-bool draw::buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key, bool press) {
+bool draw::buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, unsigned key, bool press) {
 	bool result = false;
 	if(disabled) {
 		gradh(rc, colors::button.lighten(), colors::button.darken());
@@ -64,7 +64,7 @@ bool draw::buttonv(rect rc, bool checked, bool focused, bool disabled, bool bord
 	return result;
 }
 
-bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, int key, bool press, const char* tips) {
+bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, unsigned key, bool press, const char* tips) {
 	draw::state push;
 	bool result = false;
 	struct rect rcb = {rc.x1 + 1, rc.y1 + 1, rc.x2, rc.y2};
@@ -115,6 +115,6 @@ bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool bord
 	return result;
 }
 
-bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key, bool press, const char* tips) {
+bool draw::buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, unsigned key, bool press, const char* tips) {
 	return buttonh(rc, checked, focused, disabled, border, colors::button, string, key, press, tips);
 }

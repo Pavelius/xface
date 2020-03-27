@@ -41,9 +41,7 @@ static class edit_driver : public controls::textedit {
 	anyval			value;
 	bool			istext;
 public:
-	constexpr edit_driver() : textedit(source, sizeof(source) / sizeof(source), false),
-		value(), source(), istext(false) {
-	}
+	edit_driver() : textedit(source, sizeof(source) / sizeof(source), false), value(), source(), istext(false) {}
 	bool isfocusable() const override {
 		return false;
 	}
@@ -72,7 +70,7 @@ public:
 		select_all(true);
 	}
 	void* getsource() {
-		return value.data;
+		return value.getptr();
 	}
 	void clear() {
 		textedit::clear();

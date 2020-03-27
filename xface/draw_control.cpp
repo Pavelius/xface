@@ -10,9 +10,7 @@ static control::fncmd current_execute;
 static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
-
-const bsreq bsmeta<datetime>::meta[] = {{"datetime"},
-{}};
+INSTMETA(datetime) = {{"datetime"}, {}};
 
 bool control_input() {
 	if(current_hilite) {

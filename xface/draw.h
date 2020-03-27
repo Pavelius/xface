@@ -198,8 +198,8 @@ struct state {
 	~state();
 private:
 	color				fore, fore_stroke;
-	float				linw;
 	const sprite*		font; // glyph font
+	float				linw;
 	surface*			canvas;
 	rect				clip;
 };
@@ -328,11 +328,11 @@ void					updatewindow();
 void					write(const char* url, unsigned char* bits, int width, int height, int bpp, int scanline, color* pallette);
 }
 namespace draw {
-int						addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1, const char* t2, int k2, const char* tt2);
-bool					addbutton(rect& rc, bool focused, const char* t1, int k1, const char* tt1);
-bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, int key, bool press, const char* tips = 0);
-bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false, const char* tips = 0);
-bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, int key = 0, bool press = false);
+int						addbutton(rect& rc, bool focused, const char* t1, unsigned k1, const char* tt1, const char* t2, unsigned k2, const char* tt2);
+bool					addbutton(rect& rc, bool focused, const char* t1, unsigned k1, const char* tt1);
+bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, color value, const char* string, unsigned key, bool press, const char* tips = 0);
+bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, unsigned key = 0, bool press = false, const char* tips = 0);
+bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, unsigned key = 0, bool press = false);
 int						clipart(int x, int y, int width, unsigned flags, const char* string);
 void					scrollh(const struct rect& scroll, int& origin, int count, int maximum, bool focused);
 void					scrollv(const rect& scroll, int& origin, int count, int maximum, bool focused);

@@ -6,12 +6,12 @@ using namespace draw;
 static anyval cmd_value;
 
 static void setvar() {
-	cmd_value.set(cmd_value.value);
+	cmd_value.set(cmd_value.getvalue());
 }
 
 static void xorvar() {
 	auto m = cmd_value.get();
-	auto v = cmd_value.value;
+	auto v = cmd_value.getvalue();
 	if(!v)
 		v = 1;
 	m ^= v;
@@ -74,7 +74,7 @@ int draw::radio(int x, int y, int width, const anyval& av, const char* label, co
 	unsigned flags = 0;
 	if(isfocused(rc, av))
 		flags |= Focused;
-	if(av.get() == av.value)
+	if(av.get() == av.getvalue())
 		flags |= Checked;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
@@ -111,7 +111,7 @@ int draw::checkbox(int x, int y, int width, const anyval& value, const char* lab
 	unsigned flags = 0;
 	if(isfocused(rc, value))
 		flags |= Focused;
-	auto v1 = value.value;
+	auto v1 = value.getvalue();
 	if(!v1)
 		v1 = 1;
 	if((value.get()&v1)!=0)

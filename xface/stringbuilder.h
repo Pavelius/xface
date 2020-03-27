@@ -11,7 +11,7 @@ class stringbuilder {
 	const char*			readvariable(const char* format);
 	void				add(const char* s, const grammar* source, const char* def = 0);
 public:
-	constexpr stringbuilder(char* pb, const char* pe) : pb(pb), p(pb), pe(pe) {}
+	constexpr stringbuilder(char* pb, const char* pe) : p(pb), pb(pb), pe(pe) {}
 	template<unsigned N> constexpr stringbuilder(char(&result)[N]) : stringbuilder(result, result + N - 1) {}
 	constexpr operator char*() const { return pb; }
 	void				add(const char* format, ...) { addv(format, xva_start(format)); }

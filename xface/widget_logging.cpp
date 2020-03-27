@@ -16,7 +16,7 @@ struct logi {
 	const char*		text;
 };
 }
-const bsreq bsmeta<logi>::meta[] = {
+INSTMETA(logi) = {
 	BSREQ(stamp),
 	BSREQ(text),
 {}};
@@ -79,12 +79,12 @@ static struct widget_logging : control::plugin, table {
 	void* get(int line) const {
 		return messages.data + line;
 	}
-		
+
 	int	getmaximum() const override {
 		return messages.getcount();
 	}
 
-	widget_logging() : plugin("logging", DockBottom) {
+	widget_logging() : control::plugin("logging", DockBottom) {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;

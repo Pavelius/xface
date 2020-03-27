@@ -20,10 +20,9 @@ struct archive {
 	template<class T> void set(T*& value) {
 		setpointer((void**)&value);
 	}
-	// Strings case
-	template<> void set<const char>(const char*& e) {
-		setstring(&e);
-	}
+    void set(const char*& e) {
+        setstring(&e);
+    }
 	// Array with fixed count
 	template<typename T, unsigned N> void set(T(&value)[N]) {
 		for(int i = 0; i < N; i++)

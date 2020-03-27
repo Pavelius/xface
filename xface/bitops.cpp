@@ -233,7 +233,6 @@ void draw::bop::raw32m(unsigned char* d, int d_scan, unsigned char* s, int s_sca
 // A1 - FF skip count of (b-0xB0) pixels
 void draw::bop::rle8(unsigned char* p1, int d1, unsigned char* s, int h, const unsigned char* s1, const unsigned char* s2)
 {
-	const int cbs = 1;
 	const int cbd = 1;
 	unsigned char* d = p1;
 	while(true)

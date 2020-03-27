@@ -67,7 +67,7 @@ float sqrt(const float x) {
 	} u;
 	u.x = x;
 	u.i = 0x5f3759df - (u.i >> 1);  // gives initial guess y0
-	return x * u.x*(1.5f - xhalf * u.x*u.x);// Newton step, repeating increases accuracy 
+	return x * u.x*(1.5f - xhalf * u.x*u.x);// Newton step, repeating increases accuracy
 }
 
 int isqrt(int num) {
@@ -434,7 +434,6 @@ static void rle32m(unsigned char* p1, int d1, unsigned char* s, int h, const uns
 }
 
 static void rle832(unsigned char* p1, int d1, unsigned char* s, int h, const unsigned char* s1, const unsigned char* s2, unsigned char alpha, const color* pallette) {
-	const int cbs = 3;
 	const int cbd = 32 / 8;
 	unsigned char* d = p1;
 	if(!alpha)
@@ -531,7 +530,6 @@ static void rle832(unsigned char* p1, int d1, unsigned char* s, int h, const uns
 }
 
 static void rle832m(unsigned char* p1, int d1, unsigned char* s, int h, const unsigned char* s1, const unsigned char* s2, unsigned char alpha, const color* pallette) {
-	const int cbs = 3;
 	const int cbd = 32 / 8;
 	unsigned char* d = p1;
 	if(!alpha)
@@ -680,7 +678,6 @@ static void alc32(unsigned char* d, int d_scan, const unsigned char* s, int heig
 
 static unsigned char* skip_v3(unsigned char* s, int h) {
 	const int		cbs = 1;
-	const int		cbd = 1;
 	if(!s || !h)
 		return s;
 	while(true) {

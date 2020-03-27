@@ -26,7 +26,7 @@ static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
-docki bsdata<docki>::elements[DockWorkspace + 1] = {{"dock_left", "Присоединить слева"},
+INSTDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_left_bottom", "Присоединить слева и снизу"},
 {"dock_right", "Присоединить справа"},
 {"dock_right_bottom", "Присоединить справа и снизу"},

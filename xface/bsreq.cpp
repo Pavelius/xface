@@ -4,9 +4,9 @@
 extern "C" int strcmp(const char* s1, const char* s2);
 extern "C" int memcmp(const void* s1, const void* s2, unsigned size);
 
-const bsreq bsmeta<int>::meta[] = {{"number"}, {}};
-const bsreq bsmeta<const char*>::meta[] = {{"text"}, {}};
-const bsreq bsmeta<bsreq>::meta[] = {BSREQ(id),
+INSTMETA(int) = {{"number"}, {}};
+INSTMETA(const char*) = {{"text"}, {}};
+INSTMETA(bsreq) = {BSREQ(id),
 BSREQ(offset),
 BSREQ(size),
 BSREQ(lenght),

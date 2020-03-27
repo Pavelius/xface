@@ -541,10 +541,19 @@ static bool test_data_access() {
 	return result != 0;
 }
 
+static bool test_anyval() {
+	int a = 10;
+	const anyval v2(a);
+	const anyval v1(v2);
+	return v1==v2;
+}
+
 int main() {
 	auto type = bsmeta<bsreq>::meta;
 	if(!test_write_bin())
-		return 0;
+		return -1;
+	if(!test_anyval())
+		return -1;
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();

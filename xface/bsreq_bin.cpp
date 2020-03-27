@@ -72,6 +72,8 @@ struct parser {
 				for(unsigned i = 0; i < p->count; i++)
 					serial(p->ptr(object, i), p->type); // Подчиненный объект, указанный прямо в теле
 				break;
+            default:
+                break;
 			}
 		}
 		return true;
