@@ -26,12 +26,12 @@ static rect					current_rect;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
-docki bsdata<docki>::elements[DockWorkspace + 1] = {{"Присоединить слева", "dock_left"},
-{"Присоединить слева и снизу", "dock_left_bottom"},
-{"Присоединить справа", "dock_right"},
-{"Присоединить справа и снизу", "dock_right_bottom"},
-{"Присоединить снизу", "dock_bottom"},
-{"На рабочем столе", "dock_workspace"}
+docki bsdata<docki>::elements[DockWorkspace + 1] = {{"dock_left", "Присоединить слева"},
+{"dock_left_bottom", "Присоединить слева и снизу"},
+{"dock_right", "Присоединить справа"},
+{"dock_right_bottom", "Присоединить справа и снизу"},
+{"dock_bottom", "Присоединить снизу"},
+{"dock_workspace", "На рабочем столе"}
 };
 assert_enum(dock, DockWorkspace);
 

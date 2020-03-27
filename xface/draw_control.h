@@ -45,8 +45,8 @@ enum total_s : unsigned char {
 	TotalSummarize, TotalMaximum, TotalMinimum, TotalAverage
 };
 struct docki {
-	const char*				name;
 	const char*				id;
+	const char*				name;
 };
 DECLENUM(dock);
 class pushfocus {
