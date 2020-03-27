@@ -9,11 +9,8 @@ meta_count<decltype(data_type::fn)>::value,\
 bsmeta<meta_decoy<decltype(data_type::fn)>::value>::meta,\
 meta_kind<decltype(data_type::fn)>::value,\
 bsdata<meta_decoy<decltype(data_type::fn)>::value>::source_ptr}
-#define BSDATA(c, i) c bsmeta<c>::elements[i];\
-bsdatat<c> bsmeta<c>::data(#c, bsmeta<c>::elements, KindScalar);
 #define assert_enum(e, last) static_assert(sizeof(bsdata<e##i>::elements) / sizeof(bsdata<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements");\
-template<> const bsreq bsmeta<e##i>::meta[] = {BSREQ(id), BSREQ(name), {}};\
-template<> array bsdata<e##i>::source(bsdata<e##i>::elements, sizeof(bsdata<e##i>::elements[0]), sizeof(bsdata<e##i>::elements)/sizeof(bsdata<e##i>::elements[0]));
+INSTMETA(e##i) = {BSREQ(id), BSREQ(name), {}}; INSTELEM(e##i);
 
 // Basic metadata types
 enum bstype_s : unsigned char {

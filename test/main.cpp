@@ -32,7 +32,7 @@ INSTDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
-assert_enum(gender, Female);
+assert_enum(gender, Female)
 
 INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
@@ -44,7 +44,7 @@ INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Neutral Evil", "Нейтрально злой"},
 {"Chaotic Evil", "Хаотично злой"},
 };
-assert_enum(alignment, ChaoticEvil);
+assert_enum(alignment, ChaoticEvil)
 
 static struct element {
 	const char*		surname;
@@ -83,10 +83,6 @@ BSREQ(age),
 BSREQ(flags),
 BSREQ(date),
 {}};
-
-static bsinf data_bases[] = {BSINF(gender),
-BSINF(alignment)
-};
 
 const markup* getmarkup(const bsreq* type) {
 	return 0;
@@ -532,6 +528,19 @@ static bool test_write_bin() {
 	return memcmp(&e1, &e2, sizeof(e1))==0;
 }
 
+static bool test_data_access() {
+	int result = 0;
+	for(auto& e : bsdata<alignmenti>())
+		result++;
+	result = 0;
+	for(auto& e : bsdata<genderi>())
+		result++;
+	result = 0;
+	for(auto& e : bsdata<cultivatedi>())
+		result++;
+	return result != 0;
+}
+
 int main() {
 	auto type = bsmeta<bsreq>::meta;
 	if(!test_write_bin())
@@ -539,6 +548,7 @@ int main() {
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();
+	test_data_access();
 	test_requisit();
 	test_array();
 	test_binary_serial();

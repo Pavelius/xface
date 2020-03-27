@@ -34,10 +34,11 @@ private:
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
 #define INSTDATA(e) template<> e bsdata<e>::elements[]
-#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {};\
-template<> struct bsdata<e##_s> : bsdata<e##i> {}
+#define INSTMETA(e) template<> const bsreq bsmeta<e>::meta[]
+#define INSTELEM(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
+#define NOINSTDATA(e) template<> struct bsdata<e> : bsdata<int> {};
+#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}; template<> struct bsdata<e##_s> : bsdata<e##i> {};
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
-#define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};
 
 extern "C" int						atexit(void(*func)(void));
 extern "C" void*					bsearch(const void* key, const void *base, unsigned num, unsigned size, int(*compar)(const void *, const void *));
@@ -173,7 +174,6 @@ template<class T>
 struct arem : aref<T> {
 	unsigned				count_maximum;
 	constexpr arem() : aref<T>(0, 0), count_maximum(0) {}
-	constexpr arem(T* source, unsigned count) : aref<T>(source, count), count_maximum(0) {}
 	~arem() { if(aref<T>::data && count_maximum) delete aref<T>::data; }
 	T*						add() { reserve(aref<T>::count + 1); return &aref<T>::data[aref<T>::count++]; }
 	void					add(const T& e) { *(add()) = e; }
@@ -183,8 +183,9 @@ struct arem : aref<T> {
 };
 // Abstract flag data bazed on enumerator
 template<typename T, typename DT = unsigned>
-struct cflags {
+class cflags {
 	DT						data;
+public:
 	constexpr cflags() : data(0) {}
 	constexpr cflags(const std::initializer_list<T>& list) : data() { for(auto e : list) add(e); }
 	constexpr void			add(const T id) { data |= 1 << id; }
@@ -233,6 +234,7 @@ struct bsinf {
 	const bsreq*			meta; // Type descriptor of data source
 	array&					source; // Data source content
 };
+// Abstract data access class
 template<typename T> struct bsdata {
 	static T				elements[];
 	static array			source;
@@ -240,16 +242,15 @@ template<typename T> struct bsdata {
 	//
 	static T*				add() { return source.add(); }
 	static constexpr T*		begin() { return elements; }
-	static T*				end() { return source.end(); }
+	static constexpr T*		end() { return elements + source.getcount(); }
 };
-template<> struct bsdata<int> {
-	static constexpr array*	source_ptr = 0;
-};
-NOBSDATA(unsigned);
-NOBSDATA(char);
-NOBSDATA(unsigned char);
-NOBSDATA(const char*);
-NOBSDATA(bsreq);
+template<> struct bsdata<int> { static constexpr array*	source_ptr = 0; };
+NOINSTDATA(unsigned)
+NOINSTDATA(char)
+NOINSTDATA(unsigned char)
+NOINSTDATA(const char*)
+NOINSTDATA(bsreq)
+// Abstract metadata class
 template<typename T> struct bsmeta {
 	typedef T				data_type;
 	static const bsreq		meta[];

@@ -8,8 +8,8 @@
 
 #pragma once
 
-NOBSDATA(datetime);
-typedef void			(*fnchoose)(const anyval value);
+typedef void(*fnchoose)(const anyval value);
+NOINSTDATA(datetime);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
