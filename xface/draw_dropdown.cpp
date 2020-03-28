@@ -25,7 +25,7 @@ bool draw::dropdown(const rect& rc, draw::controls::control& e) {
 		case MouseLeftDBL + Ctrl:
 		case MouseLeftDBL + Shift:
 			if(hot.pressed) {
-				if(!areb(rc))
+				if(!ishilite(rc))
 					breakmodal(0);
 				else {
 					// Уже обработали команду

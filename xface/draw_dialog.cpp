@@ -48,7 +48,7 @@ int	draw::button(int x, int y, int width, const anyval& value, bool& result, con
 		|| (focus && hot.key == KeyEnter)) {
 		result = true;
 	}
-	if(label && label[0] && areb(rc))
+	if(label && label[0] && ishilite(rc))
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
 }
@@ -78,13 +78,13 @@ int draw::radio(int x, int y, int width, const anyval& av, const char* label, co
 		flags |= Checked;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), width, flags, ":radio");
 	bool need_select = false;
-	auto a = draw::area(rc);
-	if((a == AreaHilited || a == AreaHilitedPressed) && !isdisabled(flags) && hot.key == MouseLeft) {
+	auto a = ishilite(rc);
+	if(a && !isdisabled(flags) && hot.key == MouseLeft) {
 		if(!hot.pressed)
 			need_select = true;
 	}
 	if(isfocused(flags)) {
-		draw::rectx({rc1.x1, rc1.y1, rc1.x2, rc1.y2}, draw::fore);
+		rectx({rc1.x1, rc1.y1, rc1.x2, rc1.y2}, draw::fore);
 		if(!isdisabled(flags) && hot.key == KeySpace)
 			need_select = true;
 	}
@@ -94,7 +94,7 @@ int draw::radio(int x, int y, int width, const anyval& av, const char* label, co
 	}
 	rc = rc1; rc.offset(2);
 	draw::text(rc, label);
-	if(tips && a == AreaHilited)
+	if(tips && a && !hot.pressed)
 		tooltips(tips);
 	return rc1.height() + 2;
 }
@@ -118,9 +118,9 @@ int draw::checkbox(int x, int y, int width, const anyval& value, const char* lab
 		flags |= Checked;
 	clipart(x + 2, y + imax((rc1.height() - 14) / 2, 0), 0, flags, ":check");
 	decortext(flags);
-	auto a = draw::area(rc);
+	auto a = draw::ishilite(rc);
 	auto need_value = false;
-	if((a == AreaHilited || a == AreaHilitedPressed) && !isdisabled(flags) && hot.key == MouseLeft) {
+	if(a && !isdisabled(flags) && hot.key == MouseLeft) {
 		if(!hot.pressed)
 			need_value = true;
 	}
@@ -134,7 +134,7 @@ int draw::checkbox(int x, int y, int width, const anyval& value, const char* lab
 		execute(xorvar);
 	}
 	draw::text(rc1, label);
-	if(tips && a == AreaHilited)
+	if(tips && a && !hot.pressed)
 		tooltips(tips);
 	return rc1.height() + 2;
 }

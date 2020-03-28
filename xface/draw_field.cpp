@@ -281,31 +281,22 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	if(rc.width() <= 0)
 		return rc.height() + metrics::padding * 2;
 	auto focused = isfocused(rc, av);
-	auto a = area(rc);
+	auto a = ishilite(rc);
 	color active = colors::button.mix(colors::edit, 128);
-	switch(a) {
-	case AreaHilited: gradv(rc, active.lighten(), active.darken()); break;
-	case AreaHilitedPressed: gradv(rc, active.darken(), active.lighten()); break;
-	default: gradv(rc, colors::button.lighten(), colors::button.darken()); break;
-	}
+	if(a) {
+		if(hot.pressed)
+			gradv(rc, active.darken(), active.lighten());
+		else
+			gradv(rc, active.lighten(), active.darken());
+	} else
+		gradv(rc, colors::button.lighten(), colors::button.darken());
 	rectb(rc, colors::border);
 	rect rco = rc;
 	auto execute_drop_down = false;
-	if(a == AreaHilited || a == AreaHilitedPressed) {
-		switch(hot.key) {
-		case MouseLeft:
-			if(!hot.pressed)
-				execute_drop_down = true;
-			break;
-		}
-	}
-	if(focused) {
-		switch(hot.key) {
-		case KeyEnter:
-			execute_drop_down = true;
-			break;
-		}
-	}
+	if(a && hot.key == MouseLeft && !hot.pressed)
+		execute_drop_down = true;
+	if(focused && hot.key==KeyEnter)
+		execute_drop_down = true;
 	if(execute_drop_down)
 		field(rc, av, source, getname, false);
 	rco.offset(2, 2);
@@ -316,7 +307,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	auto p = source.ptr(v);
 	char temp[260];
 	textc(rco.x1, rco.y1, rco.width(), getname(p, temp, temp + sizeof(temp) - 1, 0));
-	if(tips && a == AreaHilited)
+	if(tips && a && !hot.pressed)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;
 }

@@ -40,6 +40,7 @@ rect				draw::clipping;
 char				draw::link[4096];
 hoti				draw::hot;
 // Hot keys and menus
+static hilite_s		current_hilite_area;
 bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;
 // Locale draw variables
@@ -916,7 +917,7 @@ color draw::getcolor(color normal, unsigned flags) {
 color draw::getcolor(rect rc, color normal, color active, unsigned flags) {
 	if(flags&Disabled)
 		return normal.mix(colors::window);
-	if(areb(rc))
+	if(ishilite(rc))
 		return active;
 	return normal;
 }
@@ -1392,24 +1393,18 @@ static void intersect_rect(rect& r1, const rect& r2) {
 	}
 }
 
-areas draw::area(rect rc) {
+bool draw::ishilite(const rect& rc) {
 	if(sys_optimize_mouse_move)
 		intersect_rect(sys_static_area, rc);
 	if(dragactive())
-		return AreaNormal;
+		return false;
 	if(!hot.mouse.in(clipping))
-		return AreaNormal;
+		return false;
 	if(!mouseinput)
-		return AreaNormal;
+		return false;
 	if(hot.mouse.in(rc))
-		return hot.pressed ? AreaHilitedPressed : AreaHilited;
-	return AreaNormal;
-}
-
-bool draw::areb(rect rc) {
-	areas a = area(rc);
-	return a == AreaHilited
-		|| a == AreaHilitedPressed;
+		return true;
+	return false;
 }
 
 int	draw::aligned(int x, int width, unsigned flags, int dx) {

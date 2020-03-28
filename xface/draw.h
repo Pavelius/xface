@@ -41,13 +41,14 @@ enum window_flags {
 	WFMaximized = 0x0040,
 	WFAbsolutePos = 0x0080,
 };
-enum cursors {
+enum cursor_s {
 	CursorArrow, CursorHand, CursorLeftRight, CursorUpDown, CursorAll, CursorNo, CursorEdit, CursorWait,
 };
-enum areas {
-	AreaNormal, // Area not have mouse
-	AreaHilited, // Area have mouse
-	AreaHilitedPressed, // Area have mouse and mouse button is pressed
+enum hilite_s : unsigned char {
+	HiliteClient, HiliteTitle,
+	HiliteRow, HiliteTreemark, HiliteColumHeader, HiliteColumSlider,
+	HiliteScrollV, HiliteScrollVD, HiliteScrollVU,
+	HiliteScrollH, HiliteScrollHD, HiliteScrollHU,
 };
 enum image_flag_s {
 	ImageMirrorV = 0x0001,
@@ -146,7 +147,7 @@ bool					open(const char* title, char* path, const char* filter, int filter_inde
 bool					save(const char* title, char* path, const char* filter, int filter_index = 0);
 }
 struct hoti {
-	cursors				cursor; // set this mouse cursor
+	cursor_s			cursor; // set this mouse cursor
 	unsigned			key; // if pressed key or mouse this field has key
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed
@@ -235,8 +236,6 @@ extern const sprite*	font; // Currently selected font
 //
 int						aligned(int x, int width, unsigned state, int string_width);
 int						alignedh(const rect& rc, const char* string, unsigned state);
-areas					area(rect rc);
-bool					areb(rect rc);
 void					bezier(int x0, int y0, int x1, int y1, int x2, int y2);
 void					bezierseg(int x0, int y0, int x1, int y1, int x2, int y2);
 void					blit(surface& dest, int x, int y, int width, int height, unsigned flags, surface& dc, int xs, int ys);
@@ -274,6 +273,7 @@ inline bool				ischecked(unsigned flags) { return (flags&Checked) != 0; }
 inline bool				isdisabled(unsigned flags) { return (flags&Disabled) != 0; }
 bool					isfocused();
 inline bool				isfocused(unsigned flags) { return (flags&Focused) != 0; }
+bool					ishilite(const rect& rc);
 bool					ismodal();
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha = 0xFF);
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha, color* pal);

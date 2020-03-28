@@ -123,7 +123,7 @@ listelement* valuelist::choose(int x, int y, int width, const char* start_filter
 		case MouseLeftDBL:
 		case MouseLeftDBL + Ctrl:
 		case MouseLeftDBL + Shift:
-			if(!areb(rc))
+			if(!ishilite(rc))
 				breakmodal(0);
 			else {
 				if(!hot.pressed) {

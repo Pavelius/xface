@@ -104,7 +104,7 @@ struct testinfo {
 static int buttonx(int x, int y, int width, eventproc proc, const char* title, const char* tips = 0) {
 	auto result = button(x, y, width, proc, title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
-	if(areb(rc)) {
+	if(ishilite(rc)) {
 		if(tips)
 			statusbar("Кнопка: %1", tips);
 		else
@@ -185,9 +185,9 @@ static void test_tableref() {
 	test.addcol(pm, "#", "rownumber");
 	test.addcol(pm, "image", "Из", "image");
 	test.addcol(pm, "name", "Наименование").set(SizeAuto);
-	test.addcol(pm, "flags", "УУ", "checkbox").setparam(AreaNormal);
-	test.addcol(pm, "flags", "БУ", "checkbox").setparam(AreaHilited);
-	test.addcol(pm, "flags", "МУ", "checkbox").setparam(AreaHilitedPressed);
+	test.addcol(pm, "flags", "УУ", "checkbox").setparam(1);
+	test.addcol(pm, "flags", "БУ", "checkbox").setparam(2);
+	test.addcol(pm, "flags", "МУ", "checkbox").setparam(4);
 	test.addcol(pm, "age", "Возраст");
 	test.addcol(pm, "gender", "Пол").set(bsdata<genderi>::source_ptr);
 	test.addcol(pm, "alignment", "Мировозрение").set(bsdata<alignmenti>::source_ptr);
@@ -297,7 +297,7 @@ static void test_drag_drop() {
 			char temp[260]; stringbuilder sb(temp);
 			sb.add("Начинаем тягать %1i, %2i", rc.x1, rc.y1);
 			text(10, 42, sb);
-		} else if(areb(rc) && hot.key == MouseLeft && hot.pressed)
+		} else if(ishilite(rc) && hot.key == MouseLeft && hot.pressed)
 			dragbegin(test_drag_drop);
 		if(dragactive(test_drag_drop)) {
 			line(rc.x1, rc.y1, dragmouse.x, dragmouse.y, colors::red);

@@ -35,13 +35,13 @@ void scrollable::view(const rect& rcc) {
 		rc.y2 -= scrollh.height();
 	}
 	// mouse events modified scroll behaivor
-	auto a = area(rc);
-	if(a == AreaHilited) {
+	auto a = ishilite(rc);
+	if(a) {
 		int ws;
 		switch(hot.key) {
 		case MouseWheelUp:
 			ws = imin(32 / imin((int)wheels.y, 1), 1);
-			if(areb(scrollh))
+			if(ishilite(scrollh))
 				origin.x -= wheels.x*ws;
 			else
 				origin.y -= wheels.y*ws;
@@ -49,7 +49,7 @@ void scrollable::view(const rect& rcc) {
 			break;
 		case MouseWheelDown:
 			ws = imin(32 / imin((int)wheels.y, 1), 1);
-			if(areb(scrollh))
+			if(ishilite(scrollh))
 				origin.x += wheels.x*ws;
 			else
 				origin.y += wheels.y*ws;

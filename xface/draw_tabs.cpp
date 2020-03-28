@@ -10,14 +10,14 @@ int draw::sheetline(rect rc, bool background) {
 	return rc.height();
 }
 
-static bool sheet(rect& rc, rect& rct, const char* string, areas* area_result, bool checked, bool right_side, int w2) {
+static bool sheet(rect& rc, rect& rct, const char* string, bool* area_result, bool checked, bool right_side, int w2) {
 	bool result = false;
 	int width = textw(string) + w2;
 	if(right_side)
 		rct.set(rc.x2 - width - 8, rc.y1, rc.x2, rc.y2);
 	else
 		rct.set(rc.x1, rc.y1, rc.x1 + width + 8, rc.y2);
-	auto a = area(rct);
+	auto a = ishilite(rct);
 	if(area_result)
 		*area_result = a;
 	if(checked) {
@@ -27,14 +27,11 @@ static bool sheet(rect& rc, rect& rct, const char* string, areas* area_result, b
 			colors::active);
 	}
 	text({rct.x1, rct.y1, rct.x2 - w2, rct.y2}, string, AlignCenterCenter);
-	if(a != AreaNormal) {
-		if(a == AreaHilitedPressed) {
-			if(hot.key == MouseLeft)
-				result = true;
-		} else if(a == AreaHilited) {
-			draw::rectf({rct.x1 + 1, rct.y1 + 1, rct.x2, rct.y2 - 2},
-				colors::tabs::back, 64);
-		}
+	if(a) {
+		if(hot.key == MouseLeft && hot.pressed)
+			result = true;
+		else
+			draw::rectf({rct.x1 + 1, rct.y1 + 1, rct.x2, rct.y2 - 2}, colors::tabs::back, 64);
 	}
 	if(right_side)
 		rc.x2 -= rct.width();
@@ -64,21 +61,21 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 			fore = colors::tabs::text;
 		else
 			fore = colors::text;
-		areas a; rect element;
+		bool a; rect element;
 		if(sheet(rc, element, s, &a, (i == current), right_side, (show_close ? 16 : 0)))
 			result = 1;
-		if(a == AreaHilited || a == AreaHilitedPressed) {
+		if(a) {
 			if(hilite)
 				*hilite = i;
 		}
-		if((a == AreaHilited || a == AreaHilitedPressed || (i == current)) && show_close) {
+		if((a || (i == current)) && show_close) {
 			const int dy = 12;
 			rect rcx;
 			rcx.y1 = element.y1 + (element.height() - dy) / 2;
 			rcx.y2 = rcx.y1 + dy;
 			rcx.x1 = element.x2 - dy - 4;
 			rcx.x2 = rcx.x1 + rcx.height();
-			if(areb(rcx)) {
+			if(ishilite(rcx)) {
 				if(buttonh(rcx, false, false, false, true, 0))
 					result = 2;
 				tooltips("Закрыть");

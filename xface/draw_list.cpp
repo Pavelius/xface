@@ -5,6 +5,13 @@ using namespace draw::controls;
 
 static char		search_text[32];
 static unsigned	search_time;
+static int		current_hilite_treemark;
+
+static struct list_control_plugin : draw::plugin {
+	void before() override {
+		current_hilite_treemark = -1;
+	}
+} plugin_instance;
 
 void list::ensurevisible() {
 	correction();
@@ -57,7 +64,7 @@ void list::hilight(const rect& rc, const rect* p_current_rect) const {
 
 void list::rowhilite(const rect& rc, int index) const {
 	if(show_selection) {
-		area({rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1});
+		ishilite({rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1});
 		if(index == current)
 			hilight(rc);
 		else if(index == current_hilite)
@@ -111,9 +118,9 @@ void list::treemark(const rect& rc, int index, int level) const {
 	auto isopen = list::isopen(index);
 	int x = rc.x1 + rc.width() / 2;
 	int y = rc.y1 + rc.height() / 2 - 1;
-	areas a = area(rc);
-	if(hot.key == MouseLeft && a==AreaHilitedPressed)
-		execute((fncmd)&list::treemarking, index);
+	auto a = ishilite(rc);
+	if(a)
+		current_hilite_treemark = index;
 	circle(x, y, 6, c1);
 	line(x - 4, y, x + 4, y, c1);
 	if(!isopen)
@@ -142,7 +149,7 @@ void list::view(const rect& rcorigin) {
 	auto enable_scrollv = maximum > lines_per_page;
 	auto enable_scrollh = maximum_width > pixels_per_width;
 	int rk = hot.key&CommandMask;
-	if(draw::areb(rc)) {
+	if(ishilite(rc)) {
 		if(hot.mouse.y > rc.y1 && hot.mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
 			if((!enable_scrollv || hot.mouse.x < rc.x2 - metrics::scroll)
 				&& (!enable_scrollh || hot.mouse.y < rc.y2 - metrics::scroll))
@@ -254,6 +261,13 @@ void list::mouseinput(unsigned id, point position) {
 	switch(id) {
 	case MouseLeftDBL:
 		keyinput(KeyEnter);
+		break;
+	case MouseLeft:
+		if(ishilited() && current_hilite_treemark != -1 && hot.pressed) {
+			hot.param = current_hilite_treemark;
+			treemarking(true);
+		} else
+			control::mouseinput(id, position);
 		break;
 	default:
 		control::mouseinput(id, position);

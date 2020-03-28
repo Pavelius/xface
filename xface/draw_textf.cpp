@@ -236,7 +236,7 @@ static int textfln(int x0, int y0, int width, const char** string, color c1, int
 			if(flags&TextUscope)
 				draw::line(x4, y2, x3, y2, draw::fore);
 			rect rc = {x4, y, x3, y2};
-			if(draw::areb(rc)) {
+			if(ishilite(rc)) {
 				if(flags&TextUscope) {
 					hot.cursor = CursorHand;
 					if(temp[0] && hot.key == MouseLeft && !hot.pressed) {

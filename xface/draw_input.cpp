@@ -114,7 +114,7 @@ bool draw::isfocused(const rect& rc, const anyval& value) {
 	addelement(rc, value);
 	if(!isfocused())
 		setfocus(value, true);
-	else if(area(rc) == AreaHilitedPressed && hot.key == MouseLeft && hot.pressed) {
+	else if(ishilite(rc) && hot.key == MouseLeft && hot.pressed) {
 		setfocus(value, false);
 		hot.key = MouseLeft;
 	}

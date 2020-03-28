@@ -140,7 +140,7 @@ void control::view(const rect& rc) {
 	}
 	if(isfocused())
 		current_focus = this;
-	if(areb(rc))
+	if(ishilite(rc))
 		current_hilite = this;
 	if(show_background)
 		rectf(rc, colors::window);

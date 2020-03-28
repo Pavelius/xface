@@ -24,7 +24,7 @@ struct toolbar_builder : control::command::builder {
 			width += metrics::padding * 2 + w;
 		}
 		rect rc = {x, y, x + width, y + size.y};
-		if(areb(rc)) {
+		if(ishilite(rc)) {
 			auto name = cmd.name;
 			if(name) {
 				if(cmd.key) {

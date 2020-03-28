@@ -45,11 +45,9 @@ void properties::treemark(int x, int y, int width, void* object, bool isopen) co
 	auto x1 = x + width / 2;
 	auto y1 = y + width / 2 - 1;
 	rect rc = {x, y, x + width, y + width};
-	areas a = area(rc);
-	if(a == AreaHilitedPressed) {
-		if(hot.key == MouseLeft)
-			execute((fncmd)&properties::cmdopen, (int)object);
-	}
+	auto a = ishilite(rc);
+	if(a && hot.pressed && hot.key==MouseLeft)
+		execute((fncmd)&properties::cmdopen, (int)object);
 	color c1 = fore;
 	circle(x1, y1, 6, c1);
 	line(x1 - 4, y1, x1 + 4, y1, c1);
@@ -72,7 +70,7 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 		rectx(rc, colors::border);
 	switch(hot.key) {
 	case MouseLeft:
-		if(areb(rc) && !hot.pressed)
+		if(ishilite(rc) && !hot.pressed)
 			need_open = true;
 		break;
 	case KeySpace:

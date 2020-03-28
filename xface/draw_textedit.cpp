@@ -292,11 +292,11 @@ bool textedit::editing(rect rc) {
 		case MouseLeftDBL:
 		case MouseLeftDBL | Ctrl:
 		case MouseLeftDBL | Shift:
-			if(records && isshowrecords() && areb(rcv)) {
+			if(records && isshowrecords() && ishilite(rcv)) {
 				records->keyinput(hot.key);
 				break;
 			}
-			if(!areb(rc) && hot.pressed)
+			if(!ishilite(rc) && hot.pressed)
 				return true;
 			break;
 		default:

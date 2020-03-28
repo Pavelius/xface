@@ -66,7 +66,7 @@ static int tokey(unsigned key) {
 	return Alpha + key;
 }
 
-static void set_cursor(cursors e) {
+static void set_cursor(cursor_s e) {
 	static void* data[] = {
 		LoadCursorA(0, (char*)32512),//IDC_ARROW
 		LoadCursorA(0, (char*)32649),//IDC_HAND

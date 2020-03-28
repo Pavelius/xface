@@ -196,20 +196,16 @@ int table::rowheader(const rect& rc) const {
 		r1.x2 = r1.x2 + columns[i].width;
 		if(columns[i].size == SizeInner)
 			continue;
-		auto a = area(r1);
+		auto a = ishilite(r1);
 		if(!no_change_order) {
-			switch(a) {
-			case AreaHilited:
-				gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a1, a2);
-				break;
-			case AreaHilitedPressed:
-				gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a2, a1);
-				break;
-            default:
-                break;
+			if(a) {
+				if(hot.pressed)
+					gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a2, a1);
+				else
+					gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a1, a2);
+				if(hot.key == MouseLeft && !hot.pressed)
+					clickcolumn(i);
 			}
-			if((a == AreaHilited || a == AreaHilitedPressed) && hot.key == MouseLeft && !hot.pressed)
-				clickcolumn(i);
 		}
 		// Нарисуем границу только когда она далеко от края
 		// Чтобы она была не видна, если ширина элемента впритык к краю.
@@ -218,8 +214,8 @@ int table::rowheader(const rect& rc) const {
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)
 			textc(r1.x1 + header_padding, r1.y1 + header_padding, r1.width() - header_padding * 2, p);
-		a = area({r1.x2 - header_padding, r1.y1, r1.x2 + header_padding, r1.y2});
-		if(a == AreaHilited || a == AreaHilitedPressed) {
+		a = ishilite({r1.x2 - header_padding, r1.y1, r1.x2 + header_padding, r1.y2});
+		if(a) {
 			hot.cursor = CursorLeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
 				dragbegin(&columns[i]);
@@ -298,7 +294,7 @@ void table::rowtotal(const rect& rc) const {
 }
 
 void table::row(const rect& rc, int index) {
-	area(rc);
+	ishilite(rc);
 	if(select_mode == SelectRow)
 		rowhilite(rc, index);
 	auto x1 = rc.x1;
@@ -330,7 +326,7 @@ void table::row(const rect& rc, int index) {
 		}
 		if(show_grid_lines && columns[i].size != SizeInner)
 			draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
-		area(rt);
+		ishilite(rt);
 		(this->*pc->method->render)(rt, index, i);
 		x1 += rt.width() + 8;
 	}
@@ -541,7 +537,7 @@ void table::cell(const rect& rc, int line, int column, const char* ps) {
 	bool clipped = false;
 	textc(rc.x1, rc.y1, rc.width(), ps, -1, align, &clipped);
 	if(clipped) {
-		if(areb(rc))
+		if(ishilite(rc))
 			tooltips(rc.x1, rc.y1, 200, ps);
 	}
 }
