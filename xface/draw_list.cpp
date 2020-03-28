@@ -66,11 +66,18 @@ void list::rowhilite(const rect& rc, int index) const {
 }
 
 void list::row(const rect& rc, int index) {
+	auto r1 = rc;
 	char temp[260]; temp[0] = 0;
-	rowhilite(rc, index);
+	rowhilite(r1, index);
+	auto i = getimage(index);
+	if(i != -1) {
+		auto w = r1.height();
+		draw::image(r1.x1 + w / 2, r1.y1 + w / 2, gettreeimages(), i, 0);
+		r1.x1 += w + 1;
+	}
 	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
 	if(p)
-		draw::textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 4 * 2, p);
+		draw::textc(r1.x1 + 4, r1.y1 + 4, r1.width() - 4 * 2, p);
 }
 
 int	list::getrowheight() {
@@ -97,7 +104,7 @@ bool list::isopen(int index) const {
 	return (index < getmaximum() - 1) ? (getlevel(index + 1) > getlevel(index)) : false;
 }
 
-void list::treemark(rect rc, int index, int level) const {
+void list::treemark(const rect& rc, int index, int level) const {
 	if(!isgroup(index))
 		return;
 	color c1 = colors::text;
@@ -105,10 +112,8 @@ void list::treemark(rect rc, int index, int level) const {
 	int x = rc.x1 + rc.width() / 2;
 	int y = rc.y1 + rc.height() / 2 - 1;
 	areas a = area(rc);
-	if(a == AreaHilitedPressed) {
-		if(hot.key == MouseLeft)
-			execute((fncmd)&list::treemarking, index);
-	}
+	if(hot.key == MouseLeft && a==AreaHilitedPressed)
+		execute((fncmd)&list::treemarking, index);
 	circle(x, y, 6, c1);
 	line(x - 4, y, x + 4, y, c1);
 	if(!isopen)
@@ -281,4 +286,54 @@ int list::find(int line, int column, const char* value, int lenght) const {
 		line++;
 	}
 	return -1;
+}
+
+int list::getparent(int index) const {
+	int level = getlevel(index);
+	while(index) {
+		if(level > getlevel(index))
+			return index;
+		index--;
+	}
+	if(level > getlevel(index))
+		return index;
+	return -1;
+}
+
+int list::getroot(int index) const {
+	while(true) {
+		auto parent = getparent(index);
+		if(parent == -1)
+			return index;
+		index = parent;
+	}
+}
+
+int list::getblockcount(int index) const {
+	auto start = index;
+	auto level = getlevel(index++);
+	auto index_last = getmaximum();
+	while(index < index_last) {
+		if(level >= getlevel(index))
+			break;
+		index++;
+	}
+	return index - start;
+}
+
+int	list::getnextblock(int index, int increment) const {
+	auto i = index;
+	auto level = getlevel(i);
+	auto maximum = getmaximum();
+	while(true) {
+		auto n = i + increment;
+		if((n < 0) || (n >= maximum))
+			return index;
+		auto m = getlevel(n);
+		if(m == level)
+			return n;
+		if(m < level)
+			return index;
+		i = n;
+	}
 }

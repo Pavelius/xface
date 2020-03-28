@@ -5,6 +5,7 @@
 #include "draw.h"
 #include "markup.h"
 #include "pointl.h"
+#include "stringbuilder.h"
 
 #pragma once
 
@@ -146,14 +147,19 @@ struct list : control {
 	void					correction_width();
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
 	int						find(int line, int column, const char* name, int lenght = -1) const;
+	int						getblockcount(int index) const;
 	virtual int				getcolumn() const { return 0; } // Get current column
 	virtual int				getident() const { return 6 * 2 + 4; } // get row ident in levels
+	virtual int				getimage(int index) const { return -1; }
 	virtual int				getlevel(int index) const { return 0; } // get row ident in levels
 	inline int				getline() const { return current; } // get current line
 	int						getlinesperpage(int height) const { return height / pixels_per_line; }
 	virtual const char*		getname(char* result, const char* result_max, int line, int column) const { return 0; }
+	int						getnextblock(int index, int increment = 1) const;
 	virtual int				getmaximum() const { return 0; }
 	virtual int				getmaximumwidth() const { return 0; }
+	int						getparent(int index) const;
+	int						getroot(int index) const;
 	static int				getrowheight(); // Get default row height for any List Control
 	virtual int				getwidth(int column) const { return 0; } // Get column width
 	void					hilight(const rect& rc, const rect* prc = 0) const;
@@ -169,7 +175,7 @@ struct list : control {
 	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			rowhilite(const rect& rc, int index) const;
 	virtual void			select(int index, int column);
-	void					treemark(rect rc, int index, int level) const;
+	void					treemark(const rect& rc, int index, int level) const;
 	virtual bool			treemarking(bool run) { return true; }
 	void					view(const rect& rc) override;
 };
@@ -188,7 +194,7 @@ struct column {
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
-	bool					is(column_s v) const { return flags.is(v); }
+	constexpr bool			is(column_s v) const { return flags.is(v); }
 	void					set(const void* object, int v);
 	column&					set(image_flag_s v) { align = v; return *this; }
 	column&					set(column_size_s v) { size = v; return *this; }
@@ -212,6 +218,7 @@ struct table : list {
 		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
+	column&					addstdimage();
 	virtual void*			addrow() { return 0; } // Need override
 	virtual bool			addrow(bool run);
 	void					cell(const rect& rc, int line, int column, const char* text);
@@ -219,6 +226,7 @@ struct table : list {
 	void					celldate(const rect& rc, int line, int column);
 	void					celldatetime(const rect& rc, int line, int column);
 	void					cellimage(const rect& rc, int line, int column);
+	void					cellimagest(const rect& rc, int line, int column);
 	void					cellrownumber(const rect& rc, int line, int column);
 	void					cellhilite(const rect& rc, int line, int columen, const char* text, image_flag_s aling) const;
 	void					cellnumber(const rect& rc, int line, int column);
@@ -270,6 +278,32 @@ struct table : list {
 private:
 	void					update_columns(const rect& rc);
 };
+struct tree : table, private array {
+	struct element {
+		unsigned char		level;
+		unsigned char		flags;
+		unsigned char		type;
+		unsigned char		image;
+		void				setgroup(bool v) { flags = v ? 1 : 0; }
+	};
+	bool					sort_rows_by_name;
+	constexpr tree(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
+	void*					addrow(void* object) { return array::add(object); }
+	void					collapse(int i);
+	void					expand(int index);
+	virtual void			expanding(int index, int level) {}
+	void*					get(int index) const override { return array::ptr(index); }
+	int						getimage(int index) const override;
+	int						getlevel(int index) const override;
+	virtual int				getmaximum() const override { return array::getcount(); }
+	int						gettype(int index) const;
+	element*				insert(int& index, int level);
+	bool					isgroup(int index) const override;
+	void					open(int max_level);
+	void					swap(int i1, int i2) override;
+	void					toggle(int index);
+	bool					treemarking(bool run);
+};
 struct tableref : table, private array {
 	struct element {
 		unsigned char		level;
@@ -287,25 +321,19 @@ struct tableref : table, private array {
 	};
 	bool					sort_rows_by_name;
 	constexpr tableref(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
-	void					addref(void* object);
+	void*					addref(void* object);
 	void					collapse(int index);
 	void					expand(int index, int level);
 	virtual void			expanding(builder& e) {}
 	int						find(const void* value) const;
 	void*					get(int index) const override;
-	int						getblockcount(int index) const;
-	int						getimage(int index) const;
+	int						getimage(int index) const override;
 	int						getlevel(int index) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
-	int						getnext(int index, int increment = 1) const;
-	int						getparent(int index) const;
-	int						getroot(int index) const;
 	int						gettreecolumn() const;
 	int						gettype(int index) const;
 	bool					isgroup(int index) const override;
 	bool					keyinput(unsigned id) override;
-	bool					moveup(bool run);
-	bool					movedown(bool run);
 	void					open(int max_level);
 	bool					remove(bool run);
 	void					shift(int i1, int i2);

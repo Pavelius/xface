@@ -1,4 +1,3 @@
-#include "crt.h"
 #include "draw_control.h"
 
 using namespace draw;
@@ -18,10 +17,11 @@ void* tableref::builder::add(void* object, unsigned char image, unsigned char ty
 	return pc->array::insert(++index, &e);
 }
 
-void tableref::addref(void* object) {
+void* tableref::addref(void* object) {
 	auto p = (element*)array::add();
 	memset(p, 0, sizeof(*p));
 	p->object = object;
+	return p;
 }
 
 int	tableref::find(const void* value) const {
@@ -49,15 +49,6 @@ int	tableref::gettype(int index) const {
 	return ((element*)array::ptr(index))->type;
 }
 
-int tableref::getroot(int index) const {
-	while(true) {
-		auto parent = getparent(index);
-		if(parent == -1)
-			return index;
-		index = parent;
-	}
-}
-
 //int tableref::getnumber(int line, int column) const {
 //	if(columns[column].id) {
 //		if(strcmp(columns[column].id, "image") == 0)
@@ -69,30 +60,6 @@ int tableref::getroot(int index) const {
 //	}
 //	return 0;
 //}
-
-int tableref::getparent(int index) const {
-	int level = getlevel(index);
-	while(index) {
-		if(level > getlevel(index))
-			return index;
-		index--;
-	}
-	if(level > getlevel(index))
-		return index;
-	return -1;
-}
-
-int tableref::getblockcount(int index) const {
-	auto start = index;
-	auto level = getlevel(index++);
-	auto index_last = getmaximum();
-	while(index < index_last) {
-		if(level >= getlevel(index))
-			break;
-		index++;
-	}
-	return index - start;
-}
 
 bool tableref::isgroup(int index) const {
 	return (((element*)array::ptr(index))->flags&TIGroup) != 0;
@@ -221,23 +188,6 @@ bool tableref::keyinput(unsigned id) {
 
 int	tableref::gettreecolumn() const {
 	return getvalid(0, 1);
-}
-
-int	tableref::getnext(int index, int increment) const {
-	auto i = index;
-	auto level = getlevel(i);
-	auto maximum = getmaximum();
-	while(true) {
-		auto n = i + increment;
-		if((n < 0) || (n >= maximum))
-			return index;
-		auto m = getlevel(n);
-		if(m == level)
-			return n;
-		if(m < level)
-			return index;
-		i = n;
-	}
 }
 
 void tableref::shift(int i1, int i2) {

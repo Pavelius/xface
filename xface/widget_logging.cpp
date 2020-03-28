@@ -1,6 +1,6 @@
 #include "crt.h"
 #include "datetime.h"
-#include "draw_grid.h"
+#include "draw_control.h"
 #include "io.h"
 #include "settings.h"
 #include "stringbuilder.h"

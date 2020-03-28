@@ -136,6 +136,7 @@
     <ClCompile Include="draw_markup.cpp" />
     <ClCompile Include="draw_properties.cpp" />
     <ClCompile Include="draw_tableref.cpp" />
+    <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="markup.cpp" />
     <ClCompile Include="requisit.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="sz2numf.cpp" />
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="valuelist.cpp" />
+    <ClCompile Include="widget_directory.cpp" />
     <ClCompile Include="widget_logging.cpp" />
     <ClCompile Include="widget_settings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

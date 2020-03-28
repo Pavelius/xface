@@ -19,9 +19,6 @@
     <Filter Include="support">
       <UniqueIdentifier>{77d5ce19-1ba6-4cdd-adf7-39071b6158cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="draw\simple">
-      <UniqueIdentifier>{e189561a-4a4c-49c9-a4b0-3d9e5520f189}</UniqueIdentifier>
-    </Filter>
     <Filter Include="draw\controls">
       <UniqueIdentifier>{4e583cd2-c2b4-4c5b-9e23-e9e08fb827d5}</UniqueIdentifier>
     </Filter>
@@ -66,38 +63,11 @@
     <ClCompile Include="string_value.cpp">
       <Filter>strings</Filter>
     </ClCompile>
-    <ClCompile Include="draw_clipart.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tooltips.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_button.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_scroll.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_theme.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_dialog.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_splitter.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
     <ClCompile Include="draw_list.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
     <ClCompile Include="draw_table.cpp">
       <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tabs.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_statusbar.cpp">
-      <Filter>draw\simple</Filter>
     </ClCompile>
     <ClCompile Include="draw_textedit.cpp">
       <Filter>draw\controls</Filter>
@@ -128,15 +98,6 @@
     </ClCompile>
     <ClCompile Include="bstream.cpp">
       <Filter>support</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_dropdown.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tool.cpp">
-      <Filter>draw\simple</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_toolbar.cpp">
-      <Filter>draw\simple</Filter>
     </ClCompile>
     <ClCompile Include="requisit.cpp">
       <Filter>support</Filter>
@@ -227,6 +188,48 @@
     </ClCompile>
     <ClCompile Include="bsreq_bin.cpp">
       <Filter>collections</Filter>
+    </ClCompile>
+    <ClCompile Include="widget_directory.cpp">
+      <Filter>draw\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_button.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_clipart.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_dialog.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_dropdown.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_scroll.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_splitter.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_statusbar.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tabs.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_theme.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tool.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_toolbar.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tooltips.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tree.cpp">
+      <Filter>draw\controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

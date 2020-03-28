@@ -83,6 +83,14 @@ BSREQ(age),
 BSREQ(flags),
 BSREQ(date),
 {}};
+struct treerow : controls::tree::element {
+	const char*		name;
+	int				value;
+};
+const bsreq bsmeta<treerow>::meta[] = {BSREQ(image),
+BSREQ(name),
+BSREQ(value),
+{}};
 
 const markup* getmarkup(const bsreq* type) {
 	return 0;
@@ -209,24 +217,35 @@ static void test_tableref() {
 //	test.no_change_count = false;
 //	show_table(test);
 //}
-//
-//static void test_tree() {
-//	struct test_tree_control : controls::tree {
-//		void expanding(builder&  e) {
-//			e.add((void*)bsmeta<cultivatedi>::data.get(0), 0, 0, false);
-//			e.add((void*)bsmeta<cultivatedi>::data.get(1), 1, 0, true);
-//			e.add((void*)bsmeta<cultivatedi>::data.get(2), 1, 0, true);
-//		}
-//		constexpr test_tree_control() : tree(bsmeta<cultivatedi>::meta){}
-//	} test;
-//	test.select_mode = SelectText;
-//	test.addcol("image", 0, "image", SizeInner);
-//	test.addcol("name", "Наименование", "text", SizeAuto);
-//	test.addcol("cult_land", "Обрабатывается", "number");
-//	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-//	test.expand(0, 0);
-//	show_table(test);
-//}
+
+static void test_tree() {
+	struct test_tree_control : controls::tree {
+		void expanding(int index, int level) override {
+			treerow* p;
+			p = (treerow*)insert(index, level);
+			p->name = "Pavel";
+			p->image = 1;
+			p->value = 10;
+			p->setgroup(true);
+			p = (treerow*)insert(index, level);
+			p->name = "Julia";
+			p->image = 2;
+			p = (treerow*)insert(index, level);
+			p->name = "Peter";
+			p->image = 4;
+			p->value = 1000;
+			p->setgroup(true);
+		}
+		constexpr test_tree_control() : tree(sizeof(treerow)) {}
+	} test;
+	auto meta = bsmeta<treerow>::meta;
+	test.select_mode = SelectText;
+	test.addcol(meta, "image", 0, "image");
+	test.addcol(meta, "name", "Наименование").set(SizeAuto);
+	test.addcol(meta, "value", "Значение");
+	test.expand(-1);
+	show_table(test);
+}
 
 static void test_markup() {
 	element source = {};
@@ -415,6 +434,7 @@ static void start_menu() {
 	{"Простые элементы", simple_controls},
 	{"Список", test_list},
 	{"Таблица с ячейками", test_tableref},
+	{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
 	{"Тайлы", test_tile_manager},
 	{"Разметка", test_markup},
@@ -511,12 +531,15 @@ static bool test_anyval() {
 	return v1==v2;
 }
 
+void directory_initialize();
+
 int main() {
 	auto type = bsmeta<bsreq>::meta;
 	if(!test_write_bin())
 		return -1;
 	if(!test_anyval())
 		return -1;
+	directory_initialize();
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
 	test_datetime();

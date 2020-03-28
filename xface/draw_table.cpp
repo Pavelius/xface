@@ -455,6 +455,10 @@ column& table::addcol(const bsreq* metadata, const char* id, const char* name, c
 	return *p;
 }
 
+column& table::addstdimage() {
+	return addcol(0, "image", 0, "standart_image");
+}
+
 bool table::changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum) {
 	pushfocus pf;
 	textedit te(result, result_maximum - result - 1, true);
@@ -475,7 +479,7 @@ void table::changenumber(const rect& rc, int line, int column) {
 
 void table::changetext(const rect& rc, int line, int column) {
 	char temp[8192];
-	auto value = columns[column].type->gets(get(line));
+	auto value = (const char*)columns[column].get(get(line));
 	zcpy(temp, value, sizeof(temp) - 1);
 	if(changefield(rc, columns[column].align, temp, zendof(temp)))
 		columns[column].set(get(line), (int)szdup(temp));
@@ -575,11 +579,22 @@ void table::celltext(const rect& rc, int line, int column) {
 	cell(rc, line, column, ps);
 }
 
-void table::cellimage(const rect& rc, int line, int column) {
-	auto v = columns[column].get(get(line));
+void table::cellimagest(const rect& rc, int line, int column) {
 	auto s = gettreeimages();
-	if(s)
-		image(rc.x1 + rc.width() / 2, rc.y1 + rc.height() / 2, s, v, 0);
+	if(!s)
+		return;
+	auto v = getimage(line);
+	if(v == -1)
+		return;
+	image(rc.x1 + rc.width() / 2, rc.y1 + rc.height() / 2, s, v, 0);
+}
+
+void table::cellimage(const rect& rc, int line, int column) {
+	auto s = gettreeimages();
+	if(!s)
+		return;
+	auto v = columns[column].get(get(line));
+	image(rc.x1 + rc.width() / 2, rc.y1 + rc.height() / 2, s, v, 0);
 }
 
 void table::cellrownumber(const rect& rc, int line, int column) {
@@ -727,4 +742,5 @@ const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, 
 {"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changeref},
 {"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, &table::comparenm},
 {"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, &table::comparenm},
+{"standart_image", "Стандартное изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimagest, 0, 0},
 {}};
