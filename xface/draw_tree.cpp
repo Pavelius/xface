@@ -66,30 +66,41 @@ void tree::swap(int i1, int i2) {
 	array::swap(i1, i2);
 }
 
-//bool tableref::keyinput(unsigned id) {
-//	switch(id) {
-//	case KeyLeft:
-//		if(gettreecolumn() == current_column) {
-//			if(isopen(current)) {
-//				toggle(current);
-//				break;
-//			}
-//			auto parent = getparent(current);
-//			if(parent != current) {
-//				select(parent, current_column);
-//				break;
-//			}
-//		}
-//		return table::keyinput(id);
-//	case KeyRight:
-//		if(gettreecolumn() != current_column || isopen(current))
-//			return table::keyinput(id);
-//		toggle(current);
-//		break;
-//	default: return table::keyinput(id);
-//	}
-//	return true;
-//}
+int tree::gettreecolumn() const {
+	auto i = -1;
+	for(auto& e : columns) {
+		i++;
+		if(e.size == SizeInner)
+			continue;
+		break;
+	}
+	return i;
+}
+
+bool tree::keyinput(unsigned id) {
+	switch(id) {
+	case KeyLeft:
+		if(gettreecolumn() == current_column) {
+			if(isopen(current)) {
+				toggle(current);
+				break;
+			}
+			auto parent = getparent(current);
+			if(parent != current) {
+				select(parent, current_column);
+				break;
+			}
+		}
+		return table::keyinput(id);
+	case KeyRight:
+		if(gettreecolumn() != current_column || isopen(current))
+			return table::keyinput(id);
+		toggle(current);
+		break;
+	default: return table::keyinput(id);
+	}
+	return true;
+}
 
 //void tableref::shift(int i1, int i2) {
 //	auto c1 = getblockcount(i1);

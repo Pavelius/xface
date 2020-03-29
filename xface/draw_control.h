@@ -286,7 +286,7 @@ struct tableref : table, private array {
 	};
 	constexpr tableref(unsigned size = sizeof(element)) : array(size) {}
 	void*					addref(void* object);
-	int						find(const void* value) const;
+	int						find(const void* object) const;
 	void*					get(int index) const override { return ((element*)array::ptr(index))->object; }
 	virtual int				getmaximum() const override { return array::getcount(); }
 	void					remove(int index) override { array::remove(index, 1); }
@@ -311,8 +311,10 @@ struct tree : table, private array {
 	int						getlevel(int index) const override;
 	virtual int				getmaximum() const override { return array::getcount(); }
 	int						gettype(int index) const;
+	int						gettreecolumn() const;
 	element*				insert(int& index, int level);
 	bool					isgroup(int index) const override;
+	bool					keyinput(unsigned id) override;
 	void					swap(int i1, int i2) override;
 };
 // Cell visual drawing
