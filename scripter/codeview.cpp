@@ -120,8 +120,7 @@ struct renderer : expression::builder {
 		auto push_fore = fore;
 		auto w = textw(v);
 		rect rc = {x, y, x + w, y + texth()};
-		auto a = area(rc);
-		if(a == AreaHilited || a == AreaHilitedPressed) {
+		if(ishilite(rc)) {
 			hilite = context;
 			hilite_rect = rc;
 		}

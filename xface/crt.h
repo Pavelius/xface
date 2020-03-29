@@ -34,6 +34,7 @@ private:
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
 #define INSTDATA(e) template<> e bsdata<e>::elements[]
+#define INSTDATAC(e, c) template<> e bsdata<e>::elements[c]; template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), 0, sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
 #define INSTMETA(e) template<> const bsreq bsmeta<e>::meta[]
 #define INSTELEM(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
 #define NOINSTDATA(e) template<> struct bsdata<e> : bsdata<int> {};
@@ -199,11 +200,12 @@ class array {
 	unsigned				size;
 	unsigned				count;
 	unsigned				count_maximum;
+	bool					growable;
 public:
-	constexpr array() : data(0), size(0), count(0), count_maximum(0) {}
-	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0) {}
-	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0) {}
-	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum) {}
+	constexpr array() : data(0), size(0), count(0), count_maximum(0), growable(true) {}
+	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0), growable(true) {}
+	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0), growable(false) {}
+	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum), growable(false) {}
 	~array();
 	void*					add();
 	void*					add(const void* element);
@@ -217,7 +219,7 @@ public:
 	unsigned				getsize() const { return size; }
 	int						indexof(const void* element) const;
 	void*					insert(int index, const void* element);
-	bool					isgrowable() const { return count_maximum >= count; }
+	bool					isgrowable() const { return growable; }
 	void*					ptr(int index) const { return (char*)data + size * index; }
 	void					remove(int index, int elements_count);
 	void					setcount(unsigned value) { count = value; }
@@ -240,12 +242,14 @@ template<typename T> struct bsdata {
 	static array			source;
 	static constexpr array*	source_ptr = &source;
 	//
-	static T*				add() { return source.add(); }
+	static T*				add() { return (T*)source.add(); }
 	static constexpr T*		begin() { return elements; }
 	static constexpr T*		end() { return elements + source.getcount(); }
 };
 template<> struct bsdata<int> { static constexpr array*	source_ptr = 0; };
 NOINSTDATA(unsigned)
+NOINSTDATA(short)
+NOINSTDATA(unsigned short)
 NOINSTDATA(char)
 NOINSTDATA(unsigned char)
 NOINSTDATA(const char*)

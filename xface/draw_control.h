@@ -286,11 +286,13 @@ struct tableref : table, private array {
 	};
 	constexpr tableref(unsigned size = sizeof(element)) : array(size) {}
 	void*					addref(void* object);
+	void					clear() { array::clear(); }
 	int						find(const void* object) const;
 	void*					get(int index) const override { return ((element*)array::ptr(index))->object; }
 	virtual int				getmaximum() const override { return array::getcount(); }
 	void					remove(int index) override { array::remove(index, 1); }
 	void					swap(int i1, int i2) override { array::swap(i1, i2); }
+	void					sort(int column, bool ascending) { table::sort(column, ascending); }
 };
 struct tree : table, private array {
 	struct element {
@@ -304,6 +306,7 @@ struct tree : table, private array {
 	constexpr tree(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
 	void*					addrow() override { return array::add(); }
 	void					collapse(int index) override;
+	void					clear() { array::clear(); }
 	void					expand(int index) override;
 	virtual void			expanding(int index, int level) {}
 	void*					get(int index) const override { return array::ptr(index); }

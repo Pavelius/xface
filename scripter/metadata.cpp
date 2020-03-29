@@ -3,61 +3,73 @@
 
 using namespace code;
 
+INSTMETA(metadata) = {BSREQ(id),
+BSREQ(type),
+BSREQ(size),
+{}};
+INSTDATAC(metadata, 2048)
+
+INSTMETA(requisit) = {BSREQ(id),
+BSREQ(type),
+BSREQ(count),
+BSREQ(offset),
+{}};
+INSTDATAC(requisit, 256*128)
+
 const unsigned	pointer_size = 4;
 const unsigned	array_size = sizeof(arem<char>);
 const char*		pointer_id = "*";
 const char*		array_id = "%";
-configi			code::config;
 
-static metadata void_meta = {"Void"};
-static metadata text_meta = {"Text", 0, pointer_size};
-static metadata int_meta = {"Integer", 0, pointer_size};
-static metadata uint_meta = {"Unsigned", 0, pointer_size};
-static metadata sint_meta = {"Short", 0, pointer_size / 2};
-static metadata usint_meta = {"Short Unsigned", 0, pointer_size / 2};
-static metadata char_meta = {"Char", 0, pointer_size / 4};
-metadata metadata::type_meta = {"Type"};
-metadata metadata::type_requisit = {"Requisit"};
-
-metadata* configi::standart[8] = {&text_meta, &int_meta, &uint_meta, &sint_meta, &uint_meta, &char_meta,
-&metadata::type_meta, &metadata::type_requisit};
-
-bool metadata::isnumber() const {
-	return this == &int_meta
-		|| this == &uint_meta
-		|| this == &sint_meta
-		|| this == &usint_meta
-		|| this == &char_meta;
+static void add_standart(const char* id, unsigned size, metatype_s mf = Predefined) {
+	auto p = addtype(id);
+	p->size = size;
+	p->flags.add(Predefined);
+	p->flags.add(mf);
 }
 
-bool metadata::ispredefined() const {
-	for(auto p : configi::standart) {
-		if(p == this)
-			return true;
+void code::initialize() {
+	add_standart("Void", 0);
+	add_standart("Text", pointer_size, TextType);
+	add_standart("Integer", pointer_size, ScalarType);
+	add_standart("Unsigned", pointer_size, ScalarType);
+	add_standart("Short", pointer_size/2, ScalarType);
+	add_standart("Short Unsigned", pointer_size/2, ScalarType);
+	add_standart("Char", pointer_size/4, ScalarType);
+	add_standart("Type", pointer_size);
+	add_standart("Requisit", pointer_size);
+	auto p = addtype("Requisit");
+	p->add("type", addtype("*Type"));
+	p->add("offset", addtype("Unsigned"));
+	p->add("count", addtype("Unsigned"));
+	p->add("expression", addtype("Unsigned"));
+	p->update();
+	p = addtype("Type");
+	p->add("id", addtype("Text"));
+	p->add("type", addtype("*Type"));
+	p->add("size", addtype("Unsigned"));
+	p->update();
+}
+
+metadata* code::findtype(const char* id) {
+	for(auto& e : bsdata<metadata>()) {
+		if(e.is(id))
+			return &e;
 	}
-	return false;
+	return 0;
 }
 
-bool metadata::istext() const {
-	return this == &text_meta;
-}
-
-void metadata::initialize() {
-	if(type_meta.requisits)
-		return;
-	auto p = &type_requisit;
-	p->add("id", config.types.add("Text"));
-	p->add("type", config.types.add("*Type"));
-	p->add("offset", config.types.add("Unsigned"));
-	p->add("count", config.types.add("Unsigned"));
-	p->add("expression", config.types.add("Unsigned"));
-	p->update();
-	p = &type_meta;
-	p->add("id", config.types.find("Text"));
-	p->add("type", config.types.reference(config.types.find("Type")));
-	p->add("size", config.types.find("Unsigned"));
-	p->add("requisits", config.types.add("%Requisit"));
-	p->update();
+metadata* code::addtype(const char* id) {
+	if(id[0] == pointer_id[0])
+		return addtype(id + 1)->reference();
+	if(id[0] == array_id[0])
+		return addtype(id + 1)->array();
+	auto p = findtype(id);
+	if(p)
+		return p;
+	p = bsdata<metadata>::add();
+	p->id = id;
+	return p;
 }
 
 requisit* metadata::add(const char* id, metadata* type) {
@@ -66,21 +78,14 @@ requisit* metadata::add(const char* id, metadata* type) {
 	id = szdup(id);
 	auto p = find(id);
 	if(!p) {
-		p = requisits.add();
+		p = bsdata<requisit>::add();
 		memset(p, 0, sizeof(requisit));
+		p->parent = const_cast<metadata*>(this);
 	}
 	p->id = id;
 	p->type = type;
 	p->count = 1;
 	return p;
-}
-
-const requisit* requisitc::find(const char* id) const {
-	for(auto& e : *this) {
-		if(strcmp(e.id, id) == 0)
-			return &e;
-	}
-	return 0;
 }
 
 unsigned requisit::getsize() const {
@@ -89,7 +94,9 @@ unsigned requisit::getsize() const {
 
 void metadata::update() {
 	size = 0;
-	for(auto& e : requisits) {
+	for(auto& e : bsdata<requisit>()) {
+		if(e.parent != this)
+			continue;
 		e.offset = size;
 		size += e.getsizeof();
 	}
@@ -97,15 +104,6 @@ void metadata::update() {
 
 bool metadata::is(const char* id) const {
 	return this && strcmp(this->id, id) == 0;
-}
-
-const requisit* metadata::getid() const {
-	if(!requisits.count)
-		return 0;
-	auto p = requisits.data;
-	if(p->type->istext())
-		return p;
-	return 0;
 }
 
 const metadata* metadata::gettype() const {
@@ -116,64 +114,32 @@ const metadata* metadata::gettype() const {
 	return this;
 }
 
-metadata* metadatac::find(const char* id) const {
-	for(auto p : configi::standart) {
-		if(strcmp(p->id, id) == 0)
-			return p;
+metadata* code::addtype(const char* id, const metadata* type, unsigned size) {
+	for(auto& e : bsdata<metadata>()) {
+		if(e && e.type == type && e.is(id))
+			return &e;
 	}
-	for(auto pb = (arraydata*)this; pb; pb = pb->next) {
-		auto pe = (element*)pb->end(sizeof(element));
-		for(auto p = (element*)pb->begin(); p < pe; p++) {
-			if(strcmp(p->id, id) == 0)
-				return p;
-		}
-	}
-	return 0;
-}
-
-metadata* metadatac::find(const char* id, const metadata* type) const {
-	for(auto pb = (arraydata*)this; pb; pb = pb->next) {
-		auto pe = (element*)pb->end(sizeof(element));
-		for(auto p = (element*)pb->begin(); p < pe; p++) {
-			if(p->type != type)
-				continue;
-			if(strcmp(p->id, id) != 0)
-				continue;
-			return p;
-		}
-	}
-	return 0;
-}
-
-metadata* metadatac::add(const char* id) {
-	if(id[0] == '*')
-		return reference(add(id + 1));
-	else if(id[0] == '%')
-		return array(add(id + 1));
-	auto p = find(id);
-	if(!p) {
-		p = (metadata*)arraydata::add(sizeof(element));
-		memset(p, 0, sizeof(element));
-		p->id = szdup(id);
-	}
+	auto p = bsdata<metadata>::add();
+	p->id = szdup(id);
+	p->size = size;
+	p->type = const_cast<metadata*>(type);
 	return p;
 }
 
-metadata* metadatac::add(const char* id, metadata* type, unsigned size) {
-	auto p = find(id, type);
-	if(!p) {
-		p = (metadata*)arraydata::add(sizeof(element));
-		p->id = id;
-		p->type = type;
-		p->size = size;
+metadata* metadata::reference() const {
+	return addtype(pointer_id, this, pointer_size);
+}
+
+metadata* metadata::array() const {
+	return addtype(array_id, this, array_size);
+}
+
+requisit* metadata::find(const char* id) const {
+	for(auto& e : bsdata<requisit>()) {
+		if(!e || e.parent != this)
+			continue;
+		if(strcmp(e.id, id) == 0)
+			return &e;
 	}
-	return p;
-}
-
-metadata* metadatac::reference(metadata* type) {
-	return add(pointer_id, type, pointer_size);
-}
-
-metadata* metadatac::array(metadata* type) {
-	return add(array_id, type, array_size);
+	return 0;
 }

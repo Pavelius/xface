@@ -2,13 +2,13 @@
 
 using namespace code;
 
-struct expression_info {
+struct expressioni {
 	const char*			name;
 	operator_s			operands;
 	bool				extended;
 };
 
-expression_info expression_data[] = {{"Do Nothing", Statement},
+expressioni expression_data[] = {{"Do Nothing", Statement},
 {"Number"},
 {"Text"},
 {"Requisit"},
@@ -184,19 +184,17 @@ void expression::set(expression_s v) {
 void expression::select(valuelist& v, expression_s t) const {
 	switch(t) {
 	case Requisit:
-		for(auto& e : met->requisits)
+		for(auto& e : bsdata<requisit>()) {
+			if(!e)
+				continue;
 			v.add(e.id, (int)&e, Requisit, 0);
+		}
 		break;
 	case Metadata:
-		//for(auto& e : config.types) {
-		//	if(!e)
-		//		continue;
-		//	if(e.isarray() || e.isreference())
-		//		continue;
-		//	v.add(e.id, (int)&e, Metadata, 2);
-		//}
-		for(auto p: config.standart) {
-			v.add(p->id, (int)p, Metadata, 2);
+		for(auto& e : bsdata<metadata>()) {
+			if(!e || e.isarray() || e.isreference())
+				continue;
+			v.add(e.id, (int)&e, Metadata, 2);
 		}
 		break;
 	case While:

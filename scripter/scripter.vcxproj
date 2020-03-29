@@ -129,7 +129,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="metadata.cpp" />
     <ClCompile Include="point.cpp" />
-    <ClCompile Include="serial.cpp" />
+    <ClCompile Include="serial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>

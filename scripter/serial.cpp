@@ -13,24 +13,19 @@ struct metadata_context {
 	headeri					header;
 	io::stream&				file;
 	arem<metadata*>&		types;
-	metadatac				types_read;
 	bool					write_mode;
-
 	metadata_context(io::stream& file, bool write_mode, arem<metadata*>& types) :
 		header{"MTP", "0.1"}, file(file), write_mode(write_mode), types(types) {
 	}
-
 	template<class T> void serial(T& source) {
 		serial(&source, sizeof(source));
 	}
-
 	void serial(void* object, unsigned size) {
 		if(write_mode)
 			file.write(object, size);
 		else
 			file.read(object, size);
 	}
-
 	void serial(const char*& ps) {
 		unsigned len = 0;
 		if(write_mode) {
@@ -55,10 +50,8 @@ struct metadata_context {
 				delete ppt;
 		}
 	}
-
 	metadata* read_type_recurse() {
 	}
-
 	void serial(metadata*& value) {
 		char temp[256];
 		if(write_mode) {
@@ -89,11 +82,10 @@ struct metadata_context {
 			if(len > 0) {
 				file.read(temp, len);
 				temp[len] = 0;
-				value = types_read.add(temp);
+				//value = types_read.add(temp);
 			}
 		}
 	}
-
 	void serial(void* object, const requisit& e, const requisit* pid) {
 		if(write_mode) {
 			auto pv = *((void**)object);
@@ -106,7 +98,6 @@ struct metadata_context {
 			serial(id);
 		}
 	}
-
 	void serial(void* object, const requisit& e) {
 		if(e.type->isreference()) {
 			auto type = e.type->type;
@@ -136,11 +127,12 @@ struct metadata_context {
 		else
 			serial(object, e.type);
 	}
-
 	void serial(void* object, const metadata* pm) {
 		if(!pm)
 			return;
-		for(auto& e : pm->requisits) {
+		for(auto& e : bsdata<requisit>()) {
+			if(e.parent != pm)
+				continue;
 			if(e.count <= 1)
 				serial(e.ptr(object), e);
 			else {
@@ -149,7 +141,6 @@ struct metadata_context {
 			}
 		}
 	}
-
 };
 
 void metadata::write(const char* url, arem<metadata*>& types) {

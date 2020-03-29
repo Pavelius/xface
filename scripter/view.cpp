@@ -1,23 +1,9 @@
 #include "xface/crt.h"
-#include "xface/draw_grid.h"
 #include "xface/draw_properties.h"
 #include "main.h"
 
 using namespace code;
 using namespace draw;
-
-const bsreq bsmeta<metadata>::meta[] = {
-	BSREQ(id),
-	BSREQ(type),
-	BSREQ(size),
-{}};
-const bsreq bsmeta<requisit>::meta[] = {
-	BSREQ(id),
-	BSREQ(type),
-	BSREQ(count),
-	BSREQ(offset),
-	BSREQ(position),
-{}};
 
 static controls::properties::translate translate_data[] = {{"count", "Количество"},
 {"id", "Идентификатор"},
@@ -26,20 +12,22 @@ static controls::properties::translate translate_data[] = {{"count", "Количество
 {"type", "Тип"},
 };
 
-static struct metadata_control : controls::gridref, controls::control::plugin {
-	void before_render() {
-		if(metadata_instance.getcount() != config.types.getcount()) {
-			clear();
-			//for(auto& e : config.types) {
-			//	if(!e)
-			//		continue;
-			//	if(e.isreference() || e.isarray())
-			//		continue;
-			//	add(&e);
-			//}
+static struct metadata_control : controls::tableref, controls::control::plugin {
+	void after_initialize() override {
+		auto meta = bsmeta<metadata>::meta;
+		addcol(meta, "id", "Наименование").set(SizeAuto);
+		update();
+	}
+	void update() {
+		clear();
+		for(auto& e : bsdata<metadata>()) {
+			if(!e)
+				continue;
+			if(e.isreference() || e.isarray() || e.isnumber() || e.ispredefined())
+				continue;
+			addref(&e);
 		}
-		if(getcount() > 0)
-			((metadata*)gridref::get(current))->hilite();
+		sort(0, true);
 	}
 	control& getcontrol() override {
 		return *this;
@@ -50,7 +38,10 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
-	metadata_control() : gridref(bsmeta<metadata>::meta), plugin("metadata", DockLeft) {
+	metadata* getcurrent() const {
+		return 0;
+	}
+	metadata_control() : plugin("metadata", DockLeft) {
 		show_header = false;
 		read_only = true;
 		no_change_count = true;
@@ -59,10 +50,14 @@ static struct metadata_control : controls::gridref, controls::control::plugin {
 	}
 } metadata_instance;
 
-static struct requisit_control : controls::gridref, controls::control::plugin {
-
+static struct requisit_control : controls::tableref, controls::control::plugin {
 	struct metadata* current_parent;
-
+	void after_initialize() override {
+		auto meta = bsmeta<requisit>::meta;
+		addcol(meta, "id", "Наименование");
+		addcol(meta, "type", "Тип");
+		update();
+	}
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {
 		if(type->isreference()) {
 			getname(result, result_max, type->type);
@@ -90,26 +85,28 @@ static struct requisit_control : controls::gridref, controls::control::plugin {
 		//	return gridref::getname(result, result_max, line, column);
 		return "";
 	}
-
 	control& getcontrol() override {
 		return *this;
 	}
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return "Реквизиты";
 	}
-	void before_render() {
+	void update() {
 		clear();
 		if(current_parent) {
-			for(auto& e : current_parent->requisits)
-				add(&e);
+			for(auto& e : bsdata<requisit>()) {
+				if(e.parent==current_parent)
+					addref(&e);
+			}
 		}
-		//if((unsigned)current < getcount())
-		//	setcode(((requisit**)data)[current]);
 	}
 	command* getcommands() const override {
 		return 0;
 	}
-	requisit_control() : gridref(bsmeta<requisit>::meta), plugin("requisit", DockLeftBottom) {
+	requisit* getcurrent() const {
+		return 0;
+	}
+	requisit_control() : plugin("requisit", DockLeftBottom) {
 		show_header = false;
 		read_only = true;
 		no_change_count = true;
@@ -123,7 +120,6 @@ void metadata::hilite() {
 }
 
 static struct properties_control : controls::properties, controls::control::plugin {
-
 	void view(const rect& rc) override {
 		auto focus = (controls::control*)isfocused();
 		bsval v;
@@ -141,15 +137,13 @@ static struct properties_control : controls::properties, controls::control::plug
 	static void choose_metadata(adat<void*, 64>& result, const bsreq** name_requisit, void* type) {
 		if(name_requisit)
 			*name_requisit = bsmeta<metadata>::meta;
-		//for(auto& e : config.types) {
-		//	if(!e)
-		//		continue;
-		//	if(e.isreference() || e.isarray())
-		//		continue;
-		//	result.add(&e);
-		//}
-		for(auto p : config.standart)
-			result.add(p);
+		for(auto& e : bsdata<metadata>()) {
+			if(!e)
+				continue;
+			if(e.isreference() || e.isarray())
+				continue;
+			result.add(&e);
+		}
 	}
 	//listproc* getprocchoose(const bsreq* type) const {
 	//	if(type->type == bsmeta<metadata>::meta)
@@ -181,8 +175,5 @@ static struct properties_control : controls::properties, controls::control::plug
 } properties_instance;
 
 void run_main() {
-	//requisit_instance.addcol("id", "Наименование", "text", SizeAuto);
-	//requisit_instance.addcol("type", "Тип", "ref", SizeFixed, 100);
-	//metadata_instance.addcol("id", "Наименование", "text", SizeAuto);
 	draw::application("Scripter", false);
 }

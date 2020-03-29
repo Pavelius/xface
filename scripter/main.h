@@ -1,21 +1,13 @@
-#include "xface/crt.h"
 #include "xface/agrw.h"
+#include "xface/crt.h"
+#include "xface/bsreq.h"
 #include "xface/point.h"
 #include "xface/stringbuilder.h"
 #include "xface/valuelist.h"
 
-const char*				szdup(const char *text);
-
 #pragma once
 
 namespace code {
-
-struct metadata;
-struct requisit;
-struct expression;
-struct statement;
-typedef arem<char> arrayc;
-
 enum operator_s : unsigned char {
 	Determinal,
 	Unary, Binary, Statement,
@@ -34,6 +26,14 @@ enum token_s : unsigned char {
 	Whitespace, Keyword, OpenTag, CloseTag,
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
+enum metatype_s : unsigned char {
+	Predefined, ScalarType, TextType,
+};
+struct metadata;
+struct requisit;
+struct expression;
+struct statement;
+typedef cflags<metatype_s> metatypea;
 struct expression {
 	expression_s			type;
 	union {
@@ -90,11 +90,9 @@ struct requisit {
 	metadata*				type;
 	unsigned				offset;
 	unsigned				count;
+	metadata*				parent;
 	expression*				code;
-	point					position;
-	constexpr requisit() : id(0), type(0), offset(0), count(0), code(0), position{0,0} {}
-	constexpr requisit(const char* id, metadata* type) : id(id), type(type), offset(0), count(1), code(0), position{0, 0} {}
-	constexpr requisit(const char* id, metadata* type, unsigned count) : id(id), type(type), offset(0), count(count), code(0), position{0, 0} {}
+	//point					position;
 	constexpr operator bool() const { return id != 0; }
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
@@ -103,48 +101,46 @@ struct requisit {
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				set(expression* v) { if(this) code = v; return this; }
 };
-struct requisitc : arem<requisit> {
-	constexpr requisitc() : arem() {}
-	template<unsigned N> constexpr requisitc(requisit(&data)[N]) : arem(data, N) {}
-	const requisit*			find(const char* id) const;
+struct parametr {
+	const char*				id;
+	metadata*				type;
+	unsigned				offset;
+	unsigned				count;
+	requisit*				parent;
+	expression*				code;
+	constexpr operator bool() const { return id != 0; }
+	unsigned				getsize() const;
+	unsigned				getsizeof() const { return getsize() * count; }
+	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
+	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
+	parametr*				setcount(int v) { if(this) count = v; return this; }
+	parametr*				set(expression* v) { if(this) code = v; return this; }
 };
 struct metadata {
 	const char*				id;
-	metadata*				type;
 	unsigned				size;
-	requisitc				requisits;
-	constexpr operator bool() const { return id != 0; }
+	metatypea				flags;
+	metadata*				type;
+	operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
-	void					addto(arem<metadata*>& source) const;
-	static void				initialize();
+	metadata*				array() const;
 	bool					is(const char* id) const;
 	bool					isarray() const { return id[0] == '%' && id[1] == 0; }
-	bool					isnumber() const;
+	bool					isnumber() const { return flags.is(ScalarType); }
 	bool					isreference() const { return id[0] == '*' && id[1] == 0; }
-	bool					ispredefined() const;
-	bool					istext() const;
-	requisit*				find(const char* id) const { return const_cast<requisit*>(requisits.find(id)); }
-	const requisit*			getid() const;
+	bool					ispredefined() const { return flags.is(Predefined); }
+	bool					istext() const { return flags.is(TextType); }
+	requisit*				find(const char* id) const;
 	const metadata*			gettype() const;
 	void					hilite();
-	static metadata			type_meta;
-	static metadata			type_requisit;
 	void					update();
+	metadata*				reference() const;
 	void					write(const char* url) const;
 	static void				write(const char* url, arem<metadata*>& types);
 };
-struct metadatac : agrw<metadata, 64> {
-	metadata*				add(const char* id);
-	metadata*				add(const char* id, metadata* type, unsigned size);
-	metadata*				array(metadata* type);
-	metadata*				find(const char* id) const;
-	metadata*				find(const char* id, const metadata*) const;
-	metadata*				reference(metadata* type);
-};
-struct configi {
-	metadatac				types;
-	static metadata*		standart[8];
-};
-extern configi				config;
+metadata*					addtype(const char* id);
+metadata*					addtype(const char* id, const metadata* type, unsigned size);
+metadata*					findtype(const char* id);
+void						initialize();
 }
 void						run_main();
