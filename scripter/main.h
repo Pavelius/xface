@@ -144,3 +144,4 @@ metadata*					findtype(const char* id);
 void						initialize();
 }
 void						run_main();
+void						logmsg(const char* format, ...);
