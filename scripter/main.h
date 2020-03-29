@@ -34,6 +34,20 @@ struct requisit;
 struct expression;
 struct statement;
 typedef cflags<metatype_s> metatypea;
+struct seriali {
+	metadata*				meta;
+	array*					source;
+	int						keys;
+	arem<void*>				references;
+};
+struct seriala {
+	aref<seriali>&			types;
+	seriala(aref<seriali>& types) : types(types) {}
+	seriali*				find(const void* p);
+	unsigned				getfid(const void* p);
+	void*					getref(unsigned fid) const;
+	void					makeref(const void* p);
+};
 struct expression {
 	expression_s			type;
 	union {
@@ -101,26 +115,11 @@ struct requisit {
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				set(expression* v) { if(this) code = v; return this; }
 };
-struct parametr {
-	const char*				id;
-	metadata*				type;
-	unsigned				offset;
-	unsigned				count;
-	requisit*				parent;
-	expression*				code;
-	constexpr operator bool() const { return id != 0; }
-	unsigned				getsize() const;
-	unsigned				getsizeof() const { return getsize() * count; }
-	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
-	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
-	parametr*				setcount(int v) { if(this) count = v; return this; }
-	parametr*				set(expression* v) { if(this) code = v; return this; }
-};
 struct metadata {
 	const char*				id;
+	metadata*				type;
 	unsigned				size;
 	metatypea				flags;
-	metadata*				type;
 	operator bool() const { return id != 0; }
 	requisit*				add(const char* id, metadata* type);
 	metadata*				array() const;
@@ -136,7 +135,7 @@ struct metadata {
 	void					update();
 	metadata*				reference() const;
 	void					write(const char* url) const;
-	static void				write(const char* url, arem<metadata*>& types);
+	static void				write(const char* url, seriala& types, const metadata* element);
 };
 metadata*					addtype(const char* id);
 metadata*					addtype(const char* id, const metadata* type, unsigned size);

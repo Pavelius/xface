@@ -48,6 +48,7 @@ void code::initialize() {
 	p->add("id", addtype("Text"));
 	p->add("type", addtype("*Type"));
 	p->add("size", addtype("Unsigned"));
+	p->add("flags", addtype("Unsigned"));
 	p->update();
 }
 

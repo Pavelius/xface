@@ -5,40 +5,97 @@
 
 using namespace code;
 
-struct metadata_context {
+void* seriala::getref(unsigned fid) const {
+	return types[fid >> 24].references[fid && 0xFFFFFF];
+}
+
+seriali* seriala::find(const void* p) {
+	for(auto& e : types) {
+		if(!e.source)
+			continue;
+		if(e.source->indexof(p) == -1)
+			continue;
+		return &e;
+	}
+	return 0;
+}
+
+unsigned seriala::getfid(const void* p) {
+	if(!p)
+		return 0;
+	auto pe = find(p);
+	if(!pe)
+		return 0;
+	unsigned index = pe->references.indexof((void*)p);
+	if(index == 0xFFFFFFFF) {
+		index = pe->references.getcount();
+		pe->references.add((void*)p);
+	}
+	return ((unsigned)types.indexof(pe) << 24) | index;
+}
+
+void seriala::makeref(const void* p) {
+	if(!p)
+		return;
+	auto pe = find(p);
+	if(!pe)
+		return;
+	if(pe->references.indexof((void*)p) != -1)
+		return;
+	pe->references.add((void*)p);
+	if(pe->meta) {
+		auto count = pe->keys;
+		if(!count)
+			count = 1;
+		for(auto& e : bsdata<requisit>()) {
+			if(e.parent != pe->meta)
+				continue;
+			makeref(e.type);
+			if(--count == 0)
+				break;
+		}
+	}
+}
+
+namespace {
+enum mode_s : unsigned char {
+	MakeReferences, WriteMode, ReadMode,
+};
+struct context : seriala {
 	struct headeri {
-		char				signature[4];
-		char				version[4];
+		char			signature[4];
+		char			version[4];
 	};
-	headeri					header;
-	io::stream&				file;
-	arem<metadata*>&		types;
-	bool					write_mode;
-	metadata_context(io::stream& file, bool write_mode, arem<metadata*>& types) :
-		header{"MTP", "0.1"}, file(file), write_mode(write_mode), types(types) {
-	}
-	template<class T> void serial(T& source) {
-		serial(&source, sizeof(source));
-	}
+	headeri				header;
+	io::stream&			file;
+	mode_s				mode;
+	context(io::stream& file, mode_s mode, seriala& types) :
+		seriala(types), header{"MTD", "0.1"}, file(file), mode(mode) {}
 	void serial(void* object, unsigned size) {
-		if(write_mode)
-			file.write(object, size);
-		else
-			file.read(object, size);
+		switch(mode) {
+		case WriteMode: file.write(object, size); break;
+		case ReadMode: file.read(object, size); break;
+		}
+	}
+	template<class T> void serial(T& e) {
+		serial(&e, sizeof(e));
 	}
 	void serial(const char*& ps) {
 		unsigned len = 0;
-		if(write_mode) {
+		char temp[256 * 32];
+		char* ppt;
+		switch(mode) {
+		case WriteMode:
 			if(ps)
 				len = zlen(ps);
 			file.write(&len, sizeof(len));
 			if(len)
 				file.write(ps, len);
-		} else {
+			break;
+		case ReadMode:
 			file.read(&len, sizeof(len));
 			ps = 0;
-			char temp[256 * 32];
-			char* ppt = temp;
+			ppt = temp;
 			if(len > 0) {
 				if(len > sizeof(temp) - 1)
 					ppt = new char[len + 1];
@@ -48,54 +105,23 @@ struct metadata_context {
 			ps = szdup(ppt);
 			if(ppt != temp)
 				delete ppt;
+			break;
 		}
 	}
-	metadata* read_type_recurse() {
-	}
-	void serial(metadata*& value) {
-		char temp[256];
-		if(write_mode) {
-			auto p = value;
-			auto ps = temp; ps[0] = 0;
-			auto pe = ps + sizeof(temp) / sizeof(temp[0]) - 1;
-			while(p) {
-				if(p->isreference()) {
-					if(ps<pe)
-						*ps++ = '*';
-					*ps = 0;
-					p = p->type;
-				} else if(p->isarray()) {
-					if(ps<pe)
-						*ps++ = '%';
-					*ps = 0;
-					p = p->type;
-				} else {
-					szprint(ps, pe, p->id);
-					break;
-				}
-			}
-			serial(temp);
-		} else {
-			value = 0;
-			unsigned len = 0;
-			serial(len);
-			if(len > 0) {
-				file.read(temp, len);
-				temp[len] = 0;
-				//value = types_read.add(temp);
-			}
-		}
-	}
-	void serial(void* object, const requisit& e, const requisit* pid) {
-		if(write_mode) {
-			auto pv = *((void**)object);
-			if(!pv)
-				serial(&pv, sizeof(pv));
-			else
-				serial(pid->ptr(pv), *pid);
-		} else {
-			const char* id = 0;
-			serial(id);
+	void serial(void** p) {
+		unsigned fid;
+		switch(mode) {
+		case WriteMode:
+			fid = getfid(*p);
+			serial(fid);
+			break;
+		case ReadMode:
+			file.read(&fid, sizeof(fid));
+			*p = getref(fid);
+			break;
+		case MakeReferences:
+			makeref(*p);
+			break;
 		}
 	}
 	void serial(void* object, const requisit& e) {
@@ -103,23 +129,9 @@ struct metadata_context {
 			auto type = e.type->type;
 			if(type->isnumber() || type->istext() || type->isreference())
 				return;
-			else if(type == &metadata::type_meta) {
-
-			} else {
-				auto pid = type->getid();
-				if(pid)
-					serial(object, e, pid);
-			}
+			serial((void**)object);
 		} else if(e.type->isarray()) {
-			auto pa = (arrayc*)object;
-			auto sz = e.type->type->size;
-			serial(pa->count);
-			if(!write_mode) {
-				if(pa->count > 0)
-					pa->reserve(pa->count*sz);
-			}
-			for(unsigned i = 0; i < pa->count; i++)
-				serial(pa->data + i * sz, e.type->type);
+
 		} else if(e.type->istext())
 			serial(*((const char**)object));
 		else if(e.type->isnumber())
@@ -141,43 +153,38 @@ struct metadata_context {
 			}
 		}
 	}
+	void serial(seriala& col) {
+		serial(col.types.count);
+		for(auto& e : col.types) {
+			serial(e.references.count);
+			for(auto p : e.references)
+				serial(p, e.meta);
+		}
+	}
 };
+}
 
-void metadata::write(const char* url, arem<metadata*>& types) {
-	auto meta_type = config.types.find("Type");
-	if(!meta_type)
-		return;
+static void prepare_types(io::file& file, seriala& types, const metadata* element) {
+	context e(file, MakeReferences, types);
+	e.serial((void**)&element);
+}
+
+void metadata::write(const char* url, seriala& types, const metadata* element) {
 	io::file file(url, StreamWrite);
 	if(!file)
 		return;
-	metadata_context e(file, true, types);
+	prepare_types(file, types, element);
+	context e(file, WriteMode, types);
 	e.serial(e.header);
-	e.serial(e.types.count);
-	for(auto p : types) {
-		if(p->isreference())
-			continue;
-		if(p->isarray())
-			continue;
-		e.serial(p, meta_type);
-	}
-}
-
-void metadata::addto(arem<metadata*>& source) const {
-	if(ispredefined())
-		return;
-	auto i = source.indexof(const_cast<metadata*>(this));
-	if(i != -1)
-		return;
-	source.add(const_cast<metadata*>(this));
-	for(auto& e : requisits) {
-		if(e.type->type)
-			e.type->type->addto(source);
-		e.type->addto(source);
-	}
+	e.serial(types);
 }
 
 void metadata::write(const char* url) const {
-	arem<metadata*> types;
-	addto(types);
-	write(url, types);
+	seriali elements[4] = {{},
+	{addtype("Type"), bsdata<metadata>::source_ptr},
+	{addtype("Requisit"), bsdata<requisit>::source_ptr}
+	};
+	aref<seriali> source(elements);
+	seriala	types(source);
+	write(url, types, this);
 }
