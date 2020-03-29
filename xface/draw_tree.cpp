@@ -27,21 +27,6 @@ tree::element* tree::insert(int& index, int level) {
 	return p;
 }
 
-void tree::toggle(int index) {
-	if(!isgroup(index))
-		return;
-	auto mm = getmaximum();
-	auto cc = current;
-	if(isopen(index))
-		collapse(index);
-	else
-		expand(index);
-	if(cc > index) {
-		if(mm < getmaximum())
-			current += getmaximum() - mm;
-	}
-}
-
 void tree::collapse(int i) {
 	// если выбранный элемент входит в сворачиваемю область
 	// переместим его наверх
@@ -63,32 +48,6 @@ void tree::collapse(int i) {
 	}
 }
 
-void tree::open(int max_level) {
-	for(int level = 1; level <= max_level; level++) {
-		bool need_test = true;
-		while(need_test) {
-			need_test = false;
-			auto c = getmaximum();
-			for(auto i = 0; i < c; i++) {
-				if(level != getlevel(i))
-					continue;
-				if(i < c - 1) {
-					if(getlevel(i + 1) > level)
-						continue;
-				}
-				if(isgroup(i)) {
-					auto i1 = getmaximum();
-					expand(i);
-					if(i1 < getmaximum()) {
-						need_test = true;
-						break;
-					}
-				}
-			}
-		}
-	}
-}
-
 void tree::expand(int index) {
 	auto before_count = getmaximum();
 	if(before_count == 0)
@@ -106,3 +65,38 @@ void tree::expand(int index) {
 void tree::swap(int i1, int i2) {
 	array::swap(i1, i2);
 }
+
+//bool tableref::keyinput(unsigned id) {
+//	switch(id) {
+//	case KeyLeft:
+//		if(gettreecolumn() == current_column) {
+//			if(isopen(current)) {
+//				toggle(current);
+//				break;
+//			}
+//			auto parent = getparent(current);
+//			if(parent != current) {
+//				select(parent, current_column);
+//				break;
+//			}
+//		}
+//		return table::keyinput(id);
+//	case KeyRight:
+//		if(gettreecolumn() != current_column || isopen(current))
+//			return table::keyinput(id);
+//		toggle(current);
+//		break;
+//	default: return table::keyinput(id);
+//	}
+//	return true;
+//}
+
+//void tableref::shift(int i1, int i2) {
+//	auto c1 = getblockcount(i1);
+//	auto c2 = getblockcount(i2);
+//	array::shift(i1, i2, c1, c2);
+//	if(i1 < i2)
+//		select(i1, current_column);
+//	else
+//		select(i2 + c1, current_column);
+//}

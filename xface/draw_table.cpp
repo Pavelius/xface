@@ -704,7 +704,11 @@ bool table::addrow(bool run) {
 }
 
 bool table::removerow(bool run) {
+	if(read_only)
+		return false;
 	if(no_change_count)
+		return false;
+	if(!getmaximum())
 		return false;
 	if(run)
 		remove(current);

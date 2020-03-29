@@ -10,7 +10,6 @@
 #pragma once
 
 typedef void(*fnchoose)(const anyval value);
-NOINSTDATA(datetime);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);
@@ -142,10 +141,13 @@ struct list : control {
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
 		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true), drop_shadow(false),
 		current_rect(), view_rect() {}
+	virtual void			collapse(int index) {}
 	void					correction();
 	void					correction_width();
 	static int				current_hilite_row, current_hilite_column, current_hilite_treemark;
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
+	virtual void			expand(int index) {}
+	void					expandall(int max_level);
 	int						find(int line, int column, const char* name, int lenght = -1) const;
 	int						getblockcount(int index) const;
 	virtual int				getcolumn() const { return 0; } // Get current column
@@ -175,7 +177,7 @@ struct list : control {
 	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			rowhilite(const rect& rc, int index) const;
 	virtual void			select(int index, int column);
-	virtual void			toggle(int index) {}
+	void					toggle(int index);
 	void					treemark(const rect& rc, int index, int level) const;
 	void					view(const rect& rc) override;
 };
@@ -278,6 +280,18 @@ struct table : list {
 private:
 	void					update_columns(const rect& rc);
 };
+struct tableref : table, private array {
+	struct element {
+		void*				object;
+	};
+	constexpr tableref(unsigned size = sizeof(element)) : array(size) {}
+	void*					addref(void* object);
+	int						find(const void* value) const;
+	void*					get(int index) const override { return ((element*)array::ptr(index))->object; }
+	virtual int				getmaximum() const override { return array::getcount(); }
+	void					remove(int index) override { array::remove(index, 1); }
+	void					swap(int i1, int i2) override { array::swap(i1, i2); }
+};
 struct tree : table, private array {
 	struct element {
 		unsigned char		level;
@@ -288,9 +302,9 @@ struct tree : table, private array {
 	};
 	bool					sort_rows_by_name;
 	constexpr tree(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
-	void*					addrow(void* object) { return array::add(object); }
-	void					collapse(int i);
-	void					expand(int index);
+	void*					addrow() override { return array::add(); }
+	void					collapse(int index) override;
+	void					expand(int index) override;
 	virtual void			expanding(int index, int level) {}
 	void*					get(int index) const override { return array::ptr(index); }
 	int						getimage(int index) const override;
@@ -299,46 +313,9 @@ struct tree : table, private array {
 	int						gettype(int index) const;
 	element*				insert(int& index, int level);
 	bool					isgroup(int index) const override;
-	void					open(int max_level);
 	void					swap(int i1, int i2) override;
-	void					toggle(int index) override;
 };
-struct tableref : table, private array {
-	struct element {
-		unsigned char		level;
-		unsigned char		flags;
-		unsigned char		type;
-		unsigned char		image;
-		void*				object;
-	};
-	struct builder {
-		tableref*			pc;
-		int					index;
-		unsigned char		level;
-		constexpr builder(tableref* pc, int index, unsigned char level) : pc(pc), index(index), level(level) {}
-		void*				add(void* object, unsigned char image, unsigned char type, bool group);
-	};
-	bool					sort_rows_by_name;
-	constexpr tableref(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
-	void*					addref(void* object);
-	void					collapse(int index);
-	void					expand(int index, int level);
-	virtual void			expanding(builder& e) {}
-	int						find(const void* value) const;
-	void*					get(int index) const override;
-	int						getimage(int index) const override;
-	int						getlevel(int index) const override;
-	virtual int				getmaximum() const override { return array::getcount(); }
-	int						gettreecolumn() const;
-	int						gettype(int index) const;
-	bool					isgroup(int index) const override;
-	bool					keyinput(unsigned id) override;
-	void					open(int max_level);
-	bool					remove(bool run);
-	void					shift(int i1, int i2);
-	void					swap(int i1, int i2) override;
-	void					toggle(int index) override;
-};
+// Cell visual drawing
 struct visual {
 	typedef void			(table::*fnrender)(const rect& rc, int line, int column);
 	const char*				id;
@@ -436,4 +413,5 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
-DECLENUM(draw::dock);
+NOINSTDATA(datetime)
+DECLENUM(draw::dock)

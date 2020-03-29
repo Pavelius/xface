@@ -9,22 +9,14 @@ using namespace	draw;
 using namespace	draw::controls;
 
 namespace {
-struct header : tableref::element {
+struct header : tree::element {
 	const char*		name;
 	const char* getname() const { return name; }
-	header* getparent() const { return (header*)object; }
-	void geturl(stringbuilder& sb) const {
-		if(getparent()) {
-			getparent()->geturl(sb);
-			sb.add("/");
-		}
-		sb.add(getname());
-	}
 };
 }
 INSTMETA(header) = {BSREQ(name), BSREQ(image), {}};
 
-static struct widget_directory : control::plugin, tableref {
+static struct widget_directory : tree, control::plugin {
 
 	const char* base_url;
 
@@ -32,7 +24,7 @@ static struct widget_directory : control::plugin, tableref {
 		auto meta = bsmeta<header>::meta;
 		addstdimage();
 		addcol(meta, "name", "Наименование").set(SizeAuto);
-		expand(0, 0);
+		expand(0);
 	}
 
 	control& getcontrol() override {
@@ -43,16 +35,35 @@ static struct widget_directory : control::plugin, tableref {
 		return "Файлы";
 	}
 
-	void expanding(builder& e) override {
-		auto p = base_url;
-		for(io::file::find finder(p); finder; finder.next()) {
-			auto ph = (header*)e.add(0, 1, 0, true);
+	void addurl(stringbuilder& sb, int index) {
+		if(index < 0)
+			return;
+		addurl(sb, getparent(index));
+		auto pb = (header*)get(index);
+		if(sb)
+			sb.add("/");
+		sb.add(pb->name);
+	}
+
+	void expanding(int index, int level) override {
+		char url[260]; stringbuilder sb(url);
+		sb.add(base_url);
+		if(level > 1)
+			addurl(sb, index-1);
+		for(io::file::find finder(url); finder; finder.next()) {
+			auto pn = finder.name();
+			if(pn[0] == '.')
+				continue;
+			auto ph = (header*)insert(index, level);
 			ph->name = szdup(finder.name());
-			ph->type = 1;
+			if(zchr(ph->name, '.') == 0) {
+				ph->image = 1;
+				ph->setgroup(true);
+			}
 		}
 	}
 
-	widget_directory() : control::plugin("directory", DockLeft) {
+	widget_directory() : tree(sizeof(header)), control::plugin("directory", DockLeft) {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;
@@ -64,5 +75,4 @@ static struct widget_directory : control::plugin, tableref {
 } widget_control;
 
 void directory_initialize() {
-
 }

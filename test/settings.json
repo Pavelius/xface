@@ -46,10 +46,10 @@
     }
   },
   "window":{
-    "x":134,
-    "y":124,
-    "width":852,
-    "height":488,
+    "x":104,
+    "y":109,
+    "width":784,
+    "height":484,
     "header_width":169,
     "flags":112
   },
@@ -58,13 +58,13 @@
       "Docking":5
     },
     "directory":{
-      "Docking":4
+      "Docking":0
     }
   },
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":205
+      "size":170
     },
     "Dock1":{
       "current":0,
@@ -80,7 +80,7 @@
     },
     "Dock4":{
       "current":0,
-      "size":221
+      "size":294
     },
     "Dock5":{
       "current":0,

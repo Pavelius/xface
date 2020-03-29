@@ -3,7 +3,7 @@
 
 using namespace draw;
 
-static struct header_control : controls::tableref, controls::control::plugin {
+static struct header_control : controls::tree, controls::control::plugin {
 	void before_render() {
 	}
 	control& getcontrol() override {
@@ -15,16 +15,7 @@ static struct header_control : controls::tableref, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
-	void expanding(builder& e) {
-		if(e.level == 0) {
-			e.add(0, 1, 0, true);
-			e.add(0, 1, 0, true);
-			e.add(0, 1, 0, true);
-			e.add(0, 1, 0, true);
-		} else {
-		}
-	}
-	header_control() : tableref(), plugin("header", DockLeft) {
+	header_control() : plugin("header", DockLeft) {
 		show_header = false;
 		read_only = true;
 		no_change_count = true;

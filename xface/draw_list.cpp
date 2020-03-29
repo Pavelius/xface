@@ -352,3 +352,44 @@ int	list::getnextblock(int index, int increment) const {
 		i = n;
 	}
 }
+
+void list::toggle(int index) {
+	if(!isgroup(index))
+		return;
+	auto mm = getmaximum();
+	auto cc = current;
+	if(isopen(index))
+		collapse(index);
+	else
+		expand(index);
+	if(cc > index) {
+		if(mm < getmaximum())
+			current += getmaximum() - mm;
+	}
+}
+
+void list::expandall(int max_level) {
+	for(int level = 1; level <= max_level; level++) {
+		bool need_test = true;
+		while(need_test) {
+			need_test = false;
+			auto c = getmaximum();
+			for(auto i = 0; i < c; i++) {
+				if(level != getlevel(i))
+					continue;
+				if(i < c - 1) {
+					if(getlevel(i + 1) > level)
+						continue;
+				}
+				if(isgroup(i)) {
+					auto i1 = getmaximum();
+					expand(i);
+					if(i1 < getmaximum()) {
+						need_test = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+}
