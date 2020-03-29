@@ -44,12 +44,6 @@ enum window_flags {
 enum cursor_s {
 	CursorArrow, CursorHand, CursorLeftRight, CursorUpDown, CursorAll, CursorNo, CursorEdit, CursorWait,
 };
-enum hilite_s : unsigned char {
-	HiliteClient, HiliteTitle,
-	HiliteRow, HiliteTreemark, HiliteColumHeader, HiliteColumSlider,
-	HiliteScrollV, HiliteScrollVD, HiliteScrollVU,
-	HiliteScrollH, HiliteScrollHD, HiliteScrollHU,
-};
 enum image_flag_s {
 	ImageMirrorV = 0x0001,
 	ImageMirrorH = 0x0002,

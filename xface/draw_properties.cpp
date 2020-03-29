@@ -41,19 +41,29 @@ bool properties::cmdopen(bool run) {
 	return true;
 }
 
+static void* current_object;
+
+void properties::toggle(bool run) {
+
+}
+
 void properties::treemark(int x, int y, int width, void* object, bool isopen) const {
 	auto x1 = x + width / 2;
 	auto y1 = y + width / 2 - 1;
 	rect rc = {x, y, x + width, y + width};
 	auto a = ishilite(rc);
-	if(a && hot.pressed && hot.key==MouseLeft)
-		execute((fncmd)&properties::cmdopen, (int)object);
+	if(a && hot.pressed && hot.key == MouseLeft) {
+		current_object = object;
+		execute((fncmd)&properties::toggle);
+	}
 	color c1 = fore;
 	circle(x1, y1, 6, c1);
 	line(x1 - 4, y1, x1 + 4, y1, c1);
 	if(!isopen)
 		line(x1, y1 - 4, x1, y1 + 4, c1);
 }
+
+static const bsreq* current_type;
 
 int properties::group(int x, int y, int width, const char* label, const bsval& ev) {
 	draw::state push;
@@ -86,8 +96,10 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 		ob.type = ev.type->type;
 		y += vertical(x, y, width, ob);
 	}
-	if(need_open)
-		execute((fncmd)&properties::cmdopen, (int)ev.type);
+	if(need_open) {
+		current_type = ev.type;
+		execute((fncmd)&properties::toggle);
+	}
 	return y - y1;
 }
 

@@ -40,7 +40,6 @@ rect				draw::clipping;
 char				draw::link[4096];
 hoti				draw::hot;
 // Hot keys and menus
-static hilite_s		current_hilite_area;
 bool				sys_optimize_mouse_move = true;
 rect				sys_static_area;
 // Locale draw variables

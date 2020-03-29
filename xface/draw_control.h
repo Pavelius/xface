@@ -111,7 +111,7 @@ struct control {
 	virtual ~control() {}
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);
-	void					execute(fncmd proc, int param = 0) const;
+	void					execute(control::fncmd proc) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }

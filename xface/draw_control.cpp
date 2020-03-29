@@ -79,6 +79,8 @@ void control::mouseinput(unsigned id, point position) {
 }
 
 static void control_execute() {
+	hot.key = 0;
+	hot.param = 0;
 	(current_execute_control->*current_execute)(true);
 }
 
@@ -126,10 +128,10 @@ void control::icon(int x, int y, bool disabled, const command& cmd) const {
 	image(x, y, getimages(), cmd.image, 0, disabled ? 0x80 : 0xFF);
 }
 
-void control::execute(control::fncmd proc, int param) const {
+void control::execute(control::fncmd proc) const {
 	current_execute = proc;
 	current_execute_control = const_cast<control*>(this);
-	draw::execute(control_execute, param);
+	domodal = control_execute;
 }
 
 void control::view(const rect& rc) {

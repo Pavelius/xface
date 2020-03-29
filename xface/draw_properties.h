@@ -30,6 +30,7 @@ struct properties : control {
 	void				open(void* object);
 	void				set(const bsval& v) { value = v; }
 	void				treemark(int x, int y, int width, void* object, bool isopen) const;
+	void				toggle(bool run);
 	int					vertical(int x, int y, int width, const bsval& ev);
 	void				view(const rect& rc) override;
 };
