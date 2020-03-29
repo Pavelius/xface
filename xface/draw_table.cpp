@@ -148,14 +148,14 @@ void table::select(int index, int column) {
 
 static void proc_mouseselect() {
 	auto p = (table*)draw::hot.param;
-	auto i = p->getvalid(p->current_hilite_column);
-	p->select(p->current_hilite, i);
+	auto i = p->getvalid(list::current_hilite_column);
+	p->select(list::current_hilite_row, i);
 	if(p->columns[i].method->change_one_click)
 		p->change(true);
 }
 
 void table::mouseselect(int id, bool pressed) {
-	if(current_hilite == -1 || current_hilite_column == -1)
+	if(!ishilited() || current_hilite_row == -1 || current_hilite_column == -1)
 		return;
 	if(pressed)
 		draw::execute(proc_mouseselect, (int)this);
@@ -361,7 +361,6 @@ rect table::getrect(int row, int column) const {
 }
 
 void table::view(const rect& rc) {
-	current_hilite_column = -1;
 	rect rt;
 	rt.y1 = rc.y1;
 	rt.y2 = rc.y2;
@@ -563,8 +562,8 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 				break;
 			}
 			break;
-        default:
-            break;
+		default:
+			break;
 		}
 	}
 }
@@ -633,7 +632,7 @@ void table::celldatetime(const rect& rc, int line, int column) {
 void table::cellbox(const rect& rc, int line, int column) {
 	unsigned flags = 0;
 	auto v = columns[column].get(get(line));
-	auto b = 1<<columns[column].param;
+	auto b = 1 << columns[column].param;
 	if(v&b)
 		flags |= Checked;
 	cellhilite(rc, line, column, 0, AlignCenter);

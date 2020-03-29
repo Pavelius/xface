@@ -103,11 +103,6 @@ void tree::expand(int index) {
 	}
 }
 
-bool tree::treemarking(bool run) {
-	toggle(hot.param);
-	return true;
-}
-
 void tree::swap(int i1, int i2) {
 	array::swap(i1, i2);
 }

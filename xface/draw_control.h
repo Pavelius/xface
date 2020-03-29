@@ -73,7 +73,6 @@ struct control {
 		static plugin*		first;
 		plugin(const char* id, dock_s dock);
 		virtual void		after_initialize() {}
-		virtual void		before_render() {}
 		static const plugin* find(const char* id);
 		virtual control&	getcontrol() = 0;
 	};
@@ -134,17 +133,18 @@ struct control {
 };
 // Analog of listbox element
 struct list : control {
-	int						origin, current, current_hilite, origin_width;
+	int						origin, current, origin_width;
 	int						lines_per_page, pixels_per_line, pixels_per_width;
 	bool					show_grid_lines, show_selection, show_header;
 	bool					hilite_odd_lines, drop_shadow;
 	rect					current_rect, view_rect;
-	constexpr list() : origin(0), current(0), current_hilite(-1), origin_width(0),
+	constexpr list() : origin(0), current(0), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
 		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true), drop_shadow(false),
 		current_rect(), view_rect() {}
 	void					correction();
 	void					correction_width();
+	static int				current_hilite_row, current_hilite_column, current_hilite_treemark;
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
 	int						find(int line, int column, const char* name, int lenght = -1) const;
 	int						getblockcount(int index) const;
@@ -175,8 +175,8 @@ struct list : control {
 	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			rowhilite(const rect& rc, int index) const;
 	virtual void			select(int index, int column);
+	virtual void			toggle(int index) {}
 	void					treemark(const rect& rc, int index, int level) const;
-	virtual bool			treemarking(bool run) { return true; }
 	void					view(const rect& rc) override;
 };
 struct visual;
@@ -211,10 +211,10 @@ struct table : list {
 		int					multiplier; // 1 - ascending, -1 - descending
 	};
 	arem<column>			columns;
-	int						current_column, current_column_maximum, current_hilite_column, maximum_width;
+	int						current_column, current_column_maximum, maximum_width;
 	bool					no_change_order, no_change_count, read_only, show_totals;
 	select_mode_s			select_mode;
-	constexpr table() : current_column(0), current_column_maximum(0), current_hilite_column(-1), maximum_width(0),
+	constexpr table() : current_column(0), current_column_maximum(0), maximum_width(0),
 		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
@@ -301,8 +301,7 @@ struct tree : table, private array {
 	bool					isgroup(int index) const override;
 	void					open(int max_level);
 	void					swap(int i1, int i2) override;
-	void					toggle(int index);
-	bool					treemarking(bool run);
+	void					toggle(int index) override;
 };
 struct tableref : table, private array {
 	struct element {
@@ -338,8 +337,7 @@ struct tableref : table, private array {
 	bool					remove(bool run);
 	void					shift(int i1, int i2);
 	void					swap(int i1, int i2) override;
-	void					toggle(int index);
-	bool					treemarking(bool run) override;
+	void					toggle(int index) override;
 };
 struct visual {
 	typedef void			(table::*fnrender)(const rect& rc, int line, int column);

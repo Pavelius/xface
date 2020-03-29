@@ -3,13 +3,17 @@
 
 using namespace draw::controls;
 
-static char		search_text[32];
-static unsigned	search_time;
-static int		current_hilite_treemark;
+static char			search_text[32];
+static unsigned		search_time;
+int					list::current_hilite_row;
+int					list::current_hilite_column;
+int					list::current_hilite_treemark;
 
 static struct list_control_plugin : draw::plugin {
 	void before() override {
-		current_hilite_treemark = -1;
+		list::current_hilite_row = -1;
+		list::current_hilite_column = -1;
+		list::current_hilite_treemark = -1;
 	}
 } plugin_instance;
 
@@ -55,7 +59,7 @@ void list::hilight(const rect& rc, const rect* p_current_rect) const {
 		p_current_rect = &rc;
 	auto focused = isfocused();
 	const color c1 = focused ? colors::edit : colors::edit.mix(colors::window, 192);
-	rect r1 = {rc.x1, rc.y1, rc.x2-1, rc.y2-1};
+	rect r1 = {rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1};
 	rectf(r1, c1); rectb(r1, c1);
 	if(focused)
 		rectx(r1, colors::text.mix(colors::form, 200));
@@ -64,10 +68,10 @@ void list::hilight(const rect& rc, const rect* p_current_rect) const {
 
 void list::rowhilite(const rect& rc, int index) const {
 	if(show_selection) {
-		ishilite({rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1});
+		auto a = ishilite({rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1});
 		if(index == current)
 			hilight(rc);
-		else if(index == current_hilite)
+		else if(a && index == current_hilite_row)
 			rectf(rc, colors::edit.mix(colors::window, 96));
 	}
 }
@@ -92,16 +96,16 @@ int	list::getrowheight() {
 }
 
 void list::mousehiliting(const rect& screen, point mouse) {
-	current_hilite = origin + (mouse.y - screen.y1) / pixels_per_line;
+	current_hilite_row = origin + (mouse.y - screen.y1) / pixels_per_line;
 }
 
 static void list_mouse_select() {
 	auto p = (list*)draw::hot.param;
-	p->select(p->current_hilite, p->getcolumn());
+	p->select(p->current_hilite_row, p->getcolumn());
 }
 
 void list::mouseselect(int id, bool pressed) {
-	if(current_hilite < 0)
+	if(!ishilited() || current_hilite_row == -1)
 		return;
 	if(pressed)
 		draw::execute(list_mouse_select, (int)this);
@@ -118,8 +122,7 @@ void list::treemark(const rect& rc, int index, int level) const {
 	auto isopen = list::isopen(index);
 	int x = rc.x1 + rc.width() / 2;
 	int y = rc.y1 + rc.height() / 2 - 1;
-	auto a = ishilite(rc);
-	if(a)
+	if(ishilite(rc))
 		current_hilite_treemark = index;
 	circle(x, y, 6, c1);
 	line(x - 4, y, x + 4, y, c1);
@@ -139,7 +142,6 @@ void list::view(const rect& rcorigin) {
 	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
-	current_hilite = -1;
 	lines_per_page = getlinesperpage(rc.height());
 	correction();
 	auto maximum = getmaximum();
@@ -263,10 +265,9 @@ void list::mouseinput(unsigned id, point position) {
 		keyinput(KeyEnter);
 		break;
 	case MouseLeft:
-		if(ishilited() && current_hilite_treemark != -1 && hot.pressed) {
-			hot.param = current_hilite_treemark;
-			treemarking(true);
-		} else
+		if(ishilited() && hot.pressed && current_hilite_treemark != -1)
+			toggle(current_hilite_treemark);
+		else
 			control::mouseinput(id, position);
 		break;
 	default:

@@ -156,11 +156,6 @@ void tableref::expand(int index, int level) {
 	}
 }
 
-bool tableref::treemarking(bool run) {
-	toggle(hot.param);
-	return true;
-}
-
 bool tableref::keyinput(unsigned id) {
 	switch(id) {
 	case KeyLeft:
