@@ -183,6 +183,7 @@ struct list : control {
 };
 struct visual;
 struct column {
+	typedef void(*fntext)(const void* object, stringbuilder& sb);
 	const visual*			method;
 	const char*				title;
 	short					width;
@@ -193,6 +194,7 @@ struct column {
 	const bsreq*			type;
 	unsigned				param;
 	array*					source;
+	fntext					getpresent;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, char* result, const char* result_end) const;
@@ -203,6 +205,7 @@ struct column {
 	column&					set(column_s v) { flags.add(v); return *this; }
 	column&					set(total_s v) { total = v; return *this; }
 	column&					set(array* v) { source = v; return *this; }
+	column&					set(fntext v) { getpresent = v; return *this; }
 	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };

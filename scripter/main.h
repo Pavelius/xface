@@ -106,8 +106,8 @@ struct requisit {
 	unsigned				count;
 	metadata*				parent;
 	expression*				code;
-	//point					position;
 	constexpr operator bool() const { return id != 0; }
+	void					getname(stringbuilder& sb) const;
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }

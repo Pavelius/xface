@@ -78,9 +78,14 @@ void column::set(const void* object, int v) {
 }
 
 const char* column::get(const void* object, char* result, const char* result_end) const {
-	if(!type)
+	if(getpresent) {
+		stringbuilder sb(result, result_end);
+		getpresent(object, sb);
 		return result;
-	return type->gets(type->ptr(object));
+	}
+	if(type)
+		return type->gets(type->ptr(object));
+	return result;
 }
 
 void table::update_columns(const rect& rc) {

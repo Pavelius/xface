@@ -58,10 +58,13 @@ public:
 
 static class requisit_control : public controls::tableref, controls::control::plugin {
 	struct metadata* current_parent;
+	static void getpresent(const void* p, stringbuilder& sb) {
+		((requisit*)p)->getname(sb);
+	}
 	void after_initialize() override {
 		auto meta = bsmeta<requisit>::meta;
 		addstdimage();
-		addcol(meta, "id", "Наименование").set(SizeAuto);
+		addcol(meta, "id", "Наименование").set(SizeAuto).set(getpresent);
 		update();
 	}
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {

@@ -144,3 +144,12 @@ requisit* metadata::find(const char* id) const {
 	}
 	return 0;
 }
+
+void requisit::getname(stringbuilder& sb) const {
+	sb.add(id);
+	sb.add(":");
+	for(auto t = type; t; t = t->type)
+		sb.add(t->id);
+	if(count > 1)
+		sb.add("[%1i]", count);
+}
