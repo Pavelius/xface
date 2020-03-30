@@ -52,6 +52,11 @@ void code::initialize() {
 	p->update();
 }
 
+void metadata::add(stringbuilder& sb) const {
+	for(auto t = type; t; t = t->type)
+		sb.add(t->id);
+}
+
 metadata* code::findtype(const char* id) {
 	for(auto& e : bsdata<metadata>()) {
 		if(e.is(id))

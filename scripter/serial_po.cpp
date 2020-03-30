@@ -8,41 +8,10 @@ namespace {
 enum mode_s : unsigned char {
 	WriteMode, ReadMode,
 };
-class serializator {
+class context {
 	struct element {
-		void*			object;
-		requisit*		collection;
+		const void*		object;
 	};
-	arem<element>		references;
-public:
-	constexpr serializator() {}
-	const element* find(const void* p) const {
-		for(auto& e : references) {
-			if(e.object == p)
-				return &e;
-		}
-		return 0;
-	}
-	unsigned getfid(const void* p) {
-		if(!p)
-			return 0;
-		auto pe = find(p);
-		if(pe)
-			return references.indexof(pe);
-		return references.getcount();
-	}
-	void* getref(unsigned fid) const {
-		return references[fid].object;
-	}
-	void makeref(const void* p) {
-		if(!p)
-			return;
-		auto pe = find(p);
-		if(!pe)
-			return;
-	}
-};
-struct context : serializator {
 	struct headeri {
 		char			signature[4];
 		char			version[4];
@@ -50,7 +19,43 @@ struct context : serializator {
 	headeri				header;
 	io::stream&			file;
 	mode_s				mode;
-	context(io::stream& file, mode_s mode) : header{"MTD", "0.1"}, file(file), mode(mode) {}
+	arem<element>		references;
+	const element* find(const void* p) const {
+		for(auto& e : references) {
+			if(e.object == p)
+				return &e;
+		}
+		return 0;
+	}
+	bool isexist(const void* p) const {
+		return find(p) != 0;
+	}
+	unsigned getfid(const void* p) {
+		if(!p)
+			return 0;
+		element* pe = (element*)find(p);
+		if(pe)
+			return pe - references.data;
+		pe = references.add();
+		pe->object = p;
+		return pe - references.data;
+	}
+	const void* getref(unsigned fid) const {
+		return references.data[fid].object;
+	}
+	void addref(const void* p) {
+		if(!p)
+			return;
+		if(isexist(p))
+			return;
+		auto pe = references.add();
+		pe->object = p;
+	}
+	void addref(const metadata* p) {
+		if(p && p->type)
+			addref(p->type);
+		addref((const void*)p);
+	}
 	void serial(void* object, unsigned size) {
 		switch(mode) {
 		case WriteMode: file.write(object, size); break;
@@ -97,9 +102,12 @@ struct context : serializator {
 			break;
 		case ReadMode:
 			file.read(&fid, sizeof(fid));
-			*p = getref(fid);
+			*p = (void*)getref(fid);
 			break;
 		}
+	}
+	void serial(element& e) {
+
 	}
 	void serial(void* object, const requisit& e) {
 		if(e.type->isreference()) {
@@ -130,6 +138,8 @@ struct context : serializator {
 			}
 		}
 	}
+public:
+	context(io::stream& file, mode_s mode) : header{"MTD", "0.1"}, file(file), mode(mode) {}
 };
 }
 
@@ -138,5 +148,6 @@ void metadata::write(const char* url) const {
 	if(!file)
 		return;
 	context e(file, WriteMode);
-	e.serial(e.header);
+	auto p = addtype("*Character");
+	//e.serial(e.header);
 }
