@@ -8,7 +8,6 @@ using namespace draw;
 static controls::properties::translate translate_data[] = {{"count", "Количество"},
 {"id", "Идентификатор"},
 {"parent", "Родитель"},
-{"position", "Позиция"},
 {"type", "Тип"},
 };
 
@@ -99,6 +98,8 @@ static class requisit_control : public controls::tableref, controls::control::pl
 	}
 public:
 	requisit* getcurrent() const {
+		if(getmaximum())
+			return (requisit*)get(current);
 		return 0;
 	}
 	void set(metadata* v) {
@@ -173,6 +174,16 @@ static struct properties_control : controls::properties, controls::control::plug
 
 static void heartproc() {
 	requisit_instance.set(metadata_instance.getcurrent());
+	bsval v;
+	if(isfocused(anyval(&requisit_instance, 0, 0))) {
+		v.data = requisit_instance.getcurrent();
+		v.type = bsmeta<requisit>::meta;
+	} else if(isfocused(anyval(&metadata_instance, 0, 0))) {
+		v.data = metadata_instance.getcurrent();
+		v.type = bsmeta<metadata>::meta;
+	}
+	if(v)
+		properties_instance.set(v);
 }
 
 void run_main() {
