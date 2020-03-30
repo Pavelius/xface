@@ -27,27 +27,13 @@ enum token_s : unsigned char {
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
 enum metatype_s : unsigned char {
-	Predefined, ScalarType, TextType,
+	Predefined, Static, Public, ScalarType, TextType,
 };
 struct metadata;
 struct requisit;
 struct expression;
 struct statement;
 typedef cflags<metatype_s> metatypea;
-struct seriali {
-	metadata*				meta;
-	array*					source;
-	int						keys;
-	arem<void*>				references;
-};
-struct seriala {
-	aref<seriali>&			types;
-	seriala(aref<seriali>& types) : types(types) {}
-	seriali*				find(const void* p);
-	unsigned				getfid(const void* p);
-	void*					getref(unsigned fid) const;
-	void					makeref(const void* p);
-};
 struct expression {
 	expression_s			type;
 	union {
@@ -134,7 +120,6 @@ struct metadata {
 	void					update();
 	metadata*				reference() const;
 	void					write(const char* url) const;
-	static void				write(const char* url, seriala& types, const metadata* element);
 };
 metadata*					addtype(const char* id);
 metadata*					addtype(const char* id, const metadata* type, unsigned size);

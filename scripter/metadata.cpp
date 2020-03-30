@@ -21,23 +21,23 @@ const unsigned	array_size = sizeof(arem<char>);
 const char*		pointer_id = "*";
 const char*		array_id = "%";
 
-static void add_standart(const char* id, unsigned size, metatype_s mf = Predefined) {
+static void add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
 	p->size = size;
-	p->flags.add(Predefined);
-	p->flags.add(mf);
+	p->flags = mf;
 }
 
 void code::initialize() {
-	add_standart("Void", 0);
-	add_standart("Text", pointer_size, TextType);
-	add_standart("Integer", pointer_size, ScalarType);
-	add_standart("Unsigned", pointer_size, ScalarType);
-	add_standart("Short", pointer_size/2, ScalarType);
-	add_standart("Short Unsigned", pointer_size/2, ScalarType);
-	add_standart("Char", pointer_size/4, ScalarType);
-	add_standart("Type", pointer_size);
-	add_standart("Requisit", pointer_size);
+	add_standart("Void", 0, {Predefined}); // Must be first metadata
+	add_standart("Char", pointer_size / 4, {ScalarType, Predefined});
+	add_standart("Byte", pointer_size / 4, {ScalarType, Predefined});
+	add_standart("Short", pointer_size/2, {ScalarType, Predefined});
+	add_standart("Short Unsigned", pointer_size/2, {ScalarType, Predefined});
+	add_standart("Integer", pointer_size, {ScalarType, Predefined});
+	add_standart("Unsigned", pointer_size, {ScalarType, Predefined});
+	add_standart("Text", pointer_size, {TextType, Predefined});
+	add_standart("Type", pointer_size, {Predefined});
+	add_standart("Requisit", pointer_size, {Predefined});
 	auto p = addtype("Requisit");
 	p->add("type", addtype("*Type"));
 	p->add("offset", addtype("Unsigned"));

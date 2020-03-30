@@ -9,6 +9,7 @@
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="serial.cpp" />
     <ClCompile Include="point.cpp" />
+    <ClCompile Include="serial_po.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
