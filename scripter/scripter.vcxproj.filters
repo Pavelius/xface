@@ -10,6 +10,7 @@
     <ClCompile Include="serial.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="serial_po.cpp" />
+    <ClCompile Include="serial_pe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

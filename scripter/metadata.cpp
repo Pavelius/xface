@@ -19,7 +19,7 @@ INSTDATAC(requisit, 256*128)
 const unsigned	pointer_size = 4;
 const unsigned	array_size = sizeof(arem<char>);
 const char*		pointer_id = "*";
-const char*		array_id = "%";
+const char*		array_id = "[]";
 
 static void add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
@@ -113,9 +113,7 @@ bool metadata::is(const char* id) const {
 }
 
 const metadata* metadata::gettype() const {
-	if(isarray())
-		return type->gettype();
-	if(isreference())
+	if(isarray() || isreference())
 		return type->gettype();
 	return this;
 }
@@ -133,11 +131,17 @@ metadata* code::addtype(const char* id, const metadata* type, unsigned size) {
 }
 
 metadata* metadata::reference() const {
-	return addtype(pointer_id, this, pointer_size);
+	char temp[260]; stringbuilder sb(temp);
+	sb.add(pointer_id);
+	sb.add(id);
+	return addtype(sb, this, pointer_size);
 }
 
 metadata* metadata::array() const {
-	return addtype(array_id, this, array_size);
+	char temp[260]; stringbuilder sb(temp);
+	sb.add(array_id);
+	sb.add(id);
+	return addtype(sb, this, array_size);
 }
 
 requisit* metadata::find(const char* id) const {
@@ -153,8 +157,8 @@ requisit* metadata::find(const char* id) const {
 void requisit::getname(stringbuilder& sb) const {
 	sb.add(id);
 	sb.add(":");
-	for(auto t = type; t; t = t->type)
-		sb.add(t->id);
+	sb.add(type->id);
+	if(type->isarray())
 	if(count > 1)
 		sb.add("[%1i]", count);
 }

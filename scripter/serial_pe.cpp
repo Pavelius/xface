@@ -6,53 +6,8 @@ using namespace code;
 
 namespace {
 class context {
-	struct element {
-		const void*		object;
-	};
-	struct headeri {
-		char			signature[4];
-		char			version[4];
-	};
-	headeri				header;
-	io::stream&			file;
-	bool				write_mode;
-	arem<element>		references;
-	const element* find(const void* p) const {
-		for(auto& e : references) {
-			if(e.object == p)
-				return &e;
-		}
-		return 0;
-	}
-	bool isexist(const void* p) const {
-		return find(p) != 0;
-	}
-	unsigned getfid(const void* p) {
-		if(!p)
-			return 0;
-		element* pe = (element*)find(p);
-		if(pe)
-			return pe - references.data;
-		pe = references.add();
-		pe->object = p;
-		return pe - references.data;
-	}
-	const void* getref(unsigned fid) const {
-		return references.data[fid].object;
-	}
-	void addref(const void* p) {
-		if(!p)
-			return;
-		if(isexist(p))
-			return;
-		auto pe = references.add();
-		pe->object = p;
-	}
-	void addref(const metadata* p) {
-		if(p && p->type)
-			addref(p->type);
-		addref((const void*)p);
-	}
+	io::stream&		file;
+	bool			write_mode;
 	void serial(void* object, unsigned size) {
 		if(write_mode)
 			file.write(object, size);
@@ -87,27 +42,11 @@ class context {
 				delete ppt;
 		}
 	}
-	void serial(void** p) {
-		unsigned fid;
-		if(write_mode) {
-			fid = getfid(*p);
-			serial(fid);
-		} else {
-			file.read(&fid, sizeof(fid));
-			if(!fid)
-				*p = 0;
-			else
-				*p = (void*)references.data[fid].object;
-		}
-	}
-	void serial(element& e) {
-	}
 	void serial(void* object, const requisit& e) {
 		if(e.type->isreference()) {
 			auto type = e.type->type;
 			if(type->isnumber() || type->istext() || type->isreference())
 				return;
-			serial((void**)object);
 		} else if(e.type->isarray()) {
 
 		} else if(e.type->istext())
@@ -132,7 +71,7 @@ class context {
 		}
 	}
 public:
-	context(io::stream& file, bool write_mode) : header{"MTD", "0.1"}, file(file), write_mode(write_mode) {}
+	context(io::stream& file, bool write_mode) : file(file), write_mode(write_mode) {}
 };
 }
 

@@ -111,15 +111,15 @@ struct metadata {
 	requisit*				add(const char* id, metadata* type);
 	metadata*				array() const;
 	bool					is(const char* id) const;
-	bool					isarray() const { return id[0] == '%' && id[1] == 0; }
+	bool					isarray() const { return id[0] == '%'; }
 	bool					isnumber() const { return flags.is(ScalarType); }
-	bool					isreference() const { return id[0] == '*' && id[1] == 0; }
+	bool					isreference() const { return id[0] == '*'; }
 	bool					ispredefined() const { return flags.is(Predefined); }
 	bool					istext() const { return flags.is(TextType); }
 	requisit*				find(const char* id) const;
 	const metadata*			gettype() const;
-	void					update();
 	metadata*				reference() const;
+	void					update();
 	void					write(const char* url) const;
 };
 metadata*					addtype(const char* id);
