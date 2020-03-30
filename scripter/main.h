@@ -131,7 +131,6 @@ struct metadata {
 	bool					istext() const { return flags.is(TextType); }
 	requisit*				find(const char* id) const;
 	const metadata*			gettype() const;
-	void					hilite();
 	void					update();
 	metadata*				reference() const;
 	void					write(const char* url) const;

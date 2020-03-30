@@ -336,6 +336,7 @@ static const char* get_control_name(const void* object, char* result, const char
 
 static struct widget_application : draw::controls::control {
 
+	eventproc		heartproc;
 	control*		hotcontrols[48];
 	bool			allow_multiply_window;
 
@@ -410,6 +411,8 @@ static struct widget_application : draw::controls::control {
 		auto rct = rc;
 		for(auto p = controls::control::plugin::first; p; p = p->next)
 			p->getcontrol().show_border = metrics::show::padding;
+		if(heartproc)
+			heartproc();
 		dockbar(rct);
 		workspace(rct, allow_multiply_window);
 	}
@@ -501,8 +504,9 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(temp, zendof(temp)));
 }
 
-void draw::application(bool allow_multiply_window) {
+void draw::application(bool allow_multiply_window, eventproc heartproc) {
 	widget_application_control.allow_multiply_window = allow_multiply_window;
+	widget_application_control.heartproc = heartproc;
 	auto current_tab = 0;
 	while(ismodal()) {
 		auto pc = layouts[current_tab];
@@ -550,12 +554,12 @@ void draw::application_initialize() {
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
 
-void draw::application(const char* name, bool allow_multiply_window, eventproc showproc) {
+void draw::application(const char* name, bool allow_multiply_window, eventproc showproc, eventproc heartproc) {
 	application_initialize();
 	setcaption(name);
 	if(showproc)
 		showproc();
-	application(allow_multiply_window);
+	application(allow_multiply_window, heartproc);
 }
 
 static struct settings_settings_strategy : io::strategy {

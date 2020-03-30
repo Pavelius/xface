@@ -12,9 +12,10 @@ static controls::properties::translate translate_data[] = {{"count", "Количество
 {"type", "Тип"},
 };
 
-static struct metadata_control : controls::tableref, controls::control::plugin {
+static class metadata_control : public controls::tableref, controls::control::plugin {
 	void after_initialize() override {
 		auto meta = bsmeta<metadata>::meta;
+		addstdimage();
 		addcol(meta, "id", "Наименование").set(SizeAuto);
 		update();
 	}
@@ -38,7 +39,13 @@ static struct metadata_control : controls::tableref, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
+	int getimage(int index) const override {
+		return 2;
+	}
+public:
 	metadata* getcurrent() const {
+		if(getmaximum())
+			return (metadata*)get(current);
 		return 0;
 	}
 	metadata_control() : plugin("metadata", DockLeft) {
@@ -50,12 +57,12 @@ static struct metadata_control : controls::tableref, controls::control::plugin {
 	}
 } metadata_instance;
 
-static struct requisit_control : controls::tableref, controls::control::plugin {
+static class requisit_control : public controls::tableref, controls::control::plugin {
 	struct metadata* current_parent;
 	void after_initialize() override {
 		auto meta = bsmeta<requisit>::meta;
-		addcol(meta, "id", "Наименование");
-		addcol(meta, "type", "Тип");
+		addstdimage();
+		addcol(meta, "id", "Наименование").set(SizeAuto);
 		update();
 	}
 	const char* getname(char* result, const char* result_max, struct metadata* type) const {
@@ -68,22 +75,6 @@ static struct requisit_control : controls::tableref, controls::control::plugin {
 		} else
 			szprint(result, result_max, type->id);
 		return result;
-	}
-
-	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		//if(strcmp(columns[column].id, "type") == 0) {
-		//	auto bv = getvalue(line, column);
-		//	if(!bv)
-		//		return "";
-		//	result[0] = 0;
-		//	auto rq = (requisit*)get(line);
-		//	getname(result, result_max, (struct metadata*)bv.get());
-		//	if(rq->count > 1)
-		//		szprint(zend(result), result_max, "[%1i]", rq->count);
-		//	return result;
-		//} else
-		//	return gridref::getname(result, result_max, line, column);
-		return "";
 	}
 	control& getcontrol() override {
 		return *this;
@@ -103,8 +94,18 @@ static struct requisit_control : controls::tableref, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
+	int getimage(int index) const override {
+		return 0;
+	}
+public:
 	requisit* getcurrent() const {
 		return 0;
+	}
+	void set(metadata* v) {
+		if(v == current_parent)
+			return;
+		current_parent = v;
+		update();
 	}
 	requisit_control() : plugin("requisit", DockLeftBottom) {
 		show_header = false;
@@ -114,10 +115,6 @@ static struct requisit_control : controls::tableref, controls::control::plugin {
 		select_mode = SelectRow;
 	}
 } requisit_instance;
-
-void metadata::hilite() {
-	requisit_instance.current_parent = this;
-}
 
 static struct properties_control : controls::properties, controls::control::plugin {
 	void view(const rect& rc) override {
@@ -174,6 +171,10 @@ static struct properties_control : controls::properties, controls::control::plug
 	}
 } properties_instance;
 
+static void heartproc() {
+	requisit_instance.set(metadata_instance.getcurrent());
+}
+
 void run_main() {
-	draw::application("Scripter", false);
+	draw::application("Scripter", false, 0, heartproc);
 }
