@@ -91,7 +91,7 @@ struct requisit {
 	unsigned				offset;
 	unsigned				count;
 	metadata*				parent;
-	expression*				code;
+	//expression*				code;
 	constexpr operator bool() const { return id != 0; }
 	void					getname(stringbuilder& sb) const;
 	unsigned				getsize() const;
@@ -99,7 +99,7 @@ struct requisit {
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
 	requisit*				setcount(int v) { if(this) count = v; return this; }
-	requisit*				set(expression* v) { if(this) code = v; return this; }
+	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
 };
 struct metadata {
 	const char*				id;

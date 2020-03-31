@@ -161,7 +161,7 @@ static struct code_control : controls::control, controls::control::plugin {
 		if(!source)
 			return 0;
 		navigator b;
-		source->code->add(b);
+		//source->code->add(b);
 		auto index = b.find(current);
 		if(index == -1)
 			return 0;
@@ -215,7 +215,7 @@ static struct code_control : controls::control, controls::control::plugin {
 		if(source) {
 			renderer b(rc, isfocused());
 			b.current = current;
-			source->code->add(b);
+			//source->code->add(b);
 			current_hilite = b.hilite;
 			current_hilite_rect = b.hilite_rect;
 			current_rect = b.current_rect;
@@ -329,6 +329,6 @@ static struct code_control : controls::control, controls::control::plugin {
 
 void setcode(requisit* v) {
 	code_instance.source = v;
-	if(!code_instance.current && v)
-		code_instance.current = v->code;
+	//if(!code_instance.current && v)
+//		code_instance.current = v->code;
 }

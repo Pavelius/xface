@@ -7,36 +7,32 @@ using namespace code;
 namespace {
 class context {
 	io::stream&			file;
-	bool				write_mode, refscan;
+	bool				readmode, writemode, strmode;
 	arem<void*>			references;
+	arem<void*>			forward;
 	unsigned			fid_void, fid_text, fid_metadata, fid_requisit;
-	bool isexist(const void* p) const {
-		return references.indexof((void*)p) != -1;
+	unsigned			start_str, start_metadata, start_requisit, start_objects;
+	void clearfwd() {
+		forward.clear();
+		for(auto p : references)
+			forward.add(p);
 	}
-	unsigned getfid(const char* p) {
+	bool addfwd(const void* p) {
 		if(!p)
-			return 0;
-		p = szdup(p);
+			return true;
+		auto i = forward.indexof((void*)p);
+		if(i != -1)
+			return true;
+		forward.add((void*)p);
+		return false;
+	}
+	void addref(const void* p) {
+		if(!p)
+			return;
 		auto i = references.indexof((void*)p);
 		if(i != -1)
-			return i;
-		i = references.getcount();
+			return;
 		references.add((void*)p);
-		file.write(fid_text);
-		unsigned len = zlen(p);
-		file.write(len);
-		file.write(p, len);
-		return i;
-	}
-	unsigned getfid(const void* p) {
-		if(!p)
-			return 0;
-		auto i = references.indexof((void*)p);
-		if(i != -1)
-			return i;
-		i = references.getcount();
-		references.add((void*)p);
-		return i;
 	}
 	unsigned addmeta(const char* pn) {
 		if(!pn)
@@ -50,25 +46,26 @@ class context {
 		return i;
 	}
 	void serial(void* object, unsigned size) {
-		if(write_mode)
+		if(writemode)
 			file.write(object, size);
-		else
+		else if(readmode)
 			file.read(object, size);
 	}
-	template<class T> void serial(T& e) {
-		serial(&e, sizeof(e));
-	}
 	void serial(const char*& ps) {
-		unsigned len = 0;
 		char temp[256 * 32];
+		unsigned len;
 		char* ppt;
-		if(write_mode) {
+		if(strmode) {
+			addref((void*)ps);
+		} else if(writemode) {
+			len = 0;
 			if(ps)
 				len = zlen(ps);
 			file.write(&len, sizeof(len));
 			if(len)
 				file.write(ps, len);
-		} else {
+		} else if(readmode) {
+			len = 0;
 			file.read(&len, sizeof(len));
 			ps = 0;
 			ppt = temp;
@@ -83,45 +80,54 @@ class context {
 				delete ppt;
 		}
 	}
+	void serial(const metadata* m) {
+		if(addfwd(m))
+			return;
+		if(m->isreference())
+			serial(m->type);
+		for(auto& e : bsdata<requisit>()) {
+			if(e.parent != m)
+				continue;
+			serial(&e, (metadata*)references[fid_requisit]);
+		}
+		serial((void*)m, (metadata*)references[fid_metadata]);
+	}
 	void serial(void* object, const requisit& e) {
+		serial(e.type);
 		if(e.type->isreference()) {
 			auto type = e.type->type;
 			if(type->isnumber() || type->istext() || type->isreference())
 				return; // Skip serialization of this hard case
-			if(refscan) {
-				auto p = *((void**)object);
-				//if(p)
-				//	serial(p, type);
-			}
+			serial(*((void**)object), type);
 		} else if(e.type->isarray()) {
 
-		} else if(e.type->istext()) {
-			if(refscan)
-				getfid(*((const char**)object));
-			else
-				serial(*((const char**)object));
-		} else if(e.type->isnumber()) {
-			if(!refscan)
-				serial(object, e.type->size);
-		} else
+		} else if(e.type->istext())
+			serial(*((const char**)object));
+		else if(e.type->isnumber())
+			serial(object, e.type->size);
+		else
 			serial(object, e.type);
 	}
 	void serial(void* object, const metadata* pm) {
-		if(!pm)
+		if(!object)
 			return;
 		for(auto& e : bsdata<requisit>()) {
 			if(e.parent != pm)
 				continue;
-			if(e.count <= 1)
-				serial(e.ptr(object), e);
-			else {
-				for(unsigned i = 0; i < e.count; i++)
-					serial(e.ptr(object, i), e);
-			}
+			serial(e.ptr(object), e);
+		}
+	}
+	void writestr() {
+		for(auto i = start_str; i < start_metadata; i++) {
+			auto p = (const char*)references[i];
+			file.write(p, zlen(p) + 1);
 		}
 	}
 public:
-	context(io::stream& file, bool write_mode) : file(file), write_mode(write_mode) {
+	context(io::stream& file) : file(file),
+		writemode(false), readmode(false), strmode(false),
+		start_str(0), start_metadata(0), start_requisit(0), start_objects(0),
+		fid_metadata(0), fid_void(0), fid_requisit(0), fid_text(0) {
 		addmeta("Void");
 		addmeta("Char");
 		addmeta("Byte");
@@ -133,17 +139,13 @@ public:
 		fid_metadata = addmeta("Type");
 		fid_requisit = addmeta("Requisit");
 	}
-	void serial(const metadata* p) {
-		serial((void*)p, (metadata*)references[fid_metadata]);
-		for(auto& e : bsdata<requisit>()) {
-			if(!e || e.parent != p)
-				continue;
-			serial(&e, (metadata*)references[fid_requisit]);
-		}
-	}
 	void test() {
-		refscan = true;
+		strmode = true;
+		clearfwd();
+		start_str = references.getcount();
 		serial(addtype("Character"));
+		start_metadata = references.getcount();
+		writestr();
 	}
 };
 }
@@ -152,6 +154,6 @@ void metadata::write(const char* url) const {
 	io::file file(url, StreamWrite);
 	if(!file)
 		return;
-	context e(file, true);
+	context e(file);
 	e.test();
 }

@@ -19,7 +19,7 @@ INSTDATAC(requisit, 256*128)
 const unsigned	pointer_size = 4;
 const unsigned	array_size = sizeof(arem<char>);
 const char*		pointer_id = "*";
-const char*		array_id = "[]";
+const char*		array_id = "%";
 
 static void add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
@@ -39,6 +39,7 @@ void code::initialize() {
 	add_standart("Type", pointer_size, {Predefined});
 	add_standart("Requisit", pointer_size, {Predefined});
 	auto p = addtype("Requisit");
+	p->add("id", addtype("Text"));
 	p->add("type", addtype("*Type"));
 	p->add("offset", addtype("Unsigned"));
 	p->add("count", addtype("Unsigned"));
@@ -131,17 +132,11 @@ metadata* code::addtype(const char* id, const metadata* type, unsigned size) {
 }
 
 metadata* metadata::reference() const {
-	char temp[260]; stringbuilder sb(temp);
-	sb.add(pointer_id);
-	sb.add(id);
-	return addtype(sb, this, pointer_size);
+	return addtype(pointer_id, this, pointer_size);
 }
 
 metadata* metadata::array() const {
-	char temp[260]; stringbuilder sb(temp);
-	sb.add(array_id);
-	sb.add(id);
-	return addtype(sb, this, array_size);
+	return addtype(array_id, this, array_size);
 }
 
 requisit* metadata::find(const char* id) const {
