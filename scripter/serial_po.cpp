@@ -34,6 +34,11 @@ class context {
 			return;
 		references.add((void*)p);
 	}
+	unsigned getref(const void* p) const {
+		if(!p)
+			return 0;
+		return references.indexof((void*)p);
+	}
 	unsigned addmeta(const char* pn) {
 		if(!pn)
 			return 0;
@@ -52,32 +57,12 @@ class context {
 			file.read(object, size);
 	}
 	void serial(const char*& ps) {
-		char temp[256 * 32];
-		unsigned len;
-		char* ppt;
-		if(strmode) {
+		if(strmode) 
 			addref((void*)ps);
-		} else if(writemode) {
-			len = 0;
-			if(ps)
-				len = zlen(ps);
-			file.write(&len, sizeof(len));
-			if(len)
-				file.write(ps, len);
+		else if(writemode) {
+			auto i = getref(ps);
+			file.write(&i, sizeof(i));
 		} else if(readmode) {
-			len = 0;
-			file.read(&len, sizeof(len));
-			ps = 0;
-			ppt = temp;
-			if(len > 0) {
-				if(len > sizeof(temp) - 1)
-					ppt = new char[len + 1];
-				file.read(ppt, len);
-			}
-			ppt[len] = 0;
-			ps = szdup(ppt);
-			if(ppt != temp)
-				delete ppt;
 		}
 	}
 	void serial(const metadata* m) {
