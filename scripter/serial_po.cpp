@@ -6,52 +6,48 @@ using namespace code;
 
 namespace {
 class context {
-	struct element {
-		const void*		object;
-	};
-	struct headeri {
-		char			signature[4];
-		char			version[4];
-	};
-	headeri				header;
 	io::stream&			file;
-	bool				write_mode;
-	arem<element>		references;
-	const element* find(const void* p) const {
-		for(auto& e : references) {
-			if(e.object == p)
-				return &e;
-		}
-		return 0;
-	}
+	bool				write_mode, refscan;
+	arem<void*>			references;
+	unsigned			fid_void, fid_text, fid_metadata, fid_requisit;
 	bool isexist(const void* p) const {
-		return find(p) != 0;
+		return references.indexof((void*)p) != -1;
+	}
+	unsigned getfid(const char* p) {
+		if(!p)
+			return 0;
+		p = szdup(p);
+		auto i = references.indexof((void*)p);
+		if(i != -1)
+			return i;
+		i = references.getcount();
+		references.add((void*)p);
+		file.write(fid_text);
+		unsigned len = zlen(p);
+		file.write(len);
+		file.write(p, len);
+		return i;
 	}
 	unsigned getfid(const void* p) {
 		if(!p)
 			return 0;
-		element* pe = (element*)find(p);
-		if(pe)
-			return pe - references.data;
-		pe = references.add();
-		pe->object = p;
-		return pe - references.data;
+		auto i = references.indexof((void*)p);
+		if(i != -1)
+			return i;
+		i = references.getcount();
+		references.add((void*)p);
+		return i;
 	}
-	const void* getref(unsigned fid) const {
-		return references.data[fid].object;
-	}
-	void addref(const void* p) {
-		if(!p)
-			return;
-		if(isexist(p))
-			return;
-		auto pe = references.add();
-		pe->object = p;
-	}
-	void addref(const metadata* p) {
-		if(p && p->type)
-			addref(p->type);
-		addref((const void*)p);
+	unsigned addmeta(const char* pn) {
+		if(!pn)
+			return 0;
+		auto p = addtype(pn);
+		auto i = references.indexof((void*)p);
+		if(i != -1)
+			return i;
+		i = references.getcount();
+		references.add((void*)p);
+		return i;
 	}
 	void serial(void* object, unsigned size) {
 		if(write_mode)
@@ -87,34 +83,27 @@ class context {
 				delete ppt;
 		}
 	}
-	void serial(void** p) {
-		unsigned fid;
-		if(write_mode) {
-			fid = getfid(*p);
-			serial(fid);
-		} else {
-			file.read(&fid, sizeof(fid));
-			if(!fid)
-				*p = 0;
-			else
-				*p = (void*)references.data[fid].object;
-		}
-	}
-	void serial(element& e) {
-	}
 	void serial(void* object, const requisit& e) {
 		if(e.type->isreference()) {
 			auto type = e.type->type;
 			if(type->isnumber() || type->istext() || type->isreference())
-				return;
-			serial((void**)object);
+				return; // Skip serialization of this hard case
+			if(refscan) {
+				auto p = *((void**)object);
+				//if(p)
+				//	serial(p, type);
+			}
 		} else if(e.type->isarray()) {
 
-		} else if(e.type->istext())
-			serial(*((const char**)object));
-		else if(e.type->isnumber())
-			serial(object, e.type->size);
-		else
+		} else if(e.type->istext()) {
+			if(refscan)
+				getfid(*((const char**)object));
+			else
+				serial(*((const char**)object));
+		} else if(e.type->isnumber()) {
+			if(!refscan)
+				serial(object, e.type->size);
+		} else
 			serial(object, e.type);
 	}
 	void serial(void* object, const metadata* pm) {
@@ -132,7 +121,30 @@ class context {
 		}
 	}
 public:
-	context(io::stream& file, bool write_mode) : header{"MTD", "0.1"}, file(file), write_mode(write_mode) {}
+	context(io::stream& file, bool write_mode) : file(file), write_mode(write_mode) {
+		addmeta("Void");
+		addmeta("Char");
+		addmeta("Byte");
+		addmeta("Short");
+		addmeta("Short Unsigned");
+		addmeta("Integer");
+		addmeta("Unsigned");
+		fid_text = addmeta("Text");
+		fid_metadata = addmeta("Type");
+		fid_requisit = addmeta("Requisit");
+	}
+	void serial(const metadata* p) {
+		serial((void*)p, (metadata*)references[fid_metadata]);
+		for(auto& e : bsdata<requisit>()) {
+			if(!e || e.parent != p)
+				continue;
+			serial(&e, (metadata*)references[fid_requisit]);
+		}
+	}
+	void test() {
+		refscan = true;
+		serial(addtype("Character"));
+	}
 };
 }
 
@@ -141,6 +153,5 @@ void metadata::write(const char* url) const {
 	if(!file)
 		return;
 	context e(file, true);
-	auto p = addtype("*Character");
-	//e.serial(e.header);
+	e.test();
 }
