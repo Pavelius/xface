@@ -142,6 +142,14 @@ class context {
 		serial((void*)m, metadata::type_metadata, false);
 		write_requisits(m);
 	}
+public:
+	context(io::stream& file, bool writemode) : file(file), writemode(writemode) {
+		for(auto& e : bsdata<metadata>()) {
+			if(!e.ispredefined())
+				break;
+			references.add(&e);
+		}
+	}
 	void writemeta(const metadata* m) {
 		auto start = references.getcount();
 		write_type(m);
@@ -155,18 +163,6 @@ class context {
 			write_requisits(m);
 		}
 	}
-public:
-	context(io::stream& file, bool writemode) : file(file), writemode(writemode) {
-		for(auto& e : bsdata<metadata>()) {
-			if(!e.ispredefined())
-				break;
-			references.add(&e);
-		}
-	}
-	void test() {
-		auto p = addtype("Character");
-		writemeta(p);
-	}
 };
 }
 
@@ -175,5 +171,5 @@ void metadata::write(const char* url) const {
 	if(!file)
 		return;
 	context e(file, true);
-	e.test();
+	e.writemeta(this);
 }

@@ -32,6 +32,8 @@ static const metadata* add_standart(const char* id, unsigned size, const cflags<
 }
 
 void code::initialize() {
+	bsdata<metadata>::source.clear();
+	bsdata<requisit>::source.clear();
 	add_standart("Void", 0, {}); // Must be first metadata
 	add_standart("Char", pointer_size / 4, {ScalarType});
 	add_standart("Byte", pointer_size / 4, {ScalarType});
@@ -40,7 +42,7 @@ void code::initialize() {
 	add_standart("Integer", pointer_size, {ScalarType});
 	add_standart("Unsigned", pointer_size, {ScalarType});
 	metadata::type_text = add_standart("Text", pointer_size, {});
-	metadata::type_requisit = add_standart("Type", sizeof(metadata), {});
+	metadata::type_metadata = add_standart("Type", sizeof(metadata), {});
 	add_standart("*Type", pointer_size, {});
 	metadata::type_requisit = add_standart("Requisit", sizeof(requisit), {});
 	auto p = addtype("Requisit");

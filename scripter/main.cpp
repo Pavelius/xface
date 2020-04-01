@@ -32,8 +32,9 @@ int main() {
 	p3->add("Wears", addtype("Item"))->setcount(8);
 	p3->update();
 	p3->write("character.mtd");
-	auto r = p4->add("Add", addtype("Void"));
-	r->set(new expression(Add, new expression(10), new expression(12)));
+	p->write("rect.mtd");
+	//auto r = p4->add("Add", addtype("Void"));
+	//r->set(new expression(Add, new expression(10), new expression(12)));
 	logmsg("Размер метаданных %1i", sizeof(metadata));
 	logmsg("Размер реквизита %1i", sizeof(requisit));
 	setcode(0);
