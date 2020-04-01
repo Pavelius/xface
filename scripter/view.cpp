@@ -23,7 +23,7 @@ static class metadata_control : public controls::tableref, controls::control::pl
 		for(auto& e : bsdata<metadata>()) {
 			if(!e)
 				continue;
-			if(e.isreference() || e.isarray() || e.isnumber() || e.ispredefined())
+			if(e.isreference() || e.isarray() || e.ispredefined())
 				continue;
 			addref(&e);
 		}

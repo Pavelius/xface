@@ -27,7 +27,7 @@ enum token_s : unsigned char {
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
 enum metatype_s : unsigned char {
-	Predefined, Static, Public, Dimension, ScalarType, TextType,
+	Static, Public, Dimension, ScalarType
 };
 struct metadata;
 struct requisit;
@@ -115,11 +115,15 @@ struct metadata {
 	bool					isarray() const { return id[0] == '%'; }
 	bool					isnumber() const { return flags.is(ScalarType); }
 	bool					isreference() const { return id[0] == '*'; }
-	bool					ispredefined() const { return flags.is(Predefined); }
-	bool					istext() const { return flags.is(TextType); }
+	bool					ispredefined() const;
+	bool					istext() const;
 	requisit*				find(const char* id) const;
+	int						getid() const;
 	const metadata*			gettype() const;
 	metadata*				reference() const;
+	static const metadata*	type_text;
+	static const metadata*	type_metadata;
+	static const metadata*	type_requisit;
 	void					update();
 	void					write(const char* url) const;
 };

@@ -16,28 +16,33 @@ BSREQ(offset),
 {}};
 INSTDATAC(requisit, 256*128)
 
-const unsigned	pointer_size = 4;
-const unsigned	array_size = sizeof(arem<char>);
-const char*		pointer_id = "*";
-const char*		array_id = "%";
+const unsigned			pointer_size = 4;
+const unsigned			array_size = sizeof(arem<char>);
+const metadata*			metadata::type_metadata;
+const metadata*			metadata::type_requisit;
+const metadata*			metadata::type_text;
+const char*				pointer_id = "*";
+const char*				array_id = "%";
 
-static void add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
+static const metadata* add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
 	p->size = size;
 	p->flags = mf;
+	return p;
 }
 
 void code::initialize() {
-	add_standart("Void", 0, {Predefined}); // Must be first metadata
-	add_standart("Char", pointer_size / 4, {ScalarType, Predefined});
-	add_standart("Byte", pointer_size / 4, {ScalarType, Predefined});
-	add_standart("Short", pointer_size/2, {ScalarType, Predefined});
-	add_standart("Short Unsigned", pointer_size/2, {ScalarType, Predefined});
-	add_standart("Integer", pointer_size, {ScalarType, Predefined});
-	add_standart("Unsigned", pointer_size, {ScalarType, Predefined});
-	add_standart("Text", pointer_size, {TextType, Predefined});
-	add_standart("Type", pointer_size, {Predefined});
-	add_standart("Requisit", pointer_size, {Predefined});
+	add_standart("Void", 0, {}); // Must be first metadata
+	add_standart("Char", pointer_size / 4, {ScalarType});
+	add_standart("Byte", pointer_size / 4, {ScalarType});
+	add_standart("Short", pointer_size/2, {ScalarType});
+	add_standart("Short Unsigned", pointer_size/2, {ScalarType});
+	add_standart("Integer", pointer_size, {ScalarType});
+	add_standart("Unsigned", pointer_size, {ScalarType});
+	metadata::type_text = add_standart("Text", pointer_size, {});
+	metadata::type_requisit = add_standart("Type", sizeof(metadata), {});
+	add_standart("*Type", pointer_size, {});
+	metadata::type_requisit = add_standart("Requisit", sizeof(requisit), {});
 	auto p = addtype("Requisit");
 	p->add("id", addtype("Text"))->add(Dimension);
 	p->add("type", addtype("*Type"));
@@ -52,6 +57,18 @@ void code::initialize() {
 	p->add("size", addtype("Unsigned"));
 	p->add("flags", addtype("Unsigned"));
 	p->update();
+}
+
+int	metadata::getid() const {
+	return this - bsdata<metadata>::elements;
+}
+
+bool metadata::istext() const {
+	return this == type_text;
+}
+
+bool metadata::ispredefined() const {
+	return this <= type_requisit;
 }
 
 void metadata::add(stringbuilder& sb) const {
