@@ -72,12 +72,12 @@
     }
   },
   "window":{
-    "x":109,
-    "y":76,
-    "width":866,
-    "height":586,
+    "x":106,
+    "y":68,
+    "width":1014,
+    "height":548,
     "header_width":113,
-    "flags":112
+    "flags":48
   },
   "controls":{
     "code":{

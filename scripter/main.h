@@ -27,7 +27,7 @@ enum token_s : unsigned char {
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
 enum metatype_s : unsigned char {
-	Predefined, Static, Public, ScalarType, TextType,
+	Predefined, Static, Public, Dimension, ScalarType, TextType,
 };
 struct metadata;
 struct requisit;
@@ -91,8 +91,9 @@ struct requisit {
 	unsigned				offset;
 	unsigned				count;
 	metadata*				parent;
-	//expression*				code;
+	metatypea				flags;
 	constexpr operator bool() const { return id != 0; }
+	requisit*				add(metatype_s v) { flags.add(v); return this; }
 	void					getname(stringbuilder& sb) const;
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
