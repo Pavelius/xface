@@ -34,6 +34,14 @@ class context {
 		}
 		return 0;
 	}
+	array* findelements(const metadata* type) {
+		auto p = type->find("Elements");
+		if(!p)
+			return 0;
+		if(!p->is(Static) || !p->type->isarray() || p->type->type!=type)
+			return 0;
+		return (array*)p->offset;
+	}
 	void* findbykey(void* p, const metadata* type) {
 		keya k1;
 		for(auto p : references) {
@@ -45,7 +53,10 @@ class context {
 				continue;
 			k1.add((requisit*)p);
 		}
-		return 0;
+		auto pa = findelements(type);
+		if(!pa)
+			return 0;
+		return findbykey(*pa, p, k1);
 	}
 	void serial(void** object, const metadata* type) {
 		if(writemode) {
@@ -117,6 +128,8 @@ class context {
 		for(auto& e : bsdata<requisit>()) {
 			if(e.parent != pm)
 				continue;
+			if(e.is(Static))
+				continue;
 			if(key_only && !e.flags.is(Dimension))
 				continue;
 			serial(e.ptr(object), e);
@@ -163,6 +176,31 @@ public:
 			write_requisits(m);
 		}
 	}
+	bool readobject() {
+		char temp[256 * 8];
+		unsigned fid_type = 0;
+		file.read(fid_type);
+		if(!fid_type)
+			return false;
+		auto type = (metadata*)references[fid_type];
+		auto pe = findelements(type);
+		if(!pe)
+			return false;
+		serial(temp, type, false);
+		auto p1 = findbykey(temp, type);
+		if(!p1)
+			p1 = pe->add();
+		if(!p1)
+			return false;
+		memcpy(p1, temp, type->size);
+		return true;
+	}
+	void read() {
+		while(true) {
+			if(!readobject())
+				break;
+		}
+	}
 };
 }
 
@@ -172,4 +210,12 @@ void metadata::write(const char* url) const {
 		return;
 	context e(file, true);
 	e.writemeta(this);
+}
+
+void metadata::read(const char* url) {
+	io::file file(url, StreamRead);
+	if(!file)
+		return;
+	context e(file, false);
+	e.read();
 }

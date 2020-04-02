@@ -94,12 +94,14 @@ struct requisit {
 	metatypea				flags;
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(metatype_s v) { flags.add(v); return this; }
+	constexpr bool			is(metatype_s v) const { return flags.is(v); }
 	void					getname(stringbuilder& sb) const;
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
 	requisit*				setcount(int v) { if(this) count = v; return this; }
+	requisit*				setoffset(unsigned v) { offset = v; return this; }
 	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
 };
 struct metadata {
@@ -110,16 +112,19 @@ struct metadata {
 	operator bool() const { return id != 0; }
 	void					add(stringbuilder& sb) const;
 	requisit*				add(const char* id, metadata* type);
+	requisit*				add(array* p);
 	metadata*				array() const;
 	bool					is(const char* id) const;
-	bool					isarray() const { return id[0] == '%'; }
+	constexpr bool			is(metatype_s v) const { return flags.is(v); }
+	bool					isarray() const;
 	bool					isnumber() const { return flags.is(ScalarType); }
-	bool					isreference() const { return id[0] == '*'; }
+	bool					isreference() const;
 	bool					ispredefined() const;
 	bool					istext() const;
 	requisit*				find(const char* id) const;
 	int						getid() const;
 	const metadata*			gettype() const;
+	static void				read(const char* url);
 	metadata*				reference() const;
 	static const metadata*	type_text;
 	static const metadata*	type_metadata;

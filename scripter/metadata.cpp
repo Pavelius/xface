@@ -22,7 +22,7 @@ const metadata*			metadata::type_metadata;
 const metadata*			metadata::type_requisit;
 const metadata*			metadata::type_text;
 const char*				pointer_id = "*";
-const char*				array_id = "%";
+const char*				array_id = "&";
 
 static const metadata* add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
@@ -52,12 +52,14 @@ void code::initialize() {
 	p->add("count", addtype("Unsigned"));
 	p->add("parent", addtype("*Type"))->add(Dimension);
 	p->add("flags", addtype("Unsigned"));
+	p->add(bsdata<requisit>::source_ptr);
 	p->update();
 	p = addtype("Type");
 	p->add("id", addtype("Text"))->add(Dimension);
 	p->add("type", addtype("*Type"))->add(Dimension);
 	p->add("size", addtype("Unsigned"));
 	p->add("flags", addtype("Unsigned"));
+	p->add(bsdata<metadata>::source_ptr);
 	p->update();
 }
 
@@ -67,6 +69,14 @@ int	metadata::getid() const {
 
 bool metadata::istext() const {
 	return this == type_text;
+}
+
+bool metadata::isarray() const {
+	return id[0] == array_id[0];
+}
+
+bool metadata::isreference() const {
+	return id[0] == pointer_id[0];
 }
 
 bool metadata::ispredefined() const {
@@ -99,6 +109,13 @@ metadata* code::addtype(const char* id) {
 	return p;
 }
 
+requisit* metadata::add(::array* ptr) {
+	auto p = add("Elements", this->array());
+	p->add(Static);
+	p->offset = (unsigned)ptr;
+	return p;
+}
+
 requisit* metadata::add(const char* id, metadata* type) {
 	if(!type)
 		return 0;
@@ -123,6 +140,8 @@ void metadata::update() {
 	size = 0;
 	for(auto& e : bsdata<requisit>()) {
 		if(e.parent != this)
+			continue;
+		if(e.is(Static))
 			continue;
 		e.offset = size;
 		size += e.getsizeof();
