@@ -35,6 +35,7 @@ int main() {
 	p->write("rect.mtd");
 	initialize();
 	p->read("rect.mtd");
+	//p->read("character.mtd");
 	//auto r = p4->add("Add", addtype("Void"));
 	//r->set(new expression(Add, new expression(10), new expression(12)));
 	logmsg("Размер метаданных %1i", sizeof(metadata));

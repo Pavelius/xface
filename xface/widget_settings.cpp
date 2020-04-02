@@ -504,7 +504,7 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(temp, zendof(temp)));
 }
 
-void draw::application(bool allow_multiply_window, eventproc heartproc) {
+void draw::application(bool allow_multiply_window, eventproc heartproc, shortcut* shortcuts) {
 	widget_application_control.allow_multiply_window = allow_multiply_window;
 	widget_application_control.heartproc = heartproc;
 	auto current_tab = 0;
@@ -539,6 +539,10 @@ void draw::application(bool allow_multiply_window, eventproc heartproc) {
 		case F2: metrics::show::bottom = !metrics::show::bottom; break;
 		case Alt + F2: metrics::show::left = !metrics::show::left; break;
 		case Ctrl + F2: metrics::show::right = !metrics::show::right; break;
+		default:
+			if(shortcuts)
+				execute(shortcuts);
+			break;
 		}
 	}
 }
@@ -554,12 +558,12 @@ void draw::application_initialize() {
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
 
-void draw::application(const char* name, bool allow_multiply_window, eventproc showproc, eventproc heartproc) {
+void draw::application(const char* name, bool allow_multiply_window, eventproc showproc, eventproc heartproc, shortcut* shortcuts) {
 	application_initialize();
 	setcaption(name);
 	if(showproc)
 		showproc();
-	application(allow_multiply_window, heartproc);
+	application(allow_multiply_window, heartproc, shortcuts);
 }
 
 static struct settings_settings_strategy : io::strategy {

@@ -223,6 +223,12 @@ struct plugin {
 	virtual void		after() {}
 	virtual void		before() {}
 };
+struct shortcut {
+	eventproc			proc;
+	const char*			name;
+	unsigned			key;
+	constexpr operator bool() const { return proc != 0; }
+};
 extern rect				clipping; // Clipping area
 extern color			fore; // Foreground color (curently selected color)
 extern color			fore_stroke; // foreground stroke color
@@ -249,6 +255,7 @@ bool					dragactive();
 void					dragbegin(const void* p);
 extern point			dragmouse;
 void					execute(eventproc proc, int value = 0);
+bool					execute(const shortcut* p);
 rect					getarea();
 int						getbpp();
 color					getcolor(color normal, unsigned flags);

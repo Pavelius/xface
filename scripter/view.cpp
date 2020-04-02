@@ -121,20 +121,6 @@ public:
 } requisit_instance;
 
 static struct properties_control : controls::properties, controls::control::plugin {
-	void view(const rect& rc) override {
-		auto focus = (controls::control*)isfocused();
-		bsval v;
-		if(focus == &requisit_instance) {
-			v.data = requisit_instance.getcurrent();
-			v.type = bsmeta<requisit>::meta;
-		} else if(focus == &metadata_instance) {
-			v.data = metadata_instance.getcurrent();
-			v.type = bsmeta<metadata>::meta;
-		}
-		if(v)
-			set(v);
-		properties::view(rc);
-	}
 	static void choose_metadata(adat<void*, 64>& result, const bsreq** name_requisit, void* type) {
 		if(name_requisit)
 			*name_requisit = bsmeta<metadata>::meta;
@@ -189,6 +175,23 @@ static void heartproc() {
 		properties_instance.set(v);
 }
 
+static void choose_metadata() {
+	metadata_instance.setfocus(true);
+}
+
+static void choose_requisit() {
+	requisit_instance.setfocus(true);
+}
+
+static void choose_properties() {
+	properties_instance.setfocus(true);
+}
+
+static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
+{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
+{choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
+{}};
+
 void run_main() {
-	draw::application("Scripter", false, 0, heartproc);
+	draw::application("Scripter", false, 0, heartproc, shortcuts);
 }

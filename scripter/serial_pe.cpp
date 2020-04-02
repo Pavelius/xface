@@ -21,13 +21,13 @@ class context {
 	}
 	static bool isequal(const void* p1, const void* p2, const keya& keys) {
 		for(auto p : keys) {
-			if(memcmp((char*)p1 + p->offset, (char*)p2 + p->offset, p->count*p->parent->size) != 0)
+			if(memcmp((char*)p1 + p->offset, (char*)p2 + p->offset, p->count*p->type->size) != 0)
 				return false;
 		}
 		return true;
 	}
 	void* findbykey(array& source, void* p, const keya& k1) {
-		for(auto i = source.getcount() - 1; i >= 0; i--) {
+		for(int i = source.getcount() - 1; i >= 0; i--) {
 			auto p1 = source.ptr(i);
 			if(isequal(p1, p, k1))
 				return p1;
@@ -44,14 +44,12 @@ class context {
 	}
 	void* findbykey(void* p, const metadata* type) {
 		keya k1;
-		for(auto p : references) {
-			if(bsdata<requisit>::source.indexof(p) == -1)
+		for(auto& e : bsdata<requisit>()) {
+			if(e.parent != type)
 				continue;
-			if(((requisit*)p)->parent != type)
+			if(!e.is(Dimension))
 				continue;
-			if(!((requisit*)p)->flags.is(Dimension))
-				continue;
-			k1.add((requisit*)p);
+			k1.add(&e);
 		}
 		auto pa = findelements(type);
 		if(!pa)
@@ -73,19 +71,23 @@ class context {
 			file.read(&i, sizeof(i));
 			if(i >= sizeof(temp))
 				p = new char[i + 1];
-			file.read(p, sizeof(i));
+			file.read(p, i);
 			p[i] = 0;
 			if(read_result)
 				*read_result = true;
 			v = (void*)szdup(p);
+			references.add(v);
 		} else {
 			auto pe = findelements(type);
 			if(!pe)
 				return 0;
+			references.add(0);
+			auto pv1 = &references[references.getcount() - 1];
 			serial(p, type, only_key);
 			v = findbykey(p, type);
 			if(!v)
 				v = pe->add();
+			*pv1 = v;
 			if(!v)
 				return 0;
 			memcpy(v, p, type->size);
@@ -105,30 +107,18 @@ class context {
 			file.write(&i, sizeof(i));
 			if(i != 0xFFFFFFFF)
 				return;
-			references.add(p);
-			i = references.indexof((void*)type);
-			file.write(&i, sizeof(i));
-			if(type->istext()) {
-				i = zlen((const char*)p);
-				file.write(&i, sizeof(i));
-				file.write(p, i);
-			} else
-				serial(p, type, true);
+			writeobject(p, type, true);
 		} else {
 			file.read(&i, sizeof(i));
 			if(!i)
 				*object = 0;
 			else if(i != 0xFFFFFFFF)
 				*object = references[i];
-			else {
+			else
 				*object = readobject(0, true);
-				references.add(*object);
-			}
 		}
 	}
 	void serial(void* object, const requisit& e) {
-		if(writemode)
-			write_type(e.type);
 		if(e.type->isreference()) {
 			auto type = e.type->type;
 			if(type->isnumber() || type->istext() || type->isreference())
@@ -155,39 +145,33 @@ class context {
 				continue;
 			serial(e.ptr(object), e);
 		}
-		/* else {
-			for(auto pe : references) {
-				if(bsdata<requisit>::source.indexof(pe) == -1)
-					continue;
-				auto& e = *((requisit*)pe);
-				if(e.parent != pm)
-					continue;
-				if(e.is(Static))
-					continue;
-				if(key_only && !e.flags.is(Dimension))
-					continue;
-				serial(e.ptr(object), e);
-			}
-		}*/
 	}
 	void write_requisits(const metadata* m) {
-		unsigned fid = metadata::type_requisit->getid();
 		for(auto& e : bsdata<requisit>()) {
 			if(e.parent != m)
 				continue;
-			serial(fid);
-			serial(&e, metadata::type_requisit, false);
+			writeobject(&e, metadata::type_requisit, false);
 		}
+	}
+	void writeobject(const void* m, const metadata* type, bool key_only) {
+		if(references.indexof((void*)m) != -1)
+			return;
+		references.add((void*)m);
+		unsigned i = (unsigned)references.indexof((void*)type);
+		file.write(&i, sizeof(i));
+		if(type->istext()) {
+			i = zlen((const char*)m);
+			file.write(&i, sizeof(i));
+			file.write(m, i);
+		} else
+			serial((void*)m, type, key_only);
 	}
 	void write_type(const metadata* m) {
 		if(references.indexof((void*)m) != -1)
 			return;
 		if(m->isreference())
 			write_type(m->type);
-		references.add((void*)m);
-		unsigned fid = metadata::type_metadata->getid();
-		serial(fid);
-		serial((void*)m, metadata::type_metadata, false);
+		writeobject(m, metadata::type_metadata, false);
 		write_requisits(m);
 	}
 public:

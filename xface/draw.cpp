@@ -2184,3 +2184,13 @@ char* draw::key2str(char* result, int key) {
 	}
 	return result;
 }
+
+bool draw::execute(const shortcut* pf) {
+	for(auto p = pf; *p; p++) {
+		if(hot.key == p->key) {
+			p->proc();
+			return true;
+		}
+	}
+	return false;
+}
