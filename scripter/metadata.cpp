@@ -23,6 +23,7 @@ const metadata*			metadata::type_requisit;
 const metadata*			metadata::type_text;
 const char*				pointer_id = "*";
 const char*				array_id = "&";
+static const requisit*	requisit_data;
 
 static const metadata* add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
@@ -59,7 +60,7 @@ void code::initialize() {
 	p->add("type", addtype("*Type"))->add(Dimension);
 	p->add("size", addtype("Unsigned"));
 	p->add("flags", addtype("Unsigned"));
-	p->add(bsdata<metadata>::source_ptr);
+	requisit_data = p->add(bsdata<metadata>::source_ptr);
 	p->update();
 }
 
@@ -188,11 +189,25 @@ requisit* metadata::find(const char* id) const {
 	return 0;
 }
 
+void metadata::getname(stringbuilder& sb) const {
+	if(isreference()) {
+		sb.add(pointer_id);
+		type->getname(sb);
+	} else if(isarray()) {
+		type->getname(sb);
+		sb.add(array_id);
+	} else
+		sb.add(id);
+}
+
 void requisit::getname(stringbuilder& sb) const {
 	sb.add(id);
 	sb.add(":");
-	sb.add(type->id);
-	if(type->isarray())
+	type->getname(sb);
 	if(count > 1)
 		sb.add("[%1i]", count);
+}
+
+bool requisit::ispredefined() const {
+	return this <= requisit_data;
 }

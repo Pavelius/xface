@@ -85,25 +85,6 @@ struct statement {
 	void* operator			new(unsigned size);
 	void operator			delete(void* p, unsigned size);
 };
-struct requisit {
-	const char*				id;
-	metadata*				type;
-	unsigned				offset;
-	unsigned				count;
-	metadata*				parent;
-	metatypea				flags;
-	constexpr operator bool() const { return id != 0; }
-	requisit*				add(metatype_s v) { flags.add(v); return this; }
-	constexpr bool			is(metatype_s v) const { return flags.is(v); }
-	void					getname(stringbuilder& sb) const;
-	unsigned				getsize() const;
-	unsigned				getsizeof() const { return getsize() * count; }
-	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
-	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
-	requisit*				setcount(int v) { if(this) count = v; return this; }
-	requisit*				setoffset(unsigned v) { offset = v; return this; }
-	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
-};
 struct metadata {
 	const char*				id;
 	metadata*				type;
@@ -123,6 +104,7 @@ struct metadata {
 	bool					istext() const;
 	requisit*				find(const char* id) const;
 	int						getid() const;
+	void					getname(stringbuilder& sb) const;
 	const metadata*			gettype() const;
 	static void				read(const char* url);
 	metadata*				reference() const;
@@ -131,6 +113,27 @@ struct metadata {
 	static const metadata*	type_requisit;
 	void					update();
 	void					write(const char* url) const;
+};
+struct requisit {
+	const char*				id;
+	metadata*				type;
+	unsigned				offset;
+	unsigned				count;
+	metadata*				parent;
+	metatypea				flags;
+	constexpr operator bool() const { return id != 0; }
+	requisit*				add(metatype_s v) { flags.add(v); return this; }
+	constexpr bool			is(metatype_s v) const { return flags.is(v); }
+	bool					ispredefined() const;
+	unsigned				getlenght() const { return type->size*count; }
+	void					getname(stringbuilder& sb) const;
+	unsigned				getsize() const;
+	unsigned				getsizeof() const { return getsize() * count; }
+	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
+	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
+	requisit*				setcount(int v) { if(this) count = v; return this; }
+	requisit*				setoffset(unsigned v) { offset = v; return this; }
+	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
 };
 metadata*					addtype(const char* id);
 metadata*					addtype(const char* id, const metadata* type, unsigned size);

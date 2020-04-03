@@ -6,7 +6,7 @@ using namespace code;
 
 namespace {
 class context {
-	typedef adat<requisit*, 16> keya;
+	typedef adat<requisit*, 64> keya;
 	io::stream&			file;
 	bool				writemode;
 	arem<void*>			references;
@@ -21,7 +21,14 @@ class context {
 	}
 	static bool isequal(const void* p1, const void* p2, const keya& keys) {
 		for(auto p : keys) {
-			if(memcmp((char*)p1 + p->offset, (char*)p2 + p->offset, p->count*p->type->size) != 0)
+			if(memcmp((char*)p1 + p->offset, (char*)p2 + p->offset, p->getlenght()) != 0)
+				return false;
+		}
+		return true;
+	}
+	static bool copy(const void* p1, const void* p2, const keya& keys) {
+		for(auto p : keys) {
+			if(memcpy((char*)p1 + p->offset, (char*)p2 + p->offset, p->getlenght()) != 0)
 				return false;
 		}
 		return true;
@@ -42,15 +49,20 @@ class context {
 			return 0;
 		return (array*)p->offset;
 	}
-	void* findbykey(void* p, const metadata* type) {
-		keya k1;
-		for(auto& e : bsdata<requisit>()) {
+	void select(keya& k, const metadata* type, bool key_only) {
+		for(auto p : references) {
+			if(bsdata<requisit>::source.indexof(p) == -1)
+				continue;
+			auto& e = *((requisit*)p);
 			if(e.parent != type)
 				continue;
-			if(!e.is(Dimension))
+			if(key_only && !e.is(Dimension))
 				continue;
-			k1.add(&e);
+			k.add(&e);
 		}
+	}
+	void* findbykey(void* p, const metadata* type) {
+		keya k1; select(k1, type, true);
 		auto pa = findelements(type);
 		if(!pa)
 			return 0;
@@ -136,7 +148,10 @@ class context {
 	void serial(void* object, const metadata* pm, bool key_only) {
 		if(!object)
 			return;
-		for(auto& e : bsdata<requisit>()) {
+		for(auto p : references) {
+			if(bsdata<requisit>::source.indexof(p) == -1)
+				continue;
+			auto& e = *((requisit*)p);
 			if(e.parent != pm)
 				continue;
 			if(e.is(Static))
@@ -181,6 +196,13 @@ public:
 				break;
 			references.add(&e);
 		}
+		for(auto& e : bsdata<requisit>()) {
+			if(!e.ispredefined())
+				break;
+			references.add(&e);
+		}
+		references.add((void*)szdup("*")); // Recently used pointer name
+		references.add((void*)szdup("[]")); // Recently used array name
 	}
 	void writemeta(const metadata* m) {
 		auto start = references.getcount();
@@ -192,7 +214,7 @@ public:
 				continue;
 			if(bsdata<metadata>::source.indexof(p) == -1)
 				continue;
-			write_requisits(m);
+			write_requisits((metadata*)p);
 		}
 	}
 	void read() {

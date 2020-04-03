@@ -32,10 +32,10 @@ int main() {
 	p3->add("Wears", addtype("Item"))->setcount(8);
 	p3->update();
 	p3->write("character.mtd");
-	p->write("rect.mtd");
+	//p->write("rect.mtd");
 	initialize();
-	p->read("rect.mtd");
-	//p->read("character.mtd");
+	//p->read("rect.mtd");
+	p->read("character.mtd");
 	//auto r = p4->add("Add", addtype("Void"));
 	//r->set(new expression(Add, new expression(10), new expression(12)));
 	logmsg("Размер метаданных %1i", sizeof(metadata));
