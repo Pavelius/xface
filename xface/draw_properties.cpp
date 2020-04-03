@@ -112,6 +112,11 @@ const char* properties::gettitle(char* result, const char* result_maximum, const
 	return pv;
 }
 
+void properties::focusfirst() {
+	const anyval st(value.type->ptr(value.data), value.type->size, 0);
+	draw::setfocus(st, true);
+}
+
 int properties::element(int x, int y, int width, const bsval& ev) {
 	if(!isvisible(ev))
 		return 0;

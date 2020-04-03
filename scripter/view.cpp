@@ -184,7 +184,7 @@ static void choose_requisit() {
 }
 
 static void choose_properties() {
-	properties_instance.setfocus(true);
+	properties_instance.focusfirst();
 }
 
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},

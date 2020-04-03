@@ -21,6 +21,7 @@ struct properties : control {
 	void				close(void* object);
 	bool				cmdopen(bool run);
 	int					element(int x, int y, int width, const bsval& ev);
+	void				focusfirst();
 	const char*			getlabel(char* result, const char* result_maximum) const override { return "Свойства"; }
 	virtual const char*	gettitle(char* result, const char* result_maximum, const bsval& ev) const;
 	int					group(int x, int y, int width, const char* label, const bsval& ev);
