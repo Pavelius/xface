@@ -26,12 +26,12 @@ class context {
 		}
 		return true;
 	}
-	static bool copy(const void* p1, const void* p2, const keya& keys) {
+	static void copy(const void* p1, const void* p2, const keya& keys) {
 		for(auto p : keys) {
-			if(memcpy((char*)p1 + p->offset, (char*)p2 + p->offset, p->getlenght()) != 0)
-				return false;
+			auto s = p->getlenght();
+			auto u = p->offset;
+			memcpy((char*)p1 + u, (char*)p2 + u, s);
 		}
-		return true;
 	}
 	void* findbykey(array& source, void* p, const keya& k1) {
 		for(int i = source.getcount() - 1; i >= 0; i--) {
@@ -56,17 +56,12 @@ class context {
 			auto& e = *((requisit*)p);
 			if(e.parent != type)
 				continue;
+			if(e.is(Static))
+				continue;
 			if(key_only && !e.is(Dimension))
 				continue;
 			k.add(&e);
 		}
-	}
-	void* findbykey(void* p, const metadata* type) {
-		keya k1; select(k1, type, true);
-		auto pa = findelements(type);
-		if(!pa)
-			return 0;
-		return findbykey(*pa, p, k1);
 	}
 	void* readobject(bool* read_result = 0, bool only_key = false) {
 		char temp[256 * 4 * 4];
@@ -90,19 +85,22 @@ class context {
 			v = (void*)szdup(p);
 			references.add(v);
 		} else {
-			auto pe = findelements(type);
-			if(!pe)
+			auto pa = findelements(type);
+			if(!pa)
 				return 0;
+			keya keys; select(keys, type, only_key);
 			references.add(0);
 			auto pv1 = &references[references.getcount() - 1];
 			serial(p, type, only_key);
-			v = findbykey(p, type);
-			if(!v)
-				v = pe->add();
+			v = findbykey(*pa, p, keys);
+			if(!v) {
+				v = pa->add();
+				memset(v, 0, pa->getsize());
+			}
 			*pv1 = v;
 			if(!v)
 				return 0;
-			memcpy(v, p, type->size);
+			copy(v, p, keys);
 		}
 		if(p != temp)
 			delete p;
