@@ -104,6 +104,7 @@ struct metadata {
 	bool					istext() const;
 	requisit*				find(const char* id) const;
 	int						getid() const;
+	::array*				getelements() const;
 	void					getname(stringbuilder& sb) const;
 	const metadata*			gettype() const;
 	static void				read(const char* url);

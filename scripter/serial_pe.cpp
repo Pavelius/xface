@@ -41,14 +41,6 @@ class context {
 		}
 		return 0;
 	}
-	array* findelements(const metadata* type) {
-		auto p = type->find("Elements");
-		if(!p)
-			return 0;
-		if(!p->is(Static) || !p->type->isarray() || p->type->type != type)
-			return 0;
-		return (array*)p->offset;
-	}
 	void select(keya& k, const metadata* type, bool key_only) {
 		for(auto p : references) {
 			if(bsdata<requisit>::source.indexof(p) == -1)
@@ -85,7 +77,7 @@ class context {
 			v = (void*)szdup(p);
 			references.add(v);
 		} else {
-			auto pa = findelements(type);
+			auto pa = type->getelements();
 			if(!pa)
 				return 0;
 			keya keys; select(keys, type, only_key);
@@ -200,7 +192,10 @@ public:
 			references.add(&e);
 		}
 		references.add((void*)szdup("*")); // Recently used pointer name
-		references.add((void*)szdup("[]")); // Recently used array name
+		references.add((void*)szdup("&")); // Recently used array name
+		// Reserve some metadata for future use
+		while(references.getcount() < 32)
+			references.add(0);
 	}
 	void writemeta(const metadata* m) {
 		auto start = references.getcount();
