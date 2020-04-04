@@ -95,45 +95,36 @@ const char* stringbuilder::readvariable(const char* p) {
 	return p;
 }
 
-char* stringbuilder::adduint(char* dst, const char* result_max, unsigned value, int precision, const int radix) {
+void stringbuilder::adduint(unsigned value, int precision, const int radix) {
 	char temp[32]; int i = 0;
 	if(!value) {
-		if(dst < result_max)
-			*dst++ = '0';
-		if(dst < result_max)
-			*dst = 0;
-		return dst;
+		add("0");
+		return;
 	}
-	if(!result_max)
-		result_max = dst + 32;
 	while(value) {
 		temp[i++] = (value % radix);
 		value /= radix;
 	}
-	while(precision-- > i) {
-		if(dst < result_max)
-			*dst++ = '0';
-	}
+	while(precision-- > i)
+		add("0");
 	while(i) {
 		auto v = temp[--i];
-		if(dst < result_max) {
+		if(p < pe) {
 			if(v < 10)
-				*dst++ = '0' + v;
+				*p++ = '0' + v;
 			else
-				*dst++ = 'A' + (v - 10);
+				*p++ = 'A' + (v - 10);
 		}
 	}
-	dst[0] = 0;
-	return dst;
+	p[0] = 0;
 }
 
-char* stringbuilder::addint(char* dst, const char* result_max, int value, int precision, const int radix) {
+void stringbuilder::addint(int value, int precision, const int radix) {
 	if(value < 0) {
-		if(dst < result_max)
-			*dst++ = '-';
+		add("-");
 		value = -value;
 	}
-	return adduint(dst, result_max, value, precision, radix);
+	adduint(value, precision, radix);
 }
 
 const char* stringbuilder::readformat(const char* src, const char* vl) {
@@ -165,10 +156,10 @@ const char* stringbuilder::readformat(const char* src, const char* vl) {
 				if(p < pe)
 					*p++ = '+';
 			}
-			p = addint(p, pe, value, pnp, 10);
+			addint(value, pnp, 10);
 		} else if(*src == 'h') {
 			src++;
-			p = adduint(p, pe, (unsigned)(((int*)vl)[pn - 1]), pnp, 16);
+			adduint((unsigned)(((int*)vl)[pn - 1]), pnp, 16);
 		} else {
 			if(((char**)vl)[pn - 1]) {
 				auto p0 = p;
