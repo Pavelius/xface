@@ -111,7 +111,7 @@ metadata* code::addtype(const char* id) {
 	if(p)
 		return p;
 	p = bsdata<metadata>::add();
-	p->id = id;
+	p->id = szdup(id);
 	return p;
 }
 

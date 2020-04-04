@@ -31,9 +31,9 @@ int main() {
 	p3->add("Ability", addtype("Char"))->setcount(6);
 	p3->add("Wears", addtype("Item"))->setcount(8);
 	p3->update();
-	p3->write("character.mtd");
+	//p3->write("character.mtd");
 	//p->write("rect.mtd");
-	initialize();
+	//initialize();
 	//p->read("rect.mtd");
 	p->read("character.mtd");
 	//auto r = p4->add("Add", addtype("Void"));
