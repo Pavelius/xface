@@ -9,12 +9,12 @@ int properties::translate::compare(const void* v1, const void* v2) {
 	return strcmp(((translate*)v1)->id, ((translate*)v2)->id);
 }
 
-int properties::vertical(int x, int y, int width, const bsval& ev) {
-	if(!ev)
+int properties::vertical(int x, int y, int width, void* object, const bsreq* type) {
+	if(!object)
 		return 0;
 	int y0 = y;
-	for(auto p = ev.type; *p; p++)
-		y += element(x, y, width, bsval(ev.data, p));
+	for(auto p = type; *p; p++)
+		y += element(x, y, width, object, p);
 	return y - y0;
 }
 
@@ -65,14 +65,14 @@ void properties::treemark(int x, int y, int width, void* object, bool isopen) co
 
 static const bsreq* current_type;
 
-int properties::group(int x, int y, int width, const char* label, const bsval& ev) {
+int properties::group(int x, int y, int width, const char* label, void* object, const bsreq* type) {
 	draw::state push;
 	auto y1 = y;
 	auto dy = texth() + 4;
-	auto opened = isopen(ev.type);
+	auto opened = isopen(type);
 	rect rc = {x, y, x + width, y + dy};
 	gradv(rc, colors::form, colors::border);
-	auto focused = draw::isfocused(rc, anyval(ev.data,0,0));
+	auto focused = draw::isfocused(rc, anyval(object, 0, 0));
 	if(label && label[0])
 		text(x + 4, y + 2, label);
 	auto need_open = false;
@@ -90,21 +90,17 @@ int properties::group(int x, int y, int width, const char* label, const bsval& e
 		break;
 	}
 	y += dy;
-	if(opened) {
-		bsval ob;
-		ob.data = ev.getptr();
-		ob.type = ev.type->type;
-		y += vertical(x, y, width, ob);
-	}
+	if(opened)
+		y += vertical(x, y, width, type->ptr(object), type->type);
 	if(need_open) {
-		current_type = ev.type;
+		current_type = type;
 		execute((fncmd)&properties::toggle);
 	}
 	return y - y1;
 }
 
-const char* properties::gettitle(char* result, const char* result_maximum, const bsval& ev) const {
-	auto pv = ev.type->id;
+const char* properties::gettitle(char* result, const char* result_maximum, const void* object, const bsreq* type) const {
+	auto pv = type->id;
 	translate kv = {pv, 0};
 	auto fv = (translate*)bsearch(&kv, dictionary.data, dictionary.count, sizeof(dictionary.data[0]), translate::compare);
 	if(fv)
@@ -113,24 +109,30 @@ const char* properties::gettitle(char* result, const char* result_maximum, const
 }
 
 void properties::focusfirst() {
-	const anyval st(value.type->ptr(value.data), value.type->size, 0);
+	const anyval st(type->ptr(object), type->size, 0);
 	draw::setfocus(st, true);
 }
 
-int properties::element(int x, int y, int width, const bsval& ev) {
-	if(!isvisible(ev))
+int properties::element(int x, int y, int width, void* object, const bsreq* type) {
+	if(!isvisible(object, type))
 		return 0;
 	int h = 0;
 	char temp[260];
-	if(ev.type->is(KindNumber)) {
-		const anyval st(ev.type->ptr(ev.data), ev.type->size, 0);
-		h = field(x, y, width, gettitle(temp, zendof(temp), ev), st, title, 4);
-	} else if(ev.type->is(KindText)) {
-		h = field(x, y, width, gettitle(temp, zendof(temp), ev), *((const char**)ev.type->ptr(ev.data)), title);
-	} else if(ev.type->is(KindReference)) {
-		//h = combobox(x, y, width, gettitle(temp, zendof(temp), ev), ev, title, 0, getprocchoose(ev.type));
-	} else if(ev.type->is(KindScalar))
-		h = group(x, y, width, gettitle(temp, zendof(temp), ev), ev);
+	if(type->is(KindNumber)) {
+		const anyval st(type->ptr(object), type->size, 0);
+		auto pt = gettitle(temp, zendof(temp), object, type);
+		h = field(x, y, width, pt, st, title, 4);
+	} else if(type->is(KindText)) {
+		auto pt = gettitle(temp, zendof(temp), object, type);
+		h = field(x, y, width, pt, *((const char**)type->ptr(object)), title);
+	} else if(type->is(KindReference) && type->source) {
+		auto pt = gettitle(temp, zendof(temp), object, type);
+		const anyval st(type->ptr(object), type->size, 0);
+		h = field(x, y, width, pt, st, title, *type->source, table::getenumid);
+	} else if(type->is(KindScalar)) {
+		auto pt = gettitle(temp, zendof(temp), object, type);
+		h = group(x, y, width, pt, object, type);
+	}
 	if(!h)
 		return 0;
 	return h + spacing;
@@ -138,7 +140,7 @@ int properties::element(int x, int y, int width, const bsval& ev) {
 
 void properties::view(const rect& rc) {
 	control::view(rc);
-	if(!value) {
+	if(!object) {
 		auto push_fore = fore;
 		fore = colors::text.mix(colors::window, 128);
 		text(rc, "У объекта нет свойств", AlignCenterCenter);
@@ -148,6 +150,6 @@ void properties::view(const rect& rc) {
 		auto y = rc.y1;
 		auto width = rc.width();
 		setposition(x, y, width);
-		vertical(x, y, width, value);
+		vertical(x, y, width, object, type);
 	}
 }

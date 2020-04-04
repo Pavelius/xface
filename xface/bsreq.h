@@ -3,7 +3,7 @@
 #pragma once
 
 #define	BSREQ(fn) {#fn, (unsigned)&((data_type*)0)->fn,\
-sizeof(meta_decoy<decltype(data_type::fn)>::value),\
+sizeof(meta_size<decltype(data_type::fn)>::value),\
 sizeof(data_type::fn),\
 meta_count<decltype(data_type::fn)>::value,\
 bsmeta<meta_decoy<decltype(data_type::fn)>::value>::meta,\
@@ -18,6 +18,12 @@ enum bstype_s : unsigned char {
 	KindNumber, KindText, KindScalar, KindEnum, KindReference,
 	KindADat, KindARef, KindARem, KindCFlags
 };
+// Get base size
+template<class T> struct meta_size : meta_decoy<T> {};
+template<class T> struct meta_size<T*> { typedef T* value; };
+template<class T> struct meta_size<const T*> { typedef T* value; };
+template<class T, unsigned N> struct meta_size<T[N]> : meta_size<T> {};
+template<class T> struct meta_size<T[]> : meta_size<T> {};
 // Get kind
 template<class T> struct meta_kind : static_value<bstype_s, __is_enum(T) ? KindEnum : KindScalar> {};
 template<> struct meta_kind<const char*> : static_value<bstype_s, KindText> {};

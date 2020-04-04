@@ -78,11 +78,8 @@ void column::set(const void* object, int v) {
 }
 
 const char* column::get(const void* object, char* result, const char* result_end) const {
-	if(getpresent) {
-		stringbuilder sb(result, result_end);
-		getpresent(object, sb);
-		return result;
-	}
+	if(getpresent)
+		return getpresent(object, result, result_end);
 	if(type)
 		return type->gets(type->ptr(object));
 	return result;
@@ -485,12 +482,16 @@ void table::changetext(const rect& rc, int line, int column) {
 		columns[column].set(get(line), (int)szdup(temp));
 }
 
-static const char* get_enum_name(const void* object, char* result, const char* result_maximum) {
-	struct element {
-		const char*	id;
-		const char*	name;
-	};
-	return ((element*)object)->name;
+const char* table::getenumid(const void* object, char* result, const char* result_maximum) {
+	if(!object)
+		return "<>";
+	return ((enumi*)object)->id;
+}
+
+const char* table::getenumname(const void* object, char* result, const char* result_maximum) {
+	if(!object)
+		return "Пусто";
+	return ((enumi*)object)->name;
 }
 
 void table::changeref(const rect& rc, int line, int column) {
@@ -498,7 +499,7 @@ void table::changeref(const rect& rc, int line, int column) {
 		return;
 	auto p = get(line);
 	const anyval av((char*)p + columns[column].type->offset, columns[column].type->size, 0);
-	field(rc, av, *columns[column].source, get_enum_name, true);
+	field(rc, av, *columns[column].source, getenumname, true);
 }
 
 void table::changecheck(const rect& rc, int line, int column) {

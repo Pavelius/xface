@@ -219,12 +219,18 @@ struct combolist : controls::list, adat<void*, 64> {
 	void choose(const void* value) {
 		current = find(value);
 	}
+	static int getvalue(const anyval& var, const array& source) {
+		auto v = var.get();
+		if(var.getsize() != sizeof(void*))
+			v = (int)source.ptr(v);
+		return v;
+	}
 	void update() {
 		clear();
 		auto pe = cmb_source.end();
 		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize())
 			add(pb);
-		current = cmb_var.get();
+		current = getvalue(cmb_var, cmb_source);
 	}
 };
 
@@ -254,8 +260,11 @@ static void show_combolist() {
 	list.ensurevisible();
 	if(dropdown(rc, list)) {
 		auto p = list.data[list.current];
-		auto i = cmb_source.indexof(p);
-		cmb_var.set(i);
+		if(cmb_var.getsize() != sizeof(void*)) {
+			auto i = cmb_source.indexof(p);
+			cmb_var.set(i);
+		} else
+			cmb_var.set((int)p);
 	}
 }
 
@@ -304,9 +313,11 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 		rectx(rco, colors::black);
 	rco.offset(2, 2);
 	auto v = av.get();
-	auto p = source.ptr(v);
-	char temp[260];
-	textc(rco.x1, rco.y1, rco.width(), getname(p, temp, temp + sizeof(temp) - 1));
+	if(av.getsize() != sizeof(void*))
+		v = (int)source.ptr(v);
+	char temp[261]; auto pn = getname((void*)v, temp, temp + sizeof(temp) - 1);
+	if(pn)
+		textc(rco.x1, rco.y1, rco.width(), pn);
 	if(tips && a && !hot.pressed)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;

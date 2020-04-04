@@ -5,7 +5,6 @@
 #include "draw.h"
 #include "markup.h"
 #include "pointl.h"
-#include "stringbuilder.h"
 
 #pragma once
 
@@ -184,7 +183,6 @@ struct list : control {
 };
 struct visual;
 struct column {
-	typedef void(*fntext)(const void* object, stringbuilder& sb);
 	const visual*			method;
 	const char*				title;
 	short					width;
@@ -212,6 +210,10 @@ struct column {
 };
 struct table : list {
 	typedef int				(table::*fncompare)(int i1, int i2, int column) const;
+	struct enumi {
+		const char*			id;
+		const char*			name;
+	};
 	struct sortparam {
 		int					column;
 		int					multiplier; // 1 - ascending, -1 - descending
@@ -257,6 +259,8 @@ struct table : list {
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
 	const command*			getcommands() const override { return commands; }
+	static const char*		getenumname(const void* object, char* result, const char* result_maximum);
+	static const char*		getenumid(const void* object, char* result, const char* result_maximum);
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	rect					getrect(int row, int column) const;

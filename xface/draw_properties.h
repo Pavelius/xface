@@ -12,27 +12,28 @@ struct properties : control {
 		static int		compare(const void* v1, const void* v2);
 	};
 	int					title, spacing;
-	bsval				value;
+	void*				object;
+	const bsreq*		type;
 	arem<void*>			opened;
-	arem<translate>		dictionary;
+	aref<translate>		dictionary;
 	properties() : title(80), spacing(0) { show_background = false; }
 	void				addwidth(int& x, int& width, int v) const { x += v; width -= v; }
-	void				clear() { value.data = 0; value.type = 0; }
+	void				clear() { object = 0; }
 	void				close(void* object);
 	bool				cmdopen(bool run);
-	int					element(int x, int y, int width, const bsval& ev);
+	int					element(int x, int y, int width, void* object, const bsreq* type);
 	void				focusfirst();
 	const char*			getlabel(char* result, const char* result_maximum) const override { return "Свойства"; }
-	virtual const char*	gettitle(char* result, const char* result_maximum, const bsval& ev) const;
-	int					group(int x, int y, int width, const char* label, const bsval& ev);
+	virtual const char*	gettitle(char* result, const char* result_maximum, const void* object, const bsreq* type) const;
+	int					group(int x, int y, int width, const char* label, void* object, const bsreq* type);
 	bool				isfocusable() const override { return false; }
 	bool				isopen(const void* object) const { return opened.is((void*)object); }
-	virtual bool		isvisible(const bsval& v) const { return true; }
+	virtual bool		isvisible(const void* object, const bsreq* type) const { return true; }
 	void				open(void* object);
-	void				set(const bsval& v) { value = v; }
+	void				set(void* object, const bsreq* type) { this->object = object; this->type = type; }
 	void				treemark(int x, int y, int width, void* object, bool isopen) const;
 	void				toggle(bool run);
-	int					vertical(int x, int y, int width, const bsval& ev);
+	int					vertical(int x, int y, int width, void* object, const bsreq* type);
 	void				view(const rect& rc) override;
 };
 }

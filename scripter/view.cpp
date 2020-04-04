@@ -58,8 +58,10 @@ public:
 
 static class requisit_control : public controls::tableref, controls::control::plugin {
 	struct metadata* current_parent;
-	static void getpresent(const void* p, stringbuilder& sb) {
+	static const char* getpresent(const void* p, char* result, const char* result_maximum) {
+		stringbuilder sb(result, result_maximum);
 		((requisit*)p)->getname(sb);
+		return result;
 	}
 	void after_initialize() override {
 		auto meta = bsmeta<requisit>::meta;
@@ -143,36 +145,29 @@ static struct properties_control : controls::properties, controls::control::plug
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return "Свойства";
 	}
-	bool isvisible(const bsval& ev) const {
-		if(!ev)
+	bool isvisible(const void* object, const bsreq* type) const override {
+		if(!object)
 			return false;
-		if(strcmp(ev.type->id, "parent") == 0)
+		if(strcmp(type->id, "parent") == 0)
 			return false;
-		if(strcmp(ev.type->id, "offset") == 0)
+		if(strcmp(type->id, "offset") == 0)
 			return false;
-		if(strcmp(ev.type->id, "size") == 0)
+		if(strcmp(type->id, "size") == 0)
 			return false;
 		return true;
 	}
 	properties_control() : plugin("properties", DockRight) {
 		title = 100;
-		for(auto& e : translate_data)
-			dictionary.add(e);
+		dictionary = translate_data;
 	}
 } properties_instance;
 
 static void heartproc() {
 	requisit_instance.set(metadata_instance.getcurrent());
-	bsval v;
-	if(isfocused(anyval(&requisit_instance, 0, 0))) {
-		v.data = requisit_instance.getcurrent();
-		v.type = bsmeta<requisit>::meta;
-	} else if(isfocused(anyval(&metadata_instance, 0, 0))) {
-		v.data = metadata_instance.getcurrent();
-		v.type = bsmeta<metadata>::meta;
-	}
-	if(v)
-		properties_instance.set(v);
+	if(isfocused(anyval(&requisit_instance, 0, 0)))
+		properties_instance.set(requisit_instance.getcurrent(), bsmeta<requisit>::meta);
+	else if(isfocused(anyval(&metadata_instance, 0, 0)))
+		properties_instance.set(metadata_instance.getcurrent(), bsmeta<metadata>::meta);
 }
 
 static void choose_metadata() {
