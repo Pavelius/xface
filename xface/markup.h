@@ -5,7 +5,7 @@ typedef void(*fnchange)(void* object, const void* previous_object); // Change ob
 typedef void(*fncommand)(void* object); // Object's actions
 typedef int(*fndraw)(int x, int y, int width, const void* object); // Custom draw
 typedef int(*fnnum)(const void* object, const void* type); // Get object numeric properties
-typedef const char* (*fntext)(const void* object, char* result, const char* result_maximum, const void* type);
+typedef const char* (*fntext)(const void* object, char* result, const char* result_maximum);
 
 // Standart markup
 struct markup {

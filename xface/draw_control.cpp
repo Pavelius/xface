@@ -198,3 +198,10 @@ void control::contextmenu(const command* source, command::builder& pm) {
 	if(cmd)
 		(this->*cmd->proc.cmd)(true);
 }
+
+const char* control::getlabel(const void* object, char* result, const char* result_maximum) {
+	auto p = ((controls::control*)object)->getlabel(result, result_maximum);
+	if(!p)
+		return "No label";
+	return p;
+}

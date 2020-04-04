@@ -176,15 +176,15 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 
 struct combolist : controls::list, adat<void*, 64> {
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		return cmb_getname(data[line], result, result_max, 0);
+		return cmb_getname(data[line], result, result_max);
 	}
 	static int compare_by_order(const void* v1, const void* v2) {
 		char t1[256];
 		char t2[256];
 		auto p1 = *((void**)v1);
 		auto p2 = *((void**)v2);
-		auto n1 = cmb_getname(p1, t1, t1 + sizeof(t1) - 1, 0);
-		auto n2 = cmb_getname(p2, t2, t2 + sizeof(t2) - 1, 0);
+		auto n1 = cmb_getname(p1, t1, t1 + sizeof(t1) - 1);
+		auto n2 = cmb_getname(p2, t2, t2 + sizeof(t2) - 1);
 		return strcmp(n1, n2);
 	}
 	int	getmaximum() const {
@@ -306,7 +306,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	auto v = av.get();
 	auto p = source.ptr(v);
 	char temp[260];
-	textc(rco.x1, rco.y1, rco.width(), getname(p, temp, temp + sizeof(temp) - 1, 0));
+	textc(rco.x1, rco.y1, rco.width(), getname(p, temp, temp + sizeof(temp) - 1));
 	if(tips && a && !hot.pressed)
 		tooltips(tips);
 	return rc.height() + metrics::padding * 2;

@@ -485,10 +485,10 @@ void table::changetext(const rect& rc, int line, int column) {
 		columns[column].set(get(line), (int)szdup(temp));
 }
 
-static const char* get_enum_name(const void* object, char* result, const char* result_maximum, const void* type) {
+static const char* get_enum_name(const void* object, char* result, const char* result_maximum) {
 	struct element {
-		const char*		id;
-		const char*		name;
+		const char*	id;
+		const char*	name;
 	};
 	return ((element*)object)->name;
 }

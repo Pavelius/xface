@@ -38,7 +38,7 @@ template<> const bsreq bsmeta<control::plugin>::meta[] = {BSREQ(id),
 BSREQ(dock),
 {}};
 
-static const char* get_setting_name(const void* p, char* result, const char* result_maximum, const void* type) {
+static const char* get_setting_name(const void* p, char* result, const char* result_maximum) {
 	return szprint(result, result_maximum, ((settings*)p)->name);
 }
 
@@ -327,13 +327,6 @@ static struct widget_settings : controls::control {
 
 } widget_settings_control;
 
-static const char* get_control_name(const void* object, char* result, const char* result_maximum, const void* type) {
-	auto p = ((controls::control*)object)->getlabel(result, result_maximum);
-	if(!p)
-		return "No label";
-	return p;
-}
-
 static struct widget_application : draw::controls::control {
 
 	eventproc		heartproc;
@@ -374,7 +367,7 @@ static struct widget_application : draw::controls::control {
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
 			auto result = draw::tabs(rct, false, false, (void**)p1, 0, c1.count,
 				current_select, &current_select,
-				get_control_name,
+				control::getlabel,
 				{2, 0, 2, 0});
 			//		if(c2 > c1)
 			//		{
@@ -528,7 +521,7 @@ void draw::application(bool allow_multiply_window, eventproc heartproc, shortcut
 		auto hilite_tab = -1;
 		auto reaction = draw::tabs(rt, false, true, (void**)layouts, 0,
 			sizeof(layouts) / sizeof(layouts[0]), current_tab, &hilite_tab,
-			get_control_name,
+			control::getlabel,
 			{0, metrics::padding, 0, metrics::padding});
 		if(hilite_tab != -1)
 			get_control_status(layouts[hilite_tab]);
