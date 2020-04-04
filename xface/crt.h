@@ -149,6 +149,7 @@ struct adat {
 	bool					is(const T t) const { return indexof(t) != -1; }
 	void					remove(int index, int remove_count = 1) { if(index < 0) return; if(index<int(count - 1)) memcpy(data + index, data + index + 1, sizeof(data[0])*(count - index - 1)); count--; }
 };
+typedef adat<void*, 64>		reflist;
 // Reference to array with dymanic size
 template<class T>
 struct aref {

@@ -9,7 +9,9 @@ static fnchoose		proc_choose;
 static rect			cmb_rect;
 static array		cmb_source;
 static anyval		cmb_var;
+static const void*	cmb_param;
 static fntext		cmb_getname;
+static fnallow		cmd_allow;
 
 static const char* getvalue(const anyval& v, bool istext, char* result, const char* result_end) {
 	if(!v)
@@ -174,7 +176,7 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	return rc.height() + metrics::padding * 2;
 }
 
-struct combolist : controls::list, adat<void*, 64> {
+struct combolist : controls::list, reflist {
 	const char* getname(char* result, const char* result_max, int line, int column) const override {
 		return cmb_getname(data[line], result, result_max);
 	}
@@ -228,8 +230,11 @@ struct combolist : controls::list, adat<void*, 64> {
 	void update() {
 		clear();
 		auto pe = cmb_source.end();
-		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize())
+		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize()) {
+			if(cmd_allow && !cmd_allow(cmb_param, (int)pb))
+				continue;
 			add(pb);
+		}
 		current = getvalue(cmb_var, cmb_source);
 	}
 };
@@ -268,18 +273,20 @@ static void show_combolist() {
 	}
 }
 
-void draw::field(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant) {
+void draw::field(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow) {
 	cmb_var = av;
 	cmb_rect = rc;
 	cmb_source = source;
+	cmb_param = param;
 	cmb_getname = getname;
+	cmd_allow = allow;
 	if(instant)
 		show_combolist();
 	else
 		execute(show_combolist);
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips) {
+int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips, const void* param, fnallow allow) {
 	draw::state push;
 	if(header_label && header_label[0]) {
 		setposition(x, y, width);
@@ -307,7 +314,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	if(focused && hot.key==KeyEnter)
 		execute_drop_down = true;
 	if(execute_drop_down)
-		field(rc, av, source, getname, false);
+		field(rc, av, source, getname, false, param, allow);
 	rco.offset(2, 2);
 	if(focused)
 		rectx(rco, colors::black);

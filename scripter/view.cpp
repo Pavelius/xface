@@ -123,22 +123,29 @@ public:
 } requisit_instance;
 
 static struct properties_control : controls::properties, controls::control::plugin {
-	static void choose_metadata(adat<void*, 64>& result, const bsreq** name_requisit, void* type) {
-		if(name_requisit)
-			*name_requisit = bsmeta<metadata>::meta;
-		for(auto& e : bsdata<metadata>()) {
-			if(!e)
-				continue;
-			if(e.isreference() || e.isarray())
-				continue;
-			result.add(&e);
-		}
+	static bool choose_metadata(const void* object, int value) {
+		auto p = (metadata*)value;
+		if(p->isarray() || p->isreference())
+			return false;
+		return true;
 	}
-	//listproc* getprocchoose(const bsreq* type) const {
-	//	if(type->type == bsmeta<metadata>::meta)
-	//		return choose_metadata;
-	//	return 0;
-	//}
+	static const char* gettypename(const void* object, char* result, const char* result_maximum) {
+		if(!object)
+			return "Неопределено";
+		stringbuilder sb(result, result_maximum);
+		((metadata*)object)->add(sb);
+		return result;
+	}
+	fnallow getfnallow(const void* object, const bsreq* type) const override {
+		if(type->type == bsmeta<metadata>::meta)
+			return choose_metadata;
+		return 0;
+	}
+	fntext getfntext(const void* object, const bsreq* type) const override {
+		if(type->type == bsmeta<metadata>::meta)
+			return gettypename;
+		return controls::table::getenumname;
+	}
 	control& getcontrol() override {
 		return *this;
 	}

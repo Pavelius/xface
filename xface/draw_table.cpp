@@ -484,7 +484,7 @@ void table::changetext(const rect& rc, int line, int column) {
 
 const char* table::getenumid(const void* object, char* result, const char* result_maximum) {
 	if(!object)
-		return "<>";
+		return "Нет";
 	return ((enumi*)object)->id;
 }
 

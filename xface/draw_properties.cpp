@@ -128,7 +128,9 @@ int properties::element(int x, int y, int width, void* object, const bsreq* type
 	} else if(type->is(KindReference) && type->source) {
 		auto pt = gettitle(temp, zendof(temp), object, type);
 		const anyval st(type->ptr(object), type->size, 0);
-		h = field(x, y, width, pt, st, title, *type->source, table::getenumid);
+		h = field(x, y, width, pt, st, title, *type->source,
+			getfntext(object, type), 0,
+			this, getfnallow(object, type));
 	} else if(type->is(KindScalar)) {
 		auto pt = gettitle(temp, zendof(temp), object, type);
 		h = group(x, y, width, pt, object, type);

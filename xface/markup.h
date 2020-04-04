@@ -4,7 +4,6 @@ typedef bool(*fnallow)(const void* object, int index); // Is allow some property
 typedef void(*fnchange)(void* object, const void* previous_object); // Change object
 typedef void(*fncommand)(void* object); // Object's actions
 typedef int(*fndraw)(int x, int y, int width, const void* object); // Custom draw
-typedef int(*fnnum)(const void* object, const void* type); // Get object numeric properties
 typedef const char* (*fntext)(const void* object, char* result, const char* result_maximum);
 
 // Standart markup
@@ -28,10 +27,8 @@ struct markup {
 	};
 	struct propi {
 		fntext			getname;
-		fnnum			getvalue;
-		constexpr propi() : getname(0), getvalue(0) {}
+		constexpr propi() : getname(0) {}
 		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((fntext)v), getvalue(0) {}
-		template<class T> constexpr propi(int(*v)(const T*)) : getname(0), getvalue((fnnum)v) {}
 	};
 	constexpr explicit operator bool() const { return title || value.id || value.child; }
 	int					width;

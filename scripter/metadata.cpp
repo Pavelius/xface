@@ -90,7 +90,7 @@ bool metadata::ispredefined() const {
 }
 
 void metadata::add(stringbuilder& sb) const {
-	for(auto t = type; t; t = t->type)
+	for(auto t = this; t; t = t->type)
 		sb.add(t->id);
 }
 

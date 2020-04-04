@@ -23,6 +23,8 @@ struct properties : control {
 	bool				cmdopen(bool run);
 	int					element(int x, int y, int width, void* object, const bsreq* type);
 	void				focusfirst();
+	virtual fntext		getfntext(const void* object, const bsreq* type) const { return controls::table::getenumname; }
+	virtual fnallow		getfnallow(const void* object, const bsreq* type) const { return 0; }
 	const char*			getlabel(char* result, const char* result_maximum) const override { return "Свойства"; }
 	virtual const char*	gettitle(char* result, const char* result_maximum, const void* object, const bsreq* type) const;
 	int					group(int x, int y, int width, const char* label, void* object, const bsreq* type);
