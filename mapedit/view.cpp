@@ -1,5 +1,4 @@
 #include "draw_control.h"
-#include "draw_grid.h"
 #include "main.h"
 
 static bool		show_grid;

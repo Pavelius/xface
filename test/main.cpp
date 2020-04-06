@@ -46,7 +46,7 @@ INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 };
 assert_enum(alignment, ChaoticEvil)
 
-static struct element {
+struct element {
 	const char*		surname;
 	const char*		name;
 	int				mark;
@@ -54,11 +54,8 @@ static struct element {
 	char			age;
 	gender_s		gender;
 	alignment_s		alignment;
-} element_data[] = {{"Ivanov", "Ivan", 0, 0, 20, Male, ChaoticGood},
-{"Petrov", "Peter", 0, 0, 25, Male, ChaoticNeutral},
-{"Ludina", "Iren", 0, 0, 25, Female, LawfulGood},
 };
-const bsreq bsmeta<element>::meta[] = {BSREQ(mark),
+INSTMETA(element) = {BSREQ(mark),
 BSREQ(radio),
 BSREQ(name),
 BSREQ(surname),
@@ -66,6 +63,8 @@ BSREQ(age),
 BSREQ(gender),
 BSREQ(alignment),
 {}};
+INSTDATAC(element, 32);
+
 struct rowelement {
 	const char*		name;
 	gender_s		gender;
@@ -75,7 +74,7 @@ struct rowelement {
 	unsigned		flags;
 	datetime		date;
 };
-const bsreq bsmeta<rowelement>::meta[] = {BSREQ(name),
+INSTMETA(rowelement) = {BSREQ(name),
 BSREQ(gender),
 BSREQ(alignment),
 BSREQ(image),
@@ -87,7 +86,7 @@ struct treerow : controls::tree::element {
 	const char*		name;
 	int				value;
 };
-const bsreq bsmeta<treerow>::meta[] = {BSREQ(image),
+INSTMETA(treerow) = {BSREQ(image),
 BSREQ(name),
 BSREQ(value),
 {}};

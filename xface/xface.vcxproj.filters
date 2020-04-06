@@ -231,6 +231,9 @@
     <ClCompile Include="draw_tree.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="bsreq_bin2.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

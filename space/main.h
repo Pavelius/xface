@@ -1,4 +1,5 @@
 #include "xface/crt.h"
+#include "xface/bsreq.h"
 
 #pragma once
 
