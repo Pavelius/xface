@@ -75,16 +75,3 @@ struct bsreq {
 	void				set(const void* p, int value) const;
 	bool				write(const char* url, void* object) const;
 };
-struct bsval {
-	void*				data;
-	const bsreq*		type;
-	constexpr bsval() : data(0), type(0) {}
-	constexpr bsval(void* data, const bsreq* type) : data(data), type(type) {}
-	constexpr explicit operator bool() const { return data != 0; }
-	bsval				dereference() const;
-	int					get() const { return type->get(type->ptr(data)); }
-	const char*			getname() const;
-	void*				getptr() const { return type->ptr(data); }
-	bsval				ptr(const char* url) const;
-	void				set(int value) const { type->set(type->ptr(data), value); }
-};

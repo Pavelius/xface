@@ -7,8 +7,6 @@ static int		grid_size;
 using namespace draw;
 
 void logmsg(const char* format, ...);
-void propset(const bsval& value);
-void propclear();
 
 void tileset::import() {
 	const int d = metrics::padding * 2;

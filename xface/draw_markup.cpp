@@ -97,11 +97,8 @@ static const char* getpresent(const void* p, const bsreq* type) {
 //		command.value.set(ev.getcurrent());
 //}
 
-static bsval getvalue(contexti& ctx, const markup& e) {
-	bsval result;
-	result.type = ctx.type->find(e.value.id);
-	result.data = ctx.object;
-	return result;
+static const bsreq* getvalue(contexti& ctx, const markup& e) {
+	return ctx.type->find(e.value.id);
 }
 
 static rect start_group(int& x, int& y, int& width) {
@@ -274,9 +271,9 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 	else if(e.proc.custom) {
 		auto pv = ctx.object;
 		if(e.value.id) {
-			auto bv = getvalue(ctx, e);
-			if(bv.type)
-				pv = bv.type->ptr(bv.data, e.value.index);
+			auto type = getvalue(ctx, e);
+			if(type)
+				pv = type->ptr(ctx.object, e.value.index);
 		}
 		if(e.title) {
 			auto dy = e.proc.custom(x + ctx.title, y, width - ctx.title, pv);
@@ -305,18 +302,18 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		if(!e.value.id)
 			return 0;
 		// Теперь специальные элементы с заполненными данными
-		auto bv = getvalue(ctx, e);
-		if(!bv.data || !bv.type)
+		auto req = getvalue(ctx, e);
+		if(!req)
 			return 0;
-		if(strcmp(pn, "checkboxes") == 0 && (bv.type->is(KindEnum) || bv.type->is(KindCFlags))) {
-			auto pb = bv.type->source;
+		if(strcmp(pn, "checkboxes") == 0 && (req->is(KindEnum) || req->is(KindCFlags))) {
+			auto pb = req->source;
 			if(!pb)
 				return error(x, y, width, ctx, e, "Не найдена база");
 			if(pb->getcount() == 0)
 				return 0;
-			auto size = bv.type->size;
-			if(bv.type->is(KindCFlags))
-				size = bv.type->lenght;
+			auto size = req->size;
+			if(req->is(KindCFlags))
+				size = req->lenght;
 			auto columns = e.param;
 			if(!columns)
 				columns = 1;
@@ -327,8 +324,8 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			for(unsigned i = 0; i < pb->getcount(); i++) {
 				if(!ctx.isallow(e, i))
 					continue;
-				auto p = getpresent(pb->ptr(i), bv.type->type);
-				auto av = anyval(bv.type->ptr(bv.data), size, i);
+				auto p = getpresent(pb->ptr(i), req->type);
+				auto av = anyval(req->ptr(ctx.object), size, i);
 				auto y0 = y + checkbox(x, y, wc, av, p, 0) + 2;
 				if(y1 < y0)
 					y1 = y0;
@@ -340,50 +337,50 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 					x += wc;
 			}
 			y = y1;
-		} else if(strcmp(pn, "radiobuttons") == 0 && bv.type->is(KindEnum)) {
-			auto pb = bv.type->source;
+		} else if(strcmp(pn, "radiobuttons") == 0 && req->is(KindEnum)) {
+			auto pb = req->source;
 			if(!pb)
 				return error(x, y, width, ctx, e, "Не найдена база");
 			if(pb->getcount() == 0)
 				return 0;
-			auto size = bv.type->size;
+			auto size = req->size;
 			for(unsigned i = 0; i < pb->getcount(); i++) {
 				if(!ctx.isallow(e, i))
 					continue;
-				auto p = getpresent(pb->ptr(i), bv.type->type);
-				auto av = anyval(bv.type->ptr(bv.data), size, i);
+				auto p = getpresent(pb->ptr(i), req->type);
+				auto av = anyval(req->ptr(ctx.object), size, i);
 				y += radio(x, y, width, av, p, 0) + 2;
 			}
 		} else {
-			if(!bv.type->is(KindNumber))
-				return error(x, y, width, ctx, e, bv.type->id);
-			auto pb = bv.type->source;
+			if(!req->is(KindNumber))
+				return error(x, y, width, ctx, e, req->id);
+			auto pb = req->source;
 			if(!pb)
 				return error(x, y, width, ctx, e, pn);
 			auto count = pb->getcount();
 			if(count)
 				return 0;
-			if(count > bv.type->count)
-				count = bv.type->count;
+			if(count > req->count)
+				count = req->count;
 			for(unsigned i = 0; i < count; i++) {
-				auto pv = bv.type->ptr(bv.data, i);
+				auto pv = req->ptr(ctx.object, i);
 				if(!ctx.isallow(e, i))
 					continue;
-				y += field_main(x, y, width, ctx, getpresent(pb->ptr(i), bv.type->type), pv, bv.type, e.param, 0, &e.proc, &e.prop);
+				y += field_main(x, y, width, ctx, getpresent(pb->ptr(i), req->type), pv, req, e.param, 0, &e.proc, &e.prop);
 			}
 		}
 		return y - y0;
 	} else if(e.value.id) {
-		auto bv = getvalue(ctx, e);
-		if(!bv.data || !bv.type) {
+		auto req = getvalue(ctx, e);
+		if(!req) {
 			if(ctx.show_missed_requisit)
 				return error(x, y, width, ctx, e, "Не найден реквизит");
 			return 0; // Данные не найдены, но это не ошибка
 		}
-		auto pv = bv.type->ptr(bv.data, e.value.index);
+		auto pv = req->ptr(ctx.object, e.value.index);
 		// Вначале найдем целую форму объекта
-		if(bv.type->is(KindScalar)) {
-			auto hint_type = bv.type->type;
+		if(req->is(KindScalar)) {
+			auto hint_type = req->type;
 			auto pm = e.value.child;
 			if(!pm)
 				pm = getmarkup(hint_type);
@@ -395,7 +392,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			ctx1.type = hint_type;
 			return group_vertial(x, y, width, ctx1, pm);
 		} else
-			return field_main(x, y, width, ctx, e.title, pv, bv.type, e.param, e.value.child, &e.proc, &e.prop);
+			return field_main(x, y, width, ctx, e.title, pv, req, e.param, e.value.child, &e.proc, &e.prop);
 	} else if(e.value.child) {
 		rect rgo = {};
 		auto y0 = y;
