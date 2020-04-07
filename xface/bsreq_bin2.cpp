@@ -13,7 +13,24 @@ struct context {
 		else
 			file.read(v, lenght);
 	}
-	void serial(void** pv, const bsreq& e) {
+	bool equal(const void* p1, const void* p2, const bsreq* type, const bsreq* stop_type) {
+		for(auto p = type; *p; p++) {
+			if(stop_type && stop_type == p)
+				break;
+			if(p->equal(p1, p2)!=0)
+				return false;
+		}
+		return true;
+	}
+	void* findadd(array* pa, const void* pv, const bsreq* type, const bsreq* stop_type) {
+		auto pe = pa->end();
+		for(auto pb = pa->begin(); pb < pe; pb += pa->getsize()) {
+			if(equal(pb, pv, type, stop_type))
+				return pb;
+		}
+		return pa->add(pv);
+	}
+	void serial(void** pv, const bsreq* type, array* source) {
 		unsigned i = 0;
 		auto p = *pv;
 		if(writemode) {
@@ -22,12 +39,13 @@ struct context {
 			file.write(&i, sizeof(i));
 			if(i != 0xFFFFFFFF)
 				return;
-			if(e.is(KindText)) {
+			references.add(p);
+			if(type==bsmeta<const char*>::meta) {
 				i = zlen((const char*)p);
 				file.write(&i, sizeof(i));
 				file.write(p, i);
 			} else
-				serial(p, e.type, e.type + 1);
+				serial(p, type, type + 1);
 		} else {
 			char buffer[2048];
 			file.read(&i, sizeof(i));
@@ -37,7 +55,7 @@ struct context {
 				*pv = references[i];
 			else {
 				auto pb = buffer;
-				if(e.is(KindText)) {
+				if(type == bsmeta<const char*>::meta) {
 					file.read(&i, sizeof(i));
 					if(i > sizeof(buffer) / sizeof(buffer[0]) - 1)
 						pb = new char[i + 1];
@@ -48,10 +66,11 @@ struct context {
 					references.add(ppb);
 				} else {
 					auto pid = references.getcount();
-					references.add();
-					serial(pb, e.type, e.type + 1);
-					// TODO: find element
-					references[pid] = 0;
+					references.add(0);
+					auto stop_type = type + 1;
+					serial(pb, type, stop_type);
+					references[pid] = findadd(source, pb, type, stop_type);
+					*pv = references[pid];
 				}
 				if(pb != buffer)
 					delete pb;
@@ -71,7 +90,7 @@ struct context {
 			case KindText:
 			case KindReference:
 				for(unsigned i = 0; i < p->count; i++)
-					serial((void**)p->ptr(object, i), *p->type);
+					serial((void**)p->ptr(object, i), p->type, p->source);
 				break;
 			case KindScalar:
 				for(unsigned i = 0; i < p->count; i++)
@@ -79,10 +98,6 @@ struct context {
 				break;
 			}
 		}
-	}
-	void read_object(array* pb, const bsreq* meta) {
-	}
-	void write_object(const void* pv, const bsreq* meta) {
 	}
 	constexpr context(io::stream& file, bool writemode) : file(file), writemode(writemode) {}
 };
@@ -93,7 +108,7 @@ bool bsreq::write(const char* url, void* object) const {
 	if(!file)
 		return false;
 	context e(file, true);
-	e.write_object(object, this);
+	e.serial(object, this);
 	return true;
 }
 

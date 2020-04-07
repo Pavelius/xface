@@ -186,9 +186,6 @@
     <ClCompile Include="argw.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="bsreq_bin.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="widget_directory.cpp">
       <Filter>draw\widgets</Filter>
     </ClCompile>

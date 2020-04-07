@@ -145,6 +145,19 @@ void* bsreq::dereference(const void* data, const bsreq** result) const {
 	return (void*)r;
 }
 
+bool bsreq::equal(const void* v1, const void* v2) const {
+	if(type == bsmeta<const char*>::meta) {
+		auto p1 = *((const char**)ptr(v1));
+		if(!p1)
+			p1 = "";
+		auto p2 = *((const char**)ptr(v2));
+		if(!p2)
+			p2 = "";
+		return strcmp(p1, p2);
+	} else
+		return memcmp(ptr(v1), ptr(v2), lenght);
+}
+
 void* bsreq::ptr(const void* data, const char* url, const bsreq** result) const {
 	auto t = this;
 	auto r = data;

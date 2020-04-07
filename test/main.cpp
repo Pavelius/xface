@@ -20,14 +20,6 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 "Soldier", "Heavy Soldier", "Sniper", "Commando"
 };
 
-struct nameable {
-	const char*		id;
-	const char*		name;
-	static const char* getname(const void* p, char* result, const char* result_max) {
-		return ((nameable*)p)->name;
-	}
-};
-
 INSTDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
@@ -46,34 +38,17 @@ INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 };
 assert_enum(alignment, ChaoticEvil)
 
-struct element {
-	const char*		surname;
-	const char*		name;
-	int				mark;
-	char			radio;
-	char			age;
-	gender_s		gender;
-	alignment_s		alignment;
-};
-INSTMETA(element) = {BSREQ(mark),
-BSREQ(radio),
-BSREQ(name),
+INSTMETA(element) = {BSREQ(name),
 BSREQ(surname),
+BSREQ(refery),
+BSREQ(mark),
+BSREQ(radio),
 BSREQ(age),
 BSREQ(gender),
 BSREQ(alignment),
 {}};
 INSTDATAC(element, 32);
 
-struct rowelement {
-	const char*		name;
-	gender_s		gender;
-	alignment_s		alignment;
-	char			image;
-	char			age;
-	unsigned		flags;
-	datetime		date;
-};
 INSTMETA(rowelement) = {BSREQ(name),
 BSREQ(gender),
 BSREQ(alignment),
@@ -82,6 +57,8 @@ BSREQ(age),
 BSREQ(flags),
 BSREQ(date),
 {}};
+INSTDATAC(rowelement, 64);
+
 struct treerow : controls::tree::element {
 	const char*		name;
 	int				value;
@@ -373,10 +350,6 @@ static void test_autocomplite() {
 	auto p = e.choose(10, 10, 200, "M");
 }
 
-static const char* getname2(const void* p, const void* type) {
-	return ((nameable*)p)->name;
-}
-
 static void test_edit_field() {
 	pushfocus pf;
 	const char* name = "Павел";
@@ -384,7 +357,7 @@ static void test_edit_field() {
 	const char* lastname = "Валенинович";
 	const char* anystr = "Любая строка";
 	int number = 10;
-	auto combo = 1;
+	gender_s combo = Male;
 	while(ismodal()) {
 		auto x = 20, y = 20;
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
@@ -394,7 +367,7 @@ static void test_edit_field() {
 		y += field(x, y, 300, "Еще тест", surname, 100);
 		y += field(x, y, 300, "Еще поле", lastname, 100);
 		y += field(x, y, 300, "Путь к папке", anystr, 100);
-		y += field(x, y, 300, "Пол", combo, 100, bsdata<genderi>::source, nameable::getname, 0);
+		y += field(x, y, 300, "Пол", combo, 100, bsdata<genderi>::source, controls::table::getenumname, 0);
 		y += field(x, y, 300, "Скорость", number, 100, 4);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();
@@ -485,10 +458,6 @@ static void test_requisit() {
 	man.add(p2, "point", man.reference(p2), 2);
 }
 
-static void test_binary_serial() {
-	//bsdata::write("test.mtd");
-}
-
 static bool test_datetime() {
 	datetime d = datetime::now().daybegin() + 24 * 60;
 	auto iy = d.year();
@@ -498,16 +467,31 @@ static bool test_datetime() {
 }
 
 static bool test_write_bin() {
+	auto pa1 = bsdata<rowelement>::add();
+	pa1->name = "Test";
+	pa1->gender = Female;
+	auto pa2 = bsdata<rowelement>::add();
+	pa2->name = "Test2";
+	pa2->gender = Male;
 	element e1 = {0};
-	element e2;
+	element e2 = e1;
+	// Как выяснилось существует выравнивание полей структуры.
+	// Поэтому в местах выравнивания существуют дыры которые заполняются неинициализированными данными.
+	// В связи с этим надо инициализировать элементы побитово одинаково.
+	e1.refery[0] = pa1;
+	e1.refery[3] = pa2;
+	e1.refery[4] = pa1;
+	e1.refery[6] = pa2;
 	e1.age = 17;
-	e1.name = szdup("Kristian");
+	e1.name[0] = szdup("Kristian");
+	e1.name[1] = szdup("Кристиан");
 	e1.surname = szdup("Lang");
 	e1.gender = Male;
 	e1.alignment = LawfulNeutral;
 	bsmeta<element>::meta->write("element.bin", &e1);
 	bsmeta<element>::meta->read("element.bin", &e2);
-	return memcmp(&e1, &e2, sizeof(e1))==0;
+	auto result = memcmp(&e1, &e2, sizeof(element));
+	return (result==0);
 }
 
 static bool test_data_access() {
@@ -533,7 +517,6 @@ static bool test_anyval() {
 void directory_initialize();
 
 int main() {
-	auto type = bsmeta<bsreq>::meta;
 	if(!test_write_bin())
 		return -1;
 	if(!test_anyval())
@@ -545,7 +528,6 @@ int main() {
 	test_data_access();
 	test_requisit();
 	test_array();
-	test_binary_serial();
 	application_initialize();
 	// Создание окна
 	setcaption("X-Face C++ library samples");

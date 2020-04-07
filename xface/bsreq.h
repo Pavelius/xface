@@ -56,6 +56,7 @@ struct bsreq {
 	constexpr explicit operator bool() const { return id != 0; }
 	//
 	void*				dereference(const void* data, const bsreq** result) const;
+	bool				equal(const void* v1, const void* v2) const;
 	const bsreq*		find(const char* name) const;
 	const bsreq*		find(const char* name, unsigned count) const;
 	const bsreq*		find(const char* name, const bsreq* type) const;

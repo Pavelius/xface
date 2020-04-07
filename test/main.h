@@ -34,5 +34,24 @@ struct cultivatedi {
 	unsigned		total;
 	unsigned		year;
 };
+struct rowelement {
+	const char*		name;
+	gender_s		gender;
+	alignment_s		alignment;
+	char			image;
+	char			age;
+	unsigned		flags;
+	datetime		date;
+};
+struct element {
+	const char*		surname;
+	const char*		name[2];
+	int				mark;
+	char			radio;
+	char			age;
+	rowelement*		refery[16];
+	gender_s		gender;
+	alignment_s		alignment;
+};
 DECLENUM(alignment);
 DECLENUM(gender);
