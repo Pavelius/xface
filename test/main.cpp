@@ -68,6 +68,14 @@ BSREQ(name),
 BSREQ(value),
 {}};
 
+struct metatest {
+	adat<char, 8>	source;
+	aref<char>		buffer;
+};
+INSTMETA(metatest) = {BSREQ(source),
+BSREQ(buffer),
+{}};
+
 const markup* getmarkup(const bsreq* type) {
 	return 0;
 }
@@ -467,6 +475,7 @@ static bool test_datetime() {
 }
 
 static bool test_write_bin() {
+	auto mt1 = bsmeta<metatest>::meta;
 	auto pa1 = bsdata<rowelement>::add();
 	pa1->name = "Test";
 	pa1->gender = Female;

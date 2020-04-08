@@ -17,7 +17,7 @@ struct context {
 		for(auto p = type; *p; p++) {
 			if(stop_type && stop_type == p)
 				break;
-			if(p->equal(p1, p2)!=0)
+			if(p->equal(p1, p2) != 0)
 				return false;
 		}
 		return true;
@@ -40,7 +40,7 @@ struct context {
 			if(i != 0xFFFFFFFF)
 				return;
 			references.add(p);
-			if(type==bsmeta<const char*>::meta) {
+			if(type == bsmeta<const char*>::meta) {
 				i = zlen((const char*)p);
 				file.write(&i, sizeof(i));
 				file.write(p, i);
@@ -77,7 +77,47 @@ struct context {
 			}
 		}
 	}
-	void serial(const void* object, const bsreq* records, const bsreq* records_stop = 0) {
+	void serial_adat(adat<char, 4>* pv, const bsreq* type, unsigned size) {
+		serial(&pv->count, sizeof(pv->count));
+		for(unsigned j = 0; j < pv->count; j++)
+			serial(pv->data + size*j, type);
+	}
+	void serial_ref(aref<char>* pv, const bsreq* type, unsigned size) {
+		if(!writemode) {
+			decltype(pv->count) n = 0;
+			serial(&n, sizeof(n));
+			if(n > pv->count && pv->data) {
+				delete pv->data;
+				if(n)
+					pv->data = new char[n*size];
+				else
+					pv->data = 0;
+			}
+			pv->count = n;
+		} else
+			serial(&pv->count, sizeof(pv->count));
+		for(unsigned j = 0; j < pv->count; j++)
+			serial(pv->data + size*j, type);
+	}
+	void serial_rem(arem<char>* pv, const bsreq* type, unsigned size) {
+		if(!writemode) {
+			decltype(pv->count_maximum) n = 0;
+			serial(&n, sizeof(n));
+			if(n > pv->count_maximum && pv->data) {
+				delete pv->data;
+				if(n)
+					pv->data = new char[n*size];
+				else
+					pv->data = 0;
+			}
+			pv->count_maximum = n;
+		} else
+			serial(&pv->count_maximum, sizeof(pv->count_maximum));
+		serial(&pv->count, sizeof(pv->count));
+		for(unsigned j = 0; j < pv->count; j++)
+			serial(pv->data + size*j, type);
+	}
+	void serial(void* object, const bsreq* records, const bsreq* records_stop = 0) {
 		for(auto p = records; *p; p++) {
 			if(p == records_stop)
 				break;
@@ -95,6 +135,15 @@ struct context {
 			case KindScalar:
 				for(unsigned i = 0; i < p->count; i++)
 					serial(p->ptr(object, i), p->type);
+				break;
+			case KindADat:
+				serial_adat(((adat<char, 4>*)p->ptr(object)), p->type, p->size);
+				break;
+			case KindARef:
+				serial_ref(((aref<char>*)p->ptr(object)), p->type, p->size);
+				break;
+			case KindARem:
+				serial_rem(((arem<char>*)p->ptr(object)), p->type, p->size);
 				break;
 			}
 		}
@@ -117,6 +166,6 @@ bool bsreq::read(const char* url, const void* object) const {
 	if(!file)
 		return false;
 	context e(file, false);
-	e.serial(object, this);
+	e.serial((void*)object, this);
 	return true;
 }

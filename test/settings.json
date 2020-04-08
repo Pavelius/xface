@@ -46,12 +46,12 @@
     }
   },
   "window":{
-    "x":104,
-    "y":109,
-    "width":784,
-    "height":484,
+    "x":218,
+    "y":35,
+    "width":910,
+    "height":607,
     "header_width":169,
-    "flags":112
+    "flags":48
   },
   "controls":{
     "logging":{
