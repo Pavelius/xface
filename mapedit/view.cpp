@@ -15,6 +15,18 @@ void tileset::import() {
 	}
 }
 
+struct tileset_control_type : controls::list, controls::control::plugin {
+	control& getcontrol() override {
+		return *this;
+	}
+	const char*	getlabel(char* result, const char* result_maximum) const override {
+		return "Список тайлов";
+	}
+	tileset_control_type() : plugin("tile_list", DockRight) {
+	}
+};
+static tileset_control_type tileset_control;
+
 struct map_control_type : controls::scrollable, mapi, controls::control::plugin {
 
 	control& getcontrol() override {
@@ -54,10 +66,6 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 			break;
 		}
 		return result;
-	}
-
-	const char*	getlabel(char* result, const char* result_maximum) const override {
-		return "Редактор карт";
 	}
 
 	point getcamera() const {

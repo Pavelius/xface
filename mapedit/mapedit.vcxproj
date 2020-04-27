@@ -131,6 +131,9 @@
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_type.cpp" />
+    <ClCompile Include="object.cpp" />
+    <ClCompile Include="resource.cpp" />
+    <ClCompile Include="variant.cpp" />
     <ClCompile Include="view.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

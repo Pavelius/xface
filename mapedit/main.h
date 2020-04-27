@@ -5,13 +5,39 @@
 
 #pragma once
 
-enum map_type_s : unsigned char {
-	Rectangle, IsometricRectangle,
-};
+struct sprite;
 
+enum map_type_s : unsigned char {
+	Rectangle, IsometricRectangle, Hexagon,
+};
+enum variant_s : unsigned char {
+	NoVariant,
+	Tileset,
+};
+struct resourcei {
+	char				name[16];
+	char				folder[16];
+	map_type_s			type;
+	point				element;
+};
+struct variant {
+	variant_s			type;
+	unsigned char		value;
+	constexpr variant() : type(NoVariant), value(0) {}
+	constexpr variant(variant_s t, unsigned char v) : type(t), value(v) {}
+	constexpr explicit operator bool() const { return type != NoVariant; }
+	resourcei*			getresource() const;
+};
 struct map_typei {
 	const char*			id;
 	const char*			name;
+};
+struct object : point {
+	variant				kind;
+	short unsigned		frame;
+	short unsigned		flags;
+	explicit operator bool() const { return kind.operator bool(); }
+	void				draw(point camera) const;
 };
 struct answer : stringbuilder {
 	struct element {
@@ -30,13 +56,12 @@ struct answer : stringbuilder {
 private:
 	char				buffer[4096];
 };
-struct mapi {
-	map_type_s			type;
-	point				element;
+struct mapi : resourcei {
 	point				size;
 	point				screen; // Screen coordinates
 	point				offset; // Offset from center in elements
 };
-struct tileset {
+struct tileset : resourcei {
+	sprite*				data;
 	void				import();
 };
