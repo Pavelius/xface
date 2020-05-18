@@ -18,4 +18,5 @@ public:
 	constexpr unsigned	getsize() const { return size; }
 	constexpr int		getvalue() const { return value; }
 	void				set(const int v) const;
+	void				setvalue(void* data, unsigned size, int value = 0) { this->data = data; this->size = size; this->value = value; }
 };

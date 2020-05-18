@@ -126,15 +126,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="wizard.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\formats\bitmap\png.cpp" />
+    <ClCompile Include="..\..\formats\convert\zip.cpp" />
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
+    <ClCompile Include="..\xface\sprite_util.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_type.cpp" />
     <ClCompile Include="object.cpp" />
-    <ClCompile Include="resource.cpp" />
+    <ClCompile Include="tileset.cpp" />
     <ClCompile Include="variant.cpp" />
     <ClCompile Include="view.cpp" />
+    <ClCompile Include="wizard.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

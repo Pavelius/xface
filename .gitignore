@@ -3,6 +3,7 @@
 *.userosscache
 *.sln.docstates
 *.userprefs
+*_util.cpp
 
 # Build results
 [Dd]ebug/

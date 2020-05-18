@@ -3,17 +3,11 @@
 
 static bool		show_grid;
 static int		grid_size;
+tileset*		current_tileset;
 
 using namespace draw;
 
 void logmsg(const char* format, ...);
-
-void tileset::import() {
-	const int d = metrics::padding * 2;
-	while(ismodal()) {
-		domodal();
-	}
-}
 
 struct tileset_control_type : controls::list, controls::control::plugin {
 	control& getcontrol() override {
@@ -21,6 +15,15 @@ struct tileset_control_type : controls::list, controls::control::plugin {
 	}
 	const char*	getlabel(char* result, const char* result_maximum) const override {
 		return "Список тайлов";
+	}
+	static const char* getelementname(const void* p, char* result, const char* result_max) {
+		return ((tileset*)p)->name;
+	}
+	void view(const rect& rc) override {
+		rect r1 = rc;
+		r1.y1 += field(r1.x1, r1.y1, r1.width(), "Набор", current, 50,
+			bsdata<tileset>::source, getelementname, 0, 0, 0);
+		list::view(r1);
 	}
 	tileset_control_type() : plugin("tile_list", DockRight) {
 	}
@@ -122,6 +125,37 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 };
 static map_control_type map_control;
 
+void tileset::import() {
+}
+
+static void testwizard() {
+	struct tileimport {
+		char		folder[260];
+		tileimport() {
+			memset(this, 0, sizeof(*this));
+		}
+	};
+	struct tileset_wizard : wizard, tileimport {
+		bool choose_load_folder(const rect& rc, command_s id) {
+			if(id == Draw) {
+				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
+				field(x, y, w, "Папка загрузки", folder, sizeof(folder), 150);
+			}
+			return true;
+		}
+		const element* getelements() const override {
+			static element elements[] = {
+				{"Укажите папку, в которой находятся все графические файлы, которые вы хотите импортировать в один файл спрайтов.", &tileset_wizard::choose_load_folder}
+			};
+			return elements;
+		}
+	};
+	tileset_wizard wz;
+	wz.show("Импорт тайлов");
+}
+
 void run_main() {
-	draw::application("X-Map editor", false);
+	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
+	draw::application_initialize();
+	draw::application("X-Map editor", false, keys);
 }

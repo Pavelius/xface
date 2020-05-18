@@ -2,6 +2,7 @@
 #include "crt.h"
 #include "point.h"
 #include "stringbuilder.h"
+#include "wizard.h"
 
 #pragma once
 
@@ -20,13 +21,21 @@ struct resourcei {
 	map_type_s			type;
 	point				element;
 };
+struct tileset : resourcei {
+	sprite*				data;
+	void				read();
+	tileset();
+	void				import();
+};
 struct variant {
 	variant_s			type;
 	unsigned char		value;
 	constexpr variant() : type(NoVariant), value(0) {}
 	constexpr variant(variant_s t, unsigned char v) : type(t), value(v) {}
+	variant(variant_s t, const array& source, const void* v);
+	variant(const tileset* v) : variant(Tileset, bsdata<tileset>::source, v) {}
 	constexpr explicit operator bool() const { return type != NoVariant; }
-	resourcei*			getresource() const;
+	tileset*			getresource() const;
 };
 struct map_typei {
 	const char*			id;
@@ -61,7 +70,4 @@ struct mapi : resourcei {
 	point				screen; // Screen coordinates
 	point				offset; // Offset from center in elements
 };
-struct tileset : resourcei {
-	sprite*				data;
-	void				import();
-};
+extern tileset*			current_tileset;

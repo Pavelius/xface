@@ -5,11 +5,16 @@
     <ClCompile Include="view.cpp" />
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="map_type.cpp" />
-    <ClCompile Include="resource.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="variant.cpp" />
+    <ClCompile Include="..\xface\sprite_util.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\png.cpp" />
+    <ClCompile Include="..\..\formats\convert\zip.cpp" />
+    <ClCompile Include="tileset.cpp" />
+    <ClCompile Include="wizard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="wizard.h" />
   </ItemGroup>
 </Project>

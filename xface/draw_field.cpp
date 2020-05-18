@@ -18,9 +18,12 @@ static const char* getvalue(const anyval& v, bool istext, char* result, const ch
 		return "";
 	const char* p;
 	if(istext) {
-		p = (const char*)v.get();
-		if(p)
-			return szprint(result, result_end, p);
+		if(v.getsize() == sizeof(const char*)) {
+			p = (const char*)v.get();
+			if(p)
+				return szprint(result, result_end, p);
+		} else
+			return (const char*)v.getptr();
 		result[0] = 0;
 	} else
 		return szprint(result, result_end, "%1i", v.get());
@@ -159,6 +162,21 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	if(isfocused(rc, ev))
 		flags |= Focused;
 	field(rc, flags | TextSingleLine, ev, digits, true, false, 0);
+	return rc.height() + metrics::padding * 2;
+}
+
+int draw::field(int x, int y, int width, const char* header_label, char* sev, unsigned size, int header_width, fnchoose choosep) {
+	draw::state push;
+	setposition(x, y, width);
+	if(header_label && header_label[0])
+		titletext(x, y, width, 0, header_label, header_width);
+	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	unsigned flags = AlignLeft;
+	anyval av;
+	av.setvalue(sev, size);
+	if(isfocused(rc, av))
+		flags |= Focused;
+	field(rc, flags | TextSingleLine, av, -1, false, true, choosep);
 	return rc.height() + metrics::padding * 2;
 }
 
