@@ -12,9 +12,11 @@
     <ClCompile Include="..\..\formats\convert\zip.cpp" />
     <ClCompile Include="tileset.cpp" />
     <ClCompile Include="wizard.cpp" />
+    <ClCompile Include="fileimport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
     <ClInclude Include="wizard.h" />
+    <ClInclude Include="fileimport.h" />
   </ItemGroup>
 </Project>

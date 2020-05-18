@@ -22,16 +22,26 @@ const wizard::element* wizard::getvalid(const wizard::element* p) const {
 }
 
 const wizard::element* wizard::getlast(const wizard::element* p) const {
-	auto pc = const_cast<wizard*>(this);
-	auto p1 = p;
 	if(!p)
 		return false;
+	auto pc = const_cast<wizard*>(this);
+	const element* p1 = 0;
 	while(*p) {
 		if((pc->*p->proc.call)({}, Try))
 			p1 = p;
 		p++;
 	}
 	return p1;
+}
+
+void wizard::choosefolder(const anyval& value) {
+	char temp[260] = {};
+	if(!dialog::folder("Выбирайте папку", temp))
+		return;
+	auto p = (char*)value.getptr();
+	auto n = zlen(temp);
+	memcpy(p, temp, n);
+	p[n] = 0;
 }
 
 static void next_step() {
@@ -83,7 +93,7 @@ void wizard::show(const char* title) {
 			line(rc.x1, rc.y1 + 1, rc.x2, rc.y1 + 1, colors::border);
 			auto y = rc.y1 + metrics::padding;
 			rc.x2 -= buttonw(rc.x2, y, "Отмена", buttoncancel, KeyEscape);
-			if(!getlast(pc))
+			if(getlast(pc)!=pc)
 				rc.x2 -= buttonw(rc.x2, y, "Далее", next_step, 0);
 			else
 				rc.x2 -= buttonw(rc.x2, y, "Готово", finish_step, KeyEnter);

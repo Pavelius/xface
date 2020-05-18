@@ -34,9 +34,18 @@ static void setvalue(const anyval& v, bool istext, const char* result) {
 	if(!v)
 		return;
 	int value = 0;
-	if(istext)
-		value = (int)szdup(result);
-	else
+	if(istext) {
+		if(v.getsize() == sizeof(const char*))
+			value = (int)szdup(result);
+		else {
+			unsigned len = zlen(result);
+			if(len > v.getsize() - 1)
+				len = v.getsize() - 1;
+			auto p = (char*)v.getptr();
+			memcpy(p, result, len);
+			p[len] = 0;
+		}
+	} else
 		value = sz2num(result);
 	v.set(value);
 }

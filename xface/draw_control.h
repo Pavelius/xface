@@ -8,7 +8,7 @@
 
 #pragma once
 
-typedef void(*fnchoose)(const anyval value);
+typedef void(*fnchoose)(const anyval& value);
 
 namespace clipboard {
 void					copy(const void* string, int lenght);

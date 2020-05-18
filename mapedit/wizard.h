@@ -1,3 +1,4 @@
+#include "anyval.h"
 #include "rect.h"
 
 #pragma once
@@ -17,6 +18,7 @@ struct wizard {
 		const char*		image;
 		explicit operator bool() const { return title != 0; }
 	};
+	static void			choosefolder(const anyval& v);
 	virtual const element* getelements() const = 0;
 	const element*		getlast(const element* p) const;
 	const element*		getvalid(const element* p) const;

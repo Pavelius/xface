@@ -70,4 +70,9 @@ struct mapi : resourcei {
 	point				screen; // Screen coordinates
 	point				offset; // Offset from center in elements
 };
+struct tileimport {
+	char				source[260];
+	char				destination[260];
+	tileimport();
+};
 extern tileset*			current_tileset;

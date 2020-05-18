@@ -1,4 +1,5 @@
 #include "draw_control.h"
+#include "fileimport.h"
 #include "main.h"
 
 static bool		show_grid;
@@ -41,7 +42,7 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		auto center = true;
 		switch(type) {
 		case IsometricRectangle:
-			result.x = (pt.x/2) * element.x + (pt.x % 2)*element.x / 2;
+			result.x = (pt.x / 2) * element.x + (pt.x % 2)*element.x / 2;
 			result.y = pt.y * element.y / 2;
 			break;
 		default:
@@ -87,7 +88,7 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 			p1.y -= element.y / 2;
 			p2.x -= element.x / 2;
 			p2.y -= element.y / 2;
-			line(p1.x , p1.y + element.y, p2.x, p2.y + element.y);
+			line(p1.x, p1.y + element.y, p2.x, p2.y + element.y);
 		}
 		//line(p1.x, p1.y + element.y, p2.x, p2.y + element.y);
 		for(auto x = 0; x < size.x; x++) {
@@ -128,26 +129,34 @@ static map_control_type map_control;
 void tileset::import() {
 }
 
+tileimport::tileimport() {
+	memset(this, 0, sizeof(*this));
+}
+
 static void testwizard() {
-	struct tileimport {
-		char		folder[260];
-		tileimport() {
-			memset(this, 0, sizeof(*this));
-		}
-	};
-	struct tileset_wizard : wizard, tileimport {
+	struct tileset_wizard : wizard, tileimport, fileimport {
 		bool choose_load_folder(const rect& rc, command_s id) {
 			if(id == Draw) {
 				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
-				field(x, y, w, "Папка загрузки", folder, sizeof(folder), 150);
+				field(x, y, w, "Папка загрузки", source, sizeof(source), 150, choosefolder);
+			}
+			return true;
+		}
+		bool finish(const rect& rc, command_s id) {
+			if(id == Draw) {
+				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
+				field(x, y, w, "Имя спрайта", destination, sizeof(destination), 150);
 			}
 			return true;
 		}
 		const element* getelements() const override {
 			static element elements[] = {
-				{"Укажите папку, в которой находятся все графические файлы, которые вы хотите импортировать в один файл спрайтов.", &tileset_wizard::choose_load_folder}
+				{"Укажите папку, в которой находятся все графические файлы, которые вы хотите импортировать в один файл спрайтов.", &tileset_wizard::choose_load_folder},
+				{"Укажите имя итогового файла спрайта. Имя не должно содержать пробелов и не должно содержать никакое расширение. Система добавит расширение автоматически.", &tileset_wizard::finish}
 			};
 			return elements;
+		}
+		tileset_wizard() : fileimport("tileset", static_cast<tileimport*>(this), sizeof(tileimport)) {
 		}
 	};
 	tileset_wizard wz;
