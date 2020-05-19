@@ -63,15 +63,20 @@
       },
       "Расширения":{
         
+      },
+      "Пути":{
+        "Общие":{
+          "Спрайты":"sprites"
+        }
       }
     }
   },
   "window":{
-    "x":121,
-    "y":83,
-    "width":926,
-    "height":529,
-    "header_width":149,
+    "x":86,
+    "y":82,
+    "width":910,
+    "height":476,
+    "header_width":160,
     "flags":112
   },
   "controls":{

@@ -469,8 +469,6 @@ static struct application_plugin : draw::initplugin {
 		setting_appearance_forms();
 		setting_appearance_general_view();
 		setting_appearance_controls();
-		// Make header
-		setting_header.initialize();
 	}
 	static void exit_application() {
 		point pos, size;
@@ -498,6 +496,8 @@ static void get_control_status(controls::control* object) {
 }
 
 void draw::application(bool allow_multiply_window, eventproc heartproc, shortcut* shortcuts) {
+	// Make header
+	setting_header.initialize();
 	widget_application_control.allow_multiply_window = allow_multiply_window;
 	widget_application_control.heartproc = heartproc;
 	auto current_tab = 0;

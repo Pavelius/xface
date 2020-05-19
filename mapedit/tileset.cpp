@@ -1,8 +1,11 @@
 #include "main.h"
 #include "draw.h"
 #include "io.h"
+#include "settings.h"
 
 INSTDATAC(tileset, 256);
+
+static const char*	url_sprites = "sprites";
 
 void	sprite_write(const sprite* p, const char* url);
 int		sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode = sprite::Auto, unsigned char shadow_index = 0, color* original_pallette = 0, int explicit_frame = -1, unsigned char transparent_index = 0xFF);
@@ -52,4 +55,15 @@ void tileset::read() {
 	data = (sprite*)loadb(temp);
 	if(!data)
 		return;
+}
+
+void tileset::initialize() {
+	auto& e1 = draw::settings::root.gr("Пути").gr("Общие");
+	e1.add("Спрайты", url_sprites, draw::settings::UrlFolderPtr);
+}
+
+const char*	tileset::geturl(char* buffer, const char* name) {
+	stringbuilder sb(buffer, buffer+259);
+	sb.add("%1/%2.pma", url_sprites, name);
+	return buffer;
 }

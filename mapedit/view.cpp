@@ -2,9 +2,9 @@
 #include "fileimport.h"
 #include "main.h"
 
-static bool		show_grid;
-static int		grid_size;
-tileset*		current_tileset;
+static bool			show_grid;
+static int			grid_size;
+tileset*			current_tileset;
 
 using namespace draw;
 
@@ -142,17 +142,23 @@ static void testwizard() {
 			}
 			return true;
 		}
-		bool finish(const rect& rc, command_s id) {
+		bool choose_sprite_name(const rect& rc, command_s id) {
 			if(id == Draw) {
 				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
 				field(x, y, w, "Имя спрайта", destination, sizeof(destination), 150);
 			}
 			return true;
 		}
+		bool finish(const rect& rc, command_s id) {
+			if(id == Initialize) {
+
+			}
+			return true;
+		}
 		const element* getelements() const override {
 			static element elements[] = {
 				{"Укажите папку, в которой находятся все графические файлы, которые вы хотите импортировать в один файл спрайтов.", &tileset_wizard::choose_load_folder},
-				{"Укажите имя итогового файла спрайта. Имя не должно содержать пробелов и не должно содержать никакое расширение. Система добавит расширение автоматически.", &tileset_wizard::finish}
+				{"Укажите имя итогового файла спрайта. Имя не должно содержать пробелов и не должно содержать никакое расширение. Система добавит расширение автоматически.", &tileset_wizard::choose_sprite_name}
 			};
 			return elements;
 		}
@@ -166,5 +172,6 @@ static void testwizard() {
 void run_main() {
 	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
 	draw::application_initialize();
+	tileset::initialize();
 	draw::application("X-Map editor", false, keys);
 }

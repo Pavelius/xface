@@ -25,7 +25,9 @@ struct tileset : resourcei {
 	sprite*				data;
 	void				read();
 	tileset();
+	static const char*	geturl(char* buffer, const char* name);
 	void				import();
+	static void			initialize();
 };
 struct variant {
 	variant_s			type;
