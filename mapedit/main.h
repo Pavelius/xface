@@ -1,9 +1,9 @@
 #include "bsreq.h"
 #include "crt.h"
 #include "point.h"
+#include "setting.h"
 #include "stringbuilder.h"
 #include "wizard.h"
-#include "setting2.h"
 
 #pragma once
 
@@ -28,7 +28,6 @@ struct tileset : resourcei {
 	tileset();
 	static const char*	geturl(char* buffer, const char* name);
 	void				import();
-	static void			initialize();
 };
 struct variant {
 	variant_s			type;

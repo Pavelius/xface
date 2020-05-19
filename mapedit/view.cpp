@@ -172,6 +172,5 @@ static void testwizard() {
 void run_main() {
 	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
 	draw::application_initialize();
-	tileset::initialize();
 	draw::application("X-Map editor", false, keys);
 }

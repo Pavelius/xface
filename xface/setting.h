@@ -5,7 +5,8 @@
 namespace setting {
 enum type_s : unsigned char {
 	Number, Text, Bool,
-	Radio, Color, Url,
+	Color, Url,
+	Control, Radio, Button,
 };
 typedef bool(*ptest)();
 typedef void(*pcall)();
@@ -22,34 +23,37 @@ struct reference {
 	constexpr reference(const char*& v) : reference(Text, &v, sizeof(v)) {}
 	constexpr reference(bool& v) : reference(Bool, &v, sizeof(v)) {}
 	constexpr reference(color& v) : reference(Color, &v, sizeof(v)) {}
+	constexpr reference(pcall v) : reference(Button, (void*)v, sizeof(v)) {}
 	int				get() const;
 	void*			getptr() const { return data; }
+	bool			iszero() const { return get() == 0; }
 	void			set(int v) const;
 };
 struct element {
 	const char*		name;
 	reference		var;
-	bool(*ptest)(); // Test visibility
-	void(*pcall)();
+	int				param;
+	ptest			test; // Test visibility
 };
 template<class T>
 class list {
 	const T*		data;
 	unsigned		count;
 public:
-	const T*		begin() { return data; }
-	const T*		end() { return data + count; }
+	const T*		begin() const { return data; }
+	const T*		end() const { return data + count; }
 	list() = default;
 	template<class T, unsigned N> constexpr list(T(&data)[N]) : data(data), count(N) {};
 };
+typedef list<element> elementa;
 struct header {
 	const char*		division;
 	const char*		page;
 	const char*		group;
-	list<element>	elements;
+	elementa		elements;
 	ptest			visible;
 	header*			next;
-	header(const char* division, const char* page, const char* group, const list<element>& elements, ptest visible = 0);
+	header(const char* division, const char* page, const char* group, const elementa& elements, ptest visible = 0);
 	static header*	first;
 };
 }

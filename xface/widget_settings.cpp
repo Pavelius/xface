@@ -3,8 +3,9 @@
 #include "draw.h"
 #include "draw_control.h"
 #include "io_plugin.h"
-#include "settings.h"
+#include "setting.h"
 
+using namespace	setting;
 using namespace	draw;
 using namespace	draw::controls;
 
@@ -17,10 +18,10 @@ struct application_window {
 extern bool					sys_optimize_mouse_move;
 bool						metrics::show::padding;
 bool						metrics::show::statusbar;
+static const header*		current_header;
 static int					current_tab;
-static settings*			current_header;
 static controls::control*	active_workspace_tab;
-static application_window	window = {0, 0, 0, 0, 160, WFMinmax|WFResize};
+static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
 static const char*			settings_file_name = "settings.json";
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
@@ -38,42 +39,174 @@ template<> const bsreq bsmeta<control::plugin>::meta[] = {BSREQ(id),
 BSREQ(dock),
 {}};
 
-static const char* get_setting_name(const void* p, char* result, const char* result_maximum) {
-	return szprint(result, result_maximum, ((settings*)p)->name);
+struct streca {
+	const element*	e;
+	const header*	h;
+};
+
+static int getpriority(const header* p) {
+	if(strcmp(p->page, "Общие") == 0)
+		return 1;
+	return 10;
+}
+
+static int compare(const char* s1, const char* s2) {
+	if(s1 == s2)
+		return 0;
+	if(!s1)
+		return -1;
+	if(!s2)
+		return 1;
+	return strcmp(s1, s2);
+}
+
+static int compare(const header* h1, const header* h2) {
+	auto c1 = compare(h1->division, h2->division);
+	if(c1)
+		return c1;
+	auto r1 = getpriority(h1);
+	auto r2 = getpriority(h2);
+	if(r1 != r2)
+		return r1 - r2;
+	auto c2 = compare(h1->page, h2->page);
+	if(c2)
+		return c2;
+	return compare(h1->group, h2->group);
+}
+
+class stelemsa : public adat<streca, 128> {
+	static int compare_elements(const void* p1, const void* p2) {
+		auto e1 = (streca*)p1;
+		auto e2 = (streca*)p2;
+		auto c1 = compare(e1->h, e2->h);
+		if(c1)
+			return c1;
+		return strcmp(e1->e->name, e2->e->name);
+	}
+public:
+	void select() {
+		for(auto pm = header::first; pm; pm = pm->next) {
+			for(auto& e : pm->elements) {
+				auto p = add();
+				p->e = &e;
+				p->h = pm;
+			}
+		}
+	}
+	void match_filled() {
+		auto ps = data;
+		for(auto& e : *this) {
+			if(e.e->var.iszero())
+				continue;
+			*ps++ = e;
+		}
+		count = ps - data;
+	}
+	void match_visible() {
+		auto ps = data;
+		for(auto& e : *this) {
+			if(e.e->test && !e.e->test())
+				continue;
+			if(e.h->visible && !e.h->visible())
+				continue;
+			*ps++ = e;
+		}
+		count = ps - data;
+	}
+	void sort() {
+		qsort(data, count, sizeof(data[0]), compare_elements);
+	}
+};
+
+class strowsa : public adat<const header*, 128> {
+	static int compare_elements(const void* p1, const void* p2) {
+		return compare(*((header**)p1), *((header**)p2));
+	}
+	bool hasdivision(const header* p) const {
+		for(auto pe : *this) {
+			if(strcmp(p->division, pe->division) == 0)
+				return true;
+		}
+		return false;
+	}
+	bool haspage(const header* p) const {
+		for(auto pe : *this) {
+			if(strcmp(p->page, pe->page) == 0)
+				return true;
+		}
+		return false;
+	}
+public:
+	void sort() {
+		if(count)
+			qsort(data, count, sizeof(data[0]), compare_elements);
+	}
+	void select_divisions() {
+		for(auto pm = header::first; pm; pm = pm->next) {
+			if(hasdivision(pm))
+				continue;
+			add(pm);
+		}
+	}
+	void select_pages(const header* parent) {
+		for(auto pm = header::first; pm; pm = pm->next) {
+			if(strcmp(parent->division, pm->division) != 0)
+				continue;
+			if(haspage(pm))
+				continue;
+			add(pm);
+		}
+	}
+	void select_groups(const header* parent) {
+		for(auto pm = header::first; pm; pm = pm->next) {
+			if(strcmp(parent->division, pm->division) != 0)
+				continue;
+			if(strcmp(parent->page, pm->page) != 0)
+				continue;
+			add(pm);
+		}
+	}
+	void select_divisions(const stelemsa& source) {
+		for(auto& e : source) {
+			if(hasdivision(e.h))
+				continue;
+			add(e.h);
+		}
+	}
+	void select_pages(const stelemsa& source, const header* parent) {
+		for(auto& e : source) {
+			if(strcmp(parent->division, e.h->division) != 0)
+				continue;
+			if(haspage(e.h))
+				continue;
+			add(e.h);
+		}
+	}
+	void select_groups(const stelemsa& source, const header* parent) {
+		for(auto& e : source) {
+			if(strcmp(parent->division, e.h->division) != 0)
+				continue;
+			if(strcmp(parent->page, e.h->page) != 0)
+				continue;
+			if(haspage(e.h))
+				continue;
+			add(e.h);
+		}
+	}
+};
+
+static const char* get_page_name(const void* p, char* result, const char* result_maximum) {
+	return szprint(result, result_maximum, ((header*)p)->page);
 }
 
 static void callback_settab() {
 	current_tab = hot.param;
 }
 
-static int compare_settings(const void* p1, const void* p2) {
-	const settings* e1 = *((settings**)p1);
-	const settings* e2 = *((settings**)p2);
-	if(e1->priority != e2->priority)
-		return e1->priority - e2->priority;
-	return strcmp(e1->name, e2->name);
-}
-
-static void getsiblings(settings** result, unsigned maximum_count, settings* parent) {
-	settings** ps = result;
-	settings** pe = result + maximum_count - 1;
-	settings* tabs = parent->child();
-	if(tabs) {
-		for(settings* p = tabs; p; p = p->next) {
-			if(p->e_visible && !p->e_visible(*p))
-				continue;
-			if(ps < pe)
-				*ps++ = p;
-		}
-	}
-	*ps = 0;
-	qsort(result, zlen(result), sizeof(result[0]), compare_settings);
-}
-
 static void callback_button() {
-	auto p = (settings*)hot.param;
-	if(p->e_execute)
-		p->e_execute();
+	auto p = (element*)hot.param;
+	if(p->var.type == Button && p->var.data)
+		((pcall)p->var.data)();
 }
 
 //static void callback_choose_folder(const storage& ev) {
@@ -88,63 +221,105 @@ static void callback_choose_color() {
 	draw::dialog::color(*p);
 }
 
-//static void callback_edit() {
-//	char temp[4196]; temp[0] = 0;
-//	auto p = (settings*)hot.param;
-//	anyval av(p->data, sizeof(int), 0);
-//	switch(p->type) {
-//	case settings::TextPtr:
-//	case settings::UrlFolderPtr:
-//		if(*((const char**)p->data))
-//			zcpy(temp, *((const char**)p->data), sizeof(temp) - 1);
-//		break;
-//	case settings::Int:
-//		sznum(temp, *((int*)p->data));
-//		break;
-//    default:
-//        break;
-//	}
-//	pushfocus pf;
-//	controls::textedit te(temp, sizeof(temp), true);
-//	setfocus(av, true);
-//	if(te.editing(current_rect)) {
-//		switch(p->type) {
-//		case settings::TextPtr:
-//		case settings::UrlFolderPtr:
-//			if(temp[0])
-//				*((const char**)p->data) = szdup(temp);
-//			else
-//				*((const char**)p->data) = 0;
-//			break;
-//		case settings::Int:
-//			*((int*)p->data) = sz2num(temp);
-//			break;
-//        default:
-//            break;
-//		}
-//	}
-//}
+static const char* getname(char* temp, const setting::element& e) {
+	zcpy(temp, e.name);
+	szupper(temp);
+	return temp;
+}
+
+static int render_element(int x, int y, int width, unsigned flags, const setting::element& e) {
+	const auto title = 160;
+	char temp[512]; temp[0] = 0;
+	if(e.test && !e.test())
+		return 0;
+	auto y1 = y;
+	int d;
+	switch(e.var.type) {
+	case setting::Radio:
+		y += radio(x, y, width, anyval(e.var.data, sizeof(int), e.var.value), getname(temp, e), 0);
+		break;
+	case setting::Bool:
+		y += metrics::padding;
+		y += checkbox(x, y, width, anyval(e.var.data, sizeof(bool), 1), getname(temp, e), 0);
+		break;
+	case setting::Number:
+		d = 0;
+		if(e.param) {
+			d = e.param;
+			auto w = (d + 1)*textw("0") + metrics::padding * 2 + 19 + 4;
+			if(title + w < width)
+				width = title + w;
+		}
+		y += field(x, y, width, e.name, anyval(e.var.data, e.var.size, e.var.value), title, d);
+		break;
+	case setting::Color:
+		y += field(x, y, width, e.name, *((color*)e.var.data), title);
+		break;
+	case setting::Button:
+		if(true) {
+			auto result = false;
+			y += button(x, y, width, e, result, getname(temp, e), 0);
+			if(result)
+				draw::execute(callback_button, (int)&e);
+		}
+		break;
+	case setting::Text:
+		y += field(x, y, width, e.name, *((const char**)e.var.data), title);
+		break;
+	case setting::Url:
+		y += field(x, y, width, e.name, *((const char**)e.var.data), title);//callback_choose_folder
+		break;
+	case setting::Control:
+		break;
+	}
+	return y - y1;
+}
+
+static int render_element(int x, int y, int width, unsigned flags, const setting::header& e) {
+	auto x1 = x, y2 = y, w1 = width;
+	auto height = draw::texth() + metrics::padding * 2;
+	if(e.group) {
+		y += height;
+		x1 += metrics::padding;
+		w1 -= metrics::padding * 2;
+	}
+	auto yc = y;
+	for(auto& pe : e.elements)
+		y += render_element(x1, y, w1, flags, pe);
+	if(y == yc)
+		return 0;
+	if(e.group) {
+		color c1 = colors::border.mix(colors::window, 128);
+		color c2 = c1.darken();
+		gradv({x, y2, x + width, y2 + height}, c1, c2);
+		fore = colors::text.mix(c1, 196);
+		text(x + (width - textw(e.group)) / 2, y2 + metrics::padding, e.group);
+		rectb({x, y2, x + width, y + metrics::padding}, colors::border);
+	}
+	y += metrics::padding * 2;
+	return y - y2;
+}
 
 static struct widget_settings_header : controls::list {
-	settings*	rows[128];
-	int			maximum;
+	strowsa rows;
 	void initialize() {
-		getsiblings(rows, sizeof(rows) / sizeof(rows[0]), &settings::root);
-		maximum = zlen(rows);
-		if(current >= maximum - 1)
-			current = maximum;
+		rows.clear();
+		rows.select_divisions();
+		rows.sort();
+		if(current >= getmaximum() - 1)
+			current = getmaximum();
 		if(current < 0)
 			current = 0;
 	}
 	void row(const rect& rc, int index) override {
 		list::row({rc.x1 + 1, rc.y1 + 1, rc.x2 - 1, rc.y2}, index);
-		textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 8, rows[index]->name);
+		textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 8, rows[index]->division);
 	}
-	settings* getcurrent() {
+	const header* getcurrent() {
 		return rows[current];
 	}
 	int getmaximum() const override {
-		return maximum;
+		return rows.getcount();
 	}
 } setting_header;
 
@@ -178,96 +353,12 @@ int draw::field(int x, int y, int width, const char* label, color& value, int he
 }
 
 static struct widget_settings : controls::control {
-
-	static const char* getname(char* temp, settings& e) {
-		zcpy(temp, e.name);
-		szupper(temp);
-		return temp;
-	}
-
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return szprint(result, result_maximum, "Настройки");
 	}
-
-	static int element(int x, int y, int width, unsigned flags, settings& e) {
-		const auto title = 160;
-		settings* pc;
-		char temp[512]; temp[0] = 0;
-		if(e.e_visible && !e.e_visible(e))
-			return 0;
-		int y1 = y;
-		//cmdv ec;
-		switch(e.type) {
-		case settings::Radio:
-			y += radio(x, y, width, anyval(e.data, sizeof(int), e.value), getname(temp, e), 0);
-			break;
-		case settings::Bool:
-			y += metrics::padding;
-			y += checkbox(x, y, width, {e.data, sizeof(bool), 1}, getname(temp, e), 0);
-			break;
-		case settings::Int:
-			// Есть максимум
-			if(e.value) {
-				auto w = (getdigitscount(e.value) + 1)*textw("0") + metrics::padding * 2 + 19;
-				if(title + w < width)
-					width = title + w;
-			}
-			y += field(x, y, width, e.name, *((int*)e.data), title, getdigitscount(e.value) + 1);
-			break;
-		case settings::Color:
-			y += field(x, y, width, e.name, *((color*)e.data), title);
-			break;
-		case settings::Button:
-			if(true) {
-				auto result = false;
-				y += button(x, y, width, flags, result, getname(temp, e), 0);
-				if(result)
-					draw::execute(callback_button, (int)&e);
-			}
-			break;
-		case settings::TextPtr:
-			y += field(x, y, width, e.name, *((const char**)e.data), title);
-			break;
-		case settings::UrlFolderPtr:
-			y += field(x, y, width, e.name, *((const char**)e.data), title);// , callback_choose_folder);
-			break;
-		case settings::Control:
-			break;
-		case settings::Group:
-			pc = e.child();
-			if(!pc)
-				return 0;
-			if(true) {
-				auto x1 = x;
-				auto w1 = width;
-				auto y2 = y;
-				auto height = draw::texth() + metrics::padding * 2;
-				y += height;
-				if(e.name) {
-					x1 += metrics::padding;
-					w1 -= metrics::padding * 2;
-				}
-				for(; pc; pc = pc->next)
-					y += element(x1, y, w1, flags, *pc);
-				if(e.name) {
-					color c1 = colors::border.mix(colors::window, 128);
-					color c2 = c1.darken();
-					gradv({x, y2, x + width, y2 + height}, c1, c2);
-					fore = colors::text.mix(c1, 196);
-					text(x + (width - textw(e.name)) / 2, y2 + metrics::padding, e.name);
-					rectb({x, y2, x + width, y + metrics::padding}, colors::border);
-				}
-				y += metrics::padding * 2;
-			}
-			break;
-		}
-		return y - y1;
-	}
-
 	void view(const rect& rcorigin) override {
 		auto rc = rcorigin;
 		draw::state push;
-		settings* tabs[128];
 		fore = colors::text;
 		splitv(rc.x1, rc.y1, window.header_width, rc.height(), 6, 64, 282, false);
 		setting_header.show_border = metrics::show::padding;
@@ -281,50 +372,55 @@ static struct widget_settings : controls::control {
 		}
 		if(!top)
 			return;
-		getsiblings(tabs, sizeof(tabs) / sizeof(tabs[0]), top);
-		if(tabs[0]) {
-			// Покажем дополнительную панель
-			if(current_tab == -1)
-				current_tab = 0;
-			int h1 = 28;
-			// Нарисуем закладки
-			auto hilited = -1;
-			if(draw::tabs({rc.x1, rc.y1, rc.x2, rc.y1 + h1 + 1}, false, false,
-				(void**)tabs, 0, zlen(tabs), current_tab, &hilited,
-				get_setting_name)) {
-				draw::execute(callback_settab);
-				hot.param = hilited;
-			}
-			line(rc.x1, rc.y1 + h1, rc.x2, rc.y1 + h1, colors::border);
-			// Нариуем текущую закладку
-			if(current_tab != -1) {
-				int w3, w4;
-				auto p1 = tabs[current_tab];
-				switch(p1->type) {
-				case settings::Control:
-					rc.y1 += h1;
-					if(metrics::show::padding)
-						rc.y1 += metrics::padding;
-					((control*)p1->data)->show_border = metrics::show::padding;
-					((control*)p1->data)->view(rc);
-					break;
-				default:
-					rc.y1 += h1 + metrics::padding;
-					w4 = rc.width();
-					w3 = imin(w4, 620);
-					for(auto p = p1->child(); p; p = p->next)
-						rc.y1 += element(rc.x1, rc.y1, w3, 0, *p);
-					break;
-				}
-			}
+		strowsa tabs;
+		tabs.select_pages(top);
+		if(!tabs)
+			return;
+		tabs.sort();
+		// Покажем дополнительную панель
+		if(current_tab == -1)
+			current_tab = 0;
+		auto h1 = 28;
+		// Нарисуем закладки
+		auto hilited = -1;
+		if(draw::tabs({rc.x1, rc.y1, rc.x2, rc.y1 + h1 + 1}, false, false,
+			(void**)tabs.data, 0, tabs.count, current_tab, &hilited,
+			get_page_name)) {
+			draw::execute(callback_settab);
+			hot.param = hilited;
+		}
+		line(rc.x1, rc.y1 + h1, rc.x2, rc.y1 + h1, colors::border);
+		// Нариуем текущую закладку
+		if(current_tab == -1)
+			return;
+		auto p1 = tabs[current_tab];
+		strowsa elements; elements.select_groups(p1);
+		if(!elements)
+			return;
+		elements.sort();
+		int w3, w4;
+		auto e1 = p1->elements.begin();
+		switch(e1->var.type) {
+		case setting::Control:
+			rc.y1 += h1;
+			if(metrics::show::padding)
+				rc.y1 += metrics::padding;
+			((control*)e1->var.data)->show_border = metrics::show::padding;
+			((control*)e1->var.data)->view(rc);
+			break;
+		default:
+			rc.y1 += h1 + metrics::padding;
+			w4 = rc.width();
+			w3 = imin(w4, 620);
+			for(auto pe : elements)
+				rc.y1 += render_element(rc.x1, rc.y1, w3, 0, *pe);
+			break;
 		}
 	}
-
 	widget_settings() {
 		show_background = false;
 		show_border = false;
 	}
-
 } widget_settings_control;
 
 static struct widget_application : draw::controls::control {
@@ -419,56 +515,45 @@ static struct widget_application : draw::controls::control {
 
 } widget_application_control;
 
-static void setting_appearance_general_metrics() {
-	settings& e1 = settings::root.gr("Рабочий стол").gr("Общие").gr("Метрика");
-	e1.add("Отступы", metrics::padding);
-	e1.add("Ширина скролла", metrics::scroll);
-}
-
 void set_light_theme();
 void set_dark_theme();
 
-static void setting_appearance_forms() {
-	settings& e2 = settings::root.gr("Цвета").gr("Общие");
-	e2.add("Установить светлую тему", set_light_theme);
-	e2.add("Установить темную тему", set_dark_theme);
-	settings& e3 = settings::root.gr("Цвета").gr("Формы");
-	e3.add("Цвет текста", colors::text);
-	e3.add("Цвет окна", colors::window);
-	e3.add("Цвет формы", colors::form);
-	e3.add("Цвет границы", colors::border);
-	e3.add("Активный цвет", colors::active);
-	e3.add("Цвет кнопки", colors::button);
-	e3.add("Цвет редактирования", colors::edit);
-	e3.add("Цвет закладок", colors::tabs::back);
-	e3.add("Цвет текста закладок", colors::tabs::text);
-	e3.add("Цвет подсказки", colors::tips::back);
-	e3.add("Цвет текста подсказки", colors::tips::text);
-}
-
-static void setting_appearance_general_view() {
-	settings& e1 = settings::root.gr("Рабочий стол").gr("Общие").gr("Вид");
-	e1.add("Показывать панель статуса", metrics::show::statusbar);
-	e1.add("Показывать левую панель элементов", metrics::show::left);
-	e1.add("Показывать правую панель элементов", metrics::show::right);
-	e1.add("Показывать нижнюю панель элементов", metrics::show::bottom);
-	e1.add("Отступы на главном окне", metrics::show::padding);
-	e1.add("Использовать оптимизацию при движении мишки", sys_optimize_mouse_move);
-}
-
-static void setting_appearance_controls() {
-	control_viewer.initialize();
-	if(!control_viewer.getmaximum())
-		return;
-	settings::root.gr("Расширения").add("Элементы", control_viewer);
-}
+static const element appearance_general_metrics[] = {{"Отступы", metrics::padding, 3},
+{"Ширина скролла", metrics::scroll, 3},
+};
+static const element colors_general[] = {{"Установить светлую тему", set_light_theme},
+{"Установить темную тему", set_dark_theme},
+};
+static const element colors_form[] = {{"Цвет текста", colors::text},
+{"Цвет окна", colors::window},
+{"Цвет формы", colors::form},
+{"Цвет границы", colors::border},
+{"Активный цвет", colors::active},
+{"Цвет кнопки", colors::button},
+{"Цвет редактирования", colors::edit},
+{"Цвет закладок", colors::tabs::back},
+{"Цвет текста закладок", colors::tabs::text},
+{"Цвет подсказки", colors::tips::back},
+{"Цвет текста подсказки", colors::tips::text},
+};
+static const element appearance_general_view[] = {{"Показывать панель статуса", metrics::show::statusbar},
+{"Показывать левую панель элементов", metrics::show::left},
+{"Показывать правую панель элементов", metrics::show::right},
+{"Показывать нижнюю панель элементов", metrics::show::bottom},
+{"Отступы на главном окне", metrics::show::padding},
+{"Использовать оптимизацию при движении мишки", sys_optimize_mouse_move},
+};
+static const element plugin_elements[] = {{0, {Control, static_cast<control*>(&control_viewer), 0}}};
+static header setting_headers[] = {{"Рабочий стол", "Общие", "Метрика", appearance_general_metrics},
+{"Рабочий стол", "Общие", "Внешний вид", appearance_general_view},
+{"Цвета", "Общие", 0, colors_general},
+{"Цвета", "Формы", 0, colors_form},
+{"Расширения", "Элементы", 0, plugin_elements},
+};
 
 static struct application_plugin : draw::initplugin {
 	void initialize() override {
-		setting_appearance_general_metrics();
-		setting_appearance_forms();
-		setting_appearance_general_view();
-		setting_appearance_controls();
+		control_viewer.initialize();
 	}
 	static void exit_application() {
 		point pos, size;
@@ -546,8 +631,6 @@ void set_light_theme();
 void draw::application_initialize() {
 	set_light_theme();
 	initialize();
-	for(auto p = controls::control::plugin::first; p; p = p->next)
-		p->after_initialize();
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
 
@@ -560,72 +643,119 @@ void draw::application(const char* name, bool allow_multiply_window, eventproc s
 }
 
 static struct settings_settings_strategy : io::strategy {
-	void write(io::writer& file, settings& e) {
-		switch(e.type) {
-		case settings::Group:
-			file.open(e.name);
-			for(settings* p = (settings*)e.data; p; p = p->next)
-				write(file, *p);
-			file.close(e.name);
+	void write(io::writer& file, const element& e) {
+		switch(e.var.type) {
+		case setting::Bool:
+		case setting::Number:
+		case setting::Color:
+			file.set(e.name, e.var.get());
 			break;
-		case settings::Bool:
-			file.set(e.name, *((bool*)e.data));
+		case setting::Radio:
+			file.set(e.name, 1);
 			break;
-		case settings::Int:
-		case settings::Color:
-			file.set(e.name, *((int*)e.data));
+		case setting::Text:
+		case setting::Url:
+			file.set(e.name, (const char*)e.var.get());
 			break;
-		case settings::Radio:
-			if(*((int*)e.data) == e.value)
-				file.set(e.name, 1);
+		default:
 			break;
-		case settings::TextPtr:
-		case settings::UrlFolderPtr:
-			file.set(e.name, *((const char**)e.data));
-			break;
-        default:
-            break;
 		}
 	}
 	void write(io::writer& file, void* param) override {
-		write(file, settings::root);
-	}
-	settings* find(io::reader::node& n) {
-		auto result = (settings*)settings::root.data;
-		if(n.parent && strcmp(n.parent->name, "Root") != 0) {
-			result = find(*n.parent);
-			if(!result)
-				return 0;
-			if(result->type != settings::Group)
-				return 0;
-			result = (settings*)result->data;
+		strowsa divisions; divisions.select_divisions();
+		for(auto pd : divisions) {
+			strowsa pages; pages.select_pages(pd);
+			if(!pages)
+				continue;
+			file.open(pd->division);
+			for(auto pg : pages) {
+				strowsa groups; groups.select_groups(pg);
+				if(!groups)
+					continue;
+				file.open(pg->page);
+				for(auto gr : groups) {
+					if(gr->group)
+						file.open(gr->group);
+					for(auto& e : gr->elements)
+						write(file, e);
+					if(gr->group)
+						file.close(gr->group);
+				}
+				file.close(pg->page);
+			}
+			file.close(pd->division);
 		}
-		return result->find(szdup(n.name));
+	}
+	static const element* find(io::reader::node& n) {
+		auto name = n.name;
+		if(!name)
+			return 0;
+		if(!n.parent || !n.parent->parent || !n.parent->parent->parent)
+			return 0;
+		const char* division = 0;
+		const char* page = 0;
+		const char* group = 0;
+		if(strcmp(n.parent->parent->parent->name, "settings") == 0) {
+			division = n.parent->parent->name;
+			page = n.parent->name;
+		} else {
+			if(!n.parent->parent->parent->parent)
+				return 0;
+			if(strcmp(n.parent->parent->parent->parent->name, "settings") != 0)
+				return 0;
+			division = n.parent->parent->parent->name;
+			page = n.parent->parent->name;
+			group = n.parent->name;
+		}
+		if(!division || !page)
+			return 0;
+		for(auto pm = header::first; pm; pm = pm->next) {
+			if(strcmp(pm->division, division) != 0)
+				continue;
+			if(strcmp(pm->page, page) != 0)
+				continue;
+			if(pm->group) {
+				if(!group || strcmp(pm->group, group) != 0)
+					continue;
+			} else {
+				if(group)
+					continue;
+			}
+			for(auto& e : pm->elements) {
+				if(strcmp(e.name, name) == 0)
+					return &e;
+			}
+		}
+		return 0;
 	}
 	int getnum(const char* value) const {
+		if(strcmp(value, "true") == 0)
+			return 1;
+		if(strcmp(value, "false") == 0)
+			return 0;
+		if(strcmp(value, "null") == 0)
+			return 0;
 		return sz2num(value);
 	}
 	void set(io::reader::node& n, const char* value) override {
 		auto e = find(n);
 		if(!e)
 			return;
-		switch(e->type) {
-		case settings::Int:
-		case settings::Color:
-			*((int*)e->data) = getnum(value);
+		switch(e->var.type) {
+		case setting::Number:
+		case setting::Color:
+		case setting::Bool:
+			e->var.set(getnum(value));
 			break;
-		case settings::Bool:
-			*((bool*)e->data) = (getnum(value) ? true : false);
+		case setting::Radio:
+			e->var.set(e->var.value);
 			break;
-		case settings::Radio:
-			*((int*)e->data) = e->value;
+		case setting::Text:
+		case setting::Url:
+			e->var.set((int)szdup(value));
 			break;
-		case settings::TextPtr:
-		case settings::UrlFolderPtr:
-			*((const char**)e->data) = szdup(value);
+		default:
 			break;
-        default:
-            break;
 		}
 	}
 	settings_settings_strategy() : strategy("settings", "settings") {}
@@ -643,7 +773,7 @@ static struct window_settings_strategy : io::strategy {
 	void set(io::reader::node& n, const char* value) override {
 		if(n == "x")
 			window.x = sz2num(value);
-		else if(n=="y")
+		else if(n == "y")
 			window.y = sz2num(value);
 		else if(n == "width")
 			window.width = sz2num(value);
@@ -667,18 +797,6 @@ static struct controls_settings_strategy : io::strategy {
 			file.set("Docking", pp->dock);
 			file.close(id);
 		}
-	}
-	settings* find(io::reader::node& n) {
-		settings* result = (settings*)settings::root.data;
-		if(n.parent && szcmpi(n.parent->name, "Root") != 0) {
-			result = find(*n.parent);
-			if(!result)
-				return 0;
-			if(result->type != settings::Group)
-				return 0;
-			result = (settings*)result->data;
-		}
-		return result->find(szdup(n.name));
 	}
 	void set(io::reader::node& n, const char* value) override {
 		if(!n.parent || !n.parent->parent)

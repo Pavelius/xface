@@ -1,7 +1,6 @@
 #include "main.h"
 #include "draw.h"
 #include "io.h"
-#include "settings.h"
 
 INSTDATAC(tileset, 256);
 
@@ -57,13 +56,18 @@ void tileset::read() {
 		return;
 }
 
-void tileset::initialize() {
-	auto& e1 = draw::settings::root.gr("Пути").gr("Общие");
-	e1.add("Спрайты", url_sprites, draw::settings::UrlFolderPtr);
-}
+//void tileset::initialize() {
+//	auto& e1 = draw::settings::root.gr("Пути").gr("Общие");
+//	e1.add("Спрайты", url_sprites, draw::settings::UrlFolderPtr);
+//}
 
 const char*	tileset::geturl(char* buffer, const char* name) {
 	stringbuilder sb(buffer, buffer+259);
 	sb.add("%1/%2.pma", url_sprites, name);
 	return buffer;
 }
+
+static setting::element tileset_url[] = {{"Спрайты", {setting::Url, &url_sprites, 0}},
+};
+static setting::header headers[] = {{"Рабочий стол", "Пути", 0, tileset_url},
+};

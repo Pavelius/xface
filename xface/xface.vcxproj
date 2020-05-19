@@ -166,7 +166,7 @@
     <ClCompile Include="resources.cpp" />
     <ClCompile Include="resource_dynamic.cpp" />
     <ClCompile Include="screenshoot.cpp" />
-    <ClCompile Include="settings.cpp" />
+    <ClCompile Include="setting.cpp" />
     <ClCompile Include="stringbuilder.cpp" />
     <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
@@ -203,6 +203,7 @@
     <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
     <ClInclude Include="markup.h" />
+    <ClInclude Include="setting.h" />
     <ClInclude Include="stringbuilder.h" />
     <ClInclude Include="valuelist.h" />
     <ClInclude Include="requisit.h" />
@@ -219,7 +220,6 @@
     <ClInclude Include="rect.h" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="screenshoot.h" />
-    <ClInclude Include="settings.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="strlib.h" />
     <ClInclude Include="win.h" />

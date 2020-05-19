@@ -2,7 +2,7 @@
 #include "datetime.h"
 #include "draw_control.h"
 #include "io.h"
-#include "settings.h"
+#include "setting.h"
 #include "stringbuilder.h"
 
 using namespace	draw;
@@ -79,17 +79,16 @@ static struct widget_logging : control::plugin, table {
 		return messages.getcount();
 	}
 
-	static void setting_common() {
-		settings& e1 = settings::root.gr("Логирование").gr("Общие");
-		e1.add("Сохранять файл сообщений после закрытия программы", save_log_file);
-	}
+	//static void setting_common() {
+	//	settings& e1 = settings::root.gr("Логирование").gr("Общие");
+	//	e1.add("Сохранять файл сообщений после закрытия программы", save_log_file);
+	//}
 
 	widget_logging() : control::plugin("logging", DockBottom) {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;
 		show_toolbar = false;
-		setting_common();
 		atexit(before_application_exit);
 	}
 

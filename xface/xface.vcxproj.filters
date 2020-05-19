@@ -135,9 +135,6 @@
     <ClCompile Include="widget_settings.cpp">
       <Filter>draw\widgets</Filter>
     </ClCompile>
-    <ClCompile Include="settings.cpp">
-      <Filter>support</Filter>
-    </ClCompile>
     <ClCompile Include="win_draw_dlg.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
@@ -231,6 +228,9 @@
     <ClCompile Include="bsreq_bin2.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="setting.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
@@ -290,9 +290,6 @@
     <ClInclude Include="io_plugin.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="settings.h">
-      <Filter>support</Filter>
-    </ClInclude>
     <ClInclude Include="draw_properties.h">
       <Filter>draw\controls</Filter>
     </ClInclude>
@@ -315,6 +312,9 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="agrw.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="setting.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>

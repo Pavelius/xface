@@ -1,4 +1,4 @@
-#include "setting2.h"
+#include "setting.h"
 
 using namespace setting;
 
@@ -33,7 +33,7 @@ void reference::set(int v) const {
 
 header* header::first;
 
-header::header(const char* division, const char* page, const char* group, const list<element>& elements, ptest visible) : division(division), page(page), group(group),
+header::header(const char* division, const char* page, const char* group, const elementa& elements, ptest visible) : division(division), page(page), group(group),
 	elements(elements), visible(visible) {
 	if(!first)
 		first = this;

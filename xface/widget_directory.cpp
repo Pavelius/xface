@@ -2,7 +2,7 @@
 #include "datetime.h"
 #include "draw_control.h"
 #include "io.h"
-#include "settings.h"
+#include "setting.h"
 #include "stringbuilder.h"
 
 using namespace	draw;
