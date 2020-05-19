@@ -1,14 +1,9 @@
 #pragma once
 
 struct color {
-	unsigned char			b;
-	unsigned char			g;
-	unsigned char			r;
-	unsigned char			a;
-	//
-	inline bool	operator==(const color& e) const { return b == e.b && g == e.g && r == e.r && a == e.a; }
-	inline bool	operator!=(const color& e) const { return b != e.b || g != e.g || r != e.r || a != e.a; }
-	//
+	unsigned char			b, g, r, a;
+	constexpr bool operator==(const color& e) const { return b == e.b && g == e.g && r == e.r && a == e.a; }
+	constexpr bool operator!=(const color& e) const { return b != e.b || g != e.g || r != e.r || a != e.a; }
 	inline void				clear() { *((int*)this) = 0; }
 	static void				convert(void* output, int width, int height, int output_bpp, const void* output_pallette, const void* input, int input_bpp, const void* input_pallette = 0, int input_scanline = 0);
 	static color			create(unsigned char r, unsigned char g, unsigned char b);

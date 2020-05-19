@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClInclude Include="fileimport.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="setting2.h" />
     <ClInclude Include="wizard.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +139,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_type.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="setting2.cpp" />
     <ClCompile Include="tileset.cpp" />
     <ClCompile Include="variant.cpp" />
     <ClCompile Include="view.cpp" />

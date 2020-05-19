@@ -3,6 +3,7 @@
 #include "point.h"
 #include "stringbuilder.h"
 #include "wizard.h"
+#include "setting2.h"
 
 #pragma once
 
