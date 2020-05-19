@@ -11,14 +11,14 @@ using namespace	draw::controls;
 namespace {
 struct header : tree::element {
 	const char*		name;
-	const char* getname() const { return name; }
+	const char*		getname() const { return name; }
 };
 }
 INSTMETA(header) = {BSREQ(name), BSREQ(image), {}};
 
-static struct widget_directory : tree, control::plugin {
+static const char*		base_url = "D:/projects";
 
-	const char* base_url;
+static struct widget_directory : tree, control::plugin {
 
 	void after_initialize() override {
 		auto meta = bsmeta<header>::meta;
@@ -69,10 +69,14 @@ static struct widget_directory : tree, control::plugin {
 		select_mode = SelectRow;
 		show_toolbar = false;
 		show_header = false;
-		base_url = "D:/projects";
 	}
 
 } widget_control;
 
 void directory_initialize() {
 }
+
+static setting::element tileset_url[] = {{"Директории", {base_url, setting::Url}},
+};
+static setting::header headers[] = {{"Рабочий стол", "Пути", 0, tileset_url},
+};

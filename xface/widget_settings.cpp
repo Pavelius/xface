@@ -209,12 +209,14 @@ static void callback_button() {
 		((pcall)p->var.data)();
 }
 
-//static void callback_choose_folder(const storage& ev) {
-//	char temp[260];
-//	ev.getf(temp, zendof(temp));
-//	if(draw::dialog::folder("Укажите папку", temp))
-//		ev.set(temp);
-//}
+static void choose_folder(const anyval& ev) {
+	char temp[260];
+	auto p = (const char*)ev.get();
+	if(p)
+		zcpy(temp, p);
+	if(draw::dialog::folder("Укажите папку", temp))
+		ev.set((int)szdup(temp));
+}
 
 static void callback_choose_color() {
 	auto p = (color*)hot.param;
@@ -267,7 +269,7 @@ static int render_element(int x, int y, int width, unsigned flags, const setting
 		y += field(x, y, width, e.name, *((const char**)e.var.data), title);
 		break;
 	case setting::Url:
-		y += field(x, y, width, e.name, *((const char**)e.var.data), title);//callback_choose_folder
+		y += field(x, y, width, e.name, *((const char**)e.var.data), title, choose_folder);//callback_choose_folder
 		break;
 	case setting::Control:
 		break;
@@ -295,8 +297,8 @@ static int render_element(int x, int y, int width, unsigned flags, const setting
 		fore = colors::text.mix(c1, 196);
 		text(x + (width - textw(e.group)) / 2, y2 + metrics::padding, e.group);
 		rectb({x, y2, x + width, y + metrics::padding}, colors::border);
+		y += metrics::padding * 2;
 	}
-	y += metrics::padding * 2;
 	return y - y2;
 }
 

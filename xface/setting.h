@@ -21,6 +21,7 @@ struct reference {
 	constexpr reference(type_s type, void* data, unsigned size, int value) : type(type), data(data), size(size), value(value) {}
 	template<class T> constexpr reference(T& v) : reference(Number, &v, sizeof(v)) {}
 	constexpr reference(const char*& v) : reference(Text, &v, sizeof(v)) {}
+	constexpr reference(const char*& v, type_s type) : reference(type, &v, sizeof(v)) {}
 	constexpr reference(bool& v) : reference(Bool, &v, sizeof(v)) {}
 	constexpr reference(color& v) : reference(Color, &v, sizeof(v)) {}
 	constexpr reference(pcall v) : reference(Button, (void*)v, sizeof(v)) {}

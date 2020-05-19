@@ -169,8 +169,11 @@ static void testwizard() {
 	wz.show("Импорт тайлов");
 }
 
+void directory_initialize();
+
 void run_main() {
 	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
 	draw::application_initialize();
+	directory_initialize();
 	draw::application("X-Map editor", false, keys);
 }

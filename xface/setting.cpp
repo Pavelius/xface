@@ -7,7 +7,9 @@ int reference::get() const {
 		return 0;
 	switch(type) {
 	case Text: case Url:
-		return (int)((const char**)data);
+		if(size==sizeof(const char*))
+			return (int)*((const char**)data);
+		return 0;
 	default:
 		switch(size) {
 		case sizeof(char) : return *((char*)data);
@@ -20,7 +22,8 @@ int reference::get() const {
 void reference::set(int v) const {
 	switch(type) {
 	case Text: case Url:
-		*((const char**)data) = (const char*)v;
+		if(size == sizeof(const char*))
+			*((const char**)data) = (const char*)v;
 		break;
 	default:
 		switch(size) {
