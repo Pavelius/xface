@@ -150,15 +150,15 @@ static void testwizard() {
 			return true;
 		}
 		bool finish(const rect& rc, command_s id) {
-			if(id == Initialize) {
-
-			}
+			if(id == Initialize)
+				execute();
 			return true;
 		}
 		const element* getelements() const override {
 			static element elements[] = {
 				{"Укажите папку, в которой находятся все графические файлы, которые вы хотите импортировать в один файл спрайтов.", &tileset_wizard::choose_load_folder},
-				{"Укажите имя итогового файла спрайта. Имя не должно содержать пробелов и не должно содержать никакое расширение. Система добавит расширение автоматически.", &tileset_wizard::choose_sprite_name}
+				{"Укажите имя итогового файла спрайта. Имя не должно содержать пробелов и не должно содержать никакое расширение. Система добавит расширение автоматически.", &tileset_wizard::choose_sprite_name},
+				{"Спрайт успешно создан.", &tileset_wizard::finish}
 			};
 			return elements;
 		}

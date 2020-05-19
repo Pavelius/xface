@@ -67,6 +67,8 @@ static int buttonw(int x, int y, const char* text, eventproc proc, int key) {
 void wizard::show(const char* title) {
 	auto p_start = getelements();
 	auto pc = getvalid(p_start);
+	if(pc)
+		(this->*pc->proc.call)({}, Initialize);
 	while(ismodal()) {
 		if(!pc)
 			break;
@@ -104,7 +106,11 @@ void wizard::show(const char* title) {
 		domodal();
 		switch(current_command) {
 		case Previous: break;
-		case Next: pc = getvalid(pc + 1); break;
+		case Next:
+			pc = getvalid(pc + 1);
+			if(pc)
+				(this->*pc->proc.call)({}, Initialize);
+			break;
 		case Finish: breakmodal(1); break;
 		default: break;
 		}

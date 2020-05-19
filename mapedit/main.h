@@ -17,8 +17,7 @@ enum variant_s : unsigned char {
 	Tileset,
 };
 struct resourcei {
-	char				name[16];
-	char				folder[16];
+	char				name[32];
 	map_type_s			type;
 	point				element;
 };
@@ -26,6 +25,7 @@ struct tileset : resourcei {
 	sprite*				data;
 	void				read();
 	tileset();
+	static const char*	base_url;
 	static const char*	geturl(char* buffer, const char* name);
 	void				import();
 };
@@ -76,5 +76,6 @@ struct tileimport {
 	char				source[260];
 	char				destination[260];
 	tileimport();
+	void				execute();
 };
 extern tileset*			current_tileset;

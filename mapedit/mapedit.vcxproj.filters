@@ -13,6 +13,7 @@
     <ClCompile Include="tileset.cpp" />
     <ClCompile Include="wizard.cpp" />
     <ClCompile Include="fileimport.cpp" />
+    <ClCompile Include="tileimport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
