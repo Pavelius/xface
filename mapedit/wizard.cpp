@@ -83,15 +83,19 @@ void wizard::show(const char* title) {
 			line(r1.x1, r1.y2 + 1, r1.x2, r1.y2 + 1, colors::border);
 			rc.y1 += r1.height() + metrics::padding*2;
 		}
+		auto bottom_height = texth() + 8 + metrics::padding * 2;
+		rectb({rc.x1, rc.y1, rc.x1 + 250, rc.y2 - bottom_height - metrics::padding}, colors::border);
+		rect r2 = rc;
+		r2.x1 += 250 + metrics::padding;
 		if(pc->title)
-			rc.y1 += text(rc, pc->title, AlignLeft) + metrics::padding;
+			r2.y1 += text(r2, pc->title, AlignLeft) + metrics::padding;
 		if(pc->proc.call) {
-			rect r1 = rc;
+			rect r1 = r2;
 			r1.offset(metrics::padding * 2);
 			(this->*pc->proc.call)(r1, Draw);
 		}
 		if(true) {
-			rc.y1 = rc.y2 - (texth() + 8 + metrics::padding * 2 + 1);
+			rc.y1 = rc.y2 - bottom_height - 1;
 			line(rc.x1, rc.y1 + 1, rc.x2, rc.y1 + 1, colors::border);
 			auto y = rc.y1 + metrics::padding;
 			rc.x2 -= buttonw(rc.x2, y, "Отмена", buttoncancel, KeyEscape);

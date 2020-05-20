@@ -258,7 +258,7 @@ struct combolist : controls::list, reflist {
 		clear();
 		auto pe = cmb_source.end();
 		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize()) {
-			if(cmd_allow && !cmd_allow(cmb_param, (int)pb))
+			if(cmd_allow && !cmd_allow(cmb_param, (int)cmb_source.indexof(pb)))
 				continue;
 			add(pb);
 		}

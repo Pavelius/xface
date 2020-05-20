@@ -133,12 +133,41 @@ tileimport::tileimport() {
 	memset(this, 0, sizeof(*this));
 }
 
+#define STRQ(T,R) ((T*)0)->R
+
 static void testwizard() {
 	struct tileset_wizard : wizard, tileimport, fileimport {
+		static const char* getdirectionname(const void* object, char* result, const char* result_maximum) {
+			return ((directioni*)object)->name;
+		}
+		static bool horizallow(const void* object, int index) {
+			switch(index) {
+			case Left: case Right: case Center: return true;
+			default: return false;
+			}
+		}
+		static bool vertallow(const void* object, int index) {
+			switch(index) {
+			case Up: case Down: case Center: return true;
+			default: return false;
+			}
+		}
 		bool choose_load_folder(const rect& rc, command_s id) {
 			if(id == Draw) {
 				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
 				field(x, y, w, "Папка загрузки", source, sizeof(source), 150, choosefolder);
+			}
+			return true;
+		}
+		bool centroid(const rect& rc, command_s id) {
+			if(id == Draw) {
+				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
+				auto w1 = imin(w/2, 350);
+				auto w2 = imin(w/2, 350);
+				field(x, y, w1, "Смещение по горизонтале", base_x, 180, bsdata<directioni>::source, getdirectionname, 0, 0, horizallow);
+				y += field(x + w1 + metrics::padding, y, w1, "на значение", offset.x, 100, 4);
+				field(x, y, w1, "Смещение по вертикале", base_y, 180, bsdata<directioni>::source, getdirectionname, 0, 0, vertallow);
+				y += field(x + w1 + metrics::padding, y, w1, "на значение", offset.y, 100, 4);
 			}
 			return true;
 		}
@@ -157,6 +186,7 @@ static void testwizard() {
 		const element* getelements() const override {
 			static element elements[] = {
 				{"Укажите папку, в которой находятся все графические файлы, которые вы хотите импортировать в один файл спрайтов.", &tileset_wizard::choose_load_folder},
+				{"В каждом спрайте будет находится центральная точка, которая будет использовать для вывода спрайта на экран. Укажите смещение этой точки относительно прямоугольника, описывающим спрайт.", &tileset_wizard::centroid},
 				{"Укажите имя итогового файла спрайта. Имя не должно содержать пробелов и не должно содержать никакое расширение. Система добавит расширение автоматически.", &tileset_wizard::choose_sprite_name},
 				{"Спрайт успешно создан.", &tileset_wizard::finish}
 			};
@@ -173,7 +203,6 @@ void directory_initialize();
 
 void run_main() {
 	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
-	draw::application_initialize();
 	directory_initialize();
-	draw::application("X-Map editor", false, keys);
+	draw::application("X-Map editor", false, 0, 0, keys);
 }

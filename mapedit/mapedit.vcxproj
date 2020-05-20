@@ -134,6 +134,7 @@
     <ClCompile Include="..\..\formats\convert\zip.cpp" />
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="..\xface\sprite_util.cpp" />
+    <ClCompile Include="direction.cpp" />
     <ClCompile Include="fileimport.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_type.cpp" />

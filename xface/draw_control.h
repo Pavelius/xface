@@ -404,7 +404,7 @@ public:
 }
 void						addelement(const rect& rc, const anyval& value);
 void						application(bool allow_multiply_windows, eventproc heartproc = 0, shortcut* shortcuts = 0);
-void						application(const char* name, bool allow_multiply_windows, eventproc showproc = 0, eventproc heartproc = 0, shortcut* shortcuts = 0);
+void						application(const char* name, bool allow_multiply_windows, eventproc showproc, eventproc heartproc, shortcut* shortcuts);
 inline void					application() { application(true); }
 void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);

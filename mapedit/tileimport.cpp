@@ -2,9 +2,9 @@
 #include "draw.h"
 #include "io.h"
 
-void	sprite_write(const sprite* p, const char* url);
-int		sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode = sprite::Auto, unsigned char shadow_index = 0, color* original_pallette = 0, int explicit_frame = -1, unsigned char transparent_index = 0xFF);
-void	sprite_create(sprite* p, int count, int cicles, int additional_bytes);
+void sprite_write(const sprite* p, const char* url);
+int	sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode = sprite::Auto, unsigned char shadow_index = 0, color* original_pallette = 0, int explicit_frame = -1, unsigned char transparent_index = 0xFF);
+void sprite_create(sprite* p, int count, int cicles, int additional_bytes);
 
 static sprite* create_sprite(unsigned count) {
 	auto ps = (sprite*)new char[1024 * 1024 * 16];
@@ -30,7 +30,7 @@ static unsigned getfilecount(const char* url) {
 	return result;
 }
 
-static void create_sprite_from_bitmap(const char* name, const char* url) {
+void create_sprite_from_bitmap(const char* name, const char* url, const tileimport& ti) {
 	sprite* ps = create_sprite(getfilecount(url));
 	for(io::file::find f(url); f; f.next()) {
 		auto pn = f.name();
@@ -43,11 +43,20 @@ static void create_sprite_from_bitmap(const char* name, const char* url) {
 			continue;
 		sprite_store(ps, sf.ptr(0, 0), sf.scanline,
 			sf.width, sf.height,
-			sf.width / 2, sf.height / 2);
+			ti.getcenter(sf.width, ti.base_x, ti.offset.x),
+			ti.getcenter(sf.height, ti.base_y, ti.offset.y));
 	}
 	close_sprite(ps, name);
 }
 
+int	tileimport::getcenter(int dimension, direction_s link, int value) const {
+	switch(link) {
+	case Left: case Up:return value;
+	case Right: case Down: return dimension - value;
+	default: return dimension / 2 + value;
+	}
+}
+
 void tileimport::execute() {
-	create_sprite_from_bitmap(destination, source);
+	create_sprite_from_bitmap(destination, source, *this);
 }

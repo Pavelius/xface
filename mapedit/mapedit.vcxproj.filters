@@ -14,6 +14,7 @@
     <ClCompile Include="wizard.cpp" />
     <ClCompile Include="fileimport.cpp" />
     <ClCompile Include="tileimport.cpp" />
+    <ClCompile Include="direction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

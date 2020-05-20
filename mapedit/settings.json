@@ -71,12 +71,12 @@
     }
   },
   "window":{
-    "x":105,
-    "y":117,
-    "width":910,
-    "height":476,
+    "x":249,
+    "y":140,
+    "width":784,
+    "height":506,
     "header_width":160,
-    "flags":48
+    "flags":112
   },
   "controls":{
     "tile_list":{

@@ -16,10 +16,18 @@ enum variant_s : unsigned char {
 	NoVariant,
 	Tileset,
 };
+enum direction_s : unsigned char {
+	Center,
+	Left, Up, Right, Down,
+};
 struct resourcei {
 	char				name[32];
 	map_type_s			type;
 	point				element;
+};
+struct directioni {
+	const char*			id;
+	const char*			name;
 };
 struct tileset : resourcei {
 	sprite*				data;
@@ -75,7 +83,10 @@ struct mapi : resourcei {
 struct tileimport {
 	char				source[260];
 	char				destination[260];
+	direction_s			base_x, base_y;
+	point				offset;
 	tileimport();
 	void				execute();
+	int					getcenter(int dimension, direction_s link, int value) const;
 };
 extern tileset*			current_tileset;
