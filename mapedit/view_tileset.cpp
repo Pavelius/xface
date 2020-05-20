@@ -1,5 +1,5 @@
-#include "main.h"
 #include "draw_control.h"
+#include "main.h"
 
 using namespace draw;
 
@@ -23,7 +23,9 @@ struct control_type : controls::picker, controls::control::plugin {
 	void row(const rect& rc, int index) override {
 		draw::state push; setclip(rc);
 		auto ps = selected->getsprite();
-		image(rc.x1, rc.y1, ps, index, 0);
+		auto x = rc.x1 + rc.width() / 2;
+		auto y = rc.y1 + rc.height() / 2;
+		image(x, y, ps, index, 0);
 		rect r1 = {rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1};
 		auto a = ishilite(r1);
 		if(index == current) {
@@ -45,8 +47,8 @@ struct control_type : controls::picker, controls::control::plugin {
 		pixels_per_column = ps->width;
 		if(pixels_per_line>128)
 			pixels_per_line = 128;
-		if(pixels_per_column > 128)
-			pixels_per_column = 128;
+		if(pixels_per_column > 196)
+			pixels_per_column = 196;
 	}
 	control_type() : plugin("tile_list", DockRight) {
 		show_grid_lines = false;
