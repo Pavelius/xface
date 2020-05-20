@@ -14,6 +14,19 @@ static sprite* create_sprite(unsigned count) {
 }
 
 static void close_sprite(sprite* p, const char* name, const strlib* strings = 0) {
+	if(!p->width) {
+		auto c = p->count;
+		for(auto i = 0; i < c; i++) {
+			auto& f = p->get(i);
+			auto rc = f.getrect(0, 0, 0);
+			auto w = rc.width();
+			auto h = rc.height();
+			if(p->width < w)
+				p->width = w;
+			if(p->height < h)
+				p->height = h;
+		}
+	}
 	char path[260]; stringbuilder sb(path);
 	sb.add("%2/%1.pma", name, tileset::base_url);
 	const pma* source[16];

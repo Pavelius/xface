@@ -228,6 +228,9 @@
     <ClCompile Include="szdup.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="draw_picker.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
