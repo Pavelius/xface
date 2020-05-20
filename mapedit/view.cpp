@@ -137,6 +137,11 @@ tileimport::tileimport() {
 
 static void testwizard() {
 	struct tileset_wizard : wizard, tileimport, fileimport {
+		strlib			strings;
+		struct file {
+			unsigned	id;
+		};
+		arem<file>		files;
 		static const char* getdirectionname(const void* object, char* result, const char* result_maximum) {
 			return ((directioni*)object)->name;
 		}

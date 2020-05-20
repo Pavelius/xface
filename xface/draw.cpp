@@ -2014,7 +2014,7 @@ const char* pma::getstring(int id) const {
 	auto p = getheader("STR");
 	if(!p || id > count)
 		return "";
-	return (char*)this + ((unsigned*)((char*)this + sizeof(*this)))[id];
+	return (char*)p + ((unsigned*)((char*)p + sizeof(*p)))[id];
 }
 
 int pma::find(const char* name) const {

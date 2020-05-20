@@ -2,6 +2,7 @@
 #include "draw.h"
 #include "draw_control.h"
 #include "io.h"
+#include "stringbuilder.h"
 
 using namespace draw;
 
@@ -76,7 +77,7 @@ void mainview(const char* url) {
 	setcaption(szfname(url));
 	int current = 0;
 	int tick = 0;
-	char temp[128];
+	char temp[512]; stringbuilder sb(temp);
 	bool animated_sprite = pi->cicles != 0;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::form);
@@ -115,13 +116,19 @@ void mainview(const char* url) {
 			line(x, y, x - sx, y, colors::red);
 			line(x, y, x, y - sy, colors::red);
 		}
-		szprint(temp, zendof(temp), "[%2i/%3i](%4i,%5i, size=%6ix%7i)", szfname(url), current, maximum, sx, sy, cx, cy);
+		sb.clear();
+		sb.add("[%2i/%3i](%4i,%5i, size=%6ix%7i)", szfname(url), current, maximum, sx, sy, cx, cy);
 		if(setting::show::center)
-			zcat(temp, " center");
+			sb.adds("center");
+		auto frame_name = pi->getstring(current);
+		if(frame_name && frame_name[0])
+			sb.addn(frame_name);
+		rect rc = {0, 0, getwidth(), getheight()};
+		rc.offset(metrics::padding);
 		if(setting::show::text::bottom)
-			text(4, draw::getheight() - draw::texth() - 4, temp);
+			text(rc, temp, AlignLeftBottom);
 		else
-			text(4, 4, temp);
+			text(rc, temp, AlignLeft);
 		domodal();
 		switch(hot.key) {
 		case KeyRight:
@@ -172,25 +179,30 @@ const char* sznext(const char* p) {
 
 static void correct_font() {
 	char furl[260];
-	char temp[260];
+	char modl[260];
 	if(metrics::font)
 		return;
-	if(!io::file::getmodule(temp, sizeof(temp) / sizeof(temp[0])))
+	if(!io::file::getmodule(modl, sizeof(modl) / sizeof(modl[0])))
 		return;
-	auto pc = (char*)szfname(temp);
-	if(pc > temp && pc[-1] == '/' || pc[-1] == '\\')
+	auto pc = (char*)szfname(modl);
+	if(pc > modl && pc[-1] == '/' || pc[-1] == '\\')
 		pc[-1] = 0;
 	else
 		pc[0] = 0;
-	szurl(furl, temp, "font", "pma");
-	metrics::font = (sprite*)loadb(furl);
-	if(!metrics::font) {
-		szurl(furl, temp, "art/font", "pma");
+	static const char* font_directories[] = {"", modl};
+	for(auto temp : font_directories) {
+		szurl(furl, temp, "font", "pma");
 		metrics::font = (sprite*)loadb(furl);
-	}
-	if(!metrics::font) {
-		szurl(furl, temp, "art/fonts/font", "pma");
-		metrics::font = (sprite*)loadb(furl);
+		if(!metrics::font) {
+			szurl(furl, temp, "art/font", "pma");
+			metrics::font = (sprite*)loadb(furl);
+		}
+		if(!metrics::font) {
+			szurl(furl, temp, "art/fonts/font", "pma");
+			metrics::font = (sprite*)loadb(furl);
+		}
+		if(metrics::font)
+			break;
 	}
 }
 

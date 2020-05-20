@@ -1,8 +1,10 @@
+#include "archive.h"
 #include "bsreq.h"
 #include "crt.h"
 #include "point.h"
 #include "setting.h"
 #include "stringbuilder.h"
+#include "strlib.h"
 #include "wizard.h"
 
 #pragma once

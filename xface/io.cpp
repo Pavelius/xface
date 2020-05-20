@@ -92,7 +92,7 @@ char* szurl(char* p, const char* path, const char* name, const char* ext, const 
 	if(!p)
 		return 0;
 	*p = 0;
-	if(path) {
+	if(path && path[0]) {
 		zcpy(p, path);
 		zcat(p, "/");
 	}
