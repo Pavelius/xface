@@ -26,18 +26,23 @@ struct resourcei {
 	char				name[32];
 	map_type_s			type;
 	point				element;
+	constexpr explicit operator bool() const { return name[0] != 0; }
 };
 struct directioni {
 	const char*			id;
 	const char*			name;
 };
-struct tileset : resourcei {
+class tileset : resourcei {
 	sprite*				data;
-	void				read();
+public:
 	tileset();
+	static tileset*		add(const char* id);
 	static const char*	base_url;
+	static const char*	getname(const void* object, char* buffer, const char* buffermax);
+	const sprite*		getsprite() { return data; }
 	static const char*	geturl(char* buffer, const char* name);
 	void				import();
+	void				read();
 };
 struct variant {
 	variant_s			type;
@@ -92,3 +97,4 @@ struct tileimport {
 	int					getcenter(int dimension, direction_s link, int value) const;
 };
 extern tileset*			current_tileset;
+void					logmsg(const char* format, ...);

@@ -143,6 +143,7 @@
     <ClCompile Include="tileset.cpp" />
     <ClCompile Include="variant.cpp" />
     <ClCompile Include="view.cpp" />
+    <ClCompile Include="view_tileset.cpp" />
     <ClCompile Include="wizard.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

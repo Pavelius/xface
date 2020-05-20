@@ -15,6 +15,7 @@
     <ClCompile Include="fileimport.cpp" />
     <ClCompile Include="tileimport.cpp" />
     <ClCompile Include="direction.cpp" />
+    <ClCompile Include="view_tileset.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

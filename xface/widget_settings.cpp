@@ -332,6 +332,7 @@ static struct widget_control_viewer : controls::tableref {
 		no_change_count = true;
 		addcol(type, "id", "Наименование").set(ColumnReadOnly);
 		addcol(type, "dock", "Расположение");
+		//addcol(type, "visible", "Видимость");
 		for(auto p = plugin::first; p; p = p->next)
 			addref(p);
 	}
@@ -550,7 +551,7 @@ static header setting_headers[] = {{"Рабочий стол", "Общие", "Метрика", appearan
 {"Рабочий стол", "Общие", "Внешний вид", appearance_general_view},
 {"Цвета", "Общие", 0, colors_general},
 {"Цвета", "Формы", 0, colors_form},
-{"Расширения", "Элементы", 0, plugin_elements},
+{"Рабочий стол", "Окна", 0, plugin_elements},
 };
 
 static struct application_plugin : draw::initplugin {

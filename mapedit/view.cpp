@@ -4,32 +4,8 @@
 
 static bool			show_grid;
 static int			grid_size;
-tileset*			current_tileset;
 
 using namespace draw;
-
-void logmsg(const char* format, ...);
-
-struct tileset_control_type : controls::list, controls::control::plugin {
-	control& getcontrol() override {
-		return *this;
-	}
-	const char*	getlabel(char* result, const char* result_maximum) const override {
-		return "Список тайлов";
-	}
-	static const char* getelementname(const void* p, char* result, const char* result_max) {
-		return ((tileset*)p)->name;
-	}
-	void view(const rect& rc) override {
-		rect r1 = rc;
-		r1.y1 += field(r1.x1, r1.y1, r1.width(), "Набор", current, 50,
-			bsdata<tileset>::source, getelementname, 0, 0, 0);
-		list::view(r1);
-	}
-	tileset_control_type() : plugin("tile_list", DockRight) {
-	}
-};
-static tileset_control_type tileset_control;
 
 struct map_control_type : controls::scrollable, mapi, controls::control::plugin {
 
@@ -205,9 +181,14 @@ static void testwizard() {
 }
 
 void directory_initialize();
+void update_tileset();
+
+static void heartbreak() {
+	update_tileset();
+}
 
 void run_main() {
 	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
-	directory_initialize();
-	draw::application("X-Map editor", false, 0, 0, keys);
+	logmsg("Старт системы");
+	draw::application("X-Map editor", false, 0, heartbreak, keys);
 }
