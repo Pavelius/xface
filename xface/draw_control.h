@@ -67,6 +67,7 @@ struct control {
 	struct plugin {
 		const char*			id;
 		dock_s				dock;
+		bool				visible;
 		plugin*				next;
 		static plugin*		first;
 		plugin(const char* id, dock_s dock);
@@ -137,6 +138,7 @@ struct list : control {
 	bool					show_grid_lines, show_selection, show_header;
 	bool					hilite_odd_lines, drop_shadow;
 	rect					current_rect, view_rect;
+	static int				current_hilite_row, current_hilite_column, current_hilite_treemark;
 	constexpr list() : origin(0), current(0), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
 		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true), drop_shadow(false),
@@ -144,7 +146,6 @@ struct list : control {
 	virtual void			collapse(int index) {}
 	void					correction();
 	void					correction_width();
-	static int				current_hilite_row, current_hilite_column, current_hilite_treemark;
 	virtual void			ensurevisible(); // Ånsure that current selected item was visible on screen if current 'count' is count of items per line
 	virtual void			expand(int index) {}
 	void					expandall(int max_level);

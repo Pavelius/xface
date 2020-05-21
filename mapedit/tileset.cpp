@@ -9,7 +9,7 @@ tileset::tileset() {
 	memset(this, 0, sizeof(*this));
 }
 
-void tileset::read() {
+const sprite* tileset::getsprite() {
 	if(!data) {
 		char temp[260]; stringbuilder sb(temp);
 		sb.add(base_url);
@@ -18,6 +18,7 @@ void tileset::read() {
 		sb.add(".pma");
 		data = (sprite*)loadb(temp);
 	}
+	return data;
 }
 
 const char*	tileset::getname(const void* object, char* buffer, const char* buffermax) {

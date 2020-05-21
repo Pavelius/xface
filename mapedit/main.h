@@ -23,8 +23,8 @@ enum direction_s : unsigned char {
 	Left, Up, Right, Down,
 };
 struct resourcei {
-	char				name[32];
 	map_type_s			type;
+	char				name[32];
 	point				element;
 	constexpr explicit operator bool() const { return name[0] != 0; }
 };
@@ -39,10 +39,9 @@ public:
 	static tileset*		add(const char* id);
 	static const char*	base_url;
 	static const char*	getname(const void* object, char* buffer, const char* buffermax);
-	const sprite*		getsprite() { return data; }
+	const sprite*		getsprite();
 	static const char*	geturl(char* buffer, const char* name);
 	void				import();
-	void				read();
 };
 struct variant {
 	variant_s			type;

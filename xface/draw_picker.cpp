@@ -3,6 +3,12 @@
 using namespace draw;
 using namespace draw::controls;
 
+static void choose_mouse() {
+	auto p = (picker*)hot.param;
+	if(p->ishilited() && p->current_hilite_row!=-1)
+		p->current = p->current_hilite_row;
+}
+
 void picker::view(const rect& rcorigin) {
 	view_rect = rcorigin;
 	rect rc = rcorigin;
@@ -16,7 +22,6 @@ void picker::view(const rect& rcorigin) {
 	elements_per_line = rc.width() / pixels_per_column;
 	if(!elements_per_line)
 		return;
-	//current_hilite = -1;
 	lines_per_page = getlinesperpage(rc.height());
 	correction();
 	auto maximum = getmaximum();
@@ -40,9 +45,9 @@ void picker::view(const rect& rcorigin) {
 			}
 			rect rc = {x, y, x + pixels_per_column, y + pixels_per_line};
 			if(ishilite(rc)) {
-				//current_hilite = i;
-				//if(hot.key == MouseLeft && hot.pressed)
-				//	execute(choose_mouse, (int)static_cast<picker*>(this));
+				current_hilite_row = i;
+				if(hot.key == MouseLeft && hot.pressed)
+					draw::execute(choose_mouse, (int)static_cast<picker*>(this));
 			}
 			if(show_grid_lines) {
 				rectb(rc, colors::border);

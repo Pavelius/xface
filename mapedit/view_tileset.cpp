@@ -41,7 +41,6 @@ struct control_type : controls::picker, controls::control::plugin {
 		picker::view(r1);
 	}
 	void update() {
-		selected->read();
 		auto ps = selected->getsprite();
 		pixels_per_line = ps->height;
 		pixels_per_column = ps->width;

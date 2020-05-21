@@ -218,7 +218,7 @@ static void standart_domodal() {
 }
 
 bool draw::ismodal() {
-	clearhilite();
+	hot.cursor = CursorArrow;
 	render_control = elements;
 	if(hot.mouse.x < 0 || hot.mouse.y < 0)
 		sys_static_area.clear();

@@ -254,6 +254,7 @@ NOINSTDATA(unsigned short)
 NOINSTDATA(char)
 NOINSTDATA(unsigned char)
 NOINSTDATA(const char*)
+NOINSTDATA(bool)
 NOINSTDATA(bsreq)
 // Abstract metadata class
 template<typename T> struct bsmeta {
@@ -265,6 +266,7 @@ template<> struct bsmeta<char> : bsmeta<int> {};
 template<> struct bsmeta<unsigned short> : bsmeta<int> {};
 template<> struct bsmeta<short> : bsmeta<int> {};
 template<> struct bsmeta<unsigned> : bsmeta<int> {};
+template<> struct bsmeta<bool> : bsmeta<int> {};
 // Get object presentation
 template<class T> const char* getstr(const T e) { return bsdata<T>::elements[e].name; }
 // Untility structures

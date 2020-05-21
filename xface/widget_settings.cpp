@@ -34,10 +34,7 @@ INSTDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_workspace", "На рабочем столе"}
 };
 assert_enum(dock, DockWorkspace);
-
-template<> const bsreq bsmeta<control::plugin>::meta[] = {BSREQ(id),
-BSREQ(dock),
-{}};
+INSTMETA(control::plugin) = {BSREQ(id), BSREQ(dock), BSREQ(visible), {}};
 
 struct streca {
 	const element*	e;
@@ -332,7 +329,7 @@ static struct widget_control_viewer : controls::tableref {
 		no_change_count = true;
 		addcol(type, "id", "Наименование").set(ColumnReadOnly);
 		addcol(type, "dock", "Расположение");
-		//addcol(type, "visible", "Видимость");
+		addcol(type, "visible", "Видимость", "checkbox");
 		for(auto p = plugin::first; p; p = p->next)
 			addref(p);
 	}
@@ -427,19 +424,15 @@ static struct widget_settings : controls::control {
 } widget_settings_control;
 
 static struct widget_application : draw::controls::control {
-
 	eventproc		heartproc;
 	control*		hotcontrols[48];
 	bool			allow_multiply_window;
-
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return szprint(result, result_maximum, "Главный");
 	}
-
 	const command* getcommands() const override {
 		return 0;
 	}
-
 	static int find(control** source, control* value) {
 		for(auto p = source; *p; p++) {
 			if(p[0] == value)
@@ -447,7 +440,6 @@ static struct widget_application : draw::controls::control {
 		}
 		return -1;
 	}
-
 	static void workspace(rect rc, bool allow_multiply_window) {
 		control* p1[64];
 		auto c1 = getdocked(p1, DockWorkspace);
@@ -559,8 +551,7 @@ static struct application_plugin : draw::initplugin {
 		control_viewer.initialize();
 	}
 	static void exit_application() {
-		point pos, size;
-		getwindowpos(pos, size, &window.flags);
+		point pos, size; getwindowpos(pos, size, &window.flags);
 		if((window.flags&WFMaximized) == 0) {
 			window.x = pos.x;
 			window.y = pos.y;
@@ -643,6 +634,16 @@ void draw::application(const char* name, bool allow_multiply_window, eventproc s
 	if(showproc)
 		showproc();
 	application(allow_multiply_window, heartproc, shortcuts);
+}
+
+static int getnum(const char* value) {
+	if(strcmp(value, "true") == 0)
+		return 1;
+	if(strcmp(value, "false") == 0)
+		return 0;
+	if(strcmp(value, "null") == 0)
+		return 0;
+	return sz2num(value);
 }
 
 static struct settings_settings_strategy : io::strategy {
@@ -731,15 +732,6 @@ static struct settings_settings_strategy : io::strategy {
 		}
 		return 0;
 	}
-	int getnum(const char* value) const {
-		if(strcmp(value, "true") == 0)
-			return 1;
-		if(strcmp(value, "false") == 0)
-			return 0;
-		if(strcmp(value, "null") == 0)
-			return 0;
-		return sz2num(value);
-	}
 	void set(io::reader::node& n, const char* value) override {
 		auto e = find(n);
 		if(!e)
@@ -775,17 +767,17 @@ static struct window_settings_strategy : io::strategy {
 	}
 	void set(io::reader::node& n, const char* value) override {
 		if(n == "x")
-			window.x = sz2num(value);
+			window.x = getnum(value);
 		else if(n == "y")
-			window.y = sz2num(value);
+			window.y = getnum(value);
 		else if(n == "width")
-			window.width = sz2num(value);
+			window.width = getnum(value);
 		else if(n == "height")
-			window.height = sz2num(value);
+			window.height = getnum(value);
 		else if(n == "header_width")
-			window.header_width = sz2num(value);
+			window.header_width = getnum(value);
 		else if(n == "flags")
-			window.flags = sz2num(value);
+			window.flags = getnum(value);
 	}
 	window_settings_strategy() : strategy("window", "settings") {}
 } window_settings_strategy_instance;
@@ -798,6 +790,7 @@ static struct controls_settings_strategy : io::strategy {
 				continue;
 			file.open(id);
 			file.set("Docking", pp->dock);
+			file.set("Visible", pp->visible);
 			file.close(id);
 		}
 	}
@@ -809,6 +802,8 @@ static struct controls_settings_strategy : io::strategy {
 			return;
 		else if(szcmpi(n.name, "Docking") == 0)
 			e->dock = (dock_s)sz2num(value);
+		else if(szcmpi(n.name, "Visible") == 0)
+			e->visible = getnum(value);
 	}
 	controls_settings_strategy() : strategy("controls", "settings") {}
 } controls_settings_strategy_instance;

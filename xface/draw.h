@@ -247,7 +247,6 @@ extern surface*			canvas;
 void					circle(int x, int y, int radius);
 void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
-void					clearhilite();
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
 extern eventproc		domodal;
@@ -275,7 +274,7 @@ inline bool				ischecked(unsigned flags) { return (flags&Checked) != 0; }
 inline bool				isdisabled(unsigned flags) { return (flags&Disabled) != 0; }
 bool					isfocused();
 inline bool				isfocused(unsigned flags) { return (flags&Focused) != 0; }
-bool					ishilite(const rect& rc, int param = -1, const char* type = 0);
+bool					ishilite(const rect& rc);
 bool					ismodal();
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha = 0xFF);
 void					image(int x, int y, const sprite* e, int id, int flags, unsigned char alpha, color* pal);

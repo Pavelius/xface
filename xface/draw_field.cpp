@@ -349,7 +349,10 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	auto v = av.get();
 	if(av.getsize() != sizeof(void*))
 		v = (int)source.ptr(v);
-	char temp[261]; auto pn = getname((void*)v, temp, temp + sizeof(temp) - 1);
+	char temp[261];
+	auto pn = "Отсутствует";
+	if(v)
+		pn = getname((void*)v, temp, temp + sizeof(temp) - 1);
 	if(pn)
 		textc(rco.x1, rco.y1, rco.width(), pn);
 	if(tips && a && !hot.pressed)

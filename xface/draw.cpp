@@ -48,9 +48,6 @@ draw::surface*		draw::canvas = &default_surface;
 static bool			line_antialiasing = true;
 // Drag
 static const void*	drag_object;
-static const char*	hilite_type;
-static rect			hilite_rect;
-static int			hilite_param;
 point				draw::dragmouse;
 // Metrics
 rect				metrics::edit = {4, 4, -4, -4};
@@ -1395,7 +1392,7 @@ static void intersect_rect(rect& r1, const rect& r2) {
 	}
 }
 
-bool draw::ishilite(const rect& rc, int param, const char* type) {
+bool draw::ishilite(const rect& rc) {
 	if(sys_optimize_mouse_move)
 		intersect_rect(sys_static_area, rc);
 	if(dragactive())
@@ -1404,13 +1401,8 @@ bool draw::ishilite(const rect& rc, int param, const char* type) {
 		return false;
 	if(!mouseinput)
 		return false;
-	if(hot.mouse.in(rc)) {
-		if(param != -1) {
-			hilite_type = type;
-			hilite_param = param;
-		}
+	if(hot.mouse.in(rc))
 		return true;
-	}
 	return false;
 }
 
@@ -2201,11 +2193,4 @@ bool draw::execute(const shortcut* pf) {
 		}
 	}
 	return false;
-}
-
-void draw::clearhilite() {
-	hot.cursor = CursorArrow;
-	hilite_param = -1;
-	hilite_type = 0;
-	hilite_rect.clear();
 }
