@@ -38,6 +38,7 @@ public:
 	tileset();
 	static tileset*		add(const char* id);
 	static const char*	base_url;
+	const char*			getname() { return name; }
 	static const char*	getname(const void* object, char* buffer, const char* buffermax);
 	const sprite*		getsprite();
 	static const char*	geturl(char* buffer, const char* name);
@@ -63,23 +64,6 @@ struct object : point {
 	short unsigned		flags;
 	explicit operator bool() const { return kind.operator bool(); }
 	void				draw(point camera) const;
-};
-struct answer : stringbuilder {
-	struct element {
-		int				param;
-		const char*		text;
-		const char*		getname() const { return text; }
-	};
-	typedef void(*tips_proc)(stringbuilder& sb, const element& e);
-	adat<element, 8>	elements;
-	explicit operator bool() const { return elements.count != 0; }
-	answer();
-	void				add(int param, const char* format, ...);
-	void				addv(int param, int priority, const char* format, const char* format_param);
-	int					choosev(bool cancel_button, tips_proc tips, const char* format) const;
-	void				sort();
-private:
-	char				buffer[4096];
 };
 struct mapi : resourcei {
 	point				size;

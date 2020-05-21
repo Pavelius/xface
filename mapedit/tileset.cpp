@@ -17,12 +17,16 @@ const sprite* tileset::getsprite() {
 		sb.add(name);
 		sb.add(".pma");
 		data = (sprite*)loadb(temp);
+		if(data) {
+			element.x = data->width;
+			element.y = data->height;
+		}
 	}
 	return data;
 }
 
 const char*	tileset::getname(const void* object, char* buffer, const char* buffermax) {
-	return ((tileset*)object)->name;
+	return ((tileset*)object)->getname();
 }
 
 const char*	tileset::geturl(char* buffer, const char* name) {
