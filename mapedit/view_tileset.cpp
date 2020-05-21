@@ -1,4 +1,5 @@
 #include "draw_control.h"
+#include "io.h"
 #include "main.h"
 
 using namespace draw;
@@ -78,10 +79,38 @@ void add_tileset() {
 		const char*		name;
 	};
 	struct view : wizard {
-		tilesetview		presentation;
-		arem<spritei>	sprites;
+		arem<spritei>		sprites;
+		tilesetview			main;
+		controls::table		list;
+		void readsprites() {
+			sprites.clear();
+			for(io::file::find f(tileset::base_url); f; f.next()) {
+				auto pn = f.name();
+				if(pn[0] == '.')
+					continue;
+				auto p = sprites.add();
+				memset(p, 0, sizeof(*p));
+				char temp[260]; szfnamewe(temp, f.name());
+				p->name = szdup(temp);
+			}
+		}
+		bool mainpage(const rect& rc, command_s id) {
+			if(id == Draw) {
+				auto x1 = rc.x2 - 200;
+				list.view({x1, rc.y1, rc.x2, rc.y2});
+				main.view({rc.x1, rc.y1, x1 - metrics::padding, rc.y2});
+			}
+			return true;
+		}
 		const element* getelements() const override {
-			return 0;
+			static element elements[] = {
+				{"¬ правом окне выбирайте набор спрайтов. ¬ левом окне работает предварительный просмотр.", &view::mainpage},
+				{}};
+			return elements;
+		}
+		view() {
+			list.show_header = false;
+			readsprites();
 		}
 	};
 	view object;

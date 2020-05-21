@@ -91,7 +91,9 @@ void wizard::show(const char* title) {
 			r2.y1 += text(r2, pc->title, AlignLeft) + metrics::padding;
 		if(pc->proc.call) {
 			rect r1 = r2;
-			r1.offset(metrics::padding * 2);
+			r1.y1 += metrics::padding * 2;
+			r1.y2 -= metrics::padding * 2;
+			r1.y2 -= bottom_height - 1;
 			(this->*pc->proc.call)(r1, Draw);
 		}
 		if(true) {

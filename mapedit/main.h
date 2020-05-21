@@ -79,5 +79,6 @@ struct tileimport {
 	void				execute();
 	int					getcenter(int dimension, direction_s link, int value) const;
 };
+void					add_tileset();
 extern tileset*			current_tileset;
 void					logmsg(const char* format, ...);

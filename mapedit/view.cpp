@@ -188,7 +188,9 @@ static void heartbreak() {
 }
 
 void run_main() {
-	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", F1}};
+	static shortcut keys[] = {{testwizard, "Тестирование мастера ввода", Ctrl + Alpha + '1'},
+	{add_tileset, "Тестирование добавление спрайтов", Ctrl + Alpha + '2'},
+	{}};
 	logmsg("Старт системы");
 	draw::application("X-Map editor", false, 0, heartbreak, keys);
 }

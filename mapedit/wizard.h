@@ -10,6 +10,7 @@ struct wizard {
 	struct proct {
 		typedef bool (wizard::*callp)(const rect& rc, command_s id);
 		callp		call;
+		proct() : call(0) {}
 		template<class T> proct(bool (T::*v)(const rect& rc, command_s id)) : call((callp)v) {}
 	};
 	struct element {
