@@ -197,27 +197,12 @@ public:
 };
 // Abstract array vector
 class array {
-	void*					data;
 	unsigned				size;
-	unsigned				count;
 	unsigned				count_maximum;
 	bool					growable;
 public:
-	template<class T> class dataset {
-		array&				source;
-	public:
-		constexpr dataset(array& e) : source(e) {}
-		~dataset() { destruct(); }
-		T*					add() { return (T*)source.add(); }
-		const T*			begin() const { return (T*)source.data; }
-		T*					begin() { return (T*)source.data; }
-		void				clear() { return source.clear(); }
-		void				destruct() { for(auto& e : *this) e.~T(); }
-		const T*			end() const { return (T*)source.data + source.count; }
-		T*					end() { return (T*)source.data + source.count; }
-		array&				getsource() { return source; }
-		T*					ptr(int index) const { return (T*)source.data + index; }
-	};
+	void*					data;
+	unsigned				count;
 	constexpr array() : data(0), size(0), count(0), count_maximum(0), growable(true) {}
 	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0), growable(true) {}
 	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0), growable(false) {}
@@ -244,6 +229,16 @@ public:
 	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);
 	void					swap(int i1, int i2);
 	void					reserve(unsigned count);
+};
+template<class T> struct vector : public array {
+	constexpr vector() : array(sizeof(T)) {}
+	~vector() { for(auto& e : *this) e.~T(); }
+	T*						add() { return (T*)array::add(); }
+	const T*				begin() const { return (T*)data; }
+	T*						begin() { return (T*)data; }
+	const T*				end() const { return (T*)data + count; }
+	T*						end() { return (T*)data + count; }
+	T*						ptr(int index) const { return (T*)data + index; }
 };
 struct bsreq;
 // Abstract data source descriptor

@@ -105,8 +105,7 @@ INSTMETA(spritei) = {BSREQ(name),
 
 void add_tileset() {
 	class view : public wizard {
-		array					sprites_data;
-		array::dataset<spritei>	sprites;
+		vector<spritei>			sprites;
 		tilesetview				preview;
 		controls::tableview		list;
 		void readsprites() {
@@ -143,7 +142,7 @@ void add_tileset() {
 			return elements;
 		}
 	public:
-		view() : sprites_data(sizeof(spritei)), sprites(sprites_data), list(sprites_data) {
+		view() : list(sprites) {
 			list.show_header = false;
 			list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
 			readsprites();
