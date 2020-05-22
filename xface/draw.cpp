@@ -2036,22 +2036,6 @@ int sprite::ganim(int index, int tick) {
 	return gindex(c->start + tick % c->count);
 }
 
-point sprite::getminsize() const {
-	auto c = count;
-	point result = {};
-	for(auto i = 0; i < c; i++) {
-		auto& f = get(i);
-		auto rc = f.getrect(0, 0, 0);
-		auto w = rc.width();
-		auto h = rc.height();
-		if(result.x < w)
-			result.x = w;
-		if(result.y < h)
-			result.y = h;
-	}
-	return result;
-}
-
 int sprite::glyph(unsigned sym) const {
 	// First interval (latin plus number plus ASCII)
 	unsigned* pi = (unsigned*)edata();

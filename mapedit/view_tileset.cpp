@@ -4,6 +4,8 @@
 
 using namespace draw;
 
+rect sprite_get_border_rect(const sprite* ps);
+
 namespace {
 class tilesetview : public controls::picker {
 	const sprite* selected;
@@ -36,16 +38,16 @@ public:
 		if(v) {
 			pixels_per_line = selected->height;
 			pixels_per_column = selected->width;
+			auto rc = sprite_get_border_rect(selected);
+			rc.offset(-2);
+			if(pixels_per_line <= rc.height())
+				pixels_per_line = rc.height();
+			if(pixels_per_column <= rc.width())
+				pixels_per_column = rc.width();
 			if(pixels_per_line > 128)
 				pixels_per_line = 128;
 			if(pixels_per_column > 196)
 				pixels_per_column = 196;
-			auto minimal = selected->getminsize();
-			minimal.x += 2; minimal.y += 2;
-			if(pixels_per_line <= minimal.y)
-				pixels_per_line = minimal.y;
-			if(pixels_per_column <= minimal.x)
-				pixels_per_column = minimal.x;
 		}
 	}
 	tilesetview() :selected(0) {
@@ -82,25 +84,35 @@ void update_tileset() {
 	object.set(current_tileset);
 }
 
-struct spritei {
+struct spritei : sprite {
 	const char*		name;
 	const sprite*	data;
 	bool			error_sprite;
+	const char* getfilename(char* buffer) const {
+		return tileset::geturl(buffer, name);
+	}
 	const sprite* getsprite() {
 		if(!data && !error_sprite) {
 			char temp[260];
-			data = (sprite*)loadb(tileset::geturl(temp, name));
+			data = (sprite*)loadb(getfilename(temp));
 			if(!data)
 				error_sprite = true;
 		}
 		return data;
+	}
+	void readheader() {
+		char temp[260];
+		io::file file(getfilename(temp), StreamRead);
+		if(!file)
+			return;
+		file.read(static_cast<sprite*>(this), sizeof(sprite));
 	}
 	~spritei() {
 		if(data)
 			delete data;
 	}
 };
-INSTMETA(spritei) = {BSREQ(name),
+INSTMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
 {}};
 
 void add_tileset() {
@@ -118,6 +130,7 @@ void add_tileset() {
 				memset(p, 0, sizeof(*p));
 				char temp[260]; szfnamewe(temp, f.name());
 				p->name = szdup(temp);
+				p->readheader();
 			}
 		}
 		const sprite* getcurrentsprite() const {
@@ -130,8 +143,8 @@ void add_tileset() {
 			if(id == Draw) {
 				auto x1 = rc.x2 - 200;
 				preview.set(getcurrentsprite());
-				list.view({x1, rc.y1, rc.x2, rc.y2});
-				preview.view({rc.x1, rc.y1, x1 - metrics::padding, rc.y2});
+				preview.view({x1, rc.y1, rc.x2, rc.y2});
+				list.view({rc.x1, rc.y1, x1 - metrics::padding, rc.y2});
 			}
 			return true;
 		}
@@ -143,8 +156,11 @@ void add_tileset() {
 		}
 	public:
 		view() : list(sprites) {
-			list.show_header = false;
+			//list.show_header = false;
+			list.read_only = true;
 			list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
+			list.addcol(bsmeta<spritei>::meta, "count", "Спрайтов");
+			list.addcol(bsmeta<spritei>::meta, "size", "Размер");
 			readsprites();
 		}
 	};
