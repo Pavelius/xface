@@ -203,6 +203,21 @@ class array {
 	unsigned				count_maximum;
 	bool					growable;
 public:
+	template<class T> class dataset {
+		array&				source;
+	public:
+		constexpr dataset(array& e) : source(e) {}
+		~dataset() { destruct(); }
+		T*					add() { return (T*)source.add(); }
+		const T*			begin() const { return (T*)source.data; }
+		T*					begin() { return (T*)source.data; }
+		void				clear() { return source.clear(); }
+		void				destruct() { for(auto& e : *this) e.~T(); }
+		const T*			end() const { return (T*)source.data + source.count; }
+		T*					end() { return (T*)source.data + source.count; }
+		array&				getsource() { return source; }
+		T*					ptr(int index) const { return (T*)source.data + index; }
+	};
 	constexpr array() : data(0), size(0), count(0), count_maximum(0), growable(true) {}
 	constexpr array(unsigned size) : data(0), size(size), count(0), count_maximum(0), growable(true) {}
 	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0), growable(false) {}

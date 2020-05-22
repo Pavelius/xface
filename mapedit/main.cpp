@@ -5,7 +5,6 @@ tileset*			current_tileset;
 void run_main();
 
 int main() {
-	tileset::add("test");
 	run_main();
 }
 

@@ -268,6 +268,7 @@ struct table : list {
 	virtual void*			get(int index) const { return 0; }
 	virtual int				getcolumn() const override { return current_column; }
 	const command*			getcommands() const override { return commands; }
+	void*					getcurrent() const;
 	static const char*		getenumname(const void* object, char* result, const char* result_maximum);
 	static const char*		getenumid(const void* object, char* result, const char* result_maximum);
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
@@ -310,6 +311,15 @@ struct tableref : table, private array {
 	void					remove(int index) override { array::remove(index, 1); }
 	void					swap(int i1, int i2) override { array::swap(i1, i2); }
 	void					sort(int column, bool ascending) { table::sort(column, ascending); }
+};
+struct tableview : table {
+	array&					source;
+	constexpr tableview(array& source) : source(source) {}
+	void*					addrow() override { return source.add(); }
+	void*					get(int index) const override { return source.ptr(index); }
+	int						getmaximum() const { return source.getcount(); }
+	void					remove(int index) override { return source.remove(index, 1); }
+	void					swap(int i1, int i2) { source.swap(i1, i2); }
 };
 struct tree : table, private array {
 	struct element {

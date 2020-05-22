@@ -106,6 +106,7 @@ struct sprite : pma {
 	inline int			gindex(int index) const { return *((short unsigned*)((cicle*)ptr(cicles_offset) + cicles) + index); }
 	int					glyph(unsigned sym) const;
 	const unsigned char* ptr(unsigned o) const { return (unsigned char*)this + o; }
+	point				getminsize() const;
 };
 namespace colors {
 extern color			active;

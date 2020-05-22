@@ -148,6 +148,12 @@ void table::select(int index, int column) {
 	list::select(index, column);
 }
 
+void* table::getcurrent() const {
+	if(current >= getmaximum())
+		return 0;
+	return get(current);
+}
+
 static void proc_mouseselect() {
 	auto p = (table*)draw::hot.param;
 	auto i = p->getvalid(list::current_hilite_column);
