@@ -30,6 +30,7 @@ struct contexti {
 	void*				object;
 	const bsreq*		type;
 	bool				show_missed_requisit;
+	controls::form*		form;
 	contexti() { memset(this, 0, sizeof(*this)); }
 	bool isallow(const markup& e, int index) const {
 		if(e.proc.isallow) {
@@ -82,7 +83,7 @@ static int close_group(int x, int y, const rect& rc, const char* title) {
 
 static int element(int x, int y, int width, contexti& ctx, const markup& e);
 
-static int group_vertial(int x, int y, int width, contexti& ctx_original, const markup* elements) {
+static int group_vertial(int x, int y, int width, const contexti& ctx_original, const markup* elements) {
 	if(!elements)
 		return 0;
 	auto y0 = y;
@@ -92,18 +93,19 @@ static int group_vertial(int x, int y, int width, contexti& ctx_original, const 
 	return y - y0;
 }
 
-static int group_horizontal(int x, int y, int width, contexti& ctx_original, const markup* elements) {
+static int group_horizontal(int x, int y, int width, const contexti& ctx_original, const markup* elements) {
 	if(!elements)
 		return 0;
 	auto ym = 0;
 	auto wi = width / 12;
 	auto wp = 0;
 	auto ctx = ctx_original;
+	auto x2 = x + width;
 	for(auto p = elements; *p; p++) {
 		auto x1 = x + wp * wi;
 		auto we = p->width*wi;
-		if(x1 + we > width - 12)
-			we = width - x1;
+		if(x1 + we > x2 - 12)
+			we = x2 - x1;
 		auto yc = element(x, y, we, ctx, *p);
 		if(ym < yc)
 			ym = yc;
@@ -285,6 +287,28 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 				auto av = anyval(req->ptr(ctx.object), size, i);
 				y += radio(x, y, width, av, p, 0) + 2;
 			}
+		} else if(strcmp(pn, "tabs") == 0 && req->is(KindNumber)) {
+			if(!e.value.child)
+				return 0;
+			const markup* pages[32];
+			auto pb = pages;
+			auto pe = pages + sizeof(pages)/ sizeof(pages[0]);
+			for(auto p = e.value.child; *p; p++) {
+				if(p->proc.isvisible && !p->proc.isvisible(ctx.object, 0))
+					continue;
+				if(pb<pe)
+					*pb++ = p;
+			}
+			auto count = pb - pages;
+			if(!count)
+				return 0;
+			auto av = anyval(req->ptr(ctx.object, e.value.index), req->size, 0);
+			auto active = av.get();
+			int result_active;
+			rect rc = {x, y, x + width, y + texth() + 4 * 2};
+			auto result = tabs(rc, false, false, (void**)pages, 0, count, active, &result_active, markup::getname, {});
+			y += rc.height();
+			element(x, y, width, ctx, *pages[active]);
 		} else {
 			if(!req->is(KindNumber))
 				return error(x, y, width, ctx, e, req->id);
@@ -292,7 +316,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			if(!pb)
 				return error(x, y, width, ctx, e, pn);
 			auto count = pb->getcount();
-			if(count)
+			if(!count)
 				return 0;
 			if(count > req->count)
 				count = req->count;
@@ -307,14 +331,19 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 	} else if(e.value.id) {
 		auto req = getvalue(ctx, e);
 		if(!req) {
-			auto pc = getcontrol(ctx, e);
-			if(pc) {
-				auto splitter = pc->splitter;
-				if(!splitter)
-					splitter = 100;
-				rect rc = {x, y, x + width, y + splitter};
-				pc->view(rc);
-				return rc.height();
+			if(ctx.form) {
+				auto pc = ctx.form->getcontrol(e.value.id);
+				if(pc) {
+					auto splitter = pc->splitter;
+					if(!splitter)
+						splitter = 100;
+					setposition(x, y, width);
+					if(pc->show_toolbar)
+						y += pc->toolbar(x, y, width);
+					rect rc = {x, y, x + width, y + splitter};
+					pc->view(rc);
+					return rc.height();
+				}
 			}
 			if(ctx.show_missed_requisit)
 				return error(x, y, width, ctx, e, "Не найден реквизит");
@@ -354,13 +383,14 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		return 0;
 }
 
-int draw::field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width) {
+int draw::field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width, controls::form* form) {
 	if(!elements)
 		return 0;
 	contexti ctx;
 	ctx.title = title_width;
 	ctx.object = object;
 	ctx.type = type;
+	ctx.form = form;
 	ctx.show_missed_requisit = true;
 	if(elements->width)
 		return group_horizontal(x, y, width, ctx, elements);

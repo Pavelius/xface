@@ -20,6 +20,16 @@ const markup* markup::find(const char* id, const void* object, int result, bool 
 	return 0;
 }
 
+int	markup::getcount() const {
+	if(!this)
+		return 0;
+	auto result = 0;
+	for(auto p = this; *p; p++) {
+		result++;
+	}
+	return result;
+}
+
 int	markup::getcount(const char* id, const void* object, bool need_child) const {
 	if(!this)
 		return 0;

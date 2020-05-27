@@ -235,19 +235,46 @@ void apply_element(element* object) {
 	object->age = 12;
 }
 
+struct markupform : controls::form {
+	element				s1;
+	element				s2;
+	int					tabs;
+	vector<rowelement>	v1rows;
+	controls::tableview	v1;
+	markupform() : s1(), s2(), v1rows(), v1(v1rows), tabs(0) {
+		v1.show_header = false;
+		v1.show_toolbar = true;
+		v1.splitter = 200;
+	}
+	controls::control* getcontrol(const char* id) override {
+		if(strcmp(id, "v1") == 0)
+			return &v1;
+		return 0;
+	}
+};
+INSTMETA(markupform) = {BSREQ(s1), BSREQ(s2), BSREQ(tabs),
+{}};
+
 static void test_markup() {
-	element s1 = {};
-	element s2 = {};
+	markupform source;
 	static markup elements_left[] = {{0, "Имя", {"name"}},
 	{0, "Фамилия", {"surname"}},
 	{0, "Возраст", {"age"}},
+	{0, "Тест", {"test"}},
 	{0, "Принять", {}, 0, {}, apply_element},
+	{}};
+	static markup header[] = {{6, 0, {"s1", 0, elements_left}},
+	{6, 0, {"s2", 0, elements_left}},
+	{}};
+	static markup tabs_controls[] = {{0, "Таблица", {"v1"}},
+	{}};
+	static markup elements[] = {{0, 0, {0, 0, header}},
+	{0, "#tabs", {"tabs", 0, tabs_controls}},
 	{}};
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
-		field(10, 10, 300, elements_left, bsmeta<element>::meta, &s1);
-		field(300+10, 10, 300, elements_left, bsmeta<element>::meta, &s2);
+		field(10, 10, getwidth() - 20, elements, bsmeta<markupform>::meta, &source, 80, &source);
 		domodal();
 	}
 }
