@@ -51,52 +51,6 @@ static const char* getpresent(const void* p, const bsreq* type) {
 	return (const char*)pf->get(pf->ptr(p));
 }
 
-//static void choose_enum() {
-//	struct enum_view : controls::list, adat<int, 512> {
-//		const array&	source;
-//		markup::proci	proc;
-//		markup::propi	prop;
-//		const bsreq*	meta;
-//		const char*	getname(char* result, const char* result_max, int line, int column) const {
-//			if(prop.getname)
-//				return prop.getname(source.ptr(data[line]), result, result_max, 0);
-//			switch(column) {
-//			case 0: return getpresent(source.ptr(data[line]), meta);
-//			}
-//			return "";
-//		}
-//		int getmaximum() const override { return count; }
-//		int getcurrent() const {
-//			if(!count)
-//				return 0;
-//			return data[current];
-//		}
-//		constexpr enum_view(const bsreq* meta, const array& source) : source(source), proc(), meta(meta) {}
-//	};
-//	enum_view ev(command.meta, *command.data);
-//	ev.hilite_odd_lines = false;
-//	ev.proc = command.proc;
-//	auto i1 = 0;
-//	auto i2 = command.data->getcount() - 1;
-//	for(unsigned i = i1; i <= i2; i++) {
-//		if(command.proc.isallow) {
-//			if(!command.proc.isallow(command.object, i))
-//				continue;
-//		}
-//		ev.add(i);
-//	}
-//	auto mc = imin(12, ev.getmaximum());
-//	auto rc = command.rc;
-//	auto ci = ev.indexof(command.value.get());
-//	if(ci != -1)
-//		ev.current = ci;
-//	rc.y1 = rc.y2;
-//	rc.y2 = rc.y1 + ev.getrowheight() * mc + 1;
-//	rectf(rc, colors::form);
-//	if(dropdown(rc, ev))
-//		command.value.set(ev.getcurrent());
-//}
-
 static const bsreq* getvalue(contexti& ctx, const markup& e) {
 	return ctx.type->find(e.value.id);
 }
@@ -184,42 +138,6 @@ static int error(int x, int y, int width, contexti& ctx, const markup& e, const 
 	return rc.height() + metrics::padding * 2;
 }
 
-//void field_enum(const rect& rc, unsigned flags, const anyval& ev, const array* meta_type, const void* object, const markup::proci* pri, const markup::propi* ppi) {
-//	auto pb = bsdata::find(meta_type);
-//	if(!pb)
-//		return;
-//	char temp[128];
-//	auto focused = isfocused(flags);
-//	auto result = focused && (hot.key == KeyEnter || hot.key == F2);
-//	if(buttonh(rc, false, focused, false, true, 0, 0, false, 0))
-//		result = true;
-//	auto pn = "";
-//	auto pv = pb->get(ev.get());
-//	if(ppi && ppi->getname)
-//		pn = ppi->getname(pv, temp, zendof(temp), meta_type);
-//	else
-//		pn = getpresent(pb->get(ev.get()), pb->meta);
-//	textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 4 * 2, pn);
-//	if(focused)
-//		rectx({rc.x1 + 2, rc.y1 + 2, rc.x2 - 2, rc.y2 - 2}, colors::border);
-//	if(result) {
-//		command.clear();
-//		command.rc = rc;
-//		command.value = ev;
-//		command.data = pb;
-//		command.object = (void*)object;
-//		if(pri) {
-//			//if(pri->command) {
-//			//	cmd(pri->command, (void*)pv).execute();
-//			//	return;
-//			//}
-//			command.proc = *pri;
-//			command.prop = *ppi;
-//		}
-//		execute(choose_enum);
-//	}
-//}
-
 static int field_main(int x, int y, int width, contexti& ctx, const char* title_text, void* pv, const bsreq* type, int param, const markup* child, const markup::proci* pri, const markup::propi* ppi) {
 	auto xe = x + width;
 	auto y0 = y;
@@ -233,12 +151,10 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	if(draw::isfocused(rc, av))
 		flags |= Focused;
 	if(type->is(KindText))
-		draw::field(rc, flags, av, -1, false, true, 0);
+		fieldf(rc, flags, av, -1, false, true, 0);
 	else if(type->is(KindEnum) || (type->is(KindNumber) && type->source)) {
-		//auto hint = type->type;
-		//if(type->hint_type)
-		//	hint = type->hint_type;
-		//field_enum(rc, flags, av, hint, ctx.source.data, pri, ppi);
+		if(type->source)
+			fieldc(rc, av, *type->source, ppi->getname, 0, ctx.object, pri->isallow);
 	} else if(type->is(KindNumber)) {
 		auto d = param;
 		if(!d)
@@ -248,7 +164,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 			auto we = wn * (d + 1) + (draw::texth() + 8) + 4 * 2;
 			rc.x2 = rc.x1 + we;
 		}
-		draw::field(rc, flags, av, d, true, false, 0);
+		fieldf(rc, flags, av, d, true, false, 0);
 		if(ctx.right)
 			*ctx.right = rc.x2;
 		if(child) {

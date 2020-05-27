@@ -505,7 +505,7 @@ void table::changeref(const rect& rc, int line, int column) {
 		return;
 	auto p = get(line);
 	const anyval av((char*)p + columns[column].type->offset, columns[column].type->size, 0);
-	field(rc, av, *columns[column].source, getenumname, true);
+	fieldm(rc, av, *columns[column].source, getenumname, true, 0, 0);
 }
 
 void table::changecheck(const rect& rc, int line, int column) {

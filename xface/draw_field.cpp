@@ -120,7 +120,7 @@ static void field_down() {
 	cedit.invalidate();
 }
 
-void draw::field(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose pchoose) {
+void draw::fieldf(const rect& rco, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose pchoose) {
 	if(rco.width() <= 0)
 		return;
 	rect rc = rco;
@@ -170,7 +170,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	unsigned flags = AlignRight;
 	if(isfocused(rc, ev))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, ev, digits, true, false, 0);
+	fieldf(rc, flags | TextSingleLine, ev, digits, true, false, 0);
 	return rc.height() + metrics::padding * 2;
 }
 
@@ -185,7 +185,7 @@ int draw::field(int x, int y, int width, const char* header_label, char* sev, un
 	av.setvalue(sev, size);
 	if(isfocused(rc, av))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, av, -1, false, true, choosep);
+	fieldf(rc, flags | TextSingleLine, av, -1, false, true, choosep);
 	return rc.height() + metrics::padding * 2;
 }
 
@@ -199,7 +199,7 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	anyval av = sev;
 	if(isfocused(rc, av))
 		flags |= Focused;
-	field(rc, flags | TextSingleLine, av, -1, false, true, choosep);
+	fieldf(rc, flags | TextSingleLine, av, -1, false, true, choosep);
 	return rc.height() + metrics::padding * 2;
 }
 
@@ -300,7 +300,7 @@ static void show_combolist() {
 	}
 }
 
-void draw::field(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow) {
+void draw::fieldm(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow) {
 	cmb_var = av;
 	cmb_rect = rc;
 	cmb_source = source;
@@ -313,16 +313,9 @@ void draw::field(const rect& rc, const anyval& av, const array& source, fntext g
 		execute(show_combolist);
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips, const void* param, fnallow allow) {
-	draw::state push;
-	if(header_label && header_label[0]) {
-		setposition(x, y, width);
-		decortext(0);
-		titletext(x, y, width, 0, header_label, header_width);
-	}
-	rect rc = {x, y, x + width, y + draw::texth() + 8};
+void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext getname, const char* tips, const void* param, fnallow allow) {
 	if(rc.width() <= 0)
-		return rc.height() + metrics::padding * 2;
+		return;
 	auto focused = isfocused(rc, av);
 	auto a = ishilite(rc);
 	color active = colors::button.mix(colors::edit, 128);
@@ -338,10 +331,10 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	auto execute_drop_down = false;
 	if(a && hot.key == MouseLeft && !hot.pressed)
 		execute_drop_down = true;
-	if(focused && hot.key==KeyEnter)
+	if(focused && hot.key == KeyEnter)
 		execute_drop_down = true;
 	if(execute_drop_down)
-		field(rc, av, source, getname, false, param, allow);
+		fieldm(rc, av, source, getname, false, param, allow);
 	rco.offset(2, 2);
 	if(focused)
 		rectx(rco, colors::black);
@@ -357,5 +350,18 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 		textc(rco.x1, rco.y1, rco.width(), pn);
 	if(tips && a && !hot.pressed)
 		tooltips(tips);
+}
+
+int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips, const void* param, fnallow allow) {
+	draw::state push;
+	if(header_label && header_label[0]) {
+		setposition(x, y, width);
+		decortext(0);
+		titletext(x, y, width, 0, header_label, header_width);
+	}
+	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	if(rc.width() <= 0)
+		return rc.height() + metrics::padding * 2;
+	fieldc(rc, av, source, getname, tips, param, allow);
 	return rc.height() + metrics::padding * 2;
 }
