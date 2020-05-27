@@ -103,9 +103,10 @@ struct control {
 	bool					show_border;
 	bool					show_background;
 	bool					show_toolbar;
+	int						splitter;
 	static const sprite*	standart_toolbar;
 	static const sprite*	standart_tree;
-	constexpr control() : show_border(true), show_background(true), show_toolbar(true) {}
+	constexpr control() : show_border(true), show_background(true), show_toolbar(true), splitter(100) {}
 	virtual ~control() {}
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);

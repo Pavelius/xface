@@ -16,6 +16,7 @@ struct commandi {
 	const bsreq*		meta;
 	markup::proci		proc;
 	markup::propi		prop;
+	markup::cmdi		prod;
 	rect				rc;
 	anyval				value;
 	void clear() { memset(this, 0, sizeof(commandi)); }
@@ -53,6 +54,10 @@ static const char* getpresent(const void* p, const bsreq* type) {
 
 static const bsreq* getvalue(contexti& ctx, const markup& e) {
 	return ctx.type->find(e.value.id);
+}
+
+static controls::control* getcontrol(contexti& ctx, const markup& e) {
+	return 0;
 }
 
 static rect start_group(int& x, int& y, int& width) {
@@ -178,6 +183,10 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	return rc.height() + metrics::padding*2;
 }
 
+static void execute_command() {
+	command.prod.execute(command.object);
+}
+
 static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 	if(e.proc.isvisible && !e.proc.isvisible(ctx.object, e.value.index))
 		return 0;
@@ -201,12 +210,21 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		}
 		return e.proc.custom(x, y, width, pv);
 	} else if(e.cmd.execute) {
-		//auto dy = button(x, y, width, (int)ctx.source.data, result, e.title);
-		//if(result) {
-		//	//
-		//}
-		//return dy;
-		return 0;
+		setposition(x, y, width);
+		rect rc = {x, y, x + width, y + 4 * 2 + texth()};
+		anyval av(e.cmd.execute, sizeof(e), (int)ctx.object);
+		unsigned flags = 0;
+		auto focused = false;
+		if(isfocused(rc, av))
+			focused = true;
+		auto result = buttonh(rc, false, focused, false, true, e.title);
+		if(result) {
+			command.clear();
+			command.object = ctx.object;
+			command.prod = e.cmd;
+			execute(execute_command);
+		}
+		return rc.height() + metrics::padding*2;
 	}
 	else if(e.title && e.title[0] == '#') {
 		auto pn = e.title + 1;
@@ -289,6 +307,15 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 	} else if(e.value.id) {
 		auto req = getvalue(ctx, e);
 		if(!req) {
+			auto pc = getcontrol(ctx, e);
+			if(pc) {
+				auto splitter = pc->splitter;
+				if(!splitter)
+					splitter = 100;
+				rect rc = {x, y, x + width, y + splitter};
+				pc->view(rc);
+				return rc.height();
+			}
 			if(ctx.show_missed_requisit)
 				return error(x, y, width, ctx, e, "Не найден реквизит");
 			return 0; // Данные не найдены, но это не ошибка

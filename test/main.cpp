@@ -231,16 +231,23 @@ static void test_tree() {
 	show_table(test);
 }
 
+void apply_element(element* object) {
+	object->age = 12;
+}
+
 static void test_markup() {
-	element source = {};
+	element s1 = {};
+	element s2 = {};
 	static markup elements_left[] = {{0, "Имя", {"name"}},
 	{0, "Фамилия", {"surname"}},
 	{0, "Возраст", {"age"}},
+	{0, "Принять", {}, 0, {}, apply_element},
 	{}};
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
-		field(10, 10, 500, elements_left, bsmeta<element>::meta, &source);
+		field(10, 10, 300, elements_left, bsmeta<element>::meta, &s1);
+		field(300+10, 10, 300, elements_left, bsmeta<element>::meta, &s2);
 		domodal();
 	}
 }
@@ -296,7 +303,7 @@ static void test_drag_drop() {
 	}
 }
 
-static void choose_folder(const anyval value) {
+static void choose_folder(const anyval& value) {
 	char temp[260] = {};
 	if(!dialog::folder("Выбирайте папку", temp))
 		return;
@@ -325,7 +332,7 @@ static int run_wizard(eventproc proc) {
 
 static void test_tile_manager() {
 	pushfocus pf;
-	const char* filename = "";
+	char filename[260];
 	point tile = {};
 	point origin = {};
 	color transparent = {160, 160, 0};
@@ -334,7 +341,7 @@ static void test_tile_manager() {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		auto x = 20, y = 20;
 		auto h = draw::texth();
-		y += field(x, y, 380, "Файл тайлов", filename, 100, choose_folder);
+		y += field(x, y, 380, "Файл тайлов", filename, sizeof(filename), 100, choose_folder);
 		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
 		if(use_transparent) {
 			y += field(x, y, 380, "Цвет", transparent, 100);
