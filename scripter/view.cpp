@@ -11,7 +11,7 @@ static controls::properties::translate translate_data[] = {{"count", "Количество
 {"type", "Тип"},
 };
 
-static class metadata_control : public controls::tableref, controls::control::plugin {
+static class metadata_control : public controls::tableref, controls::control::plugin, initplugin {
 	void after_initialize() override {
 		auto meta = bsmeta<metadata>::meta;
 		addstdimage();
@@ -56,7 +56,7 @@ public:
 	}
 } metadata_instance;
 
-static class requisit_control : public controls::tableref, controls::control::plugin {
+static class requisit_control : public controls::tableref, controls::control::plugin, initplugin {
 	struct metadata* current_parent;
 	static const char* getpresent(const void* p, char* result, const char* result_maximum) {
 		stringbuilder sb(result, result_maximum);
@@ -124,8 +124,8 @@ public:
 
 static struct properties_control : controls::properties, controls::control::plugin {
 	static bool choose_metadata(const void* object, int value) {
-		auto p = (metadata*)value;
-		if(p->isarray() || p->isreference())
+		auto p = &bsdata<metadata>::elements[value];
+		if(value && (p->isarray() || p->isreference()))
 			return false;
 		return true;
 	}

@@ -55,7 +55,7 @@ static void before_application_exit() {
 		write_log_file();
 }
 
-static struct widget_logging : control::plugin, table {
+static struct widget_logging : control::plugin, draw::initplugin, table {
 
 	void after_initialize() override {
 		auto meta = bsmeta<logi>::meta;
