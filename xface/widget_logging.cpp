@@ -61,6 +61,7 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 		auto meta = bsmeta<logi>::meta;
 		addcol(meta, "stamp", "Дата").set(SizeFixed).set(AlignCenter);
 		addcol(meta, "text", "Сообщение").set(SizeAuto);
+		atexit(before_application_exit);
 	}
 
 	control& getcontrol() override {
@@ -79,17 +80,11 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 		return messages.getcount();
 	}
 
-	//static void setting_common() {
-	//	settings& e1 = settings::root.gr("Логирование").gr("Общие");
-	//	e1.add("Сохранять файл сообщений после закрытия программы", save_log_file);
-	//}
-
 	widget_logging() : control::plugin("logging", DockBottom) {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;
 		show_toolbar = false;
-		atexit(before_application_exit);
 	}
 
 } logging_control;
@@ -97,3 +92,8 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 void logmsg(const char* format, ...) {
 	logmsgv(format, xva_start(format));
 }
+
+static setting::element logging_common[] = {{"Сохранять файл сообщений после закрытия программы", save_log_file},
+};
+static setting::header headers[] = {{"Логирование", "Общие", 0, logging_common},
+};

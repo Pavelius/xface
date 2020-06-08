@@ -214,6 +214,10 @@ void metadata::getname(stringbuilder& sb) const {
 		sb.add(id);
 }
 
+void requisit::getnameonly(stringbuilder& sb) const {
+	sb.add(id);
+}
+
 void requisit::getname(stringbuilder& sb) const {
 	sb.add(id);
 	sb.add(":");

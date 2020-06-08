@@ -128,6 +128,7 @@ struct requisit {
 	bool					ispredefined() const;
 	unsigned				getlenght() const { return type->size*count; }
 	void					getname(stringbuilder& sb) const;
+	void					getnameonly(stringbuilder& sb) const;
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }

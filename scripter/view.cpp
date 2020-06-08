@@ -1,9 +1,12 @@
 #include "xface/crt.h"
 #include "xface/draw_properties.h"
+#include "xface/setting.h"
 #include "main.h"
 
 using namespace code;
 using namespace draw;
+
+static bool metadata_view_show_type = true;
 
 static controls::properties::translate translate_data[] = {{"count", "Количество"},
 {"id", "Идентификатор"},
@@ -60,7 +63,10 @@ static class requisit_control : public controls::tableref, controls::control::pl
 	struct metadata* current_parent;
 	static const char* getpresent(const void* p, char* result, const char* result_maximum) {
 		stringbuilder sb(result, result_maximum);
-		((requisit*)p)->getname(sb);
+		if(metadata_view_show_type)
+			((requisit*)p)->getname(sb);
+		else
+			((requisit*)p)->getnameonly(sb);
 		return result;
 	}
 	void after_initialize() override {
@@ -68,17 +74,6 @@ static class requisit_control : public controls::tableref, controls::control::pl
 		addstdimage();
 		addcol(meta, "id", "Наименование").set(SizeAuto).set(getpresent);
 		update();
-	}
-	const char* getname(char* result, const char* result_max, struct metadata* type) const {
-		if(type->isreference()) {
-			getname(result, result_max, type->type);
-			szprint(zend(result), result_max, "*");
-		} else if(type->isarray()) {
-			getname(result, result_max, type->type);
-			szprint(zend(result), result_max, "[]");
-		} else
-			szprint(result, result_max, type->id);
-		return result;
 	}
 	control& getcontrol() override {
 		return *this;
@@ -193,6 +188,11 @@ static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alp
 {choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
 {choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
 {}};
+
+static setting::element code_editor_metadata[] = {{"Показывать типы в окне метаданных", metadata_view_show_type},
+};
+static setting::header headers[] = {{"Редактор кода", "Метаданные", 0, code_editor_metadata},
+};
 
 void run_main() {
 	draw::application("Scripter", false, 0, heartproc, shortcuts);
