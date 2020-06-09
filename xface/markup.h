@@ -28,7 +28,7 @@ struct markup {
 	struct propi {
 		fntext			getname;
 		constexpr propi() : getname(0) {}
-		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((fntext)v), getvalue(0) {}
+		template<class T> constexpr propi(void(*v)(const T*, char*, const char*)) : getname((fntext)v) {}
 	};
 	constexpr explicit operator bool() const { return title || value.id || value.child; }
 	int					width;
