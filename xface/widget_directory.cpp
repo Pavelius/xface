@@ -18,7 +18,7 @@ INSTMETA(header) = {BSREQ(name), BSREQ(image), {}};
 
 static const char*		base_url = "D:/projects";
 
-static struct widget_directory : tree, control::plugin {
+static struct widget_directory : tree, control::plugin, initplugin {
 
 	void after_initialize() override {
 		auto meta = bsmeta<header>::meta;

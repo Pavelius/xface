@@ -71,7 +71,6 @@ struct control {
 		plugin*				next;
 		static plugin*		first;
 		plugin(const char* id, dock_s dock);
-		virtual void		after_initialize() {}
 		static const plugin* find(const char* id);
 		virtual control&	getcontrol() = 0;
 	};
