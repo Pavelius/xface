@@ -231,6 +231,9 @@
     <ClCompile Include="draw_picker.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="draw_animation.cpp">
+      <Filter>draw\controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
@@ -316,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="stringbuilder.h">
       <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_animation.h">
+      <Filter>draw\controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

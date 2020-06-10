@@ -131,6 +131,7 @@
     <ClCompile Include="bsreq_bin2.cpp" />
     <ClCompile Include="bsreq_txt.cpp" />
     <ClCompile Include="datetime.cpp" />
+    <ClCompile Include="draw_animation.cpp" />
     <ClCompile Include="draw_autocomplete.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
     <ClCompile Include="draw_markup.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="anyval.h" />
     <ClInclude Include="archive.h" />
     <ClInclude Include="datetime.h" />
+    <ClInclude Include="draw_animation.h" />
     <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
     <ClInclude Include="markup.h" />
