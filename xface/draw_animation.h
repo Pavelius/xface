@@ -18,13 +18,16 @@ struct animation {
 	void				update();
 };
 class stage {
-	constexpr static unsigned count_maximum = 256;
+	constexpr static unsigned count_maximum = 512;
 	animation			source[count_maximum];
 	unsigned			count;
 public:
 	stage() : count(0) {}
 	animation*			add();
+	animation*			add(unsigned data);
+	animation*			begin() { return source; }
 	void				clear() { count = 0; }
+	animation*			end() { return source + count; }
 	animation*			find(unsigned data);
 	void				render(point camera);
 	animation*			test(point camera, point mouse);

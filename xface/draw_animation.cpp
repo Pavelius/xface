@@ -12,3 +12,18 @@ animation* stage::add() {
 		return source;
 	return source + (count++);
 }
+
+animation* stage::find(unsigned data) {
+	for(auto& e : *this) {
+		if(e.data == data)
+			return &e;
+	}
+	return 0;
+}
+
+animation* stage::add(unsigned data) {
+	auto f = find(data);
+	if(f)
+		return f;
+	return add();
+}
