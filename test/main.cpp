@@ -274,7 +274,8 @@ static void test_markup() {
 	while(ismodal()) {
 		rect rc = {0, 0, getwidth(), getheight()};
 		rectf(rc, colors::form);
-		field(10, 10, getwidth() - 20, elements, bsmeta<markupform>::meta, &source, 80, &source);
+		rc.offset(metrics::padding);
+		field(rc.x1, rc.y1, rc.width(), elements, bsmeta<markupform>::meta, &source, 80, &source, rc.height());
 		domodal();
 	}
 }

@@ -31,6 +31,7 @@ struct contexti {
 	const bsreq*		type;
 	bool				show_missed_requisit;
 	controls::form*		form;
+	int					y2;
 	contexti() { memset(this, 0, sizeof(*this)); }
 	bool isallow(const markup& e, int index) const {
 		if(e.proc.isallow) {
@@ -334,12 +335,14 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 			if(ctx.form) {
 				auto pc = ctx.form->getcontrol(e.value.id);
 				if(pc) {
-					auto splitter = pc->splitter;
-					if(!splitter)
-						splitter = 100;
 					setposition(x, y, width);
 					if(pc->show_toolbar)
 						y += pc->toolbar(x, y, width);
+					auto splitter = pc->splitter;
+					if(ctx.y2)
+						splitter = ctx.y2 - y - metrics::padding;
+					if(!splitter)
+						splitter = 100;
 					rect rc = {x, y, x + width, y + splitter};
 					pc->view(rc);
 					return rc.height();
@@ -383,7 +386,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		return 0;
 }
 
-int draw::field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width, controls::form* form) {
+int draw::field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width, controls::form* form, int height) {
 	if(!elements)
 		return 0;
 	contexti ctx;
@@ -392,6 +395,8 @@ int draw::field(int x, int y, int width, const markup* elements, const bsreq* ty
 	ctx.type = type;
 	ctx.form = form;
 	ctx.show_missed_requisit = true;
+	if(height)
+		ctx.y2 = y + height;
 	if(elements->width)
 		return group_horizontal(x, y, width, ctx, elements);
 	else
