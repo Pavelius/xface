@@ -45,7 +45,7 @@ int main() {
 	if(!test_database())
 		return -1;
 	metadata::writefile("test.edb");
-	draw::application("Evrika", true, pass_verification);
+	draw::application("Evrika", true, pass_verification, 0, 0);
 }
 
 int __stdcall WinMain(void* ci, void* pi, char* cmd, int sw) {
