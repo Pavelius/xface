@@ -27,3 +27,8 @@ animation* stage::add(unsigned data) {
 		return f;
 	return add();
 }
+
+void stage::paint(point camera) const {
+	for(auto& e : *this)
+		e.paint(camera.x, camera.y);
+}

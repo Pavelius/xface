@@ -26,11 +26,13 @@ public:
 	animation*			add();
 	animation*			add(unsigned data);
 	animation*			begin() { return source; }
+	const animation*	begin() const { return source; }
 	void				clear() { count = 0; }
 	animation*			end() { return source + count; }
+	const animation*	end() const { return source + count; }
 	animation*			find(unsigned data);
-	void				render(point camera);
-	animation*			test(point camera, point mouse);
+	void				paint(point camera) const;
+	animation*			test(point mouse);
 	void				update(unsigned timestamp);
 };
 }
