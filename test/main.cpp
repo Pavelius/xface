@@ -244,7 +244,7 @@ struct markupform : controls::form {
 	markupform() : s1(), s2(), v1rows(), v1(v1rows), tabs(0) {
 		v1.show_header = false;
 		v1.show_toolbar = true;
-		v1.splitter = 200;
+		//v1.splitter = 200;
 	}
 	controls::control* getcontrol(const char* id) override {
 		if(strcmp(id, "v1") == 0)
