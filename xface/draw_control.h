@@ -298,6 +298,11 @@ struct table : list {
 private:
 	void					update_columns(const rect& rc);
 };
+struct calendar : control {
+	datetime				current;
+	virtual void			row(const rect& rc, datetime data) const;
+	void					view(const rect& rc) override;
+};
 struct tableref : table, private array {
 	struct element {
 		void*				object;
