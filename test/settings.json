@@ -47,20 +47,20 @@
     }
   },
   "window":{
-    "x":506,
-    "y":13,
-    "width":752,
-    "height":616,
+    "x":267,
+    "y":66,
+    "width":736,
+    "height":562,
     "header_width":169,
     "flags":48
   },
   "controls":{
-    "logging":{
-      "Docking":5,
-      "Visible":1
-    },
     "directory":{
       "Docking":0,
+      "Visible":1
+    },
+    "logging":{
+      "Docking":5,
       "Visible":1
     }
   },

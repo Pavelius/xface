@@ -339,7 +339,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 					if(pc->show_toolbar)
 						y += pc->toolbar(x, y, width);
 					auto splitter = pc->splitter;
-					if(ctx.y2)
+					if(!splitter && ctx.y2)
 						splitter = ctx.y2 - y - metrics::padding;
 					if(!splitter)
 						splitter = 100;
