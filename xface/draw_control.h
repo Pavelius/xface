@@ -224,8 +224,8 @@ struct table : list {
 		const char*			name;
 	};
 	struct sortparam {
-		int					column;
-		int					multiplier; // 1 - ascending, -1 - descending
+		unsigned short		column;
+		short				multiplier; // 1 - ascending, -1 - descending
 	};
 	arem<column>			columns;
 	int						current_column, current_column_maximum, maximum_width;
