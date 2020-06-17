@@ -7,7 +7,7 @@ using namespace io;
 struct bsdata_writer_txt {
 	writer&	ew;
 	bsdata_writer_txt(writer& ew) : ew(ew) {}
-
+	
 	bool write_object(const void* pv, const bsreq* pf, const char* id, bool run) {
 		if(run) {
 			if(!write_object(pv, pf, id, false))

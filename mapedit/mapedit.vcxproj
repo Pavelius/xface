@@ -137,7 +137,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
-    <ClCompile Include="..\xface\sprite_util.cpp" />
+    <ClCompile Include="..\xface\sprite_util.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="direction.cpp" />
     <ClCompile Include="fileimport.cpp" />
     <ClCompile Include="main.cpp" />
