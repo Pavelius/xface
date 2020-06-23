@@ -127,12 +127,17 @@
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="..\xface\widget_logging.cpp" />
     <ClCompile Include="database.cpp" />
-    <ClCompile Include="database_concept.cpp" />
-    <ClCompile Include="database_serial.cpp" />
+    <ClCompile Include="database_concept.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="database_serial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="view.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="main_old.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

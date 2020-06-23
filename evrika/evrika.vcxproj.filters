@@ -9,6 +9,7 @@
     <ClCompile Include="database_concept.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main_old.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
 </Project>

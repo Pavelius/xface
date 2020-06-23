@@ -29,22 +29,8 @@ static void pass_verification() {
 
 void initialize_metadata();
 
-static bool test_database() {
-	auto& m = databases[UserType].requisits;
-	auto p = databases[UserType].add();
-	m.set(p, "firstname", "Павел");
-	m.set(p, "surname", "Чистяков");
-	m.set(p, "lastname", "Валентинович");
-	auto p1 = m.gets(p, "surname");
-	auto p2 = m.gets(p, "lastname");
-	return p1 == szdup("Чистяков");
-}
-
 int main() {
 	initialize_metadata();
-	if(!test_database())
-		return -1;
-	metadata::writefile("test.edb");
 	draw::application("Evrika", true, pass_verification, 0, 0);
 }
 
