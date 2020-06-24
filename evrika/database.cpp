@@ -1,5 +1,8 @@
 #include "main.h"
 
+static unsigned initialize_counter = 0;
+static datetime initialize_date;
+
 //metadata databases[] = {{"Number", "Число"},
 //{"Date", "Дата"},
 //{"DateTime", "Дата и время"},
@@ -10,51 +13,63 @@
 //{"Header", "Раздел"},
 //};
 
-static void add(database& e, const char* id, const char* name, base_s base) {
-
+static void add(base_s id, rfid parent, const char* name, const char* comment) {
+	auto p = (reference*)databases[id].add();
+	p->base = id;
+	p->session_id = 0;
+	p->create_date = initialize_date;
+	p->counter = initialize_counter++;
+	p->parent = parent;
+	p->name = szdup(name);
+	p->comment = szdup(comment);
 }
 
-static void add_name(base_s type) {
-	auto& e = databases[type];
-	add(e, "name", "Наименование", TextType);
-	add(e, "text", "Комментарий", TextType);
+//static void add_name(base_s type) {
+//	auto& e = databases[type];
+//	add(e, "Наименование", TextType);
+//	add(e, "Комментарий", TextType);
+//}
+//static void add_stamp(base_s type) {
+//	auto& e = databases[type];
+//	add(e, "create_date", "Создано", DateTimeType);
+//	add(e, "identifier", "Идентификатор", NumberType);
+//}
+//static void add_change(base_s type) {
+//}
+//static void add_reference(base_s type) {
+//	add_stamp(type);
+//	add_change(type);
+//	add_name(type);
+//}
+//static void add_number(base_s type, const char* id, const char* name) {
+//	auto& e = databases[type];
+//	add(e, id, name, NumberType);
+//}
+//static void add_text(base_s type, const char* id, const char* name) {
+//	auto& e = databases[type];
+//	add(e, id, name, TextType);
+//}
+//static void add_fio(base_s type) {
+//	add_reference(type);
+//	add_text(type, "firstname", "Имя");
+//	add_text(type, "surname", "Фамилия");
+//	add_text(type, "lastname", "Отчество");
+//}
+
+static void setdate(datetime v) {
+	initialize_date = v;
+	initialize_counter = 0;
 }
-static void add_stamp(base_s type) {
-	auto& e = databases[type];
-	add(e, "create_date", "Создано", DateTimeType);
-	add(e, "identifier", "Идентификатор", NumberType);
-}
-static void add_change(base_s type) {
-}
-static void add_reference(base_s type) {
-	add_stamp(type);
-	add_change(type);
-	add_name(type);
-}
-static void add_number(base_s type, const char* id, const char* name) {
-	auto& e = databases[type];
-	add(e, id, name, NumberType);
-}
-static void add_text(base_s type, const char* id, const char* name) {
-	auto& e = databases[type];
-	add(e, id, name, TextType);
-}
-static void add_fio(base_s type) {
-	add_reference(type);
-	add_text(type, "firstname", "Имя");
-	add_text(type, "surname", "Фамилия");
-	add_text(type, "lastname", "Отчество");
+
+static void add_requisits() {
+	setdate({2020, 6, 24, 13, 15});
+	add(RequisitType, 0, "Наименование", "Наименование используемое для представления в списках");
+	add(RequisitType, 0, "Комментарий", "Комментарий или описание");
+	add(RequisitType, 0, "Родитель", "Нахождение в иерархии");
+	add(RequisitType, 0, "Тип", "Тип данных или база данных");
 }
 
 void initialize_metadata() {
-	add_reference(ReferenceType);
-	add_reference(UserType);
-	add_fio(UserType);
-}
-
-void stamp::generate(base_s id) {
-	base = id;
-	counter = databases[id].getcount();
 }
 
 void stamp::generate() {
