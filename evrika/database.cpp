@@ -3,15 +3,7 @@
 static unsigned initialize_counter = 0;
 static datetime initialize_date;
 
-//metadata databases[] = {{"Number", "Число"},
-//{"Date", "Дата"},
-//{"DateTime", "Дата и время"},
-//{"Text", "Строка"},
-//{"Reference", "Справочник"},
-//{"Document", "Документ"},
-//{"User", "Пользователь"},
-//{"Header", "Раздел"},
-//};
+database databases[256];
 
 static void add(base_s id, rfid parent, const char* name, const char* comment) {
 	auto p = (reference*)databases[id].add();
@@ -61,15 +53,29 @@ static void setdate(datetime v) {
 	initialize_counter = 0;
 }
 
+static void create_base(base_s id, unsigned size) {
+	databases[id].setup(size);
+}
+
 static void add_requisits() {
+	create_base(HeaderType, sizeof(header));
+	create_base(UserType, sizeof(user));
+	create_base(RequisitType, sizeof(requisit));
 	setdate({2020, 6, 24, 13, 15});
+	add(RequisitType, 0, "Идентификатор", "Уникальный идентификатор в пределах даты создания");
 	add(RequisitType, 0, "Наименование", "Наименование используемое для представления в списках");
 	add(RequisitType, 0, "Комментарий", "Комментарий или описание");
 	add(RequisitType, 0, "Родитель", "Нахождение в иерархии");
 	add(RequisitType, 0, "Тип", "Тип данных или база данных");
+	add(RequisitType, 0, "Дата изменения", "Дата и время изменения объекта");
+	add(RequisitType, 0, "Дата создания", "Дата и время создания объекта");
+	add(RequisitType, 0, "Автор", "Пользователь, который создал объект");
+	add(RequisitType, 0, "Изменил", "Пользователь, который последним менял объект");
+	add(RequisitType, 0, "Ответственный", "Пользователь, который отвечает за объект");
 }
 
 void initialize_metadata() {
+	add_requisits();
 }
 
 void stamp::generate() {

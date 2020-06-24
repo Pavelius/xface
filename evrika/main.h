@@ -39,3 +39,12 @@ struct header : reference {
 	unsigned				read_permission;
 	unsigned				write_permission;
 };
+struct requisit : reference {
+};
+struct user : reference {
+	const char*				firstname;
+	const char*				lastname;
+	const char*				surname;
+	unsigned				read_permission;
+	unsigned				write_permission;
+};
