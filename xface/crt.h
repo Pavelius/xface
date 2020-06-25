@@ -223,6 +223,7 @@ public:
 	bool					isgrowable() const { return growable; }
 	void*					ptr(int index) const { return (char*)data + size * index; }
 	void					remove(int index, int elements_count);
+	template<class T> aref<T> records() { return aref<T>((T*)data, count); }
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);
 	void					shift(int i1, int i2, unsigned c1, unsigned c2);

@@ -5,7 +5,7 @@ static datetime initialize_date;
 
 database databases[256];
 
-static void add(base_s id, rfid parent, const char* name, const char* comment) {
+static rfid add(base_s id, rfid parent, const char* name, const char* comment) {
 	auto p = (reference*)databases[id].add();
 	p->base = id;
 	p->session_id = 0;
@@ -14,6 +14,7 @@ static void add(base_s id, rfid parent, const char* name, const char* comment) {
 	p->parent = parent;
 	p->name = szdup(name);
 	p->comment = szdup(comment);
+	return gtr(id, databases[id].getcount() - 1);
 }
 
 //static void add_name(base_s type) {
@@ -61,6 +62,7 @@ static void add_requisits() {
 	create_base(HeaderType, sizeof(header));
 	create_base(UserType, sizeof(user));
 	create_base(RequisitType, sizeof(requisit));
+	// Реквизиты
 	setdate({2020, 6, 24, 13, 15});
 	add(RequisitType, 0, "Идентификатор", "Уникальный идентификатор в пределах даты создания");
 	add(RequisitType, 0, "Наименование", "Наименование используемое для представления в списках");
@@ -72,6 +74,11 @@ static void add_requisits() {
 	add(RequisitType, 0, "Автор", "Пользователь, который создал объект");
 	add(RequisitType, 0, "Изменил", "Пользователь, который последним менял объект");
 	add(RequisitType, 0, "Ответственный", "Пользователь, который отвечает за объект");
+	// Заголовки
+	setdate({2020, 6, 25, 15, 45});
+	add(HeaderType, 0, "Реквизиты", "Список всех возможных реквизитов в системе");
+	add(HeaderType, 0, "Документы", "События, которые влияют на деятельность предприятия");
+	add(HeaderType, 0, "Справочники", "Нормативно-справочная информация, которая не изменяется в течении времени");
 }
 
 void initialize_metadata() {

@@ -4,6 +4,9 @@
 using namespace draw;
 
 static struct header_control : controls::tree, controls::control::plugin {
+	struct element : tree::element {
+		unsigned	rfid;
+	};
 	void before_render() {
 	}
 	control& getcontrol() override {
@@ -14,6 +17,19 @@ static struct header_control : controls::tree, controls::control::plugin {
 	}
 	command* getcommands() const override {
 		return 0;
+	}
+	void expanding(int index, int level) override {
+		if(!level) {
+			for(auto& e : databases[HeaderType].records<header>()) {
+				auto pn = (element*)addrow();
+				pn->level = 1;
+				pn->setgroup(true);
+			}
+		} else {
+			auto pc = (element*)get(index);
+			auto pn = (element*)insert(index, level + 1);
+			pn->setgroup(true);
+		}
 	}
 	header_control() : plugin("header", DockLeft) {
 		show_header = false;
@@ -31,6 +47,7 @@ void initialize_metadata();
 
 int main() {
 	initialize_metadata();
+	metadata_instance.expanding(0, 0);
 	draw::application("Evrika", true, pass_verification, 0, 0);
 }
 

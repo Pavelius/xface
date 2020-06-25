@@ -9,17 +9,14 @@ enum base_s : unsigned char {
 	HeaderType, RequisitType, UserType,
 };
 struct requisit;
-union rfid {
-	unsigned				value;
-	unsigned char			byte[4];
-	unsigned short			word[2];
-	constexpr rfid() : value(0) {}
-	constexpr rfid(unsigned v) : value(v) {}
-};
+typedef unsigned			rfid;
 struct database : public array {
 	requisit*				requisits;
 };
 extern database				databases[256];
+constexpr base_s			gtb(unsigned v) { return (base_s)(v >> 24); }
+constexpr unsigned			gti(unsigned v) { return v & 0xFFFFFF; }
+constexpr unsigned			gtr(base_s b, unsigned v) { return (b << 24) | v; }
 struct stamp {
 	unsigned char			base; // Maximum 256 bases
 	unsigned char			session_id; // Maximum 255 users working at same time and one user (has 0 ID) is System

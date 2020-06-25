@@ -326,7 +326,7 @@ struct tableview : table {
 	void					remove(int index) override { return source.remove(index, 1); }
 	void					swap(int i1, int i2) { source.swap(i1, i2); }
 };
-struct tree : table, private array {
+struct tree : table, protected array {
 	struct element {
 		unsigned char		level;
 		unsigned char		flags;
