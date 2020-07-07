@@ -5,7 +5,7 @@ static datetime initialize_date;
 
 database databases[256];
 
-static rfid add(base_s id, rfid parent, const char* name, const char* comment) {
+static reference* addrf(base_s id, rfid parent, const char* name, const char* comment) {
 	auto p = (reference*)databases[id].add();
 	p->base = id;
 	p->session_id = 0;
@@ -14,7 +14,18 @@ static rfid add(base_s id, rfid parent, const char* name, const char* comment) {
 	p->parent = parent;
 	p->name = szdup(name);
 	p->comment = szdup(comment);
-	return gtr(id, databases[id].getcount() - 1);
+	return p;
+}
+
+static rfid add(base_s id, rfid parent, const char* name, const char* comment) {
+	auto p = addrf(id, parent, name, comment);
+	return gtr(id, databases[id].indexof(p));
+}
+
+static rfid addhd(base_s id, rfid parent, const char* name, const char* comment) {
+	auto p = (header*)addrf(HeaderType, parent, name, comment);
+	p->base = id;
+	return gtr(id, databases[id].indexof(p));
 }
 
 //static void add_name(base_s type) {
@@ -59,34 +70,43 @@ static void create_base(base_s id, unsigned size) {
 }
 
 static void add_requisits() {
-	create_base(HeaderType, sizeof(header));
-	create_base(UserType, sizeof(user));
-	create_base(RequisitType, sizeof(requisit));
-	// Реквизиты
-	setdate({2020, 6, 24, 13, 15});
-	add(RequisitType, 0, "Идентификатор", "Уникальный идентификатор в пределах даты создания");
-	add(RequisitType, 0, "Наименование", "Наименование используемое для представления в списках");
-	add(RequisitType, 0, "Комментарий", "Комментарий или описание");
-	add(RequisitType, 0, "Родитель", "Нахождение в иерархии");
-	add(RequisitType, 0, "Тип", "Тип данных или база данных");
-	add(RequisitType, 0, "Дата изменения", "Дата и время изменения объекта");
-	add(RequisitType, 0, "Дата создания", "Дата и время создания объекта");
-	add(RequisitType, 0, "Автор", "Пользователь, который создал объект");
-	add(RequisitType, 0, "Изменил", "Пользователь, который последним менял объект");
-	add(RequisitType, 0, "Ответственный", "Пользователь, который отвечает за объект");
-	// Заголовки
 	setdate({2020, 6, 25, 15, 45});
-	add(HeaderType, 0, "Реквизиты", "Список всех возможных реквизитов в системе");
-	add(HeaderType, 0, "Документы", "События, которые влияют на деятельность предприятия");
-	add(HeaderType, 0, "Справочники", "Нормативно-справочная информация, которая не изменяется в течении времени");
+	auto parent = addhd(RequisitType, 0, "Реквизиты", "Список всех возможных реквизитов в системе");
+	add(RequisitType, parent, "Идентификатор", "Уникальный идентификатор в пределах даты создания");
+	add(RequisitType, parent, "Наименование", "Наименование используемое для представления в списках");
+	add(RequisitType, parent, "Комментарий", "Комментарий или описание");
+	add(RequisitType, parent, "Родитель", "Нахождение в иерархии");
+	add(RequisitType, parent, "Тип", "Тип данных или база данных");
+	add(RequisitType, parent, "Дата изменения", "Дата и время изменения объекта");
+	add(RequisitType, parent, "Дата создания", "Дата и время создания объекта");
+	add(RequisitType, parent, "Автор", "Пользователь, который создал объект");
+	add(RequisitType, parent, "Изменил", "Пользователь, который последним менял объект");
+	add(RequisitType, parent, "Ответственный", "Пользователь, который отвечает за объект");
+}
+
+static void add_documents() {
+	setdate({2020, 6, 24, 13, 15});
+	auto parent = addhd(ReferenceType, 0, "Документы", "События, которые влияют на деятельность предприятия");
 }
 
 void initialize_metadata() {
+	create_base(RequisitType, sizeof(requisit));
+	create_base(HeaderType, sizeof(header));
+	create_base(UserType, sizeof(user));
 	add_requisits();
+	add_documents();
 }
 
 void stamp::generate() {
 
+}
+
+static void change_add(void* p1, void* p2, unsigned s1, unsigned s2, unsigned count, unsigned s3) {
+	for(unsigned i = 0; i < count; i++) {
+		memmove(p1, p2, s3);
+		p1 = (char*)p1 - s1;
+		p2 = (char*)p2 - s2;
+	}
 }
 
 //static const char* findurl(const char* p) {

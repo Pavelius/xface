@@ -100,30 +100,30 @@ struct serializer {
 };
 }
 
-bool metadata::readfile(const char* url) {
-	io::file file(url, StreamRead);
-	if(!file)
-		return 0;
-	serializer sb(file, false);
-	while(true) {
-		if(!sb.read_object())
-			break;
-	};
-	return 0;
-}
-
-bool metadata::writefile(const char* url) {
-	io::file file(url, StreamWrite);
-	if(!file)
-		return 0;
-	serializer sb(file, true);
-	for(auto& e : databases) {
-		if(!e)
-			continue;
-		for(unsigned i = 0; i < e.count; i++)
-			sb.write_object((stamp*)e.get(i));
-	}
-	stamp e = {};
-	sb.serial(&e, sizeof(e));
-	return 0;
-}
+//bool metadata::readfile(const char* url) {
+//	io::file file(url, StreamRead);
+//	if(!file)
+//		return 0;
+//	serializer sb(file, false);
+//	while(true) {
+//		if(!sb.read_object())
+//			break;
+//	};
+//	return 0;
+//}
+//
+//bool metadata::writefile(const char* url) {
+//	io::file file(url, StreamWrite);
+//	if(!file)
+//		return 0;
+//	serializer sb(file, true);
+//	for(auto& e : databases) {
+//		if(!e)
+//			continue;
+//		for(unsigned i = 0; i < e.count; i++)
+//			sb.write_object((stamp*)e.get(i));
+//	}
+//	stamp e = {};
+//	sb.serial(&e, sizeof(e));
+//	return 0;
+//}
