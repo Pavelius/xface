@@ -4,6 +4,7 @@
 
 using namespace io;
 
+namespace {
 struct bsdata_writer_txt {
 	writer&	ew;
 	bsdata_writer_txt(writer& ew) : ew(ew) {}
@@ -198,7 +199,7 @@ struct bsdata_reader_txt : reader {
 			// Это идентификатор типа
 			auto pd = findbase(value);
 			e.parent->set(Database, (int)&pd->source);
-			e.parent->set(Meta, (int)pd->meta);
+			e.parent->set(Meta, (int)pd->type);
 			return;
 		}
 		const bsreq* pf = 0;
@@ -223,42 +224,4 @@ struct bsdata_reader_txt : reader {
 			setvalue(pv, pf, index, value);
 	};
 };
-
-//int bsdata::writetxt(const char* url) {
-//	io::plugin* pp = plugin::find(szext(url));
-//	if(!pp)
-//		return 0;
-//	io::file file(url, StreamWrite | StreamText);
-//	if(!file)
-//		return 0;
-//	io::writer* pw = pp->write(file);
-//	if(!pw)
-//		return 0;
-//	auto object_count = 0;
-//	bsdata_writer_txt bw(*pw);
-//	pw->open("records", Array);
-//	for(auto& ps : bsmeta<bsdata>()) {
-//		for(unsigned i = 0; i < ps.count; i++) {
-//			auto p = ps.get(i);
-//			pw->open("record");
-//			pw->set("typeid", ps.id);
-//			for(auto pf = ps.meta; *pf; pf++)
-//				bw.write_field(p, pf, pf->id, true);
-//			pw->close("record");
-//			object_count++;
-//		}
-//	}
-//	pw->close("records", Array);
-//	return object_count;
-//}
-
-//int bsdata::readtxt(const char* url) {
-//	io::plugin* pp = plugin::find(szext(url));
-//	if(!pp)
-//		return 0;
-//	auto p = loadt(url);
-//	bsdata_reader_txt ev;
-//	pp->read(p, ev);
-//	delete p;
-//	return 1;
-//}
+}

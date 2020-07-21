@@ -234,6 +234,9 @@
     <ClCompile Include="draw_animation.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
+    <ClCompile Include="bsreq_parser.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

@@ -483,7 +483,10 @@ void table::changenumber(const rect& rc, int line, int column) {
 void table::changetext(const rect& rc, int line, int column) {
 	char temp[8192];
 	auto value = (const char*)columns[column].get(get(line));
-	zcpy(temp, value, sizeof(temp) - 1);
+	if(!value)
+		temp[0] = 0;
+	else
+		zcpy(temp, value, sizeof(temp) - 1);
 	if(changefield(rc, columns[column].align, temp, zendof(temp)))
 		columns[column].set(get(line), (int)szdup(temp));
 }

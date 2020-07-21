@@ -209,6 +209,7 @@ public:
 	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum), growable(false) {}
 	~array();
 	void*					add();
+	void*					addz() { auto p = add(); memset(p, 0, size); return p; }
 	void*					add(const void* element);
 	char*					begin() const { return (char*)data; }
 	void					clear();
@@ -231,7 +232,7 @@ public:
 	void					swap(int i1, int i2);
 	void					reserve(unsigned count);
 };
-template<class T> struct vector : public array {
+template<class T> struct vector : array {
 	constexpr vector() : array(sizeof(T)) {}
 	~vector() { for(auto& e : *this) e.~T(); }
 	T*						add() { return (T*)array::add(); }
@@ -244,9 +245,10 @@ template<class T> struct vector : public array {
 struct bsreq;
 // Abstract data source descriptor
 struct bsinf {
-	const char*				id; // Identifier of data source
-	const bsreq*			meta; // Type descriptor of data source
-	array&					source; // Data source content
+	const char*				id;
+	array*					source;
+	const bsreq*			type;
+	constexpr explicit operator bool() const { return id != 0; }
 };
 // Abstract data access class
 template<typename T> struct bsdata {

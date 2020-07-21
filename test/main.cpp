@@ -242,8 +242,12 @@ struct markupform : controls::form {
 	vector<rowelement>	v1rows;
 	controls::tableview	v1;
 	markupform() : s1(), s2(), v1rows(), v1(v1rows), tabs(0) {
-		v1.show_header = false;
+		v1.show_header = true;
 		v1.show_toolbar = true;
+		auto m = bsmeta<rowelement>::meta;
+		v1.addcol(m, "name", "Наименование");
+		v1.addcol(m, "gender", "Пол");
+		v1.addcol(m, "age", "Возраст");
 		//v1.splitter = 200;
 	}
 	controls::control* getcontrol(const char* id) override {

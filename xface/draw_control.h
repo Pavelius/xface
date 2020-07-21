@@ -320,7 +320,7 @@ struct tableref : table, private array {
 struct tableview : table {
 	array&					source;
 	constexpr tableview(array& source) : source(source) {}
-	void*					addrow() override { return source.add(); }
+	void*					addrow() override { return source.addz(); }
 	void*					get(int index) const override { return source.ptr(index); }
 	int						getmaximum() const { return source.getcount(); }
 	void					remove(int index) override { return source.remove(index, 1); }
