@@ -92,7 +92,7 @@ struct metadata {
 	metatypea				flags;
 	operator bool() const { return id != 0; }
 	void					add(stringbuilder& sb) const;
-	requisit*				add(const char* id, metadata* type);
+	requisit*				add(const char* id, const metadata* type);
 	requisit*				add(array* p);
 	metadata*				array() const;
 	bool					is(const char* id) const;

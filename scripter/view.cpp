@@ -26,9 +26,7 @@ static class metadata_control : public controls::tableref, controls::control::pl
 		for(auto& e : bsdata<metadata>()) {
 			if(!e)
 				continue;
-			if(e.isreference() || e.isarray() || e.ispredefined())
-				continue;
-			addref(&e);
+			add(&e);
 		}
 		sort(0, true);
 	}
@@ -45,6 +43,19 @@ static class metadata_control : public controls::tableref, controls::control::pl
 		return 2;
 	}
 public:
+	void add(const metadata* v, bool interactive = false) {
+		if(!v || v->isreference() || v->isarray() || v->ispredefined())
+			return;
+		addref(const_cast<metadata*>(v));
+		if(interactive) {
+			sort(0, true);
+			auto i = tableref::find(v);
+			if(i != -1) {
+				current = i;
+				ensurevisible();
+			}
+		}
+	}
 	metadata* getcurrent() const {
 		if(getmaximum())
 			return (metadata*)get(current);
@@ -81,15 +92,6 @@ static class requisit_control : public controls::tableref, controls::control::pl
 	const char* getlabel(char* result, const char* result_maximum) const override {
 		return "Реквизиты";
 	}
-	void update() {
-		clear();
-		if(current_parent) {
-			for(auto& e : bsdata<requisit>()) {
-				if(e.parent==current_parent)
-					addref(&e);
-			}
-		}
-	}
 	command* getcommands() const override {
 		return 0;
 	}
@@ -102,11 +104,29 @@ public:
 			return (requisit*)get(current);
 		return 0;
 	}
+	void update() {
+		clear();
+		if(current_parent) {
+			for(auto& e : bsdata<requisit>()) {
+				if(e.parent == current_parent)
+					addref(&e);
+			}
+		}
+	}
+	int find(const requisit* v) const {
+		return tableref::find(v);
+	}
 	void set(metadata* v) {
 		if(v == current_parent)
 			return;
 		current_parent = v;
 		update();
+	}
+	void set(const requisit* v) {
+		auto i = find(v);
+		if(i==-1)
+			return;
+		current = i;
 	}
 	requisit_control() : plugin("requisit", DockLeftBottom) {
 		show_header = false;
@@ -184,9 +204,30 @@ static void choose_properties() {
 	properties_instance.focusfirst();
 }
 
+static void new_requisit() {
+	auto p = metadata_instance.getcurrent();
+	if(!p)
+		return;
+	auto r = p->add("New1", metadata::type_text);
+	requisit_instance.update();
+	requisit_instance.set(r);
+	properties_instance.set(requisit_instance.getcurrent(), bsmeta<requisit>::meta);
+	properties_instance.focusfirst();
+}
+
+static void new_type() {
+	auto p = bsdata<metadata>::add();
+	p->id = szdup("Type1");
+	metadata_instance.add(p, true);
+	properties_instance.set(metadata_instance.getcurrent(), bsmeta<metadata>::meta);
+	properties_instance.focusfirst();
+}
+
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
 {choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
 {choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
+{new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
+{new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
 {}};
 
 static setting::element code_editor_metadata[] = {{"Показывать типы в окне метаданных", metadata_view_show_type},

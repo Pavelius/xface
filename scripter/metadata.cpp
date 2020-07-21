@@ -131,7 +131,7 @@ array* metadata::getelements() const {
 	return (::array*)p->offset;
 }
 
-requisit* metadata::add(const char* id, metadata* type) {
+requisit* metadata::add(const char* id, const metadata* type) {
 	if(!type)
 		return 0;
 	id = szdup(id);
@@ -142,7 +142,7 @@ requisit* metadata::add(const char* id, metadata* type) {
 		p->parent = const_cast<metadata*>(this);
 	}
 	p->id = id;
-	p->type = type;
+	p->type = const_cast<metadata*>(type);
 	p->count = 1;
 	return p;
 }
