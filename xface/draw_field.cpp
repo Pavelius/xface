@@ -171,7 +171,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	if(isfocused(rc, ev))
 		flags |= Focused;
 	fieldf(rc, flags | TextSingleLine, ev, digits, true, false, 0);
-	return rc.height() + metrics::padding * 2;
+	return rc.height() - metrics::edit.height();
 }
 
 int draw::field(int x, int y, int width, const char* header_label, char* sev, unsigned size, int header_width, fnchoose choosep) {
@@ -186,7 +186,7 @@ int draw::field(int x, int y, int width, const char* header_label, char* sev, un
 	if(isfocused(rc, av))
 		flags |= Focused;
 	fieldf(rc, flags | TextSingleLine, av, -1, false, true, choosep);
-	return rc.height() + metrics::padding * 2;
+	return rc.height() - metrics::edit.height();
 }
 
 int draw::field(int x, int y, int width, const char* header_label, const char*& sev, int header_width, fnchoose choosep) {
@@ -194,13 +194,13 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 	setposition(x, y, width);
 	if(header_label && header_label[0])
 		titletext(x, y, width, 0, header_label, header_width);
-	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	rect rc = {x, y, x + width, y + draw::texth() - metrics::edit.height()};
 	unsigned flags = AlignLeft;
 	anyval av = sev;
 	if(isfocused(rc, av))
 		flags |= Focused;
 	fieldf(rc, flags | TextSingleLine, av, -1, false, true, choosep);
-	return rc.height() + metrics::padding * 2;
+	return rc.height() - metrics::edit.height();
 }
 
 struct combolist : controls::list, reflist {
@@ -361,7 +361,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	}
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
 	if(rc.width() <= 0)
-		return rc.height() + metrics::padding * 2;
+		return rc.height() - metrics::edit.height();
 	fieldc(rc, av, source, getname, tips, param, allow);
-	return rc.height() + metrics::padding * 2;
+	return rc.height() - metrics::edit.height();
 }

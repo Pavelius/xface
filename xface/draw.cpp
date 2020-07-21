@@ -50,7 +50,7 @@ static bool			line_antialiasing = true;
 static const void*	drag_object;
 point				draw::dragmouse;
 // Metrics
-rect				metrics::edit = {4, 4, -4, -4};
+rect				metrics::edit = {2, 2, -2, -2};
 sprite*				metrics::font = (sprite*)loadb("art/fonts/font.pma");
 sprite*				metrics::h1 = (sprite*)loadb("art/fonts/h1.pma");
 sprite*				metrics::h2 = (sprite*)loadb("art/fonts/h2.pma");

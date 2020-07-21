@@ -19,11 +19,15 @@ static void xorvar() {
 }
 
 void draw::setposition(int& x, int& y, int& width, int padding) {
-	if(padding == -1)
-		padding = metrics::padding;
-	x += padding;
-	y += padding;
-	width -= padding * 2;
+	if(padding == -1) {
+		x += metrics::edit.x1;
+		y += metrics::edit.y1;
+		width += metrics::edit.x2 - metrics::edit.x1;
+	} else {
+		x += padding;
+		y += padding;
+		width -= padding * 2;
+	}
 }
 
 void draw::titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator) {

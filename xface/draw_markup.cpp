@@ -183,7 +183,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 				element(rc.x2, y0, xe - rc.x2, ctx1, *p);
 		}
 	}
-	return rc.height() + metrics::padding*2;
+	return rc.height() - metrics::edit.height();
 }
 
 static void execute_command() {
