@@ -166,7 +166,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	setposition(x, y, width);
 	if(header_label && header_label[0])
 		titletext(x, y, width, 0, header_label, header_width);
-	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	rect rc = {x, y, x + width, y + draw::texth() - metrics::edit.height()};
 	unsigned flags = AlignRight;
 	if(isfocused(rc, ev))
 		flags |= Focused;
@@ -179,7 +179,7 @@ int draw::field(int x, int y, int width, const char* header_label, char* sev, un
 	setposition(x, y, width);
 	if(header_label && header_label[0])
 		titletext(x, y, width, 0, header_label, header_width);
-	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	rect rc = {x, y, x + width, y + draw::texth() - metrics::edit.height()};
 	unsigned flags = AlignLeft;
 	anyval av;
 	av.setvalue(sev, size);
@@ -327,7 +327,6 @@ void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext 
 	} else
 		gradv(rc, colors::button.lighten(), colors::button.darken());
 	rectb(rc, colors::border);
-	rect rco = rc;
 	auto execute_drop_down = false;
 	if(a && hot.key == MouseLeft && !hot.pressed)
 		execute_drop_down = true;
@@ -335,10 +334,11 @@ void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext 
 		execute_drop_down = true;
 	if(execute_drop_down)
 		fieldm(rc, av, source, getname, false, param, allow);
-	rco.offset(2, 2);
-	if(focused)
-		rectx(rco, colors::black);
-	rco.offset(2, 2);
+	rect rco = rc + metrics::edit;
+	if(focused) {
+		rect r1 = {-1, -1, -1, -1};
+		rectx(rco + r1, colors::black);
+	}
 	auto v = av.get();
 	if(av.getsize() != sizeof(void*))
 		v = (int)source.ptr(v);
@@ -359,7 +359,7 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 		decortext(0);
 		titletext(x, y, width, 0, header_label, header_width);
 	}
-	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	rect rc = {x, y, x + width, y + draw::texth() - metrics::edit.height()};
 	if(rc.width() <= 0)
 		return rc.height() - metrics::edit.height();
 	fieldc(rc, av, source, getname, tips, param, allow);
