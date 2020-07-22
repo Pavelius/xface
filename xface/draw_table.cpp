@@ -473,8 +473,7 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 	te.show_border = false;
 	te.post_escape = false;
 	te.align = flags;
-	te.rctext.x2++;
-	return te.editing({current_rect.x1, current_rect.y1, current_rect.x2, current_rect.y2});
+	return te.editing(current_rect);
 }
 
 void table::changenumber(const rect& rc, int line, int column) {
@@ -562,10 +561,10 @@ void table::cell(const rect& rc, int line, int column, const char* ps) {
 
 void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {
 	if(line == current && column == current_column) {
-		rect rch = {rc.x1 - metrics::edit.x1 + 1, rc.y1 - metrics::edit.y1, rc.x2 - metrics::edit.x2, rc.y2 - metrics::edit.y2 - 1};
+		rect rch = {rc.x1 - metrics::edit.x1, rc.y1 - metrics::edit.y1, rc.x2 - metrics::edit.x2, rc.y2 - metrics::edit.y2 - 1};
 		switch(select_mode) {
 		case SelectCell:
-			hilight(rch);
+			hilight({rch.x1 + 1, rch.y1, rch.x2, rch.y2}, &rch);
 			break;
 		case SelectText:
 			if(!text)

@@ -176,7 +176,7 @@ void list::view(const rect& rcorigin) {
 			rect rcm = {x1, y1, x2, y1 + pixels_per_line};
 			if(hilite_odd_lines) {
 				if(ix & 1)
-					rectf(rcm, hl);
+					rectf({rcm.x1, rcm.y1, rcm.x2, rcm.y2}, hl);
 			}
 			if(show_grid_lines)
 				line(rc.x1, rcm.y2 - 1, rc.x2, rcm.y2 - 1, colors::border);
