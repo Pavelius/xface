@@ -151,7 +151,7 @@ static int field_main(int x, int y, int width, contexti& ctx, const char* title_
 	auto y0 = y;
 	setposition(x, y, width);
 	header(x, y, width, ctx, title_text);
-	rect rc = {x, y, x + width, y + draw::texth() + 8};
+	rect rc = {x, y, x + width, y + draw::texth() - metrics::edit.height()};
 	unsigned flags = AlignLeft;
 	if(type->is(KindNumber))
 		flags = AlignRight;
@@ -214,7 +214,7 @@ static int element(int x, int y, int width, contexti& ctx, const markup& e) {
 		return e.proc.custom(x, y, width, pv);
 	} else if(e.cmd.execute) {
 		setposition(x, y, width);
-		rect rc = {x, y, x + width, y + 4 * 2 + texth()};
+		rect rc = {x, y, x + width, y + texth() - metrics::edit.height()};
 		anyval av(e.cmd.execute, sizeof(e), (int)ctx.object);
 		unsigned flags = 0;
 		auto focused = false;

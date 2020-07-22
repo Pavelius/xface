@@ -171,7 +171,6 @@ void table::mouseselect(int id, bool pressed) {
 
 int table::rowheader(const rect& rc) const {
 	static int base_width;
-	const int header_padding = 4;
 	char temp[260]; auto height = getrowheight();
 	rect rch = {rc.x1, rc.y1, rc.x2, rc.y1 + height};
 	color b1 = colors::button.lighten();
@@ -221,8 +220,8 @@ int table::rowheader(const rect& rc) const {
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)
-			textc(r1.x1 + header_padding, r1.y1 + header_padding, r1.width() - header_padding * 2, p);
-		a = ishilite({r1.x2 - header_padding, r1.y1, r1.x2 + header_padding, r1.y2});
+			textc(r1.x1 + metrics::edit.x1, r1.y1 + metrics::edit.y1, r1.width() + metrics::edit.width(), p);
+		a = ishilite({r1.x2 + metrics::edit.x2 - 1, r1.y1, r1.x2 + metrics::edit.x2 + 1, r1.y2});
 		if(a) {
 			hot.cursor = CursorLeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
@@ -322,7 +321,10 @@ void table::row(const rect& rc, int index) {
 			}
 			need_tree = false;
 		}
-		rect rt = {x1 + 4, rc.y1 + 4, x1 + pc->width - 4, rc.y2 - 4};
+		rect rt = {x1 + metrics::edit.x1,
+			rc.y1 + metrics::edit.y1,
+			x1 + pc->width + metrics::edit.x2,
+			rc.y2 + metrics::edit.y2};
 		if(level_ident) {
 			if(columns[i].size != SizeInner && columns[i].size != SizeFixed) {
 				auto mx = rt.width();
@@ -332,11 +334,13 @@ void table::row(const rect& rc, int index) {
 				level_ident -= mx;
 			}
 		}
-		if(show_grid_lines && columns[i].size != SizeInner)
-			draw::line(rt.x2 + 3, rt.y1 - 4, rt.x2 + 3, rt.y2 + 3, colors::border);
+		if(show_grid_lines && columns[i].size != SizeInner) {
+			auto x = x1 + pc->width;
+			draw::line(x, rt.y1 - metrics::edit.y1, x, rt.y2 - metrics::edit.y2, colors::border);
+		}
 		ishilite(rt);
 		(this->*pc->method->render)(rt, index, i);
-		x1 += rt.width() + 8;
+		x1 += pc->width;
 	}
 }
 
@@ -558,7 +562,7 @@ void table::cell(const rect& rc, int line, int column, const char* ps) {
 
 void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {
 	if(line == current && column == current_column) {
-		rect rch = {rc.x1 - 4, rc.y1 - 4, rc.x2 + 3, rc.y2 + 3};
+		rect rch = {rc.x1 - metrics::edit.x1 + 1, rc.y1 - metrics::edit.y1, rc.x2 - metrics::edit.x2, rc.y2 - metrics::edit.y2 - 1};
 		switch(select_mode) {
 		case SelectCell:
 			hilight(rch);
@@ -570,10 +574,13 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 			case AlignRight:
 			case AlignRightCenter:
 			case AlignRightBottom:
-				hilight({rc.x2 - 3 - draw::textw(text), rc.y1 - 4, rc.x2 + 3, rc.y2 + 3}, &rch);
+				hilight({rc.x2 - metrics::edit.x1 - draw::textw(text) + 1, rc.y1 - metrics::edit.y1,
+					rc.x2 - metrics::edit.x2 + 1, rc.y2 - metrics::edit.y2 + 1}, &rch);
 				break;
 			default:
-				hilight({rc.x1 - 4, rc.y1 - 4, rc.x1 + draw::textw(text) + 5, rc.y2 + 3}, &rch);
+				hilight({rc.x1 - metrics::edit.x1, rc.y1 - metrics::edit.y1,
+					rc.x1 + draw::textw(text) - metrics::edit.x2 + 1,
+					rc.y2 - metrics::edit.y2 - 1}, &rch);
 				break;
 			}
 			break;

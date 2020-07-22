@@ -88,11 +88,12 @@ void list::row(const rect& rc, int index) {
 	}
 	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
 	if(p)
-		draw::textc(r1.x1 + 4, r1.y1 + 4, r1.width() - 4 * 2, p);
+		draw::textc(r1.x1 + metrics::edit.x1, r1.y1 + metrics::edit.y1,
+			r1.width() - metrics::edit.width(), p);
 }
 
 int	list::getrowheight() {
-	return texth() + 8;
+	return texth() - metrics::edit.height();
 }
 
 void list::mousehiliting(const rect& screen, point mouse) {
@@ -139,7 +140,7 @@ void list::view(const rect& rcorigin) {
 		rc.y1 += rowheader(rc);
 	control::view(rc);
 	current_rect.clear();
-	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
+	//rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
 	lines_per_page = getlinesperpage(rc.height());

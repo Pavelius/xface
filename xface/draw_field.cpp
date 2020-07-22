@@ -335,10 +335,8 @@ void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext 
 	if(execute_drop_down)
 		fieldm(rc, av, source, getname, false, param, allow);
 	rect rco = rc + metrics::edit;
-	if(focused) {
-		rect r1 = {-1, -1, -1, -1};
-		rectx(rco + r1, colors::black);
-	}
+	if(focused)
+		rectx(rco, colors::black);
 	auto v = av.get();
 	if(av.getsize() != sizeof(void*))
 		v = (int)source.ptr(v);
