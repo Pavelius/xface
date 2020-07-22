@@ -186,7 +186,7 @@ int table::rowheader(const rect& rc) const {
 	color a2 = active.darken();
 	rect r1;
 	r1.x1 = rch.x1 - origin_width;
-	r1.x2 = r1.x1;
+	r1.x2 = r1.x1; r1.x2++;
 	r1.y1 = rch.y1;
 	r1.y2 = rch.y2;
 	for(unsigned i = 0; i < columns.count; i++) {
@@ -279,7 +279,7 @@ void table::rowtotal(const rect& rc) const {
 	draw::setclip({rc.x1, rc.y1, rc.x2, rc.y2 + 1});
 	rect r1;
 	r1.x1 = rch.x1 - origin_width;
-	r1.x2 = r1.x1;
+	r1.x2 = r1.x1; r1.x2++;
 	r1.y1 = rch.y1;
 	r1.y2 = rch.y2;
 	for(unsigned i = 0; i < columns.count; i++) {
@@ -293,7 +293,7 @@ void table::rowtotal(const rect& rc) const {
 		temp[0] = 0;
 		if(result) {
 			zprint(temp, "%1i", result);
-			auto r2 = r1; r2.offset(4);
+			auto r2 = r1 + metrics::edit;
 			draw::text(r2, temp, AlignRight | TextSingleLine);
 		}
 		r1.x1 = r1.x2;

@@ -140,7 +140,7 @@ void list::view(const rect& rcorigin) {
 		rc.y1 += rowheader(rc);
 	control::view(rc);
 	current_rect.clear();
-	//rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
+	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
 		pixels_per_line = getrowheight();
 	lines_per_page = getlinesperpage(rc.height());
