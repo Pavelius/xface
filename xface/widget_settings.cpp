@@ -312,7 +312,7 @@ static struct widget_settings_header : controls::list {
 	}
 	void row(const rect& rc, int index) override {
 		list::row({rc.x1 + 1, rc.y1 + 1, rc.x2 - 1, rc.y2}, index);
-		textc(rc.x1 + 4, rc.y1 + 4, rc.width() - 8, rows[index]->division);
+		textc(rc.x1 + metrics::edit.x1, rc.y1 + metrics::edit.y1, rc.width() + metrics::edit.width(), rows[index]->division);
 	}
 	const header* getcurrent() {
 		return rows[current];

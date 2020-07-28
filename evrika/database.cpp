@@ -5,6 +5,10 @@ static datetime initialize_date;
 
 database databases[256];
 
+static rfid add(const char* name) {
+	return 0;
+}
+
 static reference* addrf(base_s id, rfid parent, const char* name, const char* comment) {
 	auto p = (reference*)databases[id].add();
 	p->base = id;
@@ -12,8 +16,8 @@ static reference* addrf(base_s id, rfid parent, const char* name, const char* co
 	p->create_date = initialize_date;
 	p->counter = initialize_counter++;
 	p->parent = parent;
-	p->name = szdup(name);
-	p->comment = szdup(comment);
+	p->name = add(name);
+	p->comment = add(comment);
 	return p;
 }
 

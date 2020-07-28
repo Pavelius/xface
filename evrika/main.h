@@ -28,8 +28,8 @@ struct stamp {
 };
 struct reference : stamp {
 	rfid					parent;
-	const char*				name;
-	const char*				comment;
+	rfid					name;
+	rfid					comment;
 };
 struct header : reference {
 	base_s					base;
@@ -39,9 +39,14 @@ struct header : reference {
 struct requisit : reference {
 };
 struct user : reference {
-	const char*				firstname;
-	const char*				lastname;
-	const char*				surname;
-	unsigned				read_permission;
-	unsigned				write_permission;
+	rfid					firstname;
+	rfid					lastname;
+	rfid					surname;
+	rfid					read_permission;
+	rfid					write_permission;
+};
+struct keyvalue {
+	rfid					key; // parent object (only reference type)
+	rfid					requisit; // requisit value
+	rfid					value; // object value
 };

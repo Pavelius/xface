@@ -70,8 +70,8 @@
     }
   },
   "window":{
-    "x":30,
-    "y":27,
+    "x":160,
+    "y":42,
     "width":915,
     "height":575,
     "header_width":118,
@@ -83,7 +83,7 @@
       "Visible":1
     },
     "header":{
-      "Docking":0,
+      "Docking":2,
       "Visible":1
     }
   }
