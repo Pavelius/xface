@@ -260,6 +260,15 @@ template<typename T> struct bsdata {
 	static constexpr T*		begin() { return elements; }
 	static constexpr T*		end() { return elements + source.getcount(); }
 };
+// Abstract serializer
+struct serializer {
+	enum type_s { Text, Number, Array, Struct };
+	virtual ~serializer() {}
+	virtual void			open(const char* id, type_s type = Text) = 0;
+	virtual void			set(const char* id, int v, type_s type = Number) = 0;
+	virtual void			set(const char* id, const char* v, type_s type = Text) = 0;
+	virtual void			close(const char* id, type_s type = Text) = 0;
+};
 template<> struct bsdata<int> { static constexpr array*	source_ptr = 0; };
 NOINSTDATA(unsigned)
 NOINSTDATA(short)

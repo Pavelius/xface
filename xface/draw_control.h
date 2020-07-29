@@ -130,6 +130,7 @@ struct control {
 	virtual void			setfocus(bool instant);
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
+	virtual void			write(serializer& sr) const {}
 };
 // Analog of listbox element
 struct list : control {
@@ -296,6 +297,7 @@ struct table : list {
 	virtual void			swap(int i1, int i2) {} // Need override
 	void					view(const rect& rc) override;
 	static const visual		visuals[];
+	void					write(serializer& sr) const override;
 private:
 	void					update_columns(const rect& rc);
 };

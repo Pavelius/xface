@@ -6,21 +6,20 @@
 namespace io {
 // Network protocols
 enum protocols { NoProtocol, TCP, UDP };
-enum type_s { Text, Number, Array, Struct };
 // Application defined reader.
 // Plugin read file and post events to this class.
 struct reader {
 	struct node {
 		node*			parent;
 		const char*		name;
-		type_s			type;
+		serializer::type_s type;
 		int				index;
 		bool			skip; // set this if you want skip block
 		int				params[12];
 		//
-		node(type_s type = Text);
-		node(node& parent, const char* name = "", type_s type = Text);
-		bool				operator==(const char* name) const;
+		node(serializer::type_s type = serializer::Text);
+		node(node& parent, const char* name = "", serializer::type_s type = serializer::Text);
+		bool			operator==(const char* name) const;
 		//
 		int				get(int n) const;
 		int				getlevel() const;
@@ -29,17 +28,6 @@ struct reader {
 	virtual void		open(node& e) {}
 	virtual void		set(node& e, const char* value) {};
 	virtual void		close(node& e) {}
-};
-// Application create instance of this object.
-// Then write data use custom, application-defined logic.
-struct writer {
-	stream&				e;
-	writer(stream& e) : e(e) {}
-	virtual ~writer() {}
-	virtual void		open(const char* name, int type = 0) {}
-	virtual void		set(const char* name, int value, int type = 0) {};
-	virtual void		set(const char* name, const char* value, int type = 0) {};
-	virtual void		close(const char* name, int type = 0) {}
 };
 struct plugin {
 	const char*			name;
@@ -52,7 +40,7 @@ struct plugin {
 	static plugin*		find(const char* name);
 	static void			getfilter(stringbuilder& sb);
 	virtual const char*	read(const char* source, reader& r) = 0;
-	virtual writer*		write(stream& e) = 0;
+	virtual serializer*	write(stream& e) = 0;
 };
 struct strategy : public reader {
 	const char*			id; // Second level strategy name. If we have root level 'Setting' this can be 'Columns' or 'Windows'.
@@ -63,7 +51,7 @@ struct strategy : public reader {
 	strategy(const char* id, const char* type);
 	static strategy*	find(const char* name);
 	static bool			istrue(const char* name);
-	virtual void		write(io::writer& e, void* param) = 0;
+	virtual void		write(serializer& e, void* param) = 0;
 };
 struct address {
 	unsigned short		family;

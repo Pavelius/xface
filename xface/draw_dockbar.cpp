@@ -153,7 +153,7 @@ static struct dockbar_settings_strategy : io::strategy {
 		return sz2num(text);
 	}
 
-	void write(io::writer& file, void* param) override {
+	void write(serializer& file, void* param) override {
 		for(auto i = DockLeft; i <= DockWorkspace; i = (dock_s)(i + 1)) {
 			char temp[32]; stringbuilder sb(temp);
 			sb.add("Dock%1i", i);

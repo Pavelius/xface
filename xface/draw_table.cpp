@@ -729,6 +729,21 @@ bool table::removerow(bool run) {
 	return true;
 }
 
+void table::write(serializer& file) const {
+	if(!columns)
+		return;
+	file.open("columns");
+	for(auto& e : columns) {
+		file.open("column");
+		file.set("id", e.title);
+		file.set("width", e.width);
+		file.set("size", e.size);
+		file.set("total", e.total);
+		file.close("column");
+	}
+	file.close("columns");
+}
+
 bool table::setting(bool run) {
 	return true;
 }

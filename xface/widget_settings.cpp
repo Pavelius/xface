@@ -647,7 +647,7 @@ static int getnum(const char* value) {
 }
 
 static struct settings_settings_strategy : io::strategy {
-	void write(io::writer& file, const element& e) {
+	void write(serializer& file, const element& e) {
 		switch(e.var.type) {
 		case setting::Bool:
 		case setting::Number:
@@ -665,7 +665,7 @@ static struct settings_settings_strategy : io::strategy {
 			break;
 		}
 	}
-	void write(io::writer& file, void* param) override {
+	void write(serializer& file, void* param) override {
 		strowsa divisions; divisions.select_divisions();
 		for(auto pd : divisions) {
 			strowsa pages; pages.select_pages(pd);
@@ -757,7 +757,7 @@ static struct settings_settings_strategy : io::strategy {
 } settings_settings_strategy_instance;
 
 static struct window_settings_strategy : io::strategy {
-	void write(io::writer& file, void* param) override {
+	void write(serializer& file, void* param) override {
 		file.set("x", window.x);
 		file.set("y", window.y);
 		file.set("width", window.width);
@@ -783,7 +783,7 @@ static struct window_settings_strategy : io::strategy {
 } window_settings_strategy_instance;
 
 static struct controls_settings_strategy : io::strategy {
-	void write(io::writer& file, void* param) override {
+	void write(serializer& file, void* param) override {
 		for(auto pp = controls::control::plugin::first; pp; pp = pp->next) {
 			auto id = pp->id;
 			if(!id || id[0] == 0)
@@ -791,6 +791,7 @@ static struct controls_settings_strategy : io::strategy {
 			file.open(id);
 			file.set("Docking", pp->dock);
 			file.set("Visible", pp->visible);
+			pp->getcontrol().write(file);
 			file.close(id);
 		}
 	}

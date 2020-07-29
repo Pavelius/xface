@@ -153,7 +153,7 @@ bool io::write(const char* url, const char* root_name, void* param) {
 	io::file file(url, StreamWrite | StreamText);
 	if(!file)
 		return false;
-	io::writer* pw = pp->write(file);
+	auto pw = pp->write(file);
 	if(!pw)
 		return false;
 	pw->open(root_name);
@@ -168,10 +168,10 @@ bool io::write(const char* url, const char* root_name, void* param) {
 	return true;
 }
 
-io::reader::node::node(io::type_s type) : parent(0), name(""), type(type), index(0), skip(false) {
+io::reader::node::node(serializer::type_s type) : parent(0), name(""), type(type), index(0), skip(false) {
 	memset(params, 0, sizeof(params));
 }
 
-io::reader::node::node(io::reader::node& parent, const char* name, io::type_s type) : parent(&parent), name(name), type(type), index(0), skip(parent.skip) {
+io::reader::node::node(io::reader::node& parent, const char* name, serializer::type_s type) : parent(&parent), name(name), type(type), index(0), skip(parent.skip) {
 	memset(params, 0, sizeof(params));
 }
