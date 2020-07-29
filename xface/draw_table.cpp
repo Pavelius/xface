@@ -321,25 +321,21 @@ void table::row(const rect& rc, int index) {
 			}
 			need_tree = false;
 		}
-		rect rt = {x1 + metrics::edit.x1,
-			rc.y1 + metrics::edit.y1,
-			x1 + pc->width + metrics::edit.x2,
-			rc.y2 + metrics::edit.y2};
+		rect r1 = {x1, rc.y1, x1 + pc->width - 1, rc.y2 - 1};
 		if(level_ident) {
 			if(columns[i].size != SizeInner && columns[i].size != SizeFixed) {
-				auto mx = rt.width();
+				auto mx = r1.width() + metrics::edit.width();
 				if(mx > level_ident)
 					mx = level_ident;
-				rt.x2 -= mx;
+				r1.x2 -= mx;
 				level_ident -= mx;
 			}
 		}
 		if(show_grid_lines && columns[i].size != SizeInner) {
-			auto x = x1 + pc->width;
-			draw::line(x, rt.y1 - metrics::edit.y1, x, rt.y2 - metrics::edit.y2, colors::border);
+			draw::line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
 		}
-		ishilite(rt);
-		(this->*pc->method->render)(rt, index, i);
+		ishilite(r1);
+		(this->*pc->method->render)(r1, index, i);
 		x1 += pc->width;
 	}
 }
@@ -473,7 +469,7 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 	te.show_border = false;
 	te.post_escape = false;
 	te.align = flags;
-	return te.editing(current_rect);
+	return te.editing(rc);
 }
 
 void table::changenumber(const rect& rc, int line, int column) {
@@ -552,19 +548,19 @@ void table::cell(const rect& rc, int line, int column, const char* ps) {
 	auto align = columns[column].align;
 	cellhilite(rc, line, column, ps, align);
 	bool clipped = false;
-	textc(rc.x1, rc.y1, rc.width(), ps, -1, align, &clipped);
+	rect r1 = rc + metrics::edit;
+	textc(r1.x1, r1.y1, r1.width(), ps, -1, align, &clipped);
 	if(clipped) {
-		if(ishilite(rc))
-			tooltips(rc.x1, rc.y1, 200, ps);
+		if(ishilite(r1))
+			tooltips(r1.x1, r1.y1, 200, ps);
 	}
 }
 
 void table::cellhilite(const rect& rc, int line, int column, const char* text, image_flag_s aling) const {
 	if(line == current && column == current_column) {
-		rect rch = {rc.x1 - metrics::edit.x1, rc.y1 - metrics::edit.y1, rc.x2 - metrics::edit.x2, rc.y2 - metrics::edit.y2 - 1};
 		switch(select_mode) {
 		case SelectCell:
-			hilight({rch.x1 + 1, rch.y1, rch.x2, rch.y2}, &rch);
+			hilight(rc);
 			break;
 		case SelectText:
 			if(!text)
@@ -573,13 +569,10 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 			case AlignRight:
 			case AlignRightCenter:
 			case AlignRightBottom:
-				hilight({rc.x2 - metrics::edit.x1 - draw::textw(text) + 1, rc.y1 - metrics::edit.y1,
-					rc.x2 - metrics::edit.x2 + 1, rc.y2 - metrics::edit.y2 + 1}, &rch);
+				hilight({rc.x2 + metrics::edit.width() - (draw::textw(text) + 2), rc.y1, rc.x2, rc.y2}, &rc);
 				break;
 			default:
-				hilight({rc.x1 - metrics::edit.x1, rc.y1 - metrics::edit.y1,
-					rc.x1 + draw::textw(text) - metrics::edit.x2 + 1,
-					rc.y2 - metrics::edit.y2 - 1}, &rch);
+				hilight({rc.x1, rc.y1, rc.x1 + (draw::textw(text) + 2) - metrics::edit.width(), rc.y2}, &rc);
 				break;
 			}
 			break;
