@@ -129,8 +129,6 @@ public:
 			return;
 		current = i;
 	}
-	bool addrow(bool run);
-	bool removerow(bool run);
 	requisit_control() : plugin("requisit", DockLeftBottom) {
 		show_header = false;
 		show_toolbar = false;
@@ -237,20 +235,8 @@ static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alp
 {new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
 {}};
 
-bool requisit_control::addrow(bool run) {
-	if(run)
-		new_requisit();
-	return true;
-}
-
-bool requisit_control::removerow(bool run) {
-	if(run)
-		remove_requisit();
-	return true;
-}
-
-controls::control::command requisit_control::commands_add[] = {{"add", "Добавить", 0, &requisit_control::addrow, 9},
-{"remove", "Удалить", 0, &table::removerow, 19, KeyDelete},
+controls::control::command requisit_control::commands_add[] = {{"add", "Добавить", 0, new_requisit, 9},
+{"remove", "Удалить", 0, remove_requisit, 19, KeyDelete},
 {}};
 
 static setting::element code_editor_metadata[] = {{"Показывать типы в окне метаданных", metadata_view_show_type},

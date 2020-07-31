@@ -178,9 +178,9 @@ void control::command::builder::render(const control* parent, const control::com
 }
 
 bool control::command::isallow(const control* parent) const {
-	if(!proc.cmd)
-		return true;
-	return (const_cast<control*>(parent)->*proc.cmd)(false);
+	if(proc.cmd)
+		return (const_cast<control*>(parent)->*proc.cmd)(false);
+	return true;
 }
 
 void control::command::builder::render(const control* parent, const control::command* commands) {
@@ -195,8 +195,12 @@ void control::contextmenu(const command* source, command::builder& pm) {
 	pm.start();
 	pm.render(this, source);
 	auto cmd = pm.finish();
-	if(cmd)
-		(this->*cmd->proc.cmd)(true);
+	if(cmd) {
+		if(cmd->proc.cmd)
+			(this->*cmd->proc.cmd)(true);
+		if(cmd->proc.cmd_event)
+			cmd->proc.cmd_event();
+	}
 }
 
 const char* control::getlabel(const void* object, char* result, const char* result_maximum) {

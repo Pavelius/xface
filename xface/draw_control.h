@@ -59,10 +59,12 @@ struct control {
 	typedef bool			(control::*fnvisible)() const;
 	struct proci {
 		fncmd				cmd;
+		eventproc			cmd_event;
 		fnvisible			visible;
-		constexpr proci() : cmd(0), visible(0) {}
-		template<class T> constexpr proci(bool (T::*p)() const) : cmd(0), visible((fnvisible)p) {}
-		template<class T> constexpr proci(bool (T::*p)(bool run)) : cmd((fncmd)p), visible(0) {}
+		constexpr proci() : cmd(0), cmd_event(0), visible(0) {}
+		constexpr proci(eventproc v) : cmd(0), cmd_event(v), visible(0) {}
+		template<class T> constexpr proci(bool (T::*v)() const) : cmd(0), cmd_event(0), visible((fnvisible)v) {}
+		template<class T> constexpr proci(bool (T::*v)(bool run)) : cmd((fncmd)v), cmd_event(0), visible(0) {}
 	};
 	struct plugin {
 		const char*			id;
