@@ -47,10 +47,10 @@
     }
   },
   "window":{
-    "x":75,
-    "y":61,
-    "width":990,
-    "height":504,
+    "x":153,
+    "y":64,
+    "width":784,
+    "height":543,
     "header_width":169,
     "flags":48
   },
@@ -61,13 +61,13 @@
       "columns":{
         "column":{
           "id":"Дата",
-          "width":160,
+          "width":4,
           "size":2,
           "total":0
         },
         "column":{
           "id":"Сообщение",
-          "width":616,
+          "width":200,
           "size":4,
           "total":0
         }
@@ -84,7 +84,7 @@
         },
         "column":{
           "id":"Наименование",
-          "width":180,
+          "width":200,
           "size":4,
           "total":0
         }

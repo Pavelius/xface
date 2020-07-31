@@ -72,6 +72,7 @@ public:
 
 static class requisit_control : public controls::tableref, controls::control::plugin, initplugin {
 	struct metadata* current_parent;
+	static command commands_add[];
 	static const char* getpresent(const void* p, char* result, const char* result_maximum) {
 		stringbuilder sb(result, result_maximum);
 		if(metadata_view_show_type)
@@ -93,7 +94,7 @@ static class requisit_control : public controls::tableref, controls::control::pl
 		return "Реквизиты";
 	}
 	command* getcommands() const override {
-		return 0;
+		return commands_add;
 	}
 	int getimage(int index) const override {
 		return 0;
@@ -128,8 +129,11 @@ public:
 			return;
 		current = i;
 	}
+	bool addrow(bool run);
+	bool removerow(bool run);
 	requisit_control() : plugin("requisit", DockLeftBottom) {
 		show_header = false;
+		show_toolbar = false;
 		read_only = true;
 		no_change_count = true;
 		no_change_order = true;
@@ -223,11 +227,30 @@ static void new_type() {
 	properties_instance.focusfirst();
 }
 
+static void remove_requisit() {
+}
+
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
 {choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
 {choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
 {new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
 {new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
+{}};
+
+bool requisit_control::addrow(bool run) {
+	if(run)
+		new_requisit();
+	return true;
+}
+
+bool requisit_control::removerow(bool run) {
+	if(run)
+		remove_requisit();
+	return true;
+}
+
+controls::control::command requisit_control::commands_add[] = {{"add", "Добавить", 0, &requisit_control::addrow, 9},
+{"remove", "Удалить", 0, &table::removerow, 19, KeyDelete},
 {}};
 
 static setting::element code_editor_metadata[] = {{"Показывать типы в окне метаданных", metadata_view_show_type},

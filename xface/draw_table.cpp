@@ -201,22 +201,24 @@ int table::rowheader(const rect& rc) const {
 			columns.data[i].width = new_width;
 		}
 		r1.x2 = r1.x2 + columns[i].width;
+		if(r1.x1 == (rch.x1 - origin_width))
+			r1.x1++;
 		if(columns[i].size == SizeInner)
 			continue;
 		auto a = ishilite(r1);
 		if(!no_change_order) {
 			if(a) {
 				if(hot.pressed)
-					gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a2, a1);
+					gradv({r1.x1, r1.y1 + 1, r1.x2, r1.y2}, a2, a1);
 				else
-					gradv({r1.x1 + 1, r1.y1 + 1, r1.x2, r1.y2}, a1, a2);
+					gradv({r1.x1, r1.y1 + 1, r1.x2, r1.y2}, a1, a2);
 				if(hot.key == MouseLeft && !hot.pressed)
 					clickcolumn(i);
 			}
 		}
 		// Нарисуем границу только когда она далеко от края
 		// Чтобы она была не видна, если ширина элемента впритык к краю.
-		line(r1.x2, r1.y1, r1.x2, r1.y2, colors::border);
+		line(r1.x2 - 1, r1.y1, r1.x2 - 1, r1.y2, colors::border);
 		temp[0] = 0;
 		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
 		if(p)

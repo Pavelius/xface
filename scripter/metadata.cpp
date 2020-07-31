@@ -226,6 +226,10 @@ void requisit::getname(stringbuilder& sb) const {
 		sb.add("[%1i]", count);
 }
 
+void requisit::clear() {
+	memset(this, 0, sizeof(*this));
+}
+
 bool requisit::ispredefined() const {
 	return this <= requisit_data;
 }
