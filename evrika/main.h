@@ -10,8 +10,19 @@ enum base_s : unsigned char {
 };
 struct requisit;
 typedef unsigned			rfid;
+struct rfob {
+	union {
+		unsigned char		bytes[4];
+		unsigned			dword;
+	};
+	constexpr bool operator==(const rfob& e) const { return e.dword == dword; }
+	int						get(rfob v) const;
+	void*					ptr() const;
+	void*					ptr(rfob id) const;
+};
+typedef aref<rfob>			blist;
 struct database : public array {
-	requisit*				requisits;
+	blist					requisits;
 };
 extern database				databases[256];
 constexpr base_s			gtb(unsigned v) { return (base_s)(v >> 24); }
@@ -49,4 +60,8 @@ struct keyvalue {
 	rfid					key; // parent object (only reference type)
 	rfid					requisit; // requisit value
 	rfid					value; // object value
+};
+struct keyrequisit {
+	rfid					key; // parent object (only reference type)
+	rfid					parent; // requisit value
 };

@@ -263,6 +263,25 @@ template<typename T> struct bsdata {
 // Abstract serializer
 struct serializer {
 	enum type_s { Text, Number, Array, Struct };
+	struct node {
+		node*				parent;
+		const char*			name;
+		type_s				type;
+		int					index;
+		void*				data; // application defined data
+		bool				skip; // set this if you want skip block
+		//
+		constexpr node(type_s type = Text) : parent(0), name(""), type(type), index(0), skip(false), data(0) {}
+		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), skip(false), data(0) {}
+		bool				operator==(const char* name) const { return name && strcmp(this->name, name) == 0; }
+		//
+		bool				isparent(const char* id) const { return parent && *parent == id; }
+	};
+	struct reader {
+		virtual void		open(node& e) = 0;
+		virtual void		set(node& e, const char* value) = 0;
+		virtual void		close(node& e) = 0;
+	};
 	virtual ~serializer() {}
 	virtual void			open(const char* id, type_s type = Text) = 0;
 	virtual void			set(const char* id, int v, type_s type = Number) = 0;

@@ -6,6 +6,8 @@
     <ClCompile Include="..\xface\widget_logging.cpp" />
     <ClCompile Include="database.cpp" />
     <ClCompile Include="database_serial.cpp" />
+    <ClCompile Include="properties.cpp" />
+    <ClCompile Include="rfob.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
