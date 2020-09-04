@@ -146,9 +146,7 @@
     <ClCompile Include="draw_tableref.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
-    <ClCompile Include="markup.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="markup.cpp" />
     <ClCompile Include="requisit.cpp" />
     <ClCompile Include="bsreq.cpp" />
     <ClCompile Include="bstream.cpp" />
@@ -213,9 +211,7 @@
     <ClInclude Include="draw_animation.h" />
     <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
-    <ClInclude Include="markup.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="markup.h" />
     <ClInclude Include="setting.h" />
     <ClInclude Include="stringbuilder.h" />
     <ClInclude Include="valuelist.h" />
