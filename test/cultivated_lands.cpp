@@ -13,4 +13,4 @@ BSMETA(cultivatedi) = {
 	BSREQ(arable_land),
 	BSREQ(arable_land_percent),
 {}};
-INSTELEM(cultivatedi)
+BSHEAD(cultivatedi)

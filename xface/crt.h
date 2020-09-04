@@ -37,7 +37,7 @@ private:
 #define BSDATAC(e, c) template<> e bsdata<e>::elements[c]; template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), 0, sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
 #define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};
 #define BSMETA(e) template<> const bsreq bsmeta<e>::meta[]
-#define INSTELEM(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
+#define BSHEAD(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
 #define BSLNK(T1, T2) template<> struct bsmeta<T1> : bsmeta<T2> {}; template<> struct bsdata<T1> : bsdata<T2> {};
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
 
