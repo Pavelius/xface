@@ -9,9 +9,10 @@ static bool		current_order;
 static table*	current_element;
 
 int table::comparest(int i1, int i2, int column) const {
-	char t1[260], t2[260]; t1[0] = 0; t2[0] = 0;
-	auto n1 = columns[column].get(get(i1), t1, t1 + sizeof(t1) - 1);
-	auto n2 = columns[column].get(get(i2), t2, t2 + sizeof(t2) - 1);
+	char t1[260]; stringbuilder sb1(t1);
+	char t2[260]; stringbuilder sb2(t2);
+	auto n1 = columns[column].get(get(i1), sb1);
+	auto n2 = columns[column].get(get(i2), sb2);
 	return strcmp(n1, n2);
 }
 
@@ -77,12 +78,12 @@ void column::set(const void* object, int v) {
 	type->set(type->ptr(object), v);
 }
 
-const char* column::get(const void* object, char* result, const char* result_end) const {
+const char* column::get(const void* object, stringbuilder& sb) const {
 	if(getpresent)
-		return getpresent(object, result, result_end);
+		return getpresent(object, sb);
 	if(type)
 		return type->gets(type->ptr(object));
-	return result;
+	return "";
 }
 
 void table::update_columns(const rect& rc) {
@@ -492,13 +493,13 @@ void table::changetext(const rect& rc, int line, int column) {
 		columns[column].set(get(line), (int)szdup(temp));
 }
 
-const char* table::getenumid(const void* object, char* result, const char* result_maximum) {
+const char* table::getenumid(const void* object, stringbuilder& sb) {
 	if(!object)
 		return "Нет";
 	return ((enumi*)object)->id;
 }
 
-const char* table::getenumname(const void* object, char* result, const char* result_maximum) {
+const char* table::getenumname(const void* object, stringbuilder& sb) {
 	if(!object)
 		return "Пусто";
 	return ((enumi*)object)->name;
@@ -585,8 +586,8 @@ void table::cellhilite(const rect& rc, int line, int column, const char* text, i
 }
 
 void table::celltext(const rect& rc, int line, int column) {
-	char temp[260];
-	auto ps = columns[column].get(get(line), temp, temp + sizeof(temp) / sizeof(temp[0]) - 1);
+	char temp[260]; stringbuilder sb(temp);
+	auto ps = columns[column].get(get(line), sb);
 	cell(rc, line, column, ps);
 }
 

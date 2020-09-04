@@ -26,7 +26,7 @@ static const char*			settings_file_name = "settings.json";
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
-INSTDATA(docki) = {{"dock_left", "Присоединить слева"},
+BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_left_bottom", "Присоединить слева и снизу"},
 {"dock_right", "Присоединить справа"},
 {"dock_right_bottom", "Присоединить справа и снизу"},
@@ -34,7 +34,7 @@ INSTDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_workspace", "На рабочем столе"}
 };
 assert_enum(dock, DockWorkspace);
-INSTMETA(control::plugin) = {BSREQ(id), BSREQ(dock), BSREQ(visible), {}};
+BSMETA(control::plugin) = {BSREQ(id), BSREQ(dock), BSREQ(visible), {}};
 
 struct streca {
 	const element*	e;
@@ -192,8 +192,8 @@ public:
 	}
 };
 
-static const char* get_page_name(const void* p, char* result, const char* result_maximum) {
-	return szprint(result, result_maximum, ((header*)p)->page);
+static const char* get_page_name(const void* p, stringbuilder& sb) {
+	return ((header*)p)->page;
 }
 
 static void callback_settab() {
@@ -266,7 +266,7 @@ static int render_element(int x, int y, int width, unsigned flags, const setting
 		y += field(x, y, width, e.name, *((const char**)e.var.data), title);
 		break;
 	case setting::Url:
-		y += field(x, y, width, e.name, *((const char**)e.var.data), title, choose_folder);//callback_choose_folder
+		//y += field(x, y, width, e.name, *((const char**)e.var.data), title, choose_folder);//callback_choose_folder
 		break;
 	case setting::Control:
 		break;
@@ -353,8 +353,8 @@ int draw::field(int x, int y, int width, const char* label, color& value, int he
 }
 
 static struct widget_settings : controls::control {
-	const char* getlabel(char* result, const char* result_maximum) const override {
-		return szprint(result, result_maximum, "Настройки");
+	const char* getlabel(stringbuilder& sb) const override {
+		return "Настройки";
 	}
 	void view(const rect& rcorigin) override {
 		auto rc = rcorigin;
@@ -427,8 +427,8 @@ static struct widget_application : draw::controls::control {
 	eventproc		heartproc;
 	control*		hotcontrols[48];
 	bool			allow_multiply_window;
-	const char* getlabel(char* result, const char* result_maximum) const override {
-		return szprint(result, result_maximum, "Главный");
+	const char* getlabel(stringbuilder& sb) const override {
+		return "Главный";
 	}
 	const command* getcommands() const override {
 		return 0;
@@ -570,8 +570,8 @@ static struct application_plugin : draw::initplugin {
 static controls::control* layouts[] = {&widget_application_control, &widget_settings_control};
 
 static void get_control_status(controls::control* object) {
-	char temp[260];
-	draw::statusbar("Переключить вид на '%1'", object->getlabel(temp, zendof(temp)));
+	char temp[260]; stringbuilder sb(temp);
+	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
 }
 
 void draw::application(bool allow_multiply_window, eventproc heartproc, shortcut* shortcuts) {

@@ -12,7 +12,7 @@ struct autocomplete : list {
 	bool				show_images;
 	const sprite*		images;
 	constexpr autocomplete() : source(), show_images(false), images() {}
-	const char*	getname(char* result, const char* result_max, int line, int column) const override {
+	const char*	getname(stringbuilder& sb, int line, int column) const override {
 		switch(column) {
 		case 0: return source.data[line]->text;
 		}
@@ -30,14 +30,14 @@ struct autocomplete : list {
 		return 0;
 	}
 	void row(const rect& rc, int index) override {
-		char temp[260]; temp[0] = 0;
+		char temp[260]; stringbuilder sb(temp);
 		rowhilite(rc, index);
 		auto rt = rc;
 		if(show_images) {
 			image(rt.x1 + rt.height() / 2, rt.y1 + rt.height() / 2, images, getimage(index), 0);
 			rt.x1 += rt.height() - 4;
 		}
-		auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
+		auto p = getname(sb, index, 0);
 		if(p)
 			draw::textc(rt.x1 + 4, rt.y1 + 4, rt.width() - 4 * 2, p);
 	}

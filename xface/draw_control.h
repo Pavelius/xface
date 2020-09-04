@@ -8,8 +8,6 @@
 
 #pragma once
 
-typedef void(*fnchoose)(const anyval& value);
-
 namespace clipboard {
 void					copy(const void* string, int lenght);
 char*					paste();
@@ -115,8 +113,8 @@ struct control {
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
-	virtual const char*		getlabel(char* result, const char* result_maximum) const { return 0; }
-	static const char*		getlabel(const void* object, char* result, const char* result_maximum);
+	virtual const char*		getlabel(stringbuilder& sb) const { return 0; }
+	static const char*		getlabel(const void* object, stringbuilder& sb);
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
 	static bool				is(const char* s1, const char* s2);
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
@@ -160,7 +158,7 @@ struct list : control {
 	virtual int				getlevel(int index) const { return 0; } // get row ident in levels
 	inline int				getline() const { return current; } // get current line
 	int						getlinesperpage(int height) const { return height / pixels_per_line; }
-	virtual const char*		getname(char* result, const char* result_max, int line, int column) const { return 0; }
+	virtual const char*		getname(stringbuilder& sb, int line, int column) const { return 0; }
 	int						getnextblock(int index, int increment = 1) const;
 	virtual int				getmaximum() const { return 0; }
 	virtual int				getmaximumwidth() const { return 0; }
@@ -208,7 +206,7 @@ struct column {
 	fntext					getpresent;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
-	const char*				get(const void* object, char* result, const char* result_end) const;
+	const char*				get(const void* object, stringbuilder& sb) const;
 	constexpr bool			is(column_s v) const { return flags.is(v); }
 	void					set(const void* object, int v);
 	column&					set(image_flag_s v) { align = v; return *this; }
@@ -272,8 +270,8 @@ struct table : list {
 	virtual int				getcolumn() const override { return current_column; }
 	const command*			getcommands() const override { return commands; }
 	void*					getcurrent() const;
-	static const char*		getenumname(const void* object, char* result, const char* result_maximum);
-	static const char*		getenumid(const void* object, char* result, const char* result_maximum);
+	static const char*		getenumname(const void* object, stringbuilder& sb);
+	static const char*		getenumid(const void* object, stringbuilder& sb);
 	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	rect					getrect(int row, int column) const;
@@ -460,5 +458,5 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
-NOINSTDATA(datetime)
-DECLENUM(draw::dock)
+NOBSDATA(datetime)
+BSLNK(draw::dock_s, draw::docki)

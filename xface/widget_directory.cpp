@@ -14,7 +14,7 @@ struct header : tree::element {
 	const char*		getname() const { return name; }
 };
 }
-INSTMETA(header) = {BSREQ(name), BSREQ(image), {}};
+BSMETA(header) = {BSREQ(name), BSREQ(image), {}};
 
 static const char*		base_url = "D:/projects";
 
@@ -31,7 +31,7 @@ static struct widget_directory : tree, control::plugin, initplugin {
 		return *this;
 	}
 
-	const char* getlabel(char* result, const char* result_maximum) const override {
+	const char* getlabel(stringbuilder& sb) const override {
 		return "װאיכû";
 	}
 

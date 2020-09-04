@@ -6,12 +6,12 @@
 using namespace draw;
 
 static fnchoose		proc_choose;
+static fntext		list_getname;
+static fnallow		list_allow;
 static rect			cmb_rect;
 static array		cmb_source;
 static anyval		cmb_var;
 static const void*	cmb_param;
-static fntext		cmb_getname;
-static fnallow		cmd_allow;
 
 static const char* getvalue(const anyval& v, bool istext, char* result, const char* result_end) {
 	if(!v)
@@ -102,7 +102,7 @@ void draw::savefocus() {
 static void execute_choose() {
 	if(!proc_choose)
 		return;
-	proc_choose(cmb_var);
+	//proc_choose(cmb_var);
 	cedit.load();
 	cedit.select_all(true);
 	cedit.invalidate();
@@ -204,16 +204,16 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 }
 
 struct combolist : controls::list, reflist {
-	const char* getname(char* result, const char* result_max, int line, int column) const override {
-		return cmb_getname(data[line], result, result_max);
+	const char* getname(stringbuilder& sb, int line, int column) const override {
+		return list_getname(data[line], sb);
 	}
 	static int compare_by_order(const void* v1, const void* v2) {
-		char t1[256];
-		char t2[256];
+		char t1[256]; stringbuilder sb1(t1);
+		char t2[256]; stringbuilder sb2(t2);
 		auto p1 = *((void**)v1);
 		auto p2 = *((void**)v2);
-		auto n1 = cmb_getname(p1, t1, t1 + sizeof(t1) - 1);
-		auto n2 = cmb_getname(p2, t2, t2 + sizeof(t2) - 1);
+		auto n1 = list_getname(p1, sb1);
+		auto n2 = list_getname(p2, sb2);
 		return strcmp(n1, n2);
 	}
 	int	getmaximum() const {
@@ -258,7 +258,7 @@ struct combolist : controls::list, reflist {
 		clear();
 		auto pe = cmb_source.end();
 		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize()) {
-			if(cmd_allow && !cmd_allow(cmb_param, (int)cmb_source.indexof(pb)))
+			if(list_allow && !list_allow(cmb_param, (int)cmb_source.indexof(pb)))
 				continue;
 			add(pb);
 		}
@@ -305,8 +305,8 @@ void draw::fieldm(const rect& rc, const anyval& av, const array& source, fntext 
 	cmb_rect = rc;
 	cmb_source = source;
 	cmb_param = param;
-	cmb_getname = getname;
-	cmd_allow = allow;
+	list_getname = getname;
+	list_allow = allow;
 	if(instant)
 		show_combolist();
 	else
@@ -340,10 +340,10 @@ void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext 
 	auto v = av.get();
 	if(av.getsize() != sizeof(void*))
 		v = (int)source.ptr(v);
-	char temp[261];
+	char temp[260]; stringbuilder sb(temp);
 	auto pn = "Отсутствует";
 	if(v)
-		pn = getname((void*)v, temp, temp + sizeof(temp) - 1);
+		pn = getname((void*)v, sb);
 	if(pn)
 		textc(rco.x1, rco.y1, rco.width(), pn);
 	if(tips && a && !hot.pressed)

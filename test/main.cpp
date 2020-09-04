@@ -1,6 +1,5 @@
 #include "draw_control.h"
 #include "draw_properties.h"
-#include "markup.h"
 #include "requisit.h"
 #include "stringbuilder.h"
 #include "valuelist.h"
@@ -20,13 +19,13 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 "Soldier", "Heavy Soldier", "Sniper", "Commando"
 };
 
-INSTDATA(genderi) = {{"NoGender", "Неизвестен"},
+BSDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
 assert_enum(gender, Female)
 
-INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
+BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
 {"Neutral Good", "Нейтрально добрый"},
 {"Chaotic Good", "Хаотично добрый"},
@@ -38,7 +37,7 @@ INSTDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 };
 assert_enum(alignment, ChaoticEvil)
 
-INSTMETA(element) = {BSREQ(name),
+BSMETA(element) = {BSREQ(name),
 BSREQ(surname),
 BSREQ(refery),
 BSREQ(mark),
@@ -47,9 +46,9 @@ BSREQ(age),
 BSREQ(gender),
 BSREQ(alignment),
 {}};
-INSTDATAC(element, 32);
+BSDATAC(element, 32);
 
-INSTMETA(rowelement) = {BSREQ(name),
+BSMETA(rowelement) = {BSREQ(name),
 BSREQ(gender),
 BSREQ(alignment),
 BSREQ(image),
@@ -57,13 +56,13 @@ BSREQ(age),
 BSREQ(flags),
 BSREQ(date),
 {}};
-INSTDATAC(rowelement, 64);
+BSDATAC(rowelement, 64);
 
 struct treerow : controls::tree::element {
 	const char*		name;
 	int				value;
 };
-INSTMETA(treerow) = {BSREQ(image),
+BSMETA(treerow) = {BSREQ(image),
 BSREQ(name),
 BSREQ(value),
 {}};
@@ -72,13 +71,9 @@ struct metatest {
 	adat<char, 8>	source;
 	aref<char>		buffer;
 };
-INSTMETA(metatest) = {BSREQ(source),
+BSMETA(metatest) = {BSREQ(source),
 BSREQ(buffer),
 {}};
-
-const markup* getmarkup(const bsreq* type) {
-	return 0;
-}
 
 struct testinfo {
 	const char*		name;
@@ -256,37 +251,37 @@ struct markupform : controls::form {
 		return 0;
 	}
 };
-INSTMETA(markupform) = {BSREQ(s1), BSREQ(s2), BSREQ(tabs),
+BSMETA(markupform) = {BSREQ(s1), BSREQ(s2), BSREQ(tabs),
 {}};
 
-static void test_markup() {
-	markupform source;
-	static markup elements_left[] = {{0, "Имя", {"name"}},
-	{0, "Фамилия", {"surname"}},
-	{0, "Возраст", {"age"}},
-	{0, "Тест", {"test"}},
-	{0, "Принять", {}, 0, {}, apply_element},
-	{}};
-	static markup header[] = {{6, 0, {"s1", 0, elements_left}},
-	{6, 0, {"s2", 0, elements_left}},
-	{}};
-	static markup tabs_controls[] = {{0, "Таблица", {"v1"}},
-	{}};
-	static markup elements[] = {{0, 0, {0, 0, header}},
-	{0, "#tabs", {"tabs", 0, tabs_controls}},
-	{}};
-	while(ismodal()) {
-		rect rc = {0, 0, getwidth(), getheight()};
-		rectf(rc, colors::form);
-		rc.offset(metrics::padding);
-		field(rc.x1, rc.y1, rc.width(), elements, bsmeta<markupform>::meta, &source, 80, &source, rc.height());
-		domodal();
-	}
-}
+//static void test_markup() {
+//	markupform source;
+//	static markup elements_left[] = {{0, "Имя", {"name"}},
+//	{0, "Фамилия", {"surname"}},
+//	{0, "Возраст", {"age"}},
+//	{0, "Тест", {"test"}},
+//	{0, "Принять", {}, 0, {}, apply_element},
+//	{}};
+//	static markup header[] = {{6, 0, {"s1", 0, elements_left}},
+//	{6, 0, {"s2", 0, elements_left}},
+//	{}};
+//	static markup tabs_controls[] = {{0, "Таблица", {"v1"}},
+//	{}};
+//	static markup elements[] = {{0, 0, {0, 0, header}},
+//	{0, "#tabs", {"tabs", 0, tabs_controls}},
+//	{}};
+//	while(ismodal()) {
+//		rect rc = {0, 0, getwidth(), getheight()};
+//		rectf(rc, colors::form);
+//		rc.offset(metrics::padding);
+//		field(rc.x1, rc.y1, rc.width(), elements, bsmeta<markupform>::meta, &source, 80, &source, rc.height());
+//		domodal();
+//	}
+//}
 
 static void test_list() {
 	struct test_class : controls::list {
-		const char* getname(char* result, const char* result_maximum, int line, int column) const override {
+		const char* getname(stringbuilder& sb, int line, int column) const override {
 			return product_category[line];
 		}
 		int getmaximum() const override {
@@ -362,30 +357,30 @@ static int run_wizard(eventproc proc) {
 	}
 }
 
-static void test_tile_manager() {
-	pushfocus pf;
-	char filename[260];
-	point tile = {};
-	point origin = {};
-	color transparent = {160, 160, 0};
-	auto use_transparent = false;
-	while(ismodal()) {
-		rectf({0, 0, getwidth(), getheight()}, colors::window);
-		auto x = 20, y = 20;
-		auto h = draw::texth();
-		y += field(x, y, 380, "Файл тайлов", filename, sizeof(filename), 100, choose_folder);
-		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
-		if(use_transparent) {
-			y += field(x, y, 380, "Цвет", transparent, 100);
-			y += button(x + 100, y, 280, choose_transparent_color, "Выбрать цвет с картнки");
-		}
-		auto y0 = y;
-		y += point_input(x, y, tile, 180, 100, "Ширина (точек)", "Высота (точек)");
-		point_input(x + 200, y0, origin, 180, 100, "Смещение", "Отступ");
-		y += button(x, y, 300, buttonok, "Принять");
-		domodal();
-	}
-}
+//static void test_tile_manager() {
+//	pushfocus pf;
+//	char filename[260];
+//	point tile = {};
+//	point origin = {};
+//	color transparent = {160, 160, 0};
+//	auto use_transparent = false;
+//	while(ismodal()) {
+//		rectf({0, 0, getwidth(), getheight()}, colors::window);
+//		auto x = 20, y = 20;
+//		auto h = draw::texth();
+//		y += field(x, y, 380, "Файл тайлов", filename, sizeof(filename), 100, choose_folder);
+//		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
+//		if(use_transparent) {
+//			y += field(x, y, 380, "Цвет", transparent, 100);
+//			y += button(x + 100, y, 280, choose_transparent_color, "Выбрать цвет с картнки");
+//		}
+//		auto y0 = y;
+//		y += point_input(x, y, tile, 180, 100, "Ширина (точек)", "Высота (точек)");
+//		point_input(x + 200, y0, origin, 180, 100, "Смещение", "Отступ");
+//		y += button(x, y, 300, buttonok, "Принять");
+//		domodal();
+//	}
+//}
 
 static void test_autocomplite() {
 	valuelist e;
@@ -455,8 +450,8 @@ static void start_menu() {
 	{"Таблица с ячейками", test_tableref},
 	{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
-	{"Тайлы", test_tile_manager},
-	{"Разметка", test_markup},
+	//{"Тайлы", test_tile_manager},
+	//{"Разметка", test_markup},
 	{"Приложение", draw::application},
 	{"Автосписок", test_autocomplite},
 	{0}};

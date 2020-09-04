@@ -273,8 +273,8 @@ bool textedit::editing(rect rc) {
 			return true;
 		case KeyEnter:
 			if(records && isshowrecords()) {
-				char temp[260];
-				auto value = records->getname(temp, temp + sizeof(temp) - 1, records->current, 0);
+				char temp[260]; stringbuilder sb(temp);
+				auto value = records->getname(sb, records->current, 0);
 				if(value)
 					zcpy(string, value, maxlenght);
 				select(0, false);

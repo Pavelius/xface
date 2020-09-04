@@ -53,5 +53,5 @@ struct element {
 	gender_s		gender;
 	alignment_s		alignment;
 };
-DECLENUM(alignment);
-DECLENUM(gender);
+BSLNK(alignment_s, alignmenti)
+BSLNK(gender_s, genderi)

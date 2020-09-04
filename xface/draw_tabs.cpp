@@ -45,7 +45,7 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 	draw::state push;
 	//rect rco = rc + position;
 	setclip(rc);
-	char temp[260];
+	char temp[260]; stringbuilder sb(temp);
 	auto result = 0;
 	// По-умолчанию нет подсвеченного элемента
 	if(hilite)
@@ -55,8 +55,8 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 	for(int i = start; i < count; i++) {
 		if(rc.x1 >= rc.x2 || rc.x2 <= rc.x1)
 			break;
-		auto object = data[i]; temp[0] = 0;
-		auto s = gtext(object, temp, temp + sizeof(temp)-1);
+		auto object = data[i]; sb.clear();
+		auto s = gtext(object, sb);
 		if(i == current)
 			fore = colors::tabs::text;
 		else

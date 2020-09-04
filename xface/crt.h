@@ -33,12 +33,12 @@ private:
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
-#define INSTDATA(e) template<> e bsdata<e>::elements[]
-#define INSTDATAC(e, c) template<> e bsdata<e>::elements[c]; template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), 0, sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
-#define INSTMETA(e) template<> const bsreq bsmeta<e>::meta[]
+#define BSDATA(e) template<> e bsdata<e>::elements[]
+#define BSDATAC(e, c) template<> e bsdata<e>::elements[c]; template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), 0, sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
+#define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};
+#define BSMETA(e) template<> const bsreq bsmeta<e>::meta[]
 #define INSTELEM(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
-#define NOINSTDATA(e) template<> struct bsdata<e> : bsdata<int> {};
-#define DECLENUM(e) template<> struct bsmeta<e##_s> : bsmeta<e##i> {}; template<> struct bsdata<e##_s> : bsdata<e##i> {};
+#define BSLNK(T1, T2) template<> struct bsmeta<T1> : bsmeta<T2> {}; template<> struct bsdata<T1> : bsdata<T2> {};
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
 
 extern "C" int						atexit(void(*func)(void));
@@ -289,14 +289,14 @@ struct serializer {
 	virtual void			close(const char* id, type_s type = Text) = 0;
 };
 template<> struct bsdata<int> { static constexpr array*	source_ptr = 0; };
-NOINSTDATA(unsigned)
-NOINSTDATA(short)
-NOINSTDATA(unsigned short)
-NOINSTDATA(char)
-NOINSTDATA(unsigned char)
-NOINSTDATA(const char*)
-NOINSTDATA(bool)
-NOINSTDATA(bsreq)
+NOBSDATA(unsigned)
+NOBSDATA(short)
+NOBSDATA(unsigned short)
+NOBSDATA(char)
+NOBSDATA(unsigned char)
+NOBSDATA(const char*)
+NOBSDATA(bool)
+NOBSDATA(bsreq)
 // Abstract metadata class
 template<typename T> struct bsmeta {
 	typedef T				data_type;

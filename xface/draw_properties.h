@@ -1,4 +1,3 @@
-#include "bsreq.h"
 #include "draw_control.h"
 
 #pragma once
@@ -6,36 +5,24 @@
 namespace draw {
 namespace controls {
 struct properties : control {
-	struct translate {
-		const char*		id;
-		const char*		value;
-		static int		compare(const void* v1, const void* v2);
-	};
+	int					page, page_maximum;
+	void*				pages[32];
 	int					title, spacing;
 	void*				object;
-	const bsreq*		type;
-	arem<void*>			opened;
-	aref<translate>		dictionary;
+	const markup*		type;
 	properties() : title(80), spacing(0) { show_background = false; }
 	void				addwidth(int& x, int& width, int v) const { x += v; width -= v; }
 	void				clear() { object = 0; }
-	void				close(void* object);
-	bool				cmdopen(bool run);
-	int					element(int x, int y, int width, void* object, const bsreq* type);
+	int					element(int x, int y, int width, void* object, const markup* type);
 	void				focusfirst();
-	virtual fntext		getfntext(const void* object, const bsreq* type) const { return controls::table::getenumname; }
-	virtual fnallow		getfnallow(const void* object, const bsreq* type) const { return 0; }
-	const char*			getlabel(char* result, const char* result_maximum) const override { return "Свойства"; }
-	virtual const char*	gettitle(char* result, const char* result_maximum, const void* object, const bsreq* type) const;
-	int					group(int x, int y, int width, const char* label, void* object, const bsreq* type);
+	virtual fntext		getfntext(const void* object, const markup* type) const { return type->list.getname; }
+	virtual fnallow		getfnallow(const void* object, const markup* type) const { return type->list.allow; }
+	const char*			getlabel(stringbuilder& sb) const override { return "Свойства"; }
+	virtual const char*	gettitle(stringbuilder& sb, const void* object, const markup* type) const;
 	bool				isfocusable() const override { return false; }
-	bool				isopen(const void* object) const { return opened.is((void*)object); }
-	virtual bool		isvisible(const void* object, const bsreq* type) const { return true; }
-	void				open(void* object);
-	void				set(void* object, const bsreq* type) { this->object = object; this->type = type; }
-	void				treemark(int x, int y, int width, void* object, bool isopen) const;
-	void				toggle(bool run);
-	int					vertical(int x, int y, int width, void* object, const bsreq* type);
+	virtual bool		isvisible(const void* object, const markup* type) const { return true; }
+	void				set(void* object, const markup* type) { this->object = object; this->type = type; }
+	int					group(int x, int y, int width, void* object, const markup* type);
 	void				view(const rect& rc) override;
 };
 }

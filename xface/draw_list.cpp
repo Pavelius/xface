@@ -78,7 +78,7 @@ void list::rowhilite(const rect& rc, int index) const {
 
 void list::row(const rect& rc, int index) {
 	auto r1 = rc;
-	char temp[260]; temp[0] = 0;
+	char temp[260]; stringbuilder sb(temp);
 	rowhilite(r1, index);
 	auto i = getimage(index);
 	if(i != -1) {
@@ -86,7 +86,7 @@ void list::row(const rect& rc, int index) {
 		draw::image(r1.x1 + w / 2, r1.y1 + w / 2, gettreeimages(), i, 0);
 		r1.x1 += w + 1;
 	}
-	auto p = getname(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, index, 0);
+	auto p = getname(sb, index, 0);
 	if(p)
 		draw::textc(r1.x1 + metrics::edit.x1, r1.y1 + metrics::edit.y1,
 			r1.width() - metrics::edit.width(), p);
@@ -295,8 +295,8 @@ int list::find(int line, int column, const char* value, int lenght) const {
 		lenght = zlen(value);
 	auto m = getmaximum();
 	while(line < m) {
-		char temp[260]; temp[0] = 0;
-		auto p = getname(temp, temp + sizeof(temp) - 1, line, column);
+		char temp[260]; stringbuilder sb(temp);
+		auto p = getname(sb, line, column);
 		if(p && szcmpi(p, value, lenght) == 0)
 			return line;
 		line++;

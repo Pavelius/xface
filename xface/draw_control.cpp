@@ -10,7 +10,7 @@ static control::fncmd current_execute;
 static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
-INSTMETA(datetime) = {{"datetime"}, {}};
+BSMETA(datetime) = {{"datetime"}, {}};
 
 bool control_input() {
 	if(current_hilite) {
@@ -203,8 +203,8 @@ void control::contextmenu(const command* source, command::builder& pm) {
 	}
 }
 
-const char* control::getlabel(const void* object, char* result, const char* result_maximum) {
-	auto p = ((controls::control*)object)->getlabel(result, result_maximum);
+const char* control::getlabel(const void* object, stringbuilder& sb) {
+	auto p = ((controls::control*)object)->getlabel(sb);
 	if(!p)
 		return "No label";
 	return p;

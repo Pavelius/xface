@@ -16,7 +16,7 @@ struct logi {
 	const char*		text;
 };
 }
-INSTMETA(logi) = {
+BSMETA(logi) = {
 	BSREQ(stamp),
 	BSREQ(text),
 {}};
@@ -68,7 +68,7 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 		return *this;
 	}
 
-	const char* getlabel(char* result, const char* result_maximum) const override {
+	const char* getlabel(stringbuilder& sb) const override {
 		return "Список сообщений";
 	}
 
