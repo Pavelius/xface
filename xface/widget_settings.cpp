@@ -424,7 +424,7 @@ static struct widget_settings : controls::control {
 } widget_settings_control;
 
 static struct widget_application : draw::controls::control {
-	eventproc		heartproc;
+	fnevent		heartproc;
 	control*		hotcontrols[48];
 	bool			allow_multiply_window;
 	const char* getlabel(stringbuilder& sb) const override {
@@ -574,7 +574,7 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
 }
 
-void draw::application(bool allow_multiply_window, eventproc heartproc, shortcut* shortcuts) {
+void draw::application(bool allow_multiply_window, fnevent heartproc, shortcut* shortcuts) {
 	// Make header
 	setting_header.initialize();
 	widget_application_control.allow_multiply_window = allow_multiply_window;
@@ -628,7 +628,7 @@ void draw::application_initialize() {
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
 
-void draw::application(const char* name, bool allow_multiply_window, eventproc showproc, eventproc heartproc, shortcut* shortcuts) {
+void draw::application(const char* name, bool allow_multiply_window, fnevent showproc, fnevent heartproc, shortcut* shortcuts) {
 	application_initialize();
 	setcaption(name);
 	if(showproc)

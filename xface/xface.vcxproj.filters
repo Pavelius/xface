@@ -135,17 +135,11 @@
     <ClCompile Include="win_cmd.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
-    <ClCompile Include="draw_properties.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
     <ClCompile Include="draw_autocomplete.cpp">
       <Filter>draw\controls</Filter>
     </ClCompile>
     <ClCompile Include="valuelist.cpp">
       <Filter>collections</Filter>
-    </ClCompile>
-    <ClCompile Include="markup.cpp">
-      <Filter>support</Filter>
     </ClCompile>
     <ClCompile Include="draw_markup.cpp">
       <Filter>draw\controls</Filter>
@@ -237,6 +231,12 @@
     <ClCompile Include="bsreq_parser.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="widget_properties.cpp">
+      <Filter>draw\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="markup.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
@@ -292,9 +292,6 @@
     </ClInclude>
     <ClInclude Include="io_plugin.h">
       <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="draw_properties.h">
-      <Filter>draw\controls</Filter>
     </ClInclude>
     <ClInclude Include="valuelist.h">
       <Filter>collections</Filter>

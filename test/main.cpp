@@ -1,13 +1,12 @@
 #include "draw_control.h"
-#include "draw_properties.h"
 #include "requisit.h"
-#include "stringbuilder.h"
 #include "valuelist.h"
 #include "main.h"
 
 using namespace draw;
 
 void logmsg(const char* format, ...);
+void setproperties(void* object, const markup* type);
 
 static unsigned radio_button = 2;
 static unsigned check_button = 0;
@@ -24,6 +23,7 @@ BSDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Female", "Женщина"},
 };
 assert_enum(gender, Female)
+DGLNK(gender_s, genderi)
 
 BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
@@ -47,6 +47,10 @@ BSREQ(gender),
 BSREQ(alignment),
 {}};
 BSDATAC(element, 32);
+
+template<class T> const char* getnm(const void* object, stringbuilder& sb) {
+	return ((T*)object)->name;
+}
 
 BSMETA(rowelement) = {BSREQ(name),
 BSREQ(gender),
@@ -79,8 +83,23 @@ struct testinfo {
 	const char*		name;
 	int				value;
 };
+struct markuptesti {
+	const char*		name;
+	int				value;
+	alignmenti*		alignment;
+	gender_s		gender;
+};
+DGINF(alignmenti) = {{"Наименование", DGREQ(name)}, {}};
+DGINF(genderi) = {{"Наименование", DGREQ(name)}, {}};
+DGINF(markuptesti) = {{"Наименование", DGREQ(name)},
+{"Значение", DGREQ(value)},
+{"Мировозрение", DGREQ(alignment), {getnm<alignmenti>}},
+{"Пол", DGREQ(gender), {getnm<genderi>}},
+{}};
 
-static int buttonx(int x, int y, int width, eventproc proc, const char* title, const char* tips = 0) {
+static markuptesti test_properties_value = {"Плутон", 12};
+
+static int buttonx(int x, int y, int width, fnevent proc, const char* title, const char* tips = 0) {
 	auto result = button(x, y, width, proc, title, tips);
 	rect rc = {x, y, x + width, y + texth() + metrics::padding * 2};
 	if(ishilite(rc)) {
@@ -347,7 +366,7 @@ static int point_input(int x, int y, point& result, int width, int title, const 
 static void choose_transparent_color() {
 }
 
-static int run_wizard(eventproc proc) {
+static int run_wizard(fnevent proc) {
 	pushfocus pf;
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
@@ -440,7 +459,7 @@ static void simple_controls() {
 static void start_menu() {
 	struct element {
 		const char*		name;
-		eventproc		proc;
+		fnevent			proc;
 		const char*		tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
@@ -564,6 +583,7 @@ int main() {
 		return -1;
 	if(!test_anyval())
 		return -1;
+	setproperties(&test_properties_value, dginf<markuptesti>::meta);
 	directory_initialize();
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));

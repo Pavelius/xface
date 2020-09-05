@@ -20,11 +20,7 @@ sizeof(R),\
 
 struct markup;
 
-typedef bool(*fnallow)(const void* object, int index); // Is allow some property
-typedef void(*fncommand)(void* object); // Object's actions
 typedef int(*fndraw)(int x, int y, int width, const void* object); // Custom draw
-typedef const char* (*fntext)(const void* object, stringbuilder& sb);
-typedef void(*fnsource)(const void* object, array& source);
 typedef bool(*fnchoose)(const void* object, array& source, void* pointer);
 typedef bool(*fnvisible)(const void* object);
 
@@ -34,7 +30,6 @@ struct fnlist {
 	fnsource			source;
 	fnchoose			choose;
 	fndraw				preview;
-	int					view_width;
 };
 struct fnelement {
 	fnvisible			visible;
@@ -58,6 +53,12 @@ struct markitem {
 	constexpr bool		istext() const { return type == dginf<const char*>::meta; }
 	void*				ptr(void* object) const { return (char*)object + offset; }
 };
+// Context for markup
+struct markcontext {
+	void*				object;
+	int					title, spacing;
+	constexpr markcontext() : object(0), title(120), spacing(2) {}
+};
 // Standart markup
 struct markup {
 	constexpr explicit operator bool() const { return title || value.type; }
@@ -72,6 +73,9 @@ struct markup {
 	bool				isgroup() const { return value.type != 0 && !list.getname && !value.istext() && !value.isnum(); }
 	bool				ispage() const { return title && title[0] == '#'; }
 };
+namespace draw {
+int						field(int x, int y, int width, markcontext& ctx, const markup* type);
+}
 DGLNK(char, int)
 DGLNK(short, int)
 DGLNK(unsigned char, int)

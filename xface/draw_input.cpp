@@ -16,7 +16,7 @@ static bool		break_modal;
 static int		break_result;
 plugin*			draw::plugin::first;
 initplugin*		draw::initplugin::first;
-eventproc		draw::domodal;
+fnevent		draw::domodal;
 
 static void setfocus_callback() {
 	setfocus(cmd_value, true);
@@ -141,7 +141,7 @@ void draw::setfocus(const anyval& value, bool instant) {
 	}
 }
 
-void draw::execute(eventproc proc, int param) {
+void draw::execute(fnevent proc, int param) {
 	domodal = proc;
 	hot.key = 0;
 	hot.param = param;

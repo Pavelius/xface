@@ -57,7 +57,7 @@ int	draw::button(int x, int y, int width, const anyval& value, bool& result, con
 	return rc.height() + metrics::padding * 2;
 }
 
-int	draw::button(int x, int y, int width, eventproc proc, const char* label, const char* tips, int key) {
+int	draw::button(int x, int y, int width, fnevent proc, const char* label, const char* tips, int key) {
 	auto result = false;
 	auto dy = button(x, y, width, anyval((void*)proc, 0, 0), result, label, tips, key);
 	if(result)

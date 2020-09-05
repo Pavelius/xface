@@ -142,7 +142,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="draw_picker.cpp" />
-    <ClCompile Include="draw_properties.cpp" />
     <ClCompile Include="draw_tableref.cpp" />
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
@@ -190,6 +189,7 @@
     <ClCompile Include="valuelist.cpp" />
     <ClCompile Include="widget_directory.cpp" />
     <ClCompile Include="widget_logging.cpp" />
+    <ClCompile Include="widget_properties.cpp" />
     <ClCompile Include="widget_settings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -209,7 +209,6 @@
     <ClInclude Include="archive.h" />
     <ClInclude Include="datetime.h" />
     <ClInclude Include="draw_animation.h" />
-    <ClInclude Include="draw_properties.h" />
     <ClInclude Include="io_plugin.h" />
     <ClInclude Include="markup.h" />
     <ClInclude Include="setting.h" />

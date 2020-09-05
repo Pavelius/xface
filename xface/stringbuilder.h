@@ -43,3 +43,5 @@ public:
 	void				set(char* v) { p = v; p[0] = 0; }
 	static unsigned char upper(unsigned char sym);
 };
+// Callback function for title, header or getting name
+typedef const char* (*fntext)(const void* object, stringbuilder& sb);

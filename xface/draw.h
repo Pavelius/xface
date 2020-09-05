@@ -4,8 +4,7 @@
 
 #pragma once
 
-typedef void(*eventproc)();
-typedef const char* (*fntext)(const void* object, stringbuilder& sb);
+typedef void(*fnevent)();
 extern "C" int strcmp(const char* s1, const char* s2); // Compare two strings
 
 enum draw_event_s {
@@ -226,7 +225,7 @@ struct plugin {
 	virtual void		before() {}
 };
 struct shortcut {
-	eventproc			proc;
+	fnevent			proc;
 	const char*			name;
 	unsigned			key;
 	constexpr operator bool() const { return proc != 0; }
@@ -251,12 +250,12 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
-extern eventproc		domodal;
+extern fnevent		domodal;
 bool					dragactive(const void* p);
 bool					dragactive();
 void					dragbegin(const void* p);
 extern point			dragmouse;
-void					execute(eventproc proc, int value = 0);
+void					execute(fnevent proc, int value = 0);
 bool					execute(const shortcut* p);
 rect					getarea();
 int						getbpp();

@@ -330,3 +330,9 @@ template<class T> struct meta_decoy<aref<T>> : meta_decoy<T> {};
 template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
 template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
 template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};
+// Callback funtion of status probing. Return true if 'object' support 'index' status.
+typedef bool(*fnallow)(const void* object, int index);
+// Callback funtion of object comand executing
+typedef void(*fncommand)(void* object);
+// Callback function of source identification. Return property filled 'source'.
+typedef void(*fnsource)(const void* object, array& source);

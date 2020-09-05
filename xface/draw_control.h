@@ -57,10 +57,10 @@ struct control {
 	typedef bool			(control::*fnvisible)() const;
 	struct proci {
 		fncmd				cmd;
-		eventproc			cmd_event;
+		fnevent			cmd_event;
 		fnvisible			visible;
 		constexpr proci() : cmd(0), cmd_event(0), visible(0) {}
-		constexpr proci(eventproc v) : cmd(0), cmd_event(v), visible(0) {}
+		constexpr proci(fnevent v) : cmd(0), cmd_event(v), visible(0) {}
 		template<class T> constexpr proci(bool (T::*v)() const) : cmd(0), cmd_event(0), visible((fnvisible)v) {}
 		template<class T> constexpr proci(bool (T::*v)(bool run)) : cmd((fncmd)v), cmd_event(0), visible(0) {}
 	};
@@ -433,12 +433,12 @@ struct form {
 };
 }
 void						addelement(const rect& rc, const anyval& value);
-void						application(bool allow_multiply_windows, eventproc heartproc = 0, shortcut* shortcuts = 0);
-void						application(const char* name, bool allow_multiply_windows, eventproc showproc, eventproc heartproc, shortcut* shortcuts);
+void						application(bool allow_multiply_windows, fnevent heartproc = 0, shortcut* shortcuts = 0);
+void						application(const char* name, bool allow_multiply_windows, fnevent showproc, fnevent heartproc, shortcut* shortcuts);
 inline void					application() { application(true); }
 void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
-int							button(int x, int y, int width, eventproc proc, const char* label, const char* tips = 0, int key = 0);
+int							button(int x, int y, int width, fnevent proc, const char* label, const char* tips = 0, int key = 0);
 int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);

@@ -13,7 +13,7 @@ static array		cmb_source;
 static anyval		cmb_var;
 static const void*	cmb_param;
 
-static const char* getvalue(const anyval& v, bool istext, char* result, const char* result_end) {
+static const char* getvalue(const anyval& v, bool istext, stringbuilder& sb) {
 	if(!v)
 		return "";
 	const char* p;
@@ -21,13 +21,14 @@ static const char* getvalue(const anyval& v, bool istext, char* result, const ch
 		if(v.getsize() == sizeof(const char*)) {
 			p = (const char*)v.get();
 			if(p)
-				return szprint(result, result_end, p);
+				return p;
 		} else
 			return (const char*)v.getptr();
-		result[0] = 0;
-	} else
-		return szprint(result, result_end, "%1i", v.get());
-	return result;
+	} else {
+		sb.add("%1i", v.get());
+		return (const char*)(char*)sb;
+	}
+	return "";
 }
 
 static void setvalue(const anyval& v, bool istext, const char* result) {
@@ -63,7 +64,8 @@ public:
 		return draw::isfocused(value);
 	}
 	void load() {
-		auto p = getvalue(value, istext, source, source + sizeof(source) / sizeof(source[0]) - 1);
+		stringbuilder sb(source);
+		auto p = getvalue(value, istext, sb);
 		if(p != source)
 			zcpy(source, p, sizeof(source));
 		invalidate();
@@ -155,8 +157,8 @@ void draw::fieldf(const rect& rco, unsigned flags, const anyval& ev, int digits,
 		cedit.update(ev, istext, digits);
 		cedit.view(rc);
 	} else {
-		char temp[260];
-		auto p = getvalue(ev, istext, temp, temp + sizeof(temp) / sizeof(temp[0]));
+		char temp[260]; stringbuilder sb(temp);
+		auto p = getvalue(ev, istext, sb);
 		draw::text(rc + metrics::edit, p, flags & edit_mask);
 	}
 }

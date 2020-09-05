@@ -1,38 +1,38 @@
 #include "crt.h"
 
-const char* szskipcr(const char* p) {
-	if(*p == '\n') {
-		p++;
-		if(*p == '\r')
-			p++;
-	} else if(*p == '\r') {
-		p++;
-		if(*p == '\n')
-			p++;
-	}
-	return p;
-}
-
-const char* szskipcrr(const char* p0, const char* p) {
-	if(!p)
-		return 0;
-	if(p0 >= p)
-		return p;
-	if(p[-1] == '\n') {
-		p--;
-		if(p0 >= p)
-			return p;
-		if(p[-1] == '\r')
-			p--;
-	} else if(p[-1] == '\r') {
-		p--;
-		if(p0 >= p)
-			return p;
-		if(p[-1] == '\n')
-			p--;
-	}
-	return p;
-}
+//const char* szskipcr(const char* p) {
+//	if(*p == '\n') {
+//		p++;
+//		if(*p == '\r')
+//			p++;
+//	} else if(*p == '\r') {
+//		p++;
+//		if(*p == '\n')
+//			p++;
+//	}
+//	return p;
+//}
+//
+//const char* szskipcrr(const char* p0, const char* p) {
+//	if(!p)
+//		return 0;
+//	if(p0 >= p)
+//		return p;
+//	if(p[-1] == '\n') {
+//		p--;
+//		if(p0 >= p)
+//			return p;
+//		if(p[-1] == '\r')
+//			p--;
+//	} else if(p[-1] == '\r') {
+//		p--;
+//		if(p0 >= p)
+//			return p;
+//		if(p[-1] == '\n')
+//			p--;
+//	}
+//	return p;
+//}
 
 const char* psnum16(const char* p, int& value) {
 	int result = 0;
