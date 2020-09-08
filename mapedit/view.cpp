@@ -118,7 +118,7 @@ static void testwizard() {
 			unsigned	id;
 		};
 		arem<file>		files;
-		static const char* getdirectionname(const void* object, char* result, const char* result_maximum) {
+		static const char* getdirectionname(const void* object, stringbuilder& sb) {
 			return ((directioni*)object)->name;
 		}
 		static bool horizallow(const void* object, int index) {
@@ -136,7 +136,7 @@ static void testwizard() {
 		bool choose_load_folder(const rect& rc, command_s id) {
 			if(id == Draw) {
 				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
-				field(x, y, w, "Папка загрузки", source, sizeof(source), 150, choosefolder);
+				field(x, y, w, "Папка загрузки", source, sizeof(source), 150, 0/*choosefolder*/);
 			}
 			return true;
 		}

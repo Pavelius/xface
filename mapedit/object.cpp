@@ -1,3 +1,3 @@
 #include "main.h"
 
-INSTDATAC(object, 256 * 128);
+BSDATAC(object, 256 * 128);

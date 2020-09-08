@@ -2,7 +2,7 @@
 #include "draw.h"
 #include "io.h"
 
-void sprite_write(const sprite* p, const char* url);
+//void sprite_write(const sprite* p, const char* url);
 int	sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode = sprite::Auto, unsigned char shadow_index = 0, color* original_pallette = 0, int explicit_frame = -1, unsigned char transparent_index = 0xFF);
 void sprite_create(sprite* p, int count, int cicles, int additional_bytes);
 void pma_write(const char* url, const pma** source);

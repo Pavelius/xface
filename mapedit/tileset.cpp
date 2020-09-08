@@ -1,7 +1,7 @@
 #include "main.h"
 #include "draw.h"
 
-INSTDATAC(tileset, 256);
+BSDATAC(tileset, 256);
 
 const char*	tileset::base_url = "sprites";
 
@@ -25,7 +25,7 @@ const sprite* tileset::getsprite() {
 	return data;
 }
 
-const char*	tileset::getname(const void* object, char* buffer, const char* buffermax) {
+const char*	tileset::getname(const void* object, stringbuilder& sb) {
 	return ((tileset*)object)->getname();
 }
 

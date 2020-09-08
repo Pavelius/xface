@@ -1,6 +1,6 @@
 #include "main.h"
 
-INSTDATA(directioni) = {{"Center", "Центр"},
+BSDATA(directioni) = {{"Center", "Центр"},
 {"Left", "Лево"},
 {"Top", "Верх"},
 {"Right", "Право"},

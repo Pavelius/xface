@@ -112,7 +112,7 @@ struct spritei : sprite {
 			delete data;
 	}
 };
-INSTMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
+BSMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
 {}};
 
 void add_tileset() {
