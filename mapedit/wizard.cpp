@@ -56,7 +56,7 @@ static void prev_step() {
 	current_command = Previous;
 }
 
-static int buttonw(int x, int y, const char* text, eventproc proc, int key) {
+static int buttonw(int x, int y, const char* text, fnevent proc, int key) {
 	auto w = textw(text) + 8;
 	if(w < 100)
 		w = 100;

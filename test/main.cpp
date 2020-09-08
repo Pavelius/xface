@@ -36,6 +36,7 @@ BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Chaotic Evil", "Хаотично злой"},
 };
 assert_enum(alignment, ChaoticEvil)
+DGLNK(alignment_s, alignmenti)
 
 BSMETA(element) = {BSREQ(name),
 BSREQ(surname),
@@ -88,6 +89,7 @@ struct markuptesti {
 	int				value;
 	alignmenti*		alignment;
 	gender_s		gender;
+	cflags<alignment_s> alignments;
 };
 DGINF(alignmenti) = {{"Наименование", DGREQ(name)}, {}};
 DGINF(genderi) = {{"Наименование", DGREQ(name)}, {}};
@@ -95,6 +97,7 @@ DGINF(markuptesti) = {{"Наименование", DGREQ(name)},
 {"Значение", DGREQ(value)},
 {"Мировозрение", DGREQ(alignment), {getnm<alignmenti>}},
 {"Пол", DGREQ(gender), {getnm<genderi>}},
+{"#chk Характер", DGREQ(alignments), {getnm<alignmenti>}},
 {}};
 
 static markuptesti test_properties_value = {"Плутон", 12};
