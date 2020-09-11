@@ -57,7 +57,7 @@ struct control {
 	typedef bool			(control::*fnvisible)() const;
 	struct proci {
 		fncmd				cmd;
-		fnevent			cmd_event;
+		fnevent				cmd_event;
 		fnvisible			visible;
 		constexpr proci() : cmd(0), cmd_event(0), visible(0) {}
 		constexpr proci(fnevent v) : cmd(0), cmd_event(v), visible(0) {}
