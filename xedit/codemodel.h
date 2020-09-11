@@ -5,15 +5,15 @@
 
 enum group_s : unsigned char {
 	IllegalSymbol,
-	WhiteSpace, Operator, Keyword,
-	Number, String, Comment, Identifier,
+	WhiteSpace, Operator, Keyword, Comment,
+	Number, String, Identifier,
 	OpenParam, CloseParam, OpenBlock, CloseBlock, OpenScope, CloseScope,
 };
-struct visuali {
-	color					present;
-	unsigned				flags;
-};
 struct groupi {
+	struct visuali {
+		color				present;
+		unsigned			flags;
+	};
 	const char*				name;
 	visuali					visual;
 };
@@ -40,21 +40,25 @@ struct codepos {
 class codemodel : arem<char> {
 	const lexer*			lex;
 	int						p1, p2;
-	bool					modified;
 	void					correct();
 public:
+	virtual void			changing() {}
 	void					clear();
 	bool					isidentifier(const char* source, const char** v) const;
 	bool					iskeyword(const char* source, const lexer::word** v) const;
-	bool					ismodified() const { return modified; }
+	bool					isselected() const { return p2 != -1 && p1 != -1; }
 	bool					iswhitespace(char sym) const;
+	bool					iswhitespace(const char* sym, const char** v) const;
+	void					left(bool shift, bool ctrl);
+	const char*				get(int index) const { return data + index; }
 	int						getbegin() const;
+	int						getcurrent() const { return p1; }
 	int						getend() const;
 	int						getlenght() const;
 	void					paste(const char* v);
+	void					right(bool shift, bool ctrl);
 	void					set(const char* source);
 	void					set(const lexer& v) { lex = &v; }
 	void					set(int index, bool shift);
-	void					setmodified(bool v) { modified = v; }
 	void					getnext(codepos& e) const;
 };

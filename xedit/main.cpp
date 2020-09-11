@@ -1,9 +1,24 @@
 #include "main.h"
-#include "code_view.h"
+#include "codeview.h"
 
 using namespace draw;
+using namespace draw::controls;
 
 void logmsg(const char* format, ...);
+
+static draw::controls::control* getwindow(const char* id) {
+	auto p = control::plugin::find(id);
+	if(!p)
+		return 0;
+	return &const_cast<control::plugin*>(p)->getcontrol();
+}
+
+static void setglob(const char* control_id, const char* id, int value) {
+	auto p = getwindow(control_id);
+	if(!p)
+		return;
+	p->setvalue(id, value);
+}
 
 int main() {
 	lexer e;
@@ -20,6 +35,7 @@ int main() {
 	codemodel cm;
 	cm.set(e);
 	cm.set("fn print(text : String) {}");
+	setglob("codeview", "text", (int)"fn print(text : String) {}");
 	while(true) {
 		cm.getnext(cp);
 		if(cp.from == cp.to)

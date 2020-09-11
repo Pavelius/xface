@@ -34,12 +34,24 @@ void codemodel::set(const char* value) {
 	auto len = zlen(value);
 	reserve(len + 1);
 	memcpy(data, value, len + 1);
+	changing();
 }
 
 bool codemodel::iswhitespace(char sym) const {
 	if(lex && lex->whitespaces)
 		return zchr(lex->whitespaces, sym) != 0;
 	return zchr(" \t", sym) != 0;
+}
+
+bool codemodel::iswhitespace(const char* sym, const char** v) const {
+	if(!iswhitespace(*sym))
+		return false;
+	auto pb = sym;
+	while(iswhitespace(*sym))
+		sym++;
+	if(v)
+		*v = sym;
+	return true;
 }
 
 bool codemodel::iskeyword(const char* source, const lexer::word** pv) const {
@@ -73,10 +85,9 @@ void codemodel::getnext(codepos& e) const {
 	const char* ps = data + e.from;
 	if(*ps == 0)
 		e.type = WhiteSpace;
-	else if(iswhitespace(*ps)) {
-		ps++;
+	else if(iswhitespace(ps, &ps))
 		e.type = WhiteSpace;
-	} else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[1] >= '0' && ps[1] <= '9')) {
+	else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[1] >= '0' && ps[1] <= '9')) {
 		if(ps[0] == '-')
 			ps++;
 		while(*ps && *ps >= '0' && *ps <= '9')
@@ -114,7 +125,7 @@ void codemodel::clear() {
 		while(*s2)
 			*s1++ = *s2++;
 		*s1 = 0;
-		modified = true;
+		changing();
 		if(p1 > p2)
 			p1 = p2;
 	}
@@ -129,7 +140,7 @@ void codemodel::paste(const char* input) {
 		reserve(p1 + i2 + 1);
 	memmove(data + p1 + i2, data + p1, (count - p1 + 1) * sizeof(char));
 	memcpy(data + p1, input, i2); count += i2;
-	modified = true;
+	changing();
 	set(p1 + i2, false);
 }
 
@@ -158,4 +169,26 @@ void codemodel::correct() {
 		p1 = lenght;
 	if(p1 < 0)
 		p1 = 0;
+}
+
+void codemodel::left(bool shift, bool ctrl) {
+	auto n = p1;
+	if(!ctrl)
+		n -= 1;
+	else {
+//		for(; n > 0 && isspace(string[n - 1]); n--);
+//		for(; n > 0 && !isspace(string[n - 1]); n--);
+	}
+	set(n, shift);
+}
+
+void codemodel::right(bool shift, bool ctrl) {
+	auto n = p1;
+	if(!ctrl)
+		n += 1;
+	else {
+//		for(; string[n] && !isspace(string[n]); n++);
+//		for(; string[n] && isspace(string[n]); n++);
+	}
+	set(n, shift);
 }

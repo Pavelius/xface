@@ -128,6 +128,7 @@ struct control {
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
 	virtual void			redraw() {}
 	virtual void			setfocus(bool instant);
+	virtual void			setvalue(const char* id, int value) {}
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
 	virtual void			write(serializer& sr) const {}

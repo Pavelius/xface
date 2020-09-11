@@ -2,12 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="code_view.cpp" />
     <ClCompile Include="codemodel.cpp" />
+    <ClCompile Include="codeview.cpp" />
+    <ClCompile Include="widget_codeview.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
-    <ClInclude Include="code_view.h" />
     <ClInclude Include="codemodel.h" />
+    <ClInclude Include="codeview.h" />
   </ItemGroup>
 </Project>

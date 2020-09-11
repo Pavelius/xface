@@ -126,12 +126,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="codemodel.cpp" />
-    <ClCompile Include="code_view.cpp" />
+    <ClCompile Include="codeview.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="widget_codeview.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="codemodel.h" />
-    <ClInclude Include="code_view.h" />
+    <ClInclude Include="codeview.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

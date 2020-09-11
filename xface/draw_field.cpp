@@ -31,7 +31,7 @@ static const char* getvalue(const anyval& v, bool istext, stringbuilder& sb) {
 	return "";
 }
 
-static void setvalue(const anyval& v, bool istext, const char* result) {
+static void setvalueg(const anyval& v, bool istext, const char* result) {
 	if(!v)
 		return;
 	int value = 0;
@@ -71,7 +71,7 @@ public:
 		invalidate();
 	}
 	void save() {
-		setvalue(value, istext, source);
+		setvalueg(value, istext, source);
 	}
 	void update(const anyval& ev, bool istext, int digits = -1) {
 		if(this->value == ev)

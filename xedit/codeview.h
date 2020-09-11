@@ -5,17 +5,18 @@
 
 namespace draw {
 namespace controls {
-struct codeview : public scrollable, arem<char> {
+struct codeview : public scrollable, codemodel {
 	int						cashed_width;
 	int						cashed_string;
 	int						cashed_origin;
+	void					textout(int x, int y, int index);
 public:
 	rect					rctext, rcclient;
 	bool					readonly;
+	static sprite*			font;
 	//
-	virtual void			cashing(rect rc);
+	void					changing() override { invalidate(); }
 	bool					copy(bool run);
-	void					correct();
 	bool					cut(bool run);
 	bool					editing(rect rc);
 	void					ensurevisible(int linenumber);
@@ -28,14 +29,12 @@ public:
 	int						lineb(int index) const;
 	int						linee(int index) const;
 	int						linen(int index) const;
-	void					left(bool shift, bool ctrl);
 	void					mouseinput(unsigned id, point position);
 	bool					paste(bool run);
 	void					redraw(const rect& rc) override;
-	void					right(bool shift, bool ctrl);
-	void					select(int index, bool shift);
 	unsigned				select_all(bool run);
 	void					setrecordlist(const char* string);
+	void					setvalue(const char* id, int value) override;
 	void					updaterecords(bool setfilter);
 };
 }
