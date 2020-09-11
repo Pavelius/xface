@@ -58,7 +58,7 @@ public:
 	void					paste(const char* v);
 	void					right(bool shift, bool ctrl);
 	void					set(const char* source);
-	void					set(const lexer& v) { lex = &v; }
+	void					set(const lexer* v) { lex = v; }
 	void					set(int index, bool shift);
 	void					getnext(codepos& e) const;
 };

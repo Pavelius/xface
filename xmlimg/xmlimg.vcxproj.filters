@@ -1,21 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="xml.cpp" />
-    <ClCompile Include="win_util.cpp" />
-    <ClCompile Include="..\..\formats\util\sprite_store.cpp" />
-    <ClCompile Include="..\..\formats\bitmap\pcx.cpp" />
-    <ClCompile Include="..\..\formats\bitmap\png.cpp" />
-    <ClCompile Include="..\..\formats\bitmap\tga.cpp" />
-    <ClCompile Include="..\..\formats\convert\zip.cpp" />
+    <ClCompile Include="..\..\formats\bitmap\pcx.cpp">
+      <Filter>Плагины</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\bitmap\png.cpp">
+      <Filter>Плагины</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\bitmap\tga.cpp">
+      <Filter>Плагины</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\convert\zip.cpp">
+      <Filter>Плагины</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\formats\util\sprite_util.cpp">
+      <Filter>Утилиты</Filter>
+    </ClCompile>
+    <ClCompile Include="xml.cpp">
+      <Filter>Плагины</Filter>
+    </ClCompile>
+    <ClCompile Include="win_util.cpp">
+      <Filter>Утилиты</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Логика</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="xml.h" />
-    <ClInclude Include="util.h" />
+    <ClInclude Include="util.h">
+      <Filter>Утилиты</Filter>
+    </ClInclude>
+    <ClInclude Include="xml.h">
+      <Filter>Плагины</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\images.xml" />
-    <Xml Include="..\..\ti\ti\images.xml" />
+    <Filter Include="Плагины">
+      <UniqueIdentifier>{3175e0a2-eff1-45d9-a273-8b3ee0b541f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Утилиты">
+      <UniqueIdentifier>{b6155767-a243-4e07-a366-22b511e28562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Логика">
+      <UniqueIdentifier>{7804c98e-192b-47e9-a8db-36945de51ae6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="images.xml">
+      <Filter>Логика</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

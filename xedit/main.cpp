@@ -33,9 +33,10 @@ int main() {
 	e.sort();
 	codepos cp = {};
 	codemodel cm;
-	cm.set(e);
+	cm.set(&e);
 	cm.set("fn print(text : String) {}");
 	setglob("codeview", "text", (int)"fn print(text : String) {}");
+	setglob("codeview", "lex", (int)&e);
 	while(true) {
 		cm.getnext(cp);
 		if(cp.from == cp.to)

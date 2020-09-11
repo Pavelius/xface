@@ -1,8 +1,7 @@
-#include "xface/collection.h"
-#include "xface/crt.h"
-#include "xface/stringbuilder.h"
-#include "xface/draw.h"
-#include "xface/io.h"
+#include "crt.h"
+#include "stringbuilder.h"
+#include "draw.h"
+#include "io.h"
 #include "xml.h"
 #include "util.h"
 
@@ -11,7 +10,7 @@ sprite::frame&		sprite_add(sprite* p);
 void*				sprite_add(sprite* p, const void* data, int dsize);
 void				sprite_create(sprite* p, int count, int cicles, int additional_bytes);
 int					sprite_store(sprite* ps, const unsigned char* p, int width, int w, int h, int ox, int oy, sprite::encodes mode, unsigned char shadow_index = 1, color* original_pallette = 0, int explicit_frame = -1, unsigned char transparent_index = 0xFF);
-void				sprite_write(const sprite* p, const char* url);
+void				sprite_write(const char* url, const sprite* p);
 static const char*	tempref[4096 * 2];
 
 static const char* parse_component(const char* p, unsigned char& a) {
@@ -490,7 +489,7 @@ static bool library(xml::reader& doc, const content& parent) {
 			doc.skip_block();
 		}
 		status_saving(get(0, e.output, 0, "pma"));
-		sprite_write(sprite, get(0, e.output, 0, "pma"));
+		sprite_write(get(0, e.output, 0, "pma"), sprite);
 		delete sprite;
 		doc.next();
 		return true;

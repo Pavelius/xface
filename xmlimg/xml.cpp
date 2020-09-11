@@ -12,8 +12,8 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-#include "xface/crt.h"
-#include "xface/io.h"
+#include "crt.h"
+#include "io.h"
 #include "xml.h"
 
 bool xml::var::operator==(const char* string) const {

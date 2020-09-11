@@ -15,11 +15,4 @@
   <library output="...\code">
     <font input="Consolas" height="16"/>
   </library>
-  <library output="...\flags" count="20">
-    <grd input="...\shields_rc3.png" height="60" width="51"/>
-  </library>
-  <library output="...\portraits" count="20">
-    <png input="...\2FBAR1_S"/>
-    <png input="...\2FELF1_S"/>
-  </library>
 </convert>

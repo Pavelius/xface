@@ -13,7 +13,7 @@ struct codeview : public scrollable, codemodel {
 public:
 	rect					rctext, rcclient;
 	bool					readonly;
-	static sprite*			font;
+	static const sprite*	font;
 	//
 	void					changing() override { invalidate(); }
 	bool					copy(bool run);

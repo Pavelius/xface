@@ -3,6 +3,27 @@
 using namespace draw;
 using namespace draw::controls;
 
+//IllegalSymbol,
+//WhiteSpace, Operator, Keyword, Comment,
+//Number, String, Identifier,
+//OpenParam, CloseParam, OpenBlock, CloseBlock, OpenScope, CloseScope,
+
+BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
+{"White space", {color::create(255, 255, 255)}},
+{"Operator", {color::create(255, 128, 0)}},
+{"Keyword", {color::create(0, 0, 255)}},
+{"Comment", {color::create(0, 255, 0)}},
+{"Number", {color::create(255, 255, 0)}},
+{"String", {color::create(0, 255, 255)}},
+{"Identifier", {color::create(0, 255, 255)}},
+{"Open parameters block", {color::create(255, 0, 255)}},
+{"Close parameters block", {color::create(255, 0, 255)}},
+{"Open code block", {color::create(255, 0, 255)}},
+{"Close code block", {color::create(255, 0, 255)}},
+{"Open scope block", {color::create(255, 0, 255)}},
+{"Close scope block", {color::create(255, 0, 255)}},
+};
+
 void codeview::ensurevisible(int linenumber) {
 	// TODO: ѕозиционировать строку, чтобы она была видна.
 	// 1) ¬ычислить общее количество строк.
@@ -41,18 +62,32 @@ int	codeview::hittest(rect rc, point pt, unsigned state) const {
 void codeview::setvalue(const char* id, int value) {
 	if(strcmp(id, "text") == 0)
 		set((const char*)value);
+	else if(strcmp(id, "lex") == 0)
+		set((const lexer*)value);
 }
 
 void codeview::invalidate() {
 	cashed_width = -1;
 }
 
-void codeview::redraw(const rect& rcorigin) {
-	rect rc = rcorigin + rctext;
-	if(show_border)
-		rc.offset(-1, -1);
+void codeview::redraw(const rect& rco) {
+	draw::state push;
+	draw::font = this->font;
+	rect rc = rco + rctext;
 	rc.y1 -= origin.y;
-	text(rc, get(0), 0, 0);
+	auto x = rc.x1, y = rc.y1;
+	codepos cp = {};
+	while(true) {
+		getnext(cp);
+		auto c = cp.to - cp.from;
+		if(!c)
+			break;
+		auto t = get(cp.from);
+		fore = bsdata<groupi>::elements[cp.type].visual.present;
+		text(x, y, t, c, 0);
+		x += c*textw('A');
+		cp.from = cp.to;
+	}
 }
 
 bool codeview::keyinput(unsigned id) {
@@ -171,3 +206,5 @@ control::command* codeview::getcommands() const {
 	{}};
 	return commands;
 }
+
+const sprite* codeview::font = (sprite*)loadb("art/fonts/code.pma");
