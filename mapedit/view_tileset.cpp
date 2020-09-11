@@ -9,7 +9,7 @@ rect sprite_get_border_rect(const sprite* ps);
 namespace {
 class tilesetview : public controls::picker {
 	const sprite* selected;
-	const char*	getlabel(char* result, const char* result_maximum) const override {
+	const char*	getlabel(stringbuilder& sb) const override {
 		return "Набор тайлов";
 	}
 	int getmaximum() const override {
@@ -59,7 +59,7 @@ struct control_type : public tilesetview, controls::control::plugin {
 	control& getcontrol() override {
 		return *this;
 	}
-	const char*	getlabel(char* result, const char* result_maximum) const override {
+	const char*	getlabel(stringbuilder& sb) const override {
 		return "Список тайлов";
 	}
 	void view(const rect& rc) override {
@@ -112,7 +112,7 @@ struct spritei : sprite {
 			delete data;
 	}
 };
-INSTMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
+BSMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
 {}};
 
 void add_tileset() {
