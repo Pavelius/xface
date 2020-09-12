@@ -29,6 +29,9 @@ int main() {
 	e.add("if", Keyword);
 	e.add("return", Keyword);
 	e.add("while", Keyword);
+	e.add("impl", Keyword);
+	e.add("struct", Keyword);
+	e.add("let", Keyword);
 	e.add(":", Operator);
 	e.add(";", Operator);
 	e.add("..", Operator);
