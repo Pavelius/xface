@@ -6,15 +6,12 @@
 namespace draw {
 namespace controls {
 struct codeview : public scrollable, codemodel {
-	int						cashed_width;
-	int						cashed_string;
-	int						cashed_origin;
 	void					textout(int x, int y, int index);
 public:
 	rect					rctext, rcclient;
 	bool					readonly;
 	static const sprite*	font;
-	//
+	codeview();
 	void					changing() override { invalidate(); }
 	bool					copy(bool run);
 	bool					cut(bool run);

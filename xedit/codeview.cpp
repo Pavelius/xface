@@ -73,7 +73,7 @@ void codeview::setvalue(const char* id, int value) {
 }
 
 void codeview::invalidate() {
-	cashed_width = -1;
+	wheels.y = font->height;
 }
 
 void codeview::redraw(const rect& rco) {
@@ -206,6 +206,10 @@ bool codeview::cut(bool run) {
 void codeview::textout(int x, int y, int start) {
 	codepos pos = {};
 	getnext(pos);
+}
+
+codeview::codeview() {
+
 }
 
 control::command* codeview::getcommands() const {

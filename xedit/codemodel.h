@@ -37,6 +37,14 @@ struct codepos {
 	int						from, count;
 	int						line, column;
 };
+struct typei {
+	const char*				name;
+};
+class parseri {
+	arem<typei>				types;
+public:
+	void					addtype(const char* id);
+};
 class codemodel : arem<char> {
 	const lexer*			lex;
 	int						p1, p2;
