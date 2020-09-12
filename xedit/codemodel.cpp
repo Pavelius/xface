@@ -54,6 +54,25 @@ bool codemodel::iswhitespace(const char* sym, const char** v) const {
 	return true;
 }
 
+bool codemodel::isnextline(const char* ps, const char** pv) const {
+	if(*ps == 10) {
+		ps++;
+		if(*ps == 13)
+			*ps++;
+		if(pv)
+			*pv = ps;
+		return true;
+	} else if(*ps == 13) {
+		ps++;
+		if(*ps == 10)
+			*ps++;
+		if(pv)
+			*pv = ps;
+		return true;
+	}
+	return false;
+}
+
 bool codemodel::iskeyword(const char* source, const lexer::word** pv) const {
 	if(!lex)
 		return false;
@@ -81,13 +100,20 @@ void codemodel::getnext(codepos& e) const {
 		return;
 	const lexer::word* kw;
 	e.type = IllegalSymbol;
-	e.to = e.from;
+	e.count = 0;
 	const char* ps = data + e.from;
+	const char* p1 = ps;
 	if(*ps == 0)
 		e.type = WhiteSpace;
 	else if(iswhitespace(ps, &ps))
 		e.type = WhiteSpace;
-	else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[1] >= '0' && ps[1] <= '9')) {
+	else if(isnextline(ps, &ps)) {
+		e.line++;
+		e.count = ps - p1;
+		e.column = 0;
+		e.type = WhiteSpace;
+		return;
+	} else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[1] >= '0' && ps[1] <= '9')) {
 		if(ps[0] == '-')
 			ps++;
 		while(*ps && *ps >= '0' && *ps <= '9')
@@ -96,14 +122,20 @@ void codemodel::getnext(codepos& e) const {
 	} else if(ps[0] == '/' && ps[1] == '/') {
 		ps += 2;
 		e.type = Comment;
-		while(*ps && *ps != 13 && *ps != 10)
-			ps++;
+		while(*ps) {
+			if(isnextline(ps, &ps)) {
+				e.line++;
+				break;
+			} else
+				ps++;
+		}
 	} else if(iskeyword(ps, &kw)) {
 		ps += kw->size;
 		e.type = kw->type;
 	} else if(isidentifier(ps, &ps))
 		e.type = Identifier;
-	e.to = ps - data;
+	e.count = ps - p1;
+	e.column += e.count;
 }
 
 int	codemodel::getbegin() const {

@@ -11,11 +11,11 @@ using namespace draw::controls;
 BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"White space", {color::create(255, 255, 255)}},
 {"Operator", {color::create(255, 128, 0)}},
-{"Keyword", {color::create(0, 0, 255)}},
+{"Keyword", {color::create(0, 0, 255), TextBold}},
 {"Comment", {color::create(0, 255, 0)}},
 {"Number", {color::create(255, 255, 0)}},
 {"String", {color::create(0, 255, 255)}},
-{"Identifier", {color::create(0, 255, 255)}},
+{"Identifier", {color::create(0, 0, 0)}},
 {"Open parameters block", {color::create(255, 0, 255)}},
 {"Close parameters block", {color::create(255, 0, 255)}},
 {"Open code block", {color::create(255, 0, 255)}},
@@ -76,17 +76,20 @@ void codeview::redraw(const rect& rco) {
 	rect rc = rco + rctext;
 	rc.y1 -= origin.y;
 	auto x = rc.x1, y = rc.y1;
+	point size = {(short)textw('A'), (short)texth()};
 	codepos cp = {};
 	while(true) {
+		auto x1 = x + cp.column*size.x;
+		auto y1 = y + cp.line*size.y;
 		getnext(cp);
-		auto c = cp.to - cp.from;
+		auto c = cp.count;
 		if(!c)
 			break;
 		auto t = get(cp.from);
-		fore = bsdata<groupi>::elements[cp.type].visual.present;
-		text(x, y, t, c, 0);
-		x += c*textw('A');
-		cp.from = cp.to;
+		auto& ei = bsdata<groupi>::elements[cp.type].visual;
+		fore = ei.present;
+		text(x1, y1, t, c, ei.flags);
+		cp.from += cp.count;
 	}
 }
 

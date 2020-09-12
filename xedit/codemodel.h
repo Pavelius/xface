@@ -34,7 +34,7 @@ struct lexer {
 };
 struct codepos {
 	group_s					type;
-	int						from, to;
+	int						from, count;
 	int						line, column;
 };
 class codemodel : arem<char> {
@@ -46,6 +46,7 @@ public:
 	void					clear();
 	bool					isidentifier(const char* source, const char** v) const;
 	bool					iskeyword(const char* source, const lexer::word** v) const;
+	bool					isnextline(const char* source, const char** pv) const;
 	bool					isselected() const { return p2 != -1 && p1 != -1; }
 	bool					iswhitespace(char sym) const;
 	bool					iswhitespace(const char* sym, const char** v) const;
