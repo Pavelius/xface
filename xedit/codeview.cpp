@@ -11,9 +11,9 @@ using namespace draw::controls;
 BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"White space", {color::create(255, 255, 255)}},
 {"Operator", {color::create(255, 128, 0)}},
-{"Keyword", {color::create(0, 0, 255), TextBold}},
-{"Comment", {color::create(0, 255, 0)}},
-{"Number", {color::create(255, 255, 0)}},
+{"Keyword", {color::create(0, 0, 128), TextBold}},
+{"Comment", {color::create(0, 128, 0)}},
+{"Number", {color::create(128, 128, 0)}},
 {"String", {color::create(0, 255, 255)}},
 {"Identifier", {color::create(0, 0, 0)}},
 {"Open parameters block", {color::create(255, 0, 255)}},
@@ -59,11 +59,17 @@ int	codeview::hittest(rect rc, point pt, unsigned state) const {
 	return draw::hittest({rc.x1, rc.y1 - origin.y, rc.x2, rc.y2}, get(0), state, pt);
 }
 
+void codeview::open(const char* url) {
+	set(loadt(url));
+}
+
 void codeview::setvalue(const char* id, int value) {
 	if(strcmp(id, "text") == 0)
 		set((const char*)value);
 	else if(strcmp(id, "lex") == 0)
 		set((const lexer*)value);
+	else if(strcmp(id, "open") == 0)
+		open((const char*)value);
 }
 
 void codeview::invalidate() {

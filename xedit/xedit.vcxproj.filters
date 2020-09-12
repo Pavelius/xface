@@ -11,4 +11,7 @@
     <ClInclude Include="codemodel.h" />
     <ClInclude Include="codeview.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="code_sample.txt" />
+  </ItemGroup>
 </Project>

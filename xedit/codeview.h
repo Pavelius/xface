@@ -30,6 +30,7 @@ public:
 	int						linee(int index) const;
 	int						linen(int index) const;
 	void					mouseinput(unsigned id, point position);
+	void					open(const char* url);
 	bool					paste(bool run);
 	void					redraw(const rect& rc) override;
 	unsigned				select_all(bool run);

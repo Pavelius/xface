@@ -25,26 +25,24 @@ int main() {
 	e.add("fn", Keyword);
 	e.add("mod", Keyword);
 	e.add("for", Keyword);
+	e.add("in", Keyword);
+	e.add("if", Keyword);
+	e.add("return", Keyword);
 	e.add("while", Keyword);
 	e.add(":", Operator);
 	e.add(";", Operator);
+	e.add("..", Operator);
+	e.add(",", Operator);
+	e.add("->", Operator);
 	e.add("=", Operator);
 	e.add("(", OpenParam); e.add(")", CloseParam);
 	e.add("{", OpenBlock); e.add("}", CloseBlock);
 	e.add("[", OpenScope); e.add("]", CloseScope);
 	e.sort();
 	codepos cp = {};
-	codemodel cm;
-	cm.set(&e);
-	cm.set("fn print(text : String) {}");
-	setglob("codeview", "text", (int)"fn print(text : String) {\n  let a = 10;\n  a\n}");
+	//setglob("codeview", "text", (int)"fn print(text : String) {\n  let a = 10;\n  a\n}");
+	setglob("codeview", "open", (int)"code_sample.txt");
 	setglob("codeview", "lex", (int)&e);
-	while(true) {
-		cm.getnext(cp);
-		if(!cp.count)
-			break;
-		cp.from += cp.count;
-	}
 	application("X-Code editor", true, 0, 0, 0);
 	return 0;
 }

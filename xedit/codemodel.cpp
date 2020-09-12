@@ -31,6 +31,8 @@ const lexer::word* lexer::find(const char* sym) const {
 }
 
 void codemodel::set(const char* value) {
+	if(!value)
+		return;
 	auto len = zlen(value);
 	reserve(len + 1);
 	memcpy(data, value, len + 1);
@@ -113,7 +115,7 @@ void codemodel::getnext(codepos& e) const {
 		e.column = 0;
 		e.type = WhiteSpace;
 		return;
-	} else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[1] >= '0' && ps[1] <= '9')) {
+	} else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[0] >= '0' && ps[0] <= '9')) {
 		if(ps[0] == '-')
 			ps++;
 		while(*ps && *ps >= '0' && *ps <= '9')
@@ -125,7 +127,9 @@ void codemodel::getnext(codepos& e) const {
 		while(*ps) {
 			if(isnextline(ps, &ps)) {
 				e.line++;
-				break;
+				e.column = 0;
+				e.count = ps - p1;
+				return;
 			} else
 				ps++;
 		}
@@ -134,6 +138,8 @@ void codemodel::getnext(codepos& e) const {
 		e.type = kw->type;
 	} else if(isidentifier(ps, &ps))
 		e.type = Identifier;
+	else
+		ps++;
 	e.count = ps - p1;
 	e.column += e.count;
 }
