@@ -29,6 +29,7 @@ public:
 	int						getcurrent() const { return p1; }
 	int						getend() const;
 	point					getendpos() const;
+	int						getindex(int origin, int column, int row) const;
 	point					getpos(int index) const;
 	int						hittest(rect rc, point pt, unsigned state) const;
 	static void				instance();

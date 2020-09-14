@@ -84,6 +84,7 @@ void codeview::redraw(const rect& rco) {
 	draw::state push;
 	draw::font = this->font;
 	rect rc = rco + rctext;
+	rcclient = rc;
 	rc.y1 -= origin.y;
 	auto x = rc.x1, y = rc.y1;
 	codepos cp = {};
@@ -217,14 +218,12 @@ bool codeview::paste(bool run) {
 void codeview::mouseinput(unsigned id, point position) {
 	switch(id) {
 	case MouseLeft:
+	case MouseLeft | Shift:
 		if(hot.pressed) {
-			auto i = hittest(rcclient, position, 0);
-			if(i == -2)
-				set(0, false);
-			else if(i == -3)
-				set(getlenght(), false);
-			else if(i >= 0)
-				set(i, false);
+			auto i = getindex(0,
+				(hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x,
+				(hot.mouse.y - rcclient.y1) / fontsize.y);
+			set(i, (id&Shift) != 0);
 		}
 		break;
 	default:
@@ -347,6 +346,26 @@ void codeview::right(bool shift, bool ctrl) {
 		n = skipsp(n);
 	}
 	set(n, shift);
+}
+
+int	codeview::getindex(int origin, int column, int row) const {
+	const char* pb = data + origin;
+	const char* pe = data + count;
+	point pos = {0, 0};
+	while(true) {
+		if(pos.y == row && pos.x == column)
+			break;
+		if(pb >= pe || *pb == 0 || isnextline(pb, &pb)) {
+			pos.x = 0;
+			pos.y++;
+			if(pb >= pe || *pb == 0 || pos.y > row)
+				break;
+		} else {
+			pos.x++;
+			pb++;
+		}
+	}
+	return pb - data;
 }
 
 point codeview::getpos(int index) const {

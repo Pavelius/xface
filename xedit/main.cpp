@@ -25,6 +25,7 @@ int main() {
 	lexer e;
 	e.add("fn", Keyword);
 	e.add("mod", Keyword);
+	e.add("mut", Keyword);
 	e.add("for", Keyword);
 	e.add("in", Keyword);
 	e.add("if", Keyword);
