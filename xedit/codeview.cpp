@@ -30,29 +30,8 @@ void codeview::ensurevisible(int linenumber) {
 	// 2) Вычислить количество строк на экране.
 }
 
-int	codeview::lineb(int index) const {
-	return 0;
-}
-
-int	codeview::linee(int index) const {
-	return 0;
-}
-
 int	codeview::linen(int index) const {
 	return 0;
-}
-
-point codeview::getpos(rect rc, int index, unsigned state) const {
-	auto line_number = 0;
-	auto line_count = 0;
-	auto line_start = draw::textlb(get(0), index, rc.width(), &line_number, &line_count);
-	auto p = get(line_start);
-	auto x1 = aligned(rc.x1, rc.width(), state, textw(p, line_count));
-	auto y1 = rc.y1 + draw::alignedh(rc, get(0), state);
-	return{
-		(short)(x1 + textw(get(line_start), index - line_start)),
-		(short)(y1 + line_number * texth() - origin.y)
-	};
 }
 
 int	codeview::hittest(rect rc, point pt, unsigned state) const {
@@ -168,11 +147,11 @@ bool codeview::keyinput(unsigned id) {
 		break;
 	case KeyHome:
 	case KeyHome | Shift:
-		//select(lineb(p1), (id&Shift) != 0);
+		set(lineb(getcurrent()), (id&Shift) != 0);
 		break;
 	case KeyEnd:
 	case KeyEnd | Shift:
-		//select(linee(p1), (id&Shift) != 0);
+		set(linee(getcurrent()), (id&Shift) != 0);
 		break;
 	default:
 		return scrollable::keyinput(id);

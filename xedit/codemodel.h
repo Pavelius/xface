@@ -62,6 +62,8 @@ public:
 	bool					iswhitespace(char sym) const;
 	bool					iswhitespace(const char* sym, const char** v) const;
 	void					left(bool shift, bool ctrl);
+	int						lineb(int index) const;
+	int						linee(int index) const;
 	const char*				get(int index) const { return data + index; }
 	int						getbegin() const;
 	point					getbeginpos() const;
@@ -70,6 +72,7 @@ public:
 	point					getendpos() const;
 	int						getlenght() const;
 	void					getnext(codepos& e) const;
+	point					getpos(int index) const;
 	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size) const;
 	void					paste(const char* v);
 	void					right(bool shift, bool ctrl);

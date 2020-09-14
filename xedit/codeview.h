@@ -20,13 +20,10 @@ public:
 	bool					cut(bool run);
 	void					ensurevisible(int linenumber);
 	command*				getcommands() const override;
-	point					getpos(rect rc, int index, unsigned state) const;
 	int						hittest(rect rc, point pt, unsigned state) const;
 	static void				instance();
 	void					invalidate() override;
 	bool					keyinput(unsigned id) override;
-	int						lineb(int index) const;
-	int						linee(int index) const;
 	int						linen(int index) const;
 	void					mouseinput(unsigned id, point position);
 	void					open(const char* url);

@@ -203,6 +203,26 @@ int codemodel::getlenght() const {
 	return count;
 }
 
+int	codemodel::lineb(int index) const {
+	auto p = data + index;
+	while(p > data) {
+		if(p[-1] == 10 || p[-1] == 13)
+			break;
+		p--;
+	}
+	return p - data;
+}
+
+int	codemodel::linee(int index) const {
+	auto p = data + index;
+	while(p > data) {
+		if(p[0] == 10 || p[0] == 13)
+			break;
+		p++;
+	}
+	return p - data;
+}
+
 void codemodel::set(int index, bool shift) {
 	if(index < 0)
 		index = 0;
@@ -246,6 +266,13 @@ void codemodel::right(bool shift, bool ctrl) {
 //		for(; string[n] && isspace(string[n]); n++);
 	}
 	set(n, shift);
+}
+
+point codemodel::getpos(int index) const {
+	point result, result2, size;
+	int index2 = -1;
+	getstate(index, result, index2, result2, size);
+	return result;
 }
 
 void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) const {
