@@ -36,6 +36,7 @@ void codemodel::set(const char* value) {
 	auto len = zlen(value);
 	reserve(len + 1);
 	memcpy(data, value, len + 1);
+	count = len + 1;
 	changing();
 }
 
@@ -229,4 +230,34 @@ void codemodel::right(bool shift, bool ctrl) {
 //		for(; string[n] && isspace(string[n]); n++);
 	}
 	set(n, shift);
+}
+
+void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) const {
+	const char* pb = data;
+	const char* pe = data + count;
+	point pos = {0, 0};
+	pos1 = {-1, -1};
+	pos2 = {-1, -1};
+	size = {0, 0};
+	while(true) {
+		auto i = pb - data;
+		if(i == p1)
+			pos1 = pos;
+		if(i == p2)
+			pos2 = pos;
+		if(pb>=pe || *pb==0 || isnextline(pb, &pb)) {
+			if(size.x < pos.x)
+				size.x = pos.x;
+			pos.x = 0;
+			pos.y++;
+			if(pb >= pe || *pb == 0)
+				break;
+		} else {
+			pos.x++;
+			pb++;
+		}
+	}
+	if(p1 == p2 || p2 == -1)
+		pos2 = pos1;
+	size.y = pos.y;
 }

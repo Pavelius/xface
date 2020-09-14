@@ -73,20 +73,30 @@ void codeview::setvalue(const char* id, int value) {
 }
 
 void codeview::invalidate() {
-	wheels.y = font->height;
+	wheels.y = fontsize.y;
+	cash_columns = -1;
+}
+
+void codeview::cashing() {
+	getstate(p1, pos1, p2, pos2, size);
+	maximum.x = size.x * fontsize.x;
+	maximum.y = size.y * fontsize.y;
 }
 
 void codeview::redraw(const rect& rco) {
+	if(cash_columns == -1) {
+		cashing();
+		cash_columns = size.x;
+	}
 	draw::state push;
 	draw::font = this->font;
 	rect rc = rco + rctext;
 	rc.y1 -= origin.y;
 	auto x = rc.x1, y = rc.y1;
-	point size = {(short)textw('A'), (short)texth()};
 	codepos cp = {};
 	while(true) {
-		auto x1 = x + cp.column*size.x;
-		auto y1 = y + cp.line*size.y;
+		auto x1 = x + cp.column*fontsize.x;
+		auto y1 = y + cp.line*fontsize.y;
 		getnext(cp);
 		auto c = cp.count;
 		if(!c)
@@ -96,6 +106,11 @@ void codeview::redraw(const rect& rco) {
 		fore = ei.present;
 		text(x1, y1, t, c, ei.flags);
 		cp.from += cp.count;
+	}
+	if(pos1 == pos2) {
+		auto x1 = x + pos1.x*fontsize.x;
+		auto y1 = y + pos1.y*fontsize.x;
+		line(x1, y1, x1, y1 + fontsize.y, colors::text.mix(colors::edit));
 	}
 }
 
@@ -208,8 +223,16 @@ void codeview::textout(int x, int y, int start) {
 	getnext(pos);
 }
 
-codeview::codeview() {
+void codeview::instance() {
+	auto old_font = draw::font;
+	draw::font = codeview::font;
+	fontsize.x = textw('A');
+	fontsize.y = texth();
+	draw::font = old_font;
+}
 
+codeview::codeview() : cash_columns(-1) {
+	p1 = 10; p2 = -1;
 }
 
 control::command* codeview::getcommands() const {
@@ -221,3 +244,4 @@ control::command* codeview::getcommands() const {
 }
 
 const sprite* codeview::font = (sprite*)loadb("art/fonts/code.pma");
+point codeview::fontsize;

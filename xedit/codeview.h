@@ -6,12 +6,15 @@
 namespace draw {
 namespace controls {
 struct codeview : public scrollable, codemodel {
+	int						cash_columns;
 	void					textout(int x, int y, int index);
 public:
 	rect					rctext, rcclient;
 	bool					readonly;
 	static const sprite*	font;
+	static point			fontsize;
 	codeview();
+	void					cashing();
 	void					changing() override { invalidate(); }
 	bool					copy(bool run);
 	bool					cut(bool run);
@@ -21,6 +24,7 @@ public:
 	point					getpos(rect rc, int index, unsigned state) const;
 	int						getrecordsheight() const;
 	int						hittest(rect rc, point pt, unsigned state) const;
+	static void				instance();
 	void					invalidate() override;
 	bool					keyinput(unsigned id) override;
 	int						lineb(int index) const;

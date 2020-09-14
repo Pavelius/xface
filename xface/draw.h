@@ -324,7 +324,7 @@ int						texth(const char* string, int width);
 int						textw(int sym);
 int						textw(const char* string, int count = -1);
 int						textw(rect& rc, const char* string);
-int						textw(sprite* font);
+int						textw(const sprite* font);
 void					triangle(point v1, point v2, point v3, color c1);
 void					updatewindow();
 void					write(const char* url, unsigned char* bits, int width, int height, int bpp, int scanline, color* pallette);

@@ -1,5 +1,6 @@
 #include "crt.h"
 #include "color.h"
+#include "point.h"
 
 #pragma once
 
@@ -47,9 +48,10 @@ public:
 };
 class codemodel : arem<char> {
 	const lexer*			lex;
-	int						p1, p2;
 	void					correct();
 public:
+	int						p1, p2;
+	point					size, pos1, pos2;
 	virtual void			changing() {}
 	void					clear();
 	bool					isidentifier(const char* source, const char** v) const;
@@ -64,6 +66,7 @@ public:
 	int						getcurrent() const { return p1; }
 	int						getend() const;
 	int						getlenght() const;
+	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size) const;
 	void					paste(const char* v);
 	void					right(bool shift, bool ctrl);
 	void					set(const char* source);

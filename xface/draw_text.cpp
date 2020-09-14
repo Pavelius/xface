@@ -14,7 +14,7 @@ int draw::textw(int sym) {
 	return fwidth(font)[wsymbol(font, sym)];
 }
 
-int draw::textw(sprite* font) {
+int draw::textw(const sprite* font) {
 	if(!font)
 		return 0;
 	return fwidth(font)[wsymbol(font, 'A')];

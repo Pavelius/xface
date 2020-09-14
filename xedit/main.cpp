@@ -21,6 +21,7 @@ static void setglob(const char* control_id, const char* id, int value) {
 }
 
 int main() {
+	codeview::instance();
 	lexer e;
 	e.add("fn", Keyword);
 	e.add("mod", Keyword);
