@@ -25,9 +25,17 @@ BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 };
 
 void codeview::ensurevisible(int linenumber) {
-	// TODO: Позиционировать строку, чтобы она была видна.
-	// 1) Вычислить общее количество строк.
-	// 2) Вычислить количество строк на экране.
+	if(linenumber == -1)
+		return;
+	auto cw = fontsize.y*getcurrent();
+	if(cw < origin.y) {
+		origin.y = cw;
+		invalidate();
+	}
+	if(getcurrent() > origin.y + (lines_per_page - 1)*fontsize.y) {
+		origin.y = cw - (lines_per_page + 1)*fontsize.y;
+		invalidate();
+	}
 }
 
 int	codeview::linen(int index) const {
@@ -39,14 +47,15 @@ int	codeview::hittest(rect rc, point pt, unsigned state) const {
 }
 
 void codeview::open(const char* url) {
-	set(loadt(url));
+	codemodel::set(loadt(url));
+	invalidate();
 }
 
 void codeview::setvalue(const char* id, int value) {
 	if(strcmp(id, "text") == 0)
-		set((const char*)value);
+		codemodel::set((const char*)value);
 	else if(strcmp(id, "lex") == 0)
-		set((const lexer*)value);
+		codemodel::set((const lexer*)value);
 	else if(strcmp(id, "open") == 0)
 		open((const char*)value);
 	else if(strcmp(id, "select") == 0)
@@ -60,7 +69,10 @@ void codeview::invalidate() {
 	cash_columns = -1;
 }
 
-void codeview::beforeredraw() {
+void codeview::beforeredraw(const rect& rc) {
+	if(!fontsize.y)
+		return;
+	lines_per_page = rc.height() / fontsize.y;
 	if(cash_columns == -1) {
 		updatestate();
 		maximum.x = size.x * fontsize.x;
@@ -117,12 +129,14 @@ bool codeview::keyinput(unsigned id) {
 	case KeyRight | Ctrl:
 	case KeyRight | Shift | Ctrl:
 		right((id&Shift) != 0, (id&Ctrl) != 0);
+		ensurevisible(p1);
 		break;
 	case KeyLeft:
 	case KeyLeft | Shift:
 	case KeyLeft | Ctrl:
 	case KeyLeft | Shift | Ctrl:
 		left((id&Shift) != 0, (id&Ctrl) != 0);
+		ensurevisible(p1);
 		break;
 	case KeyBackspace:
 		if(!readonly) {
@@ -147,7 +161,16 @@ bool codeview::keyinput(unsigned id) {
 		break;
 	case KeyHome:
 	case KeyHome | Shift:
-		set(lineb(getcurrent()), (id&Shift) != 0);
+		if(true) {
+			auto i0 = getcurrent();
+			auto i1 = lineb(i0);
+			auto i2 = skipsp(i1);
+			if(i0 == i1)
+				break;
+			if(i0 == i2)
+				i2 = i1;
+			set(i2, (id&Shift) != 0);
+		}
 		break;
 	case KeyEnd:
 	case KeyEnd | Shift:
@@ -214,6 +237,60 @@ bool codeview::cut(bool run) {
 	return true;
 }
 
+point codeview::getbeginpos() const {
+	if(p2 == -1)
+		return pos1;
+	if(p1 < p2)
+		return pos1;
+	return pos2;
+}
+
+int	codeview::getbegin() const {
+	if(p2 == -1)
+		return p1;
+	return imin(p1, p2);
+}
+
+int	codeview::getend() const {
+	if(p2 == -1)
+		return p1;
+	return imax(p1, p2);
+}
+
+point codeview::getendpos() const {
+	if(p2 == -1)
+		return pos1;
+	if(p1 > p2)
+		return pos1;
+	return pos2;
+}
+
+void codeview::clear() {
+	if(p2 != -1 && p1 != p2 && data) {
+		auto s1 = data + getbegin();
+		auto s2 = data + getend();
+		while(*s2)
+			*s1++ = *s2++;
+		*s1 = 0;
+		invalidate();
+		if(p1 > p2)
+			p1 = p2;
+	}
+	p2 = -1;
+}
+
+void codeview::paste(const char* input) {
+	clear();
+	auto i2 = zlen(input);
+	auto count = getlenght();
+	if(p1 + i2 > count)
+		reserve(p1 + i2 + 1);
+	memmove(data + p1 + i2, data + p1, (count - p1 + 1) * sizeof(char));
+	memcpy(data + p1, input, i2); count += i2;
+	invalidate();
+	set(p1 + i2, false);
+}
+
 void codeview::textout(int x, int y, int start) {
 	codepos pos = {};
 	getnext(pos);
@@ -225,6 +302,58 @@ void codeview::instance() {
 	fontsize.x = textw('A');
 	fontsize.y = texth();
 	draw::font = old_font;
+}
+
+void codeview::set(int index, bool shift) {
+	if(index < 0)
+		index = 0;
+	else if(index > getlenght())
+		index = count;
+	if(shift) {
+		if(p2 == -1)
+			p2 = p1;
+	} else
+		p2 = -1;
+	p1 = index;
+}
+
+void codeview::correction() {
+	auto lenght = getlenght();
+	if(p2 != -1 && p2 > lenght)
+		p2 = lenght;
+	if(p1 > lenght)
+		p1 = lenght;
+	if(p1 < 0)
+		p1 = 0;
+}
+
+void codeview::left(bool shift, bool ctrl) {
+	auto p = data + p1;
+	if(!ctrl)
+		p--;
+	else {
+		for(; p > data && iswhitespace(p[-1]); p--);
+		for(; p > data && !iswhitespace(p[-1]); p--);
+	}
+	set(p - data, shift);
+}
+
+void codeview::right(bool shift, bool ctrl) {
+	auto n = p1;
+	if(!ctrl)
+		n += 1;
+	else {
+		n = skipnsp(n);
+		n = skipsp(n);
+	}
+	set(n, shift);
+}
+
+point codeview::getpos(int index) const {
+	point result, result2, size;
+	int index2 = -1;
+	getstate(index, result, index2, result2, size);
+	return result;
 }
 
 codeview::codeview() : cash_columns(-1) {

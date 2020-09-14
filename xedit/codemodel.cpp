@@ -37,7 +37,6 @@ void codemodel::set(const char* value) {
 	reserve(len + 1);
 	memcpy(data, value, len + 1);
 	count = len + 1;
-	changing();
 }
 
 bool codemodel::iswhitespace(char sym) const {
@@ -145,60 +144,6 @@ void codemodel::getnext(codepos& e) const {
 	e.column += e.count;
 }
 
-point codemodel::getbeginpos() const {
-	if(p2 == -1)
-		return pos1;
-	if(p1 < p2)
-		return pos1;
-	return pos2;
-}
-
-int	codemodel::getbegin() const {
-	if(p2 == -1)
-		return p1;
-	return imin(p1, p2);
-}
-
-int	codemodel::getend() const {
-	if(p2 == -1)
-		return p1;
-	return imax(p1, p2);
-}
-
-point codemodel::getendpos() const {
-	if(p2 == -1)
-		return pos1;
-	if(p1 > p2)
-		return pos1;
-	return pos2;
-}
-
-void codemodel::clear() {
-	if(p2 != -1 && p1 != p2 && data) {
-		auto s1 = data + getbegin();
-		auto s2 = data + getend();
-		while(*s2)
-			*s1++ = *s2++;
-		*s1 = 0;
-		changing();
-		if(p1 > p2)
-			p1 = p2;
-	}
-	p2 = -1;
-}
-
-void codemodel::paste(const char* input) {
-	clear();
-	auto i2 = zlen(input);
-	auto count = getlenght();
-	if(p1 + i2 > count)
-		reserve(p1 + i2 + 1);
-	memmove(data + p1 + i2, data + p1, (count - p1 + 1) * sizeof(char));
-	memcpy(data + p1, input, i2); count += i2;
-	changing();
-	set(p1 + i2, false);
-}
-
 int codemodel::getlenght() const {
 	return count;
 }
@@ -223,58 +168,6 @@ int	codemodel::linee(int index) const {
 	return p - data;
 }
 
-void codemodel::set(int index, bool shift) {
-	if(index < 0)
-		index = 0;
-	else if(index > getlenght())
-		index = count;
-	if(shift) {
-		if(p2 == -1)
-			p2 = p1;
-	} else
-		p2 = -1;
-	p1 = index;
-}
-
-void codemodel::correct() {
-	auto lenght = getlenght();
-	if(p2 != -1 && p2 > lenght)
-		p2 = lenght;
-	if(p1 > lenght)
-		p1 = lenght;
-	if(p1 < 0)
-		p1 = 0;
-}
-
-void codemodel::left(bool shift, bool ctrl) {
-	auto n = p1;
-	if(!ctrl)
-		n -= 1;
-	else {
-//		for(; n > 0 && isspace(string[n - 1]); n--);
-//		for(; n > 0 && !isspace(string[n - 1]); n--);
-	}
-	set(n, shift);
-}
-
-void codemodel::right(bool shift, bool ctrl) {
-	auto n = p1;
-	if(!ctrl)
-		n += 1;
-	else {
-//		for(; string[n] && !isspace(string[n]); n++);
-//		for(; string[n] && isspace(string[n]); n++);
-	}
-	set(n, shift);
-}
-
-point codemodel::getpos(int index) const {
-	point result, result2, size;
-	int index2 = -1;
-	getstate(index, result, index2, result2, size);
-	return result;
-}
-
 void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) const {
 	const char* pb = data;
 	const char* pe = data + count;
@@ -288,7 +181,7 @@ void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) 
 			pos1 = pos;
 		if(i == p2)
 			pos2 = pos;
-		if(pb>=pe || *pb==0 || isnextline(pb, &pb)) {
+		if(pb >= pe || *pb == 0 || isnextline(pb, &pb)) {
 			if(size.x < pos.x)
 				size.x = pos.x;
 			pos.x = 0;
@@ -303,4 +196,20 @@ void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) 
 	if(p1 == p2 || p2 == -1)
 		pos2 = pos1;
 	size.y = pos.y;
+}
+
+int	codemodel::skipsp(int index) const {
+	auto p = data + index;
+	auto pe = data + count;
+	while(p < pe && iswhitespace(*p))
+		p++;
+	return p - data;
+}
+
+int	codemodel::skipnsp(int index) const {
+	auto p = data + index;
+	auto pe = data + count;
+	while(p < pe && !iswhitespace(*p))
+		p++;
+	return p - data;
 }

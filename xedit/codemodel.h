@@ -46,38 +46,22 @@ class parseri {
 public:
 	void					addtype(const char* id);
 };
-class codemodel : arem<char> {
+class codemodel : public arem<char> {
 	const lexer*			lex;
-	void					correct();
-	int						p1, p2;
-	point					pos1, pos2;
 public:
-	point					size;
-	virtual void			changing() {}
-	void					clear();
 	bool					isidentifier(const char* source, const char** v) const;
 	bool					iskeyword(const char* source, const lexer::word** v) const;
 	bool					isnextline(const char* source, const char** pv) const;
-	bool					isselected() const { return p2 != -1 && p1 != -1; }
 	bool					iswhitespace(char sym) const;
 	bool					iswhitespace(const char* sym, const char** v) const;
-	void					left(bool shift, bool ctrl);
 	int						lineb(int index) const;
 	int						linee(int index) const;
 	const char*				get(int index) const { return data + index; }
-	int						getbegin() const;
-	point					getbeginpos() const;
-	int						getcurrent() const { return p1; }
-	int						getend() const;
-	point					getendpos() const;
 	int						getlenght() const;
 	void					getnext(codepos& e) const;
-	point					getpos(int index) const;
 	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size) const;
-	void					paste(const char* v);
-	void					right(bool shift, bool ctrl);
 	void					set(const char* source);
 	void					set(const lexer* v) { lex = v; }
-	void					set(int index, bool shift);
-	void					updatestate() { getstate(p1, pos1, p2, pos2, size); }
+	int						skipsp(int index) const;
+	int						skipnsp(int index) const;
 };
