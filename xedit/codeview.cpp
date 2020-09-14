@@ -70,6 +70,10 @@ void codeview::setvalue(const char* id, int value) {
 		set((const lexer*)value);
 	else if(strcmp(id, "open") == 0)
 		open((const char*)value);
+	else if(strcmp(id, "select") == 0)
+		set(value, false);
+	else if(strcmp(id, "select_range") == 0)
+		set(value, true);
 }
 
 void codeview::invalidate() {
@@ -77,17 +81,15 @@ void codeview::invalidate() {
 	cash_columns = -1;
 }
 
-void codeview::cashing() {
-	getstate(p1, pos1, p2, pos2, size);
-	maximum.x = size.x * fontsize.x;
-	maximum.y = size.y * fontsize.y;
+void codeview::beforeredraw() {
+	if(cash_columns == -1) {
+		updatestate();
+		maximum.x = size.x * fontsize.x;
+		maximum.y = size.y * fontsize.y;
+	}
 }
 
 void codeview::redraw(const rect& rco) {
-	if(cash_columns == -1) {
-		cashing();
-		cash_columns = size.x;
-	}
 	draw::state push;
 	draw::font = this->font;
 	rect rc = rco + rctext;
@@ -107,10 +109,25 @@ void codeview::redraw(const rect& rco) {
 		text(x1, y1, t, c, ei.flags);
 		cp.from += cp.count;
 	}
-	if(pos1 == pos2) {
-		auto x1 = x + pos1.x*fontsize.x;
-		auto y1 = y + pos1.y*fontsize.x;
+	// Draw hilite
+	if(getbegin() == getend()) {
+		auto p1 = getbeginpos();
+		auto x1 = x + p1.x*fontsize.x;
+		auto y1 = y + p1.y*fontsize.y;
 		line(x1, y1, x1, y1 + fontsize.y, colors::text.mix(colors::edit));
+	} else if(getbegin() != -1) {
+		auto p1 = getbeginpos();
+		auto p2 = getendpos();
+		for(auto i = p1.y; i <= p2.y; i++) {
+			auto x1 = rco.x1;
+			auto x2 = rco.x2;
+			auto y1 = y + i * fontsize.y;
+			if(i == p1.y)
+				x1 = x + p1.x*fontsize.x;
+			if(i == p2.y)
+				x2 = x + p2.x*fontsize.x;
+			rectf({x1, y1, x2, y1 + fontsize.y}, colors::edit, 64);
+		}
 	}
 }
 
@@ -232,7 +249,6 @@ void codeview::instance() {
 }
 
 codeview::codeview() : cash_columns(-1) {
-	p1 = 10; p2 = -1;
 }
 
 control::command* codeview::getcommands() const {

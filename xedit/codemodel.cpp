@@ -145,6 +145,14 @@ void codemodel::getnext(codepos& e) const {
 	e.column += e.count;
 }
 
+point codemodel::getbeginpos() const {
+	if(p2 == -1)
+		return pos1;
+	if(p1 < p2)
+		return pos1;
+	return pos2;
+}
+
 int	codemodel::getbegin() const {
 	if(p2 == -1)
 		return p1;
@@ -155,6 +163,14 @@ int	codemodel::getend() const {
 	if(p2 == -1)
 		return p1;
 	return imax(p1, p2);
+}
+
+point codemodel::getendpos() const {
+	if(p2 == -1)
+		return pos1;
+	if(p1 > p2)
+		return pos1;
+	return pos2;
 }
 
 void codemodel::clear() {

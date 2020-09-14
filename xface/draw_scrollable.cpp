@@ -26,6 +26,7 @@ void scrollable::view(const rect& rcc) {
 	// calculate scroll positions
 	scrollv.clear();
 	scrollh.clear();
+	beforeredraw();
 	if(rcheight < maximum.y) {
 		scrollv.set(rc.x2 - metrics::scroll, rc.y1, rc.x2 - 1, rc.y2 - 1);
 		rc.x2 -= scrollv.width();

@@ -14,15 +14,13 @@ public:
 	static const sprite*	font;
 	static point			fontsize;
 	codeview();
-	void					cashing();
+	void					beforeredraw() override;
 	void					changing() override { invalidate(); }
 	bool					copy(bool run);
 	bool					cut(bool run);
-	bool					editing(rect rc);
 	void					ensurevisible(int linenumber);
 	command*				getcommands() const override;
 	point					getpos(rect rc, int index, unsigned state) const;
-	int						getrecordsheight() const;
 	int						hittest(rect rc, point pt, unsigned state) const;
 	static void				instance();
 	void					invalidate() override;
@@ -35,9 +33,7 @@ public:
 	bool					paste(bool run);
 	void					redraw(const rect& rc) override;
 	unsigned				select_all(bool run);
-	void					setrecordlist(const char* string);
 	void					setvalue(const char* id, int value) override;
-	void					updaterecords(bool setfilter);
 };
 }
 }

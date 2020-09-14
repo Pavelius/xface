@@ -381,6 +381,7 @@ struct scrollable : control {
 	rect					centerview(const rect& rc);
 	virtual void			invalidate();
 	virtual void			redraw(const rect& rc) {}
+	virtual void			beforeredraw() {}
 	void					view(const rect& rc) override;
 };
 class textedit : public scrollable {

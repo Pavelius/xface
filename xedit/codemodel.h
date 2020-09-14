@@ -49,9 +49,10 @@ public:
 class codemodel : arem<char> {
 	const lexer*			lex;
 	void					correct();
-public:
 	int						p1, p2;
-	point					size, pos1, pos2;
+	point					pos1, pos2;
+public:
+	point					size;
 	virtual void			changing() {}
 	void					clear();
 	bool					isidentifier(const char* source, const char** v) const;
@@ -63,14 +64,17 @@ public:
 	void					left(bool shift, bool ctrl);
 	const char*				get(int index) const { return data + index; }
 	int						getbegin() const;
+	point					getbeginpos() const;
 	int						getcurrent() const { return p1; }
 	int						getend() const;
+	point					getendpos() const;
 	int						getlenght() const;
+	void					getnext(codepos& e) const;
 	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size) const;
 	void					paste(const char* v);
 	void					right(bool shift, bool ctrl);
 	void					set(const char* source);
 	void					set(const lexer* v) { lex = v; }
 	void					set(int index, bool shift);
-	void					getnext(codepos& e) const;
+	void					updatestate() { getstate(p1, pos1, p2, pos2, size); }
 };

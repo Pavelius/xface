@@ -47,6 +47,8 @@ int main() {
 	//setglob("codeview", "text", (int)"fn print(text : String) {\n  let a = 10;\n  a\n}");
 	setglob("codeview", "open", (int)"code_sample.txt");
 	setglob("codeview", "lex", (int)&e);
+	setglob("codeview", "select", 100);
+	setglob("codeview", "select_range", 200);
 	application("X-Code editor", true, 0, 0, 0);
 	return 0;
 }
