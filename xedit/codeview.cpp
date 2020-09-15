@@ -75,9 +75,10 @@ void codeview::invalidate() {
 void codeview::beforeredraw(const rect& rc) {
 	if(!fontsize.y)
 		return;
+	rcclient = rc;
 	lines_per_page = rc.height() / fontsize.y;
 	if(cash_origin == -1) {
-		updatestate({0, (short)origin.y}, cash_origin);
+		getstate(p1, pos1, p2, pos2, size, {0, (short)origin.y}, cash_origin);
 		maximum.x = size.x * fontsize.x;
 		maximum.y = size.y;
 	}
@@ -105,12 +106,12 @@ void codeview::redraw(const rect& rco) {
 		ps += c;
 	}
 	// Draw hilite
-	if(getbegin() == getend()) {
-		auto p1 = getbeginpos();
-		auto x1 = x + p1.x*fontsize.x;
-		auto y1 = y + p1.y*fontsize.y;
+	if(true) {
+		auto x1 = x + pos1.x*fontsize.x;
+		auto y1 = y + pos1.y*fontsize.y;
 		line(x1, y1, x1, y1 + fontsize.y, colors::text.mix(colors::edit));
-	} else if(getbegin() != -1) {
+	}
+	if(getbegin() != -1) {
 		auto p1 = getbeginpos();
 		auto p2 = getendpos();
 		for(auto i = p1.y; i <= p2.y; i++) {
@@ -183,12 +184,11 @@ bool codeview::keyinput(unsigned id) {
 	case KeyHome:
 	case KeyHome | Shift:
 		if(true) {
-			auto i0 = getcurrent();
-			auto i1 = lineb(i0);
+			auto i1 = lineb(p1);
 			auto i2 = skipsp(i1);
-			if(i0 == i1)
+			if(p1 == i1)
 				break;
-			if(i0 == i2)
+			if(p1 == i2)
 				i2 = i1;
 			set(i2, (id&Shift) != 0);
 		}
@@ -242,9 +242,15 @@ void codeview::mouseinput(unsigned id, point position) {
 		if(hot.pressed) {
 			point pt;
 			pt.x = (hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x;
-			pt.y = (hot.mouse.y - rcclient.y1) / fontsize.y;
+			pt.y = (hot.mouse.y - rcclient.y1) / fontsize.y + origin.y;
 			auto i = getindex(pt);
 			set(i, (id&Shift) != 0);
+		}
+		break;
+	case MouseLeftDBL:
+		if(hot.pressed) {
+			left(false, true);
+			right(true, true);
 		}
 		break;
 	default:
@@ -352,8 +358,13 @@ void codeview::left(bool shift, bool ctrl) {
 	if(!ctrl)
 		p = nextstep(p, -1);
 	else {
-		for(; p > data && iswhitespace(p[-1]); p--);
-		for(; p > data && !iswhitespace(p[-1]); p--);
+		while(p > data && iswhitespace(p[-1]))
+			p = nextstep(p, -1);
+		if(p > data) {
+			auto result = isidentifier(p[-1]);
+			while(p > data && isidentifier(p[-1]) == result)
+				p = nextstep(p, -1);
+		}
 	}
 	set(p - data, shift);
 }
@@ -363,8 +374,14 @@ void codeview::right(bool shift, bool ctrl) {
 	if(!ctrl)
 		p = nextstep(p, 1);
 	else {
-		for(; p > data && iswhitespace(*p); p++);
-		for(; p > data && !iswhitespace(*p); p++);
+		auto pe = data + count;
+		while(p < pe && iswhitespace(*p))
+			p = nextstep(p, 1);
+		if(p < pe) {
+			auto result = isidentifier(*p);
+			while(p > data && isidentifier(*p) == result)
+				p = nextstep(p, 1);
+		}
 	}
 	set(p - data, shift);
 }

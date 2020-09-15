@@ -49,7 +49,6 @@ public:
 	unsigned				select_all(bool run);
 	void					setvalue(const char* id, int value) override;
 	void					view(const rect& rc) override;
-	void					updatestate(const point origin, int& origin_index) { getstate(p1, pos1, p2, pos2, size, origin, origin_index); }
 };
 }
 }

@@ -40,7 +40,7 @@ void codemodel::set(const char* value) {
 }
 
 bool codemodel::iswhitespace(char sym) const {
-	return sym == '0x20' || sym == '\t';
+	return sym == 0x20 || sym == '\t';
 }
 
 bool codemodel::iswhitespace(const char* sym, const char** v) const {
@@ -109,6 +109,10 @@ bool codemodel::iskeyword(const char* source, const lexer::word** pv) const {
 	if(pv)
 		*pv = kw;
 	return true;
+}
+
+bool codemodel::isidentifier(char sym) const {
+	return ischa(sym) || sym == '_' || (sym >= '0' && sym <= '9');
 }
 
 bool codemodel::isidentifier(const char* ps, const char** v) const {

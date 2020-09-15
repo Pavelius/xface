@@ -51,6 +51,7 @@ class codemodel : public arem<char> {
 	const lexer*			lex;
 	const parseri*			parser;
 public:
+	bool					isidentifier(char sym) const;
 	bool					isidentifier(const char* source, const char** v) const;
 	bool					iskeyword(const char* source, const lexer::word** v) const;
 	bool					isliteral(const char* source, const char** pv) const;
