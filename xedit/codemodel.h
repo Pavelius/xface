@@ -53,6 +53,7 @@ class codemodel : public arem<char> {
 public:
 	bool					isidentifier(const char* source, const char** v) const;
 	bool					iskeyword(const char* source, const lexer::word** v) const;
+	bool					isliteral(const char* source, const char** pv) const;
 	bool					isnextline(const char* source, const char** pv) const;
 	bool					istype(const char* source, const typei** pv) const;
 	bool					iswhitespace(char sym) const;
@@ -60,8 +61,9 @@ public:
 	int						lineb(int index) const;
 	int						linee(int index) const;
 	const char*				get(int index) const { return data + index; }
+	int						getindex(point pt) const;
 	int						getlenght() const;
-	void					getnext(codepos& e) const;
+	int						getnext(const char* ps, point& from, group_s& group) const;
 	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size, const point origin, int& origin_index) const;
 	void					set(const char* source);
 	void					set(const lexer* v) { lex = v; }

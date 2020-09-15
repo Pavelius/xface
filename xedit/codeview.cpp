@@ -27,16 +27,15 @@ BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"Close user block", {color::create(0, 50, 128)}},
 };
 
-void codeview::ensurevisible(int linenumber) {
-	if(linenumber == -1)
+void codeview::ensurevisible(int cw) {
+	if(cw < 0 || cw >= maximum.y)
 		return;
-	auto cw = fontsize.y*getcurrent();
 	if(cw < origin.y) {
 		origin.y = cw;
 		invalidate();
 	}
-	if(getcurrent() > origin.y + (lines_per_page - 1)*fontsize.y) {
-		origin.y = cw - (lines_per_page + 1)*fontsize.y;
+	if(cw > origin.y + (lines_per_page - 1)) {
+		origin.y = cw - (lines_per_page - 1);
 		invalidate();
 	}
 }
@@ -70,7 +69,6 @@ void codeview::setvalue(const char* id, int value) {
 }
 
 void codeview::invalidate() {
-	wheels.y = fontsize.y;
 	cash_origin = -1;
 }
 
@@ -81,7 +79,7 @@ void codeview::beforeredraw(const rect& rc) {
 	if(cash_origin == -1) {
 		updatestate({0, (short)origin.y}, cash_origin);
 		maximum.x = size.x * fontsize.x;
-		maximum.y = size.y * fontsize.y;
+		maximum.y = size.y;
 	}
 }
 
@@ -90,21 +88,21 @@ void codeview::redraw(const rect& rco) {
 	draw::font = this->font;
 	rect rc = rco + rctext;
 	rcclient = rc;
-	rc.y1 -= origin.y;
+	rc.y1 -= origin.y * fontsize.y;
 	auto x = rc.x1, y = rc.y1;
-	codepos cp = {};
+	point pos = {};
+	group_s type;
+	auto ps = data;
 	while(true) {
-		auto x1 = x + cp.column*fontsize.x;
-		auto y1 = y + cp.line*fontsize.y;
-		getnext(cp);
-		auto c = cp.count;
+		auto x1 = x + pos.x*fontsize.x;
+		auto y1 = y + pos.y*fontsize.y;
+		auto c = getnext(ps, pos, type);
 		if(!c)
 			break;
-		auto t = get(cp.from);
-		auto& ei = bsdata<groupi>::elements[cp.type].visual;
+		auto& ei = bsdata<groupi>::elements[type].visual;
 		fore = ei.present;
-		text(x1, y1, t, c, ei.flags);
-		cp.from += cp.count;
+		text(x1, y1, ps, c, ei.flags);
+		ps += c;
 	}
 	// Draw hilite
 	if(getbegin() == getend()) {
@@ -135,14 +133,32 @@ bool codeview::keyinput(unsigned id) {
 	case KeyRight | Ctrl:
 	case KeyRight | Shift | Ctrl:
 		right((id&Shift) != 0, (id&Ctrl) != 0);
-		ensurevisible(p1);
+		ensurevisible(pos1.y + 1);
 		break;
 	case KeyLeft:
 	case KeyLeft | Shift:
 	case KeyLeft | Ctrl:
 	case KeyLeft | Shift | Ctrl:
 		left((id&Shift) != 0, (id&Ctrl) != 0);
-		ensurevisible(p1);
+		ensurevisible(pos1.y - 1);
+		break;
+	case KeyUp:
+	case KeyUp | Shift:
+		if(getcurrentpos().y > 0) {
+			auto pt = getcurrentpos();
+			pt.y -= 1;
+			set(getindex(pt), (id&Shift) != 0);
+			ensurevisible(pt.y);
+		}
+		break;
+	case KeyDown:
+	case KeyDown | Shift:
+		if(getcurrentpos().y < maximum.y) {
+			auto pt = getcurrentpos();
+			pt.y += 1;
+			set(getindex(pt), (id&Shift) != 0);
+			ensurevisible(pt.y);
+		}
 		break;
 	case KeyBackspace:
 		if(!readonly) {
@@ -162,7 +178,6 @@ bool codeview::keyinput(unsigned id) {
 		if(hot.param >= 0x20 && !readonly) {
 			char temp[8];
 			paste(szput(temp, hot.param));
-			invalidate();
 		}
 		break;
 	case KeyHome:
@@ -183,7 +198,7 @@ bool codeview::keyinput(unsigned id) {
 		set(linee(getcurrent()), (id&Shift) != 0);
 		break;
 	default:
-		return scrollable::keyinput(id);
+		return control::keyinput(id);
 	}
 	return true;
 }
@@ -225,15 +240,15 @@ void codeview::mouseinput(unsigned id, point position) {
 	case MouseLeft:
 	case MouseLeft | Shift:
 		if(hot.pressed) {
-			auto i = getindex(0,
-				(hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x,
-				(hot.mouse.y - rcclient.y1) / fontsize.y);
+			point pt;
+			pt.x = (hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x;
+			pt.y = (hot.mouse.y - rcclient.y1) / fontsize.y;
+			auto i = getindex(pt);
 			set(i, (id&Shift) != 0);
-			invalidate();
 		}
 		break;
 	default:
-		scrollable::mouseinput(id, position);
+		control::mouseinput(id, position);
 		break;
 	}
 }
@@ -294,11 +309,6 @@ void codeview::paste(const char* input) {
 	set(p1 + i2, false);
 }
 
-void codeview::textout(int x, int y, int start) {
-	codepos pos = {};
-	getnext(pos);
-}
-
 void codeview::instance() {
 	auto old_font = draw::font;
 	draw::font = codeview::font;
@@ -318,16 +328,23 @@ void codeview::set(int index, bool shift) {
 	} else
 		p2 = -1;
 	p1 = index;
+	invalidate();
 }
 
 void codeview::correction() {
 	auto lenght = getlenght();
-	if(p2 != -1 && p2 > lenght)
+	if(p2 != -1 && p2 > lenght) {
 		p2 = lenght;
-	if(p1 > lenght)
+		invalidate();
+	}
+	if(p1 > lenght) {
 		p1 = lenght;
-	if(p1 < 0)
+		invalidate();
+	}
+	if(p1 < 0) {
 		p1 = 0;
+		invalidate();
+	}
 }
 
 void codeview::left(bool shift, bool ctrl) {
@@ -342,45 +359,28 @@ void codeview::left(bool shift, bool ctrl) {
 }
 
 void codeview::right(bool shift, bool ctrl) {
-	auto n = p1;
-	if(!ctrl)
-		n += 1;
-	else {
-		n = skipnsp(n);
-		n = skipsp(n);
+	const char* p = data + p1;
+	if(!ctrl) {
+		if(!isnextline(p, &p))
+			p++;
+	} else {
+		for(; p > data && iswhitespace(*p); p++);
+		for(; p > data && !iswhitespace(*p); p++);
 	}
-	set(n, shift);
+	set(p - data, shift);
 }
-
-int	codeview::getindex(int origin, int column, int row) const {
-	const char* pb = data + cash_origin;
-	const char* pe = data + count;
-	point pos = {0, 0};
-	while(true) {
-		if(pos.y == row && pos.x == column)
-			break;
-		if(pb >= pe || *pb == 0 || isnextline(pb, &pb)) {
-			pos.x = 0;
-			pos.y++;
-			if(pb >= pe || *pb == 0 || pos.y > row)
-				break;
-		} else {
-			pos.x++;
-			pb++;
-		}
-	}
-	return pb - data;
-}
-
-//point codeview::getpos(int index) const {
-//	point result, result2, size;
-//	point origin = {0, 0};
-//	int index2 = -1, origin_result;
-//	getstate(index, result, index2, result2, size);
-//	return result;
-//}
 
 codeview::codeview() : cash_origin(-1) {
+}
+
+void codeview::view(const rect& rc) {
+	control::view(rc);
+	beforeredraw(rc);
+	if(true) {
+		draw::state push;
+		setclip(rc);
+		redraw(rc);
+	}
 }
 
 control::command* codeview::getcommands() const {

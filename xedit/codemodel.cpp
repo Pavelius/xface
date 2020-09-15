@@ -84,6 +84,22 @@ bool codemodel::istype(const char* source, const typei** pv) const {
 	return true;
 }
 
+bool codemodel::isliteral(const char* ps, const char** pv) const {
+	if(*ps != '\"')
+		return false;
+	ps++;
+	while(*ps && *ps != '\"') {
+		if(*ps == '\\')
+			ps++;
+		ps++;
+	}
+	if(*ps)
+		ps++;
+	if(pv)
+		*pv = ps;
+	return true;
+}
+
 bool codemodel::iskeyword(const char* source, const lexer::word** pv) const {
 	if(!lex)
 		return false;
@@ -106,55 +122,51 @@ bool codemodel::isidentifier(const char* ps, const char** v) const {
 	return false;
 }
 
-void codemodel::getnext(codepos& e) const {
-	if(!data)
-		return;
-	const lexer::word* kw;
+int codemodel::getnext(const char* ps, point& pos, group_s& type) const {
 	const typei* pt;
-	e.type = IllegalSymbol;
-	e.count = 0;
-	const char* ps = data + e.from;
+	const lexer::word* kw;
+	type = IllegalSymbol;
 	const char* p1 = ps;
 	if(*ps == 0)
-		e.type = WhiteSpace;
+		type = WhiteSpace;
 	else if(iswhitespace(ps, &ps))
-		e.type = WhiteSpace;
+		type = WhiteSpace;
 	else if(isnextline(ps, &ps)) {
-		e.line++;
-		e.count = ps - p1;
-		e.column = 0;
-		e.type = WhiteSpace;
-		return;
+		type = WhiteSpace;
+		pos.y++;
+		pos.x = 0;
+		return ps - p1;
 	} else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[0] >= '0' && ps[0] <= '9')) {
+		type = Number;
 		if(ps[0] == '-')
 			ps++;
 		while(*ps && *ps >= '0' && *ps <= '9')
 			ps++;
-		e.type = Number;
-	} else if(ps[0] == '/' && ps[1] == '/') {
+	} else if(isliteral(ps, &ps))
+		type = String;
+	else if(ps[0] == '/' && ps[1] == '/') {
+		type = Comment;
 		ps += 2;
-		e.type = Comment;
 		while(*ps) {
 			if(isnextline(ps, &ps)) {
-				e.line++;
-				e.column = 0;
-				e.count = ps - p1;
-				return;
+				pos.y++;
+				pos.x = 0;
+				return ps - p1;
 			} else
 				ps++;
 		}
 	} else if(iskeyword(ps, &kw)) {
 		ps += kw->size;
-		e.type = kw->type;
+		type = kw->type;
 	} else if(isidentifier(ps, &ps)) {
 		if(istype(p1, &pt))
-			e.type = Type;
+			type = Type;
 		else
-			e.type = Identifier;
+			type = Identifier;
 	} else
 		ps++;
-	e.count = ps - p1;
-	e.column += e.count;
+	pos.x += ps - p1;
+	return ps - p1;
 }
 
 int codemodel::getlenght() const {
@@ -181,6 +193,13 @@ int	codemodel::linee(int index) const {
 	return p - data;
 }
 
+int	codemodel::getindex(point pt) const {
+	point pt1, pt2, size;
+	int p1 = -1, p2 = -1, r3;
+	getstate(p1, pt1, p2, pt2, size, pt, r3);
+	return r3;
+}
+
 void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size, const point origin, int& origin_index) const {
 	const char* pb = data;
 	const char* pe = data + count;
@@ -188,6 +207,7 @@ void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size, 
 	pos1 = {-1, -1};
 	pos2 = {-1, -1};
 	size = {0, 0};
+	origin_index = -1;
 	while(true) {
 		auto i = pb - data;
 		if(i == p1)
@@ -199,6 +219,8 @@ void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size, 
 		if(pb >= pe || *pb == 0 || isnextline(pb, &pb)) {
 			if(size.x < pos.x)
 				size.x = pos.x;
+			if(origin.y == pos.y && origin_index == -1)
+				origin_index = i;
 			pos.x = 0;
 			pos.y++;
 			if(pb >= pe || *pb == 0)
