@@ -16,6 +16,7 @@ BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"Number", {color::create(128, 128, 0)}},
 {"String", {color::create(0, 255, 255)}},
 {"Identifier", {color::create(0, 0, 0)}},
+{"Identifier", {color::create(0, 0, 100)}},
 {"Open parameters block", {color::create(255, 0, 255)}},
 {"Close parameters block", {color::create(255, 0, 255)}},
 {"Open code block", {color::create(255, 0, 255)}},
@@ -56,6 +57,8 @@ void codeview::setvalue(const char* id, int value) {
 		codemodel::set((const char*)value);
 	else if(strcmp(id, "lex") == 0)
 		codemodel::set((const lexer*)value);
+	else if(strcmp(id, "parser") == 0)
+		codemodel::set((const parseri*)value);
 	else if(strcmp(id, "open") == 0)
 		open((const char*)value);
 	else if(strcmp(id, "select") == 0)
@@ -281,9 +284,7 @@ void codeview::clear() {
 void codeview::paste(const char* input) {
 	clear();
 	auto i2 = zlen(input);
-	auto count = getlenght();
-	if(p1 + i2 > count)
-		reserve(p1 + i2 + 1);
+	reserve(p1 + i2 + 1);
 	memmove(data + p1 + i2, data + p1, (count - p1 + 1) * sizeof(char));
 	memcpy(data + p1, input, i2); count += i2;
 	invalidate();

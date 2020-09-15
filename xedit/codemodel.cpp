@@ -40,9 +40,7 @@ void codemodel::set(const char* value) {
 }
 
 bool codemodel::iswhitespace(char sym) const {
-	if(lex && lex->whitespaces)
-		return zchr(lex->whitespaces, sym) != 0;
-	return zchr(" \t", sym) != 0;
+	return sym == '0x20' || sym == '\t';
 }
 
 bool codemodel::iswhitespace(const char* sym, const char** v) const {
@@ -75,6 +73,17 @@ bool codemodel::isnextline(const char* ps, const char** pv) const {
 	return false;
 }
 
+bool codemodel::istype(const char* source, const typei** pv) const {
+	if(!parser)
+		return false;
+	auto kw = parser->find(source);
+	if(!kw)
+		return false;
+	if(pv)
+		*pv = kw;
+	return true;
+}
+
 bool codemodel::iskeyword(const char* source, const lexer::word** pv) const {
 	if(!lex)
 		return false;
@@ -101,6 +110,7 @@ void codemodel::getnext(codepos& e) const {
 	if(!data)
 		return;
 	const lexer::word* kw;
+	const typei* pt;
 	e.type = IllegalSymbol;
 	e.count = 0;
 	const char* ps = data + e.from;
@@ -136,9 +146,12 @@ void codemodel::getnext(codepos& e) const {
 	} else if(iskeyword(ps, &kw)) {
 		ps += kw->size;
 		e.type = kw->type;
-	} else if(isidentifier(ps, &ps))
-		e.type = Identifier;
-	else
+	} else if(isidentifier(ps, &ps)) {
+		if(istype(ps, &pt))
+			e.type = Type;
+		else
+			e.type = Identifier;
+	} else
 		ps++;
 	e.count = ps - p1;
 	e.column += e.count;
@@ -212,4 +225,19 @@ int	codemodel::skipnsp(int index) const {
 	while(p < pe && !iswhitespace(*p))
 		p++;
 	return p - data;
+}
+
+void parseri::addtype(const char* id) {
+	auto p = types.add();
+	p->name = szdup(id);
+	p->size = zlen(id);
+}
+
+const typei* parseri::find(const char* sym) const {
+	for(auto& e : types) {
+		auto n = e.size;
+		if(memcmp(sym, e.name, e.size) == 0)
+			return &e;
+	}
+	return 0;
 }
