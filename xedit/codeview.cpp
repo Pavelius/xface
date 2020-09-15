@@ -348,9 +348,9 @@ void codeview::correction() {
 }
 
 void codeview::left(bool shift, bool ctrl) {
-	auto p = data + p1;
+	const char* p = data + p1;
 	if(!ctrl)
-		p--;
+		p = nextstep(p, -1);
 	else {
 		for(; p > data && iswhitespace(p[-1]); p--);
 		for(; p > data && !iswhitespace(p[-1]); p--);
@@ -360,10 +360,9 @@ void codeview::left(bool shift, bool ctrl) {
 
 void codeview::right(bool shift, bool ctrl) {
 	const char* p = data + p1;
-	if(!ctrl) {
-		if(!isnextline(p, &p))
-			p++;
-	} else {
+	if(!ctrl)
+		p = nextstep(p, 1);
+	else {
 		for(; p > data && iswhitespace(*p); p++);
 		for(; p > data && !iswhitespace(*p); p++);
 	}
@@ -381,6 +380,24 @@ void codeview::view(const rect& rc) {
 		setclip(rc);
 		redraw(rc);
 	}
+}
+
+const char* codeview::nextstep(const char* ps, int dir) {
+	if(*ps == 10) {
+		ps += dir;
+		if(*ps == 13)
+			ps += dir;
+	} else if(*ps == 13) {
+		ps += dir;
+		if(*ps == 10)
+			ps += dir;
+	} else
+		ps += dir;
+	if(ps < data)
+		return data;
+	else if(ps >= (data + count - 1))
+		return (data + count - 1);
+	return ps;
 }
 
 control::command* codeview::getcommands() const {

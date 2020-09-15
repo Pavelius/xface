@@ -11,6 +11,7 @@ struct codeview : control, codemodel {
 	int						p1, p2;
 	point					pos1, pos2, size;
 	point					origin, maximum;
+	const char*				nextstep(const char* ps, int dir);
 public:
 	rect					rctext, rcclient;
 	bool					readonly;
@@ -30,6 +31,7 @@ public:
 	point					getcurrentpos() const { return pos1; }
 	int						getend() const;
 	point					getendpos() const;
+	int						getpixelperline() const { return fontsize.y; }
 	int						hittest(rect rc, point pt, unsigned state) const;
 	static void				instance();
 	void					invalidate();
