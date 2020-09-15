@@ -23,6 +23,8 @@ BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"Close code block", {color::create(255, 0, 255)}},
 {"Open scope block", {color::create(255, 0, 255)}},
 {"Close scope block", {color::create(255, 0, 255)}},
+{"Open user block", {color::create(0, 50, 100)}},
+{"Close user block", {color::create(0, 50, 128)}},
 };
 
 void codeview::ensurevisible(int linenumber) {
@@ -69,15 +71,15 @@ void codeview::setvalue(const char* id, int value) {
 
 void codeview::invalidate() {
 	wheels.y = fontsize.y;
-	cash_columns = -1;
+	cash_origin = -1;
 }
 
 void codeview::beforeredraw(const rect& rc) {
 	if(!fontsize.y)
 		return;
 	lines_per_page = rc.height() / fontsize.y;
-	if(cash_columns == -1) {
-		updatestate();
+	if(cash_origin == -1) {
+		updatestate({0, (short)origin.y}, cash_origin);
 		maximum.x = size.x * fontsize.x;
 		maximum.y = size.y * fontsize.y;
 	}
@@ -227,6 +229,7 @@ void codeview::mouseinput(unsigned id, point position) {
 				(hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x,
 				(hot.mouse.y - rcclient.y1) / fontsize.y);
 			set(i, (id&Shift) != 0);
+			invalidate();
 		}
 		break;
 	default:
@@ -350,7 +353,7 @@ void codeview::right(bool shift, bool ctrl) {
 }
 
 int	codeview::getindex(int origin, int column, int row) const {
-	const char* pb = data + origin;
+	const char* pb = data + cash_origin;
 	const char* pe = data + count;
 	point pos = {0, 0};
 	while(true) {
@@ -369,14 +372,15 @@ int	codeview::getindex(int origin, int column, int row) const {
 	return pb - data;
 }
 
-point codeview::getpos(int index) const {
-	point result, result2, size;
-	int index2 = -1;
-	getstate(index, result, index2, result2, size);
-	return result;
-}
+//point codeview::getpos(int index) const {
+//	point result, result2, size;
+//	point origin = {0, 0};
+//	int index2 = -1, origin_result;
+//	getstate(index, result, index2, result2, size);
+//	return result;
+//}
 
-codeview::codeview() : cash_columns(-1) {
+codeview::codeview() : cash_origin(-1) {
 }
 
 control::command* codeview::getcommands() const {

@@ -147,7 +147,7 @@ void codemodel::getnext(codepos& e) const {
 		ps += kw->size;
 		e.type = kw->type;
 	} else if(isidentifier(ps, &ps)) {
-		if(istype(ps, &pt))
+		if(istype(p1, &pt))
 			e.type = Type;
 		else
 			e.type = Identifier;
@@ -181,7 +181,7 @@ int	codemodel::linee(int index) const {
 	return p - data;
 }
 
-void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) const {
+void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size, const point origin, int& origin_index) const {
 	const char* pb = data;
 	const char* pe = data + count;
 	point pos = {0, 0};
@@ -194,6 +194,8 @@ void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size) 
 			pos1 = pos;
 		if(i == p2)
 			pos2 = pos;
+		if(origin == pos)
+			origin_index = i;
 		if(pb >= pe || *pb == 0 || isnextline(pb, &pb)) {
 			if(size.x < pos.x)
 				size.x = pos.x;

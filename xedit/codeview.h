@@ -6,7 +6,7 @@
 namespace draw {
 namespace controls {
 struct codeview : public scrollable, codemodel {
-	int						cash_columns;
+	int						cash_origin;
 	int						lines_per_page;
 	int						p1, p2;
 	point					pos1, pos2, size;
@@ -47,7 +47,7 @@ public:
 	void					set(int index, bool shift);
 	unsigned				select_all(bool run);
 	void					setvalue(const char* id, int value) override;
-	void					updatestate() { getstate(p1, pos1, p2, pos2, size); }
+	void					updatestate(const point origin, int& origin_index) { getstate(p1, pos1, p2, pos2, size, origin, origin_index); }
 };
 }
 }

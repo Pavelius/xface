@@ -48,7 +48,7 @@ int main() {
 	e.add("(", OpenParam); e.add(")", CloseParam);
 	e.add("{", OpenBlock); e.add("}", CloseBlock);
 	e.add("[", OpenScope); e.add("]", CloseScope);
-	e.add("<", OpenScope); e.add(">", CloseScope);
+	e.add("<", OpenUser); e.add(">", CloseUser);
 	e.sort();
 	parseri r;
 	r.addtype("i32");
@@ -57,6 +57,7 @@ int main() {
 	r.addtype("u16");
 	r.addtype("i8");
 	r.addtype("f32");
+	r.addtype("false");
 	codepos cp = {};
 	//setglob("codeview", "text", (int)"fn print(text : String) {\n  let a = 10;\n  a\n}");
 	setglob("codeview", "open", (int)"code_sample.txt");

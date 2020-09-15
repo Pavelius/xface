@@ -8,7 +8,7 @@ enum group_s : unsigned char {
 	IllegalSymbol,
 	WhiteSpace, Operator, Keyword, Comment,
 	Number, String, Identifier, Type,
-	OpenParam, CloseParam, OpenBlock, CloseBlock, OpenScope, CloseScope,
+	OpenParam, CloseParam, OpenBlock, CloseBlock, OpenScope, CloseScope, OpenUser, CloseUser,
 };
 struct groupi {
 	struct visuali {
@@ -62,7 +62,7 @@ public:
 	const char*				get(int index) const { return data + index; }
 	int						getlenght() const;
 	void					getnext(codepos& e) const;
-	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size) const;
+	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size, const point origin, int& origin_index) const;
 	void					set(const char* source);
 	void					set(const lexer* v) { lex = v; }
 	void					set(const parseri* v) { parser = v; }
