@@ -10,7 +10,7 @@ struct codeview : control, codemodel {
 	int						lines_per_page;
 	int						p1, p2;
 	point					pos1, pos2, size;
-	point					origin, maximum;
+	pointl					origin, maximum;
 	const char*				nextstep(const char* ps, int dir);
 public:
 	rect					rctext, rcclient;
@@ -18,7 +18,6 @@ public:
 	static const sprite*	font;
 	static point			fontsize;
 	codeview();
-	void					beforeredraw(const rect& rc);
 	void					clear();
 	bool					copy(bool run);
 	void					correction();

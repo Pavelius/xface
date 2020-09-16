@@ -72,18 +72,6 @@ void codeview::invalidate() {
 	cash_origin = -1;
 }
 
-void codeview::beforeredraw(const rect& rc) {
-	if(!fontsize.y)
-		return;
-	rcclient = rc;
-	lines_per_page = rc.height() / fontsize.y;
-	if(cash_origin == -1) {
-		getstate(p1, pos1, p2, pos2, size, {0, (short)origin.y}, cash_origin);
-		maximum.x = size.x * fontsize.x;
-		maximum.y = size.y;
-	}
-}
-
 void codeview::redraw(const rect& rco) {
 	draw::state push;
 	draw::font = this->font;
@@ -391,12 +379,33 @@ codeview::codeview() : cash_origin(-1) {
 
 void codeview::view(const rect& rc) {
 	control::view(rc);
-	beforeredraw(rc);
+	auto pixels_per_line = getpixelperline();
+	if(!pixels_per_line)
+		return;
+	rcclient = rc;
+	lines_per_page = rc.height() / pixels_per_line;
+	if(cash_origin == -1) {
+		getstate(p1, pos1, p2, pos2, size, {0, (short)origin.y}, cash_origin);
+		maximum.x = size.x * fontsize.x;
+		maximum.y = size.y;
+	}
+	auto screen_width = rc.width();
+	auto screen_height = rc.height();
+	auto maximum_x = maximum.x;
+	auto maximum_y = maximum.y * pixels_per_line;
+	auto enable_scrollv = maximum_y > lines_per_page;
+	auto enable_scrollh = maximum.x > screen_width;
 	if(true) {
 		draw::state push;
 		setclip(rc);
 		redraw(rc);
 	}
+	if(enable_scrollv)
+		draw::scrollv({rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
+			origin.y, lines_per_page, maximum.y, isfocused());
+	if(enable_scrollh)
+		draw::scrollh({rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
+			origin.x, screen_width, maximum_x, isfocused());
 }
 
 const char* codeview::nextstep(const char* ps, int dir) {
