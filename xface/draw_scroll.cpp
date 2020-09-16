@@ -164,7 +164,7 @@ rect scroll::getslide() const {
 		auto ds = pix_page - ss;
 		auto dr = maximum - page;
 		auto p = ((*origin)*ds) / dr + work.y1;
-		return {work.x1, p, work.x2 - 2, p + ss};
+		return {work.x1, p, work.x2, p + ss};
 	}
 }
 
@@ -172,6 +172,8 @@ void scroll::view(bool focused) {
 	if(!isvisible())
 		return;
 	auto a = ishilite(work);
+	if(dragactive(origin))
+		a = true;
 	if(a) {
 		auto slide = getslide();
 		rectf(work, colors::button, 128);
@@ -183,9 +185,9 @@ void scroll::view(bool focused) {
 		if(focused) {
 			auto slide = getslide();
 			if(horizontal)
-				rectf({slide.x1, slide.y2 - 2, slide.x2, slide.y2 + 2}, colors::blue, 128);
+				rectf({slide.x1, slide.y2 - 4, slide.x2, slide.y2}, colors::blue, 128);
 			else
-				rectf({slide.x2 - 2, slide.y1, slide.x2 + 2, slide.y2}, colors::blue, 128);
+				rectf({slide.x2 - 4, slide.y1, slide.x2, slide.y2}, colors::blue, 128);
 		}
 	}
 }
@@ -194,19 +196,19 @@ void draw::scroll::input() {
 	if(!isvisible())
 		return;
 	if(dragactive(origin)) {
-		auto p1 = hot.mouse.y - drag_value;
-		auto pix_page = work.width();
+		auto p1 = hot.mouse.y - drag_value - work.y1;
+		auto pix_page = work.height();
 		auto pix_scroll = (pix_page * page) / maximum; // scroll size (in pixels)
 		auto dr = maximum - page;
 		auto ds = pix_page - pix_scroll;
-		*origin = ((p1 - work.y1)*dr) / ds;
-		//execute(&scroll::setorigin, ((p1 - work.y1)*dr) / ds);
+		*origin = (p1*dr) / ds;
+		correct();
 	} else {
-		auto slider = getslide();
 		switch(hot.key) {
 		case MouseLeft:
 			if(ishilite(work)) {
 				if(hot.pressed) {
+					auto slider = getslide();
 					if(hot.mouse.y < slider.y1)
 						execute(&scroll::setorigin, *origin - page);
 					else if(hot.mouse.y > slider.y2)

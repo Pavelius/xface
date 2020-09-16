@@ -388,11 +388,8 @@ void codeview::view(const rect& rc) {
 		maximum.x = size.x * fontsize.x;
 		maximum.y = size.y;
 	}
-	auto screen_width = rc.width();
-	auto maximum_x = maximum.x;
-	auto enable_scrollh = maximum.x > screen_width;
-	draw::scroll scrollv(origin.y, lines_per_page, maximum.y, rc);
-	scrollv.input();
+	draw::scroll scrollv(origin.y, lines_per_page, maximum.y, rc); scrollv.input();
+	draw::scroll scrollh(origin.x, rc.width() / fontsize.x, maximum.x, rc, true); scrollh.input();
 	control::view(rc);
 	if(true) {
 		draw::state push;
@@ -400,9 +397,7 @@ void codeview::view(const rect& rc) {
 		redraw(rc);
 	}
 	scrollv.view(isfocused());
-	if(enable_scrollh)
-		draw::scrollh({rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
-			origin.x, screen_width, maximum_x, isfocused());
+	scrollh.view(isfocused());
 }
 
 const char* codeview::nextstep(const char* ps, int dir) {
