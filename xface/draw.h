@@ -232,15 +232,15 @@ struct shortcut {
 };
 class scroll {
 	int&				origin;
-	int					maximum, koeff, page;
+	int					page, maximum;
 	rect				work;
 	bool				horizontal;
 public:
-	scroll(int& origin, int maximum, int koeff, const rect& client, bool horizontal = false);
-	int					getmaximum() const { return maximum*koeff; }
+	scroll(int& origin, int page, int maximum, const rect& client, bool horizontal = false);
+	rect				getslide() const;
 	void				input();
 	bool				isvisible() const { return work; }
-	void				view();
+	void				view(bool focused);
 };
 extern rect				clipping; // Clipping area
 extern color			fore; // Foreground color (curently selected color)

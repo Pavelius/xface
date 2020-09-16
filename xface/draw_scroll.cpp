@@ -113,14 +113,80 @@ void draw::scrollh(const rect& scroll, int& origin, int per_page, int maximum, b
 	}
 }
 
-draw::scroll::scroll(int& origin, int maximum, int koeff, const rect& client, bool horizontal) :
-	origin(origin), maximum(maximum), koeff(koeff), horizontal(horizontal),
-	page(horizontal ? client.width() : client.height()) {
-	if(getmaximum() > page) {
+draw::scroll::scroll(int& origin, int page, int maximum, const rect& client, bool horizontal) :
+	origin(origin), page(page), maximum(maximum), horizontal(horizontal) {
+	if(maximum > page) {
 		if(horizontal)
 			work.set(client.x1, client.y2 - metrics::scroll, client.x2, client.y2);
 		else
 			work.set(client.x2 - metrics::scroll, client.y1, client.x2, client.y2);
 	} else
 		work.clear();
+}
+
+rect draw::scroll::getslide() const {
+	if(horizontal) {
+		auto pix_page = work.width();
+		auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
+		auto ds = pix_page - ss;
+		int dr = maximum - page;
+		int p = (origin*ds) / dr + work.y1;
+		return {p, work.y1, p + ss, work.y2};
+	} else {
+		auto pix_page = work.height();
+		auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
+		auto ds = pix_page - ss;
+		int dr = maximum - page;
+		int p = (origin*ds) / dr + work.y1;
+		return {work.x1, p, work.x2, p + ss};
+	}
+}
+
+void draw::scroll::view(bool focused) {
+	if(!isvisible())
+		return;
+	auto a = draw::ishilite(work);
+	if(a) {
+		auto scroll = work; scroll.x2++; scroll.y2++;
+		auto slide = getslide();
+		if(hot.pressed) {
+			draw::rectf(scroll, colors::button, 128);
+			draw::buttonh(slide, true, false, false, true, 0);
+		} else {
+			draw::rectf(scroll, colors::button, 128);
+			draw::buttonh(slide, false, false, false, true, 0);
+		}
+	} else {
+		if(focused) {
+			auto slide = getslide();
+			draw::rectf({slide.x1, work.y2 - 2, slide.x2, work.y2 + 2}, colors::blue, 128);
+		}
+	}
+}
+
+void draw::scroll::input() {
+	if(!isvisible())
+		return;
+	auto a = draw::ishilite(work);
+	auto need_correct = false;
+	auto pix_page = work.width();
+	auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
+	auto ds = pix_page - ss;
+	/*if(dragactive(&origin)) {
+		a = true;
+		p1 = hot.mouse.y - drag_value;
+		auto dr = maximum - page;
+		origin = ((p1 - work.y1)*dr) / ds;
+		need_correct = true;
+	} else if(a && hot.pressed && hot.key == MouseLeft) {
+		if(hot.mouse.y < p)
+			origin -= count;
+		else if(hot.mouse.y > p + ss)
+			origin += count;
+		else {
+			dragbegin(&origin);
+			drag_value = hot.mouse.y - p;
+		}
+		need_correct = true;
+	}*/
 }
