@@ -225,10 +225,21 @@ struct plugin {
 	virtual void		before() {}
 };
 struct shortcut {
-	fnevent			proc;
+	fnevent				proc;
 	const char*			name;
 	unsigned			key;
 	constexpr operator bool() const { return proc != 0; }
+};
+class scroll {
+	int&				origin;
+	int					maximum, koeff, page;
+	rect				work;
+	bool				horizontal;
+public:
+	scroll(int& origin, int maximum, int koeff, const rect& client, bool horizontal = false);
+	int					getmaximum() const { return maximum*koeff; }
+	void				input();
+	void				view();
 };
 extern rect				clipping; // Clipping area
 extern color			fore; // Foreground color (curently selected color)
@@ -250,7 +261,7 @@ void					circle(int x, int y, int radius, const color c1);
 void					circlef(int x, int y, int radius, const color c1, unsigned char alpha = 0xFF);
 void					create(int x, int y, int width, int height, unsigned flags, int bpp);
 void					decortext(unsigned flags);
-extern fnevent		domodal;
+extern fnevent			domodal;
 bool					dragactive(const void* p);
 bool					dragactive();
 void					dragbegin(const void* p);

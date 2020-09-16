@@ -99,7 +99,7 @@ void draw::scrollh(const rect& scroll, int& origin, int per_page, int maximum, b
 		if(origin + per_page > maximum)
 			origin = maximum - per_page;
 	}
-	if(a){
+	if(a) {
 		if(hot.pressed) {
 			rectf({scroll.x1, scroll.y1, scroll.x2 + 1, scroll.y2 + 1}, colors::button, 128);
 			buttonh({p, scroll.y1, p + ss, scroll.y2}, true, false, false, true, 0);
@@ -111,4 +111,16 @@ void draw::scrollh(const rect& scroll, int& origin, int per_page, int maximum, b
 		if(focused)
 			rectf({p, scroll.y2 - 2, p + ss, scroll.y2 + 2}, colors::blue, 128);
 	}
+}
+
+draw::scroll::scroll(int& origin, int maximum, int koeff, const rect& client, bool horizontal) :
+	origin(origin), maximum(maximum), koeff(koeff), horizontal(horizontal),
+	page(horizontal ? client.width() : client.height()) {
+	if(getmaximum() > page) {
+		if(horizontal)
+			work.set(client.x1, client.y2 - metrics::scroll, client.x2, client.y2);
+		else
+			work.set(client.x2 - metrics::scroll, client.y1, client.x2, client.y2);
+	} else
+		work.clear();
 }
