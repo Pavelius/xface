@@ -239,6 +239,7 @@ public:
 	scroll(int& origin, int maximum, int koeff, const rect& client, bool horizontal = false);
 	int					getmaximum() const { return maximum*koeff; }
 	void				input();
+	bool				isvisible() const { return work; }
 	void				view();
 };
 extern rect				clipping; // Clipping area
