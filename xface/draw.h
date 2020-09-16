@@ -231,15 +231,21 @@ struct shortcut {
 	constexpr operator bool() const { return proc != 0; }
 };
 class scroll {
-	int&				origin;
+	int*				origin;
 	int					page, maximum;
-	rect				work;
+	rect				work, client;
 	bool				horizontal;
+	static void			callback();
+	void				correct();
 public:
+	typedef void (scroll::*proc)(int param);
+	constexpr scroll() : origin(0), page(), maximum(), work(), client(), horizontal(false) {}
 	scroll(int& origin, int page, int maximum, const rect& client, bool horizontal = false);
+	void				execute(proc p, int param) const;
 	rect				getslide() const;
 	void				input();
-	bool				isvisible() const { return work; }
+	bool				isvisible() const { return origin && work; }
+	void				setorigin(int v) { if(origin) { *origin = v; correct(); } }
 	void				view(bool focused);
 };
 extern rect				clipping; // Clipping area

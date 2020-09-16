@@ -378,7 +378,6 @@ codeview::codeview() : cash_origin(-1) {
 }
 
 void codeview::view(const rect& rc) {
-	control::view(rc);
 	auto pixels_per_line = getpixelperline();
 	if(!pixels_per_line)
 		return;
@@ -390,19 +389,17 @@ void codeview::view(const rect& rc) {
 		maximum.y = size.y;
 	}
 	auto screen_width = rc.width();
-	auto screen_height = rc.height();
 	auto maximum_x = maximum.x;
-	auto maximum_y = maximum.y * pixels_per_line;
-	auto enable_scrollv = maximum_y > lines_per_page;
 	auto enable_scrollh = maximum.x > screen_width;
+	draw::scroll scrollv(origin.y, lines_per_page, maximum.y, rc);
+	scrollv.input();
+	control::view(rc);
 	if(true) {
 		draw::state push;
 		setclip(rc);
 		redraw(rc);
 	}
-	if(enable_scrollv)
-		draw::scrollv({rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
-			origin.y, lines_per_page, maximum.y, isfocused());
+	scrollv.view(isfocused());
 	if(enable_scrollh)
 		draw::scrollh({rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
 			origin.x, screen_width, maximum_x, isfocused());

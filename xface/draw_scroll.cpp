@@ -1,5 +1,7 @@
 #include "draw.h"
 
+using namespace draw;
+
 static int drag_value;
 
 void draw::scrollv(const rect& scroll, int& origin, int count, int maximum, bool focused) {
@@ -113,8 +115,11 @@ void draw::scrollh(const rect& scroll, int& origin, int per_page, int maximum, b
 	}
 }
 
-draw::scroll::scroll(int& origin, int page, int maximum, const rect& client, bool horizontal) :
-	origin(origin), page(page), maximum(maximum), horizontal(horizontal) {
+static draw::scroll::proc	call_proc;
+static draw::scroll			call_object;
+
+scroll::scroll(int& origin, int page, int maximum, const rect& client, bool horizontal) :
+	origin(&origin), page(page), maximum(maximum), horizontal(horizontal), client(client) {
 	if(maximum > page) {
 		if(horizontal)
 			work.set(client.x1, client.y2 - metrics::scroll, client.x2, client.y2);
@@ -124,42 +129,63 @@ draw::scroll::scroll(int& origin, int page, int maximum, const rect& client, boo
 		work.clear();
 }
 
-rect draw::scroll::getslide() const {
+void draw::scroll::correct() {
+	if(!origin)
+		return;
+	if(*origin + page > maximum)
+		*origin = maximum - page;
+	if(*origin < 0)
+		*origin = 0;
+}
+
+void draw::scroll::callback() {
+	(call_object.*call_proc)(hot.param);
+}
+
+void draw::scroll::execute(draw::scroll::proc p, int param) const {
+	call_proc = p;
+	call_object = *this;
+	draw::execute(callback, param);
+}
+
+rect scroll::getslide() const {
+	if(!origin)
+		return {0, 0, 0, 0};
 	if(horizontal) {
 		auto pix_page = work.width();
 		auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
 		auto ds = pix_page - ss;
-		int dr = maximum - page;
-		int p = (origin*ds) / dr + work.y1;
+		auto dr = maximum - page;
+		auto p = ((*origin)*ds) / dr + work.x1;
 		return {p, work.y1, p + ss, work.y2};
 	} else {
 		auto pix_page = work.height();
 		auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
 		auto ds = pix_page - ss;
-		int dr = maximum - page;
-		int p = (origin*ds) / dr + work.y1;
-		return {work.x1, p, work.x2, p + ss};
+		auto dr = maximum - page;
+		auto p = ((*origin)*ds) / dr + work.y1;
+		return {work.x1, p, work.x2 - 2, p + ss};
 	}
 }
 
-void draw::scroll::view(bool focused) {
+void scroll::view(bool focused) {
 	if(!isvisible())
 		return;
-	auto a = draw::ishilite(work);
+	auto a = ishilite(work);
 	if(a) {
-		auto scroll = work; scroll.x2++; scroll.y2++;
 		auto slide = getslide();
-		if(hot.pressed) {
-			draw::rectf(scroll, colors::button, 128);
-			draw::buttonh(slide, true, false, false, true, 0);
-		} else {
-			draw::rectf(scroll, colors::button, 128);
-			draw::buttonh(slide, false, false, false, true, 0);
-		}
+		rectf(work, colors::button, 128);
+		if(horizontal)
+			buttonh(slide, hot.pressed, false, false, true, 0);
+		else
+			buttonv(slide, hot.pressed, false, false, true, 0);
 	} else {
 		if(focused) {
 			auto slide = getslide();
-			draw::rectf({slide.x1, work.y2 - 2, slide.x2, work.y2 + 2}, colors::blue, 128);
+			if(horizontal)
+				rectf({slide.x1, slide.y2 - 2, slide.x2, slide.y2 + 2}, colors::blue, 128);
+			else
+				rectf({slide.x2 - 2, slide.y1, slide.x2 + 2, slide.y2}, colors::blue, 128);
 		}
 	}
 }
@@ -167,26 +193,38 @@ void draw::scroll::view(bool focused) {
 void draw::scroll::input() {
 	if(!isvisible())
 		return;
-	auto a = draw::ishilite(work);
-	auto need_correct = false;
-	auto pix_page = work.width();
-	auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
-	auto ds = pix_page - ss;
-	/*if(dragactive(&origin)) {
-		a = true;
-		p1 = hot.mouse.y - drag_value;
+	if(dragactive(origin)) {
+		auto p1 = hot.mouse.y - drag_value;
+		auto pix_page = work.width();
+		auto pix_scroll = (pix_page * page) / maximum; // scroll size (in pixels)
 		auto dr = maximum - page;
-		origin = ((p1 - work.y1)*dr) / ds;
-		need_correct = true;
-	} else if(a && hot.pressed && hot.key == MouseLeft) {
-		if(hot.mouse.y < p)
-			origin -= count;
-		else if(hot.mouse.y > p + ss)
-			origin += count;
-		else {
-			dragbegin(&origin);
-			drag_value = hot.mouse.y - p;
+		auto ds = pix_page - pix_scroll;
+		*origin = ((p1 - work.y1)*dr) / ds;
+		//execute(&scroll::setorigin, ((p1 - work.y1)*dr) / ds);
+	} else {
+		auto slider = getslide();
+		switch(hot.key) {
+		case MouseLeft:
+			if(ishilite(work)) {
+				if(hot.pressed) {
+					if(hot.mouse.y < slider.y1)
+						execute(&scroll::setorigin, *origin - page);
+					else if(hot.mouse.y > slider.y2)
+						execute(&scroll::setorigin, *origin + page);
+					else {
+						dragbegin(origin);
+						drag_value = hot.mouse.y - slider.y1;
+					}
+				}
+				hot.key = 0;
+			}
+			break;
+		case MouseWheelUp:
+			execute(&scroll::setorigin, *origin - 1);
+			break;
+		case MouseWheelDown:
+			execute(&scroll::setorigin, *origin + 1);
+			break;
 		}
-		need_correct = true;
-	}*/
+	}
 }
