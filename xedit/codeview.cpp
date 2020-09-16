@@ -94,6 +94,24 @@ void codeview::redraw(const rect& rco) {
 		text(x1, y1, ps, c, ei.flags);
 		ps += c;
 	}
+	switch(hot.key) {
+	case MouseLeft:
+	case MouseLeft | Shift:
+		if(hot.pressed) {
+			point pt;
+			pt.x = (hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x;
+			pt.y = (hot.mouse.y - rcclient.y1) / fontsize.y + origin.y;
+			auto i = getindex(pt);
+			//set(i, (hot.key&Shift) != 0);
+		}
+		break;
+	case MouseLeftDBL:
+		if(hot.pressed) {
+			//left(false, true);
+			//right(true, true);
+		}
+		break;
+	}
 	// Draw hilite
 	if(true) {
 		auto x1 = x + pos1.x*fontsize.x;
@@ -222,30 +240,6 @@ bool codeview::paste(bool run) {
 		delete p;
 	}
 	return true;
-}
-
-void codeview::mouseinput(unsigned id, point position) {
-	switch(id) {
-	case MouseLeft:
-	case MouseLeft | Shift:
-		if(hot.pressed) {
-			point pt;
-			pt.x = (hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x;
-			pt.y = (hot.mouse.y - rcclient.y1) / fontsize.y + origin.y;
-			auto i = getindex(pt);
-			set(i, (id&Shift) != 0);
-		}
-		break;
-	case MouseLeftDBL:
-		if(hot.pressed) {
-			left(false, true);
-			right(true, true);
-		}
-		break;
-	default:
-		control::mouseinput(id, position);
-		break;
-	}
 }
 
 bool codeview::cut(bool run) {

@@ -38,7 +38,6 @@ public:
 	bool					keyinput(unsigned id) override;
 	void					left(bool shift, bool ctrl);
 	int						linen(int index) const;
-	void					mouseinput(unsigned id, point position);
 	void					open(const char* url);
 	bool					paste(bool run);
 	void					paste(const char* input);
