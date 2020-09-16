@@ -78,6 +78,7 @@ void codeview::redraw(const rect& rco) {
 	rect rc = rco + rctext;
 	rcclient = rc;
 	rc.y1 -= origin.y * fontsize.y;
+	rc.x1 -= origin.x;
 	auto x = rc.x1, y = rc.y1;
 	point pos = {};
 	group_s type;

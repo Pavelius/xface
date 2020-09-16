@@ -138,7 +138,7 @@ void list::view(const rect& rcorigin) {
 	correction_width();
 	if(show_header)
 		rc.y1 += rowheader(rc);
-	control::view(rc);
+	rect rc1 = rc;
 	current_rect.clear();
 	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
@@ -149,13 +149,16 @@ void list::view(const rect& rcorigin) {
 	auto maximum_width = getmaximumwidth();
 	if(!pixels_per_line)
 		return;
-	auto enable_scrollv = maximum > lines_per_page;
-	auto enable_scrollh = maximum_width > pixels_per_width;
+	scroll scrollv(origin, lines_per_page, maximum, rc, false);
+	scroll scrollh(origin_width, pixels_per_width, maximum_width, rc, true);
+	scrollv.input();
+	scrollh.input();
+	control::view(rc1);
 	int rk = hot.key&CommandMask;
 	if(ishilite(rc)) {
 		if(hot.mouse.y > rc.y1 && hot.mouse.y <= rc.y1 + pixels_per_line * (maximum - origin)) {
-			if((!enable_scrollv || hot.mouse.x < rc.x2 - metrics::scroll)
-				&& (!enable_scrollh || hot.mouse.y < rc.y2 - metrics::scroll))
+			if((!scrollv.ishilite() || hot.mouse.x < rc.x2 - metrics::scroll)
+				&& (!scrollh.ishilite() || hot.mouse.y < rc.y2 - metrics::scroll))
 				mousehiliting(rc, hot.mouse);
 		}
 		if(rk == MouseLeft || rk == MouseRight)
@@ -185,12 +188,8 @@ void list::view(const rect& rcorigin) {
 			ix++;
 		}
 	}
-	if(enable_scrollv)
-		draw::scrollv({rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
-			origin, lines_per_page, maximum, isfocused());
-	if(enable_scrollh)
-		draw::scrollh({rc.x1, rc.y2 - metrics::scroll, rc.x2, rc.y2},
-			origin_width, pixels_per_width, maximum_width, isfocused());
+	scrollv.view(isfocused());
+	scrollh.view(isfocused());
 	if(drop_shadow) {
 		rectf({rcorigin.x2 + 1, rcorigin.y1 + 4, rcorigin.x2 + 5, rcorigin.y2}, colors::black, 64);
 		rectf({rcorigin.x1 + 4, rcorigin.y2, rcorigin.x2 + 5, rcorigin.y2 + 5}, colors::black, 64);

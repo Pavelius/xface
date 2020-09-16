@@ -236,14 +236,15 @@ class scroll {
 	rect				work, client;
 	bool				horizontal;
 	static void			callback();
-	void				correct();
 public:
 	typedef void (scroll::*proc)(int param);
 	constexpr scroll() : origin(0), page(), maximum(), work(), client(), horizontal(false) {}
 	scroll(int& origin, int page, int maximum, const rect& client, bool horizontal = false);
+	void				correct();
 	void				execute(proc p, int param) const;
 	rect				getslide() const;
 	void				input();
+	bool				ishilite() const;
 	bool				isvisible() const { return origin && work; }
 	void				setorigin(int v) { if(origin) { *origin = v; correct(); } }
 	void				view(bool focused);
@@ -354,8 +355,6 @@ bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border
 bool					buttonh(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, unsigned key = 0, bool press = false, const char* tips = 0);
 bool					buttonv(rect rc, bool checked, bool focused, bool disabled, bool border, const char* string, unsigned key = 0, bool press = false);
 int						clipart(int x, int y, int width, unsigned flags, const char* string);
-void					scrollh(const struct rect& scroll, int& origin, int count, int maximum, bool focused);
-void					scrollv(const rect& scroll, int& origin, int count, int maximum, bool focused);
 int						sheetline(rect rc, bool background);
 void					splitv(int x, int y, int& value, int height, int size, int minimum, int maximum, bool right_align);
 void					splith(int x, int y, int width, int& value, int size, int minimum, int maximum, bool down_align);

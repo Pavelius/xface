@@ -5,7 +5,7 @@ using namespace draw::controls;
 
 static void choose_mouse() {
 	auto p = (picker*)hot.param;
-	if(p->ishilited() && p->current_hilite_row!=-1)
+	if(p->ishilited() && p->current_hilite_row != -1)
 		p->current = p->current_hilite_row;
 }
 
@@ -14,7 +14,6 @@ void picker::view(const rect& rcorigin) {
 	rect rc = rcorigin;
 	pixels_per_width = rc.width() - 1;
 	correction_width();
-	control::view(rc);
 	current_rect.clear();
 	rc.x1 += 1; rc.y1 += 1; // Чтобы был отступ для первой строки
 	if(!pixels_per_line)
@@ -29,39 +28,36 @@ void picker::view(const rect& rcorigin) {
 	auto maximum_width = getmaximumwidth();
 	if(!pixels_per_line)
 		return;
-	auto enable_scrollv = maximum_height > lines_per_page;
-	if(true) {
-		draw::state push; setclip(rc);
-		auto c = 0;
-		auto x = rc.x1;
-		auto y = rc.y1;
-		for(auto i = origin; i < maximum; i++) {
-			if(c >= elements_per_line) {
-				x = rc.x1;
-				y += pixels_per_line;
-				c = 0;
-				if(y > rc.y2)
-					break;
-			}
-			rect rc = {x, y, x + pixels_per_column, y + pixels_per_line};
-			if(ishilite(rc)) {
-				current_hilite_row = i;
-				if(hot.key == MouseLeft && hot.pressed)
-					draw::execute(choose_mouse, (int)static_cast<picker*>(this));
-			}
-			if(show_grid_lines) {
-				rectb(rc, colors::border);
-				rc.x1 += 1;
-				rc.y1 += 1;
-			}
-			row(rc, i);
-			c++;
-			x += pixels_per_column;
+	scroll scrollv(origin, lines_per_page, maximum_height, rcorigin, false);
+	scrollv.correct(); scrollv.input();
+	control::view(rcorigin);
+	draw::state push; setclip(rc);
+	auto c = 0;
+	auto x = rc.x1;
+	auto y = rc.y1;
+	for(auto i = origin; i < maximum; i++) {
+		if(c >= elements_per_line) {
+			x = rc.x1;
+			y += pixels_per_line;
+			c = 0;
+			if(y > rc.y2)
+				break;
 		}
+		rect rc = {x, y, x + pixels_per_column, y + pixels_per_line};
+		if(ishilite(rc)) {
+			current_hilite_row = i;
+			if(hot.key == MouseLeft && hot.pressed)
+				draw::execute(choose_mouse, (int)static_cast<picker*>(this));
+		}
+		if(show_grid_lines) {
+			rectb(rc, colors::border);
+			rc.x1 += 1;
+			rc.y1 += 1;
+		}
+		row(rc, i);
+		c++;
+		x += pixels_per_column;
 	}
-	if(enable_scrollv)
-		draw::scrollv({rc.x2 - metrics::scroll, rc.y1, rc.x2, rc.y2},
-			origin, lines_per_page*elements_per_line, maximum, isfocused());
 }
 
 void picker::ensurevisible() {

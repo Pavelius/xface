@@ -61,13 +61,13 @@
       "columns":{
         "column":{
           "id":"Дата",
-          "width":8,
+          "width":4,
           "size":2,
           "total":0
         },
         "column":{
           "id":"Сообщение",
-          "width":607,
+          "width":200,
           "size":4,
           "total":0
         }
@@ -88,7 +88,7 @@
         },
         "column":{
           "id":"Наименование",
-          "width":137,
+          "width":200,
           "size":4,
           "total":0
         }
