@@ -72,11 +72,38 @@ void codeview::invalidate() {
 	cash_origin = -1;
 }
 
+bool codeview::wordselect(bool run) {
+	left(false, true);
+	right(true, true);
+	return 0;
+}
+
 void codeview::redraw(const rect& rco) {
 	draw::state push;
 	draw::font = this->font;
 	rect rc = rco + rctext;
-	rcclient = rc;
+	// Mouse input handle
+	if(ishilite(rc)) {
+		switch(hot.key) {
+		case MouseLeft:
+		case MouseLeft | Shift:
+			if(hot.pressed) {
+				point pt;
+				pt.x = (hot.mouse.x - rc.x1 + fontsize.x / 2) / fontsize.x;
+				pt.y = (hot.mouse.y - rc.y1) / fontsize.y + origin.y;
+				auto i = getindex(pt);
+				if(hot.key&Shift)
+					execute((fnset)&codeview::setshift, i);
+				else
+					execute((fnset)&codeview::setnorm, i);
+			}
+			break;
+		case MouseLeftDBL:
+			if(hot.pressed)
+				execute((fncmd)&codeview::wordselect);
+			break;
+		}
+	}
 	rc.y1 -= origin.y * fontsize.y;
 	rc.x1 -= origin.x;
 	auto x = rc.x1, y = rc.y1;
@@ -93,24 +120,6 @@ void codeview::redraw(const rect& rco) {
 		fore = ei.present;
 		text(x1, y1, ps, c, ei.flags);
 		ps += c;
-	}
-	switch(hot.key) {
-	case MouseLeft:
-	case MouseLeft | Shift:
-		if(hot.pressed) {
-			point pt;
-			pt.x = (hot.mouse.x - rcclient.x1 + fontsize.x / 2) / fontsize.x;
-			pt.y = (hot.mouse.y - rcclient.y1) / fontsize.y + origin.y;
-			auto i = getindex(pt);
-			//set(i, (hot.key&Shift) != 0);
-		}
-		break;
-	case MouseLeftDBL:
-		if(hot.pressed) {
-			//left(false, true);
-			//right(true, true);
-		}
-		break;
 	}
 	// Draw hilite
 	if(true) {
@@ -376,7 +385,6 @@ void codeview::view(const rect& rc) {
 	auto pixels_per_line = getpixelperline();
 	if(!pixels_per_line)
 		return;
-	rcclient = rc;
 	lines_per_page = rc.height() / pixels_per_line;
 	if(cash_origin == -1) {
 		getstate(p1, pos1, p2, pos2, size, {0, (short)origin.y}, cash_origin);
@@ -384,7 +392,7 @@ void codeview::view(const rect& rc) {
 		maximum.y = size.y;
 	}
 	draw::scroll scrollv(origin.y, lines_per_page, maximum.y, rc); scrollv.input();
-	draw::scroll scrollh(origin.x, rc.width() / fontsize.x, maximum.x, rc, true); scrollh.input();
+	draw::scroll scrollh(origin.x, rc.width(), maximum.x, rc, true); scrollh.input();
 	control::view(rc);
 	if(true) {
 		draw::state push;

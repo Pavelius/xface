@@ -13,7 +13,7 @@ struct codeview : control, codemodel {
 	pointl					origin, maximum;
 	const char*				nextstep(const char* ps, int dir);
 public:
-	rect					rctext, rcclient;
+	rect					rctext;
 	bool					readonly;
 	static const sprite*	font;
 	static point			fontsize;
@@ -44,8 +44,11 @@ public:
 	void					redraw(const rect& rc);
 	void					right(bool shift, bool ctrl);
 	void					set(int index, bool shift);
+	void					setnorm(int index) { set(index, false); }
+	void					setshift(int index) { set(index, true); }
 	unsigned				select_all(bool run);
 	void					setvalue(const char* id, int value) override;
+	bool					wordselect(bool run);
 	void					view(const rect& rc) override;
 };
 }

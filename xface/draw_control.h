@@ -54,6 +54,7 @@ public:
 namespace controls {
 struct control {
 	typedef bool			(control::*fncmd)(bool run);
+	typedef void			(control::*fnset)(int v);
 	typedef bool			(control::*fnvisible)() const;
 	struct proci {
 		fncmd				cmd;
@@ -110,6 +111,7 @@ struct control {
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);
 	void					execute(control::fncmd proc) const;
+	void					execute(control::fnset proc, int param) const;
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }

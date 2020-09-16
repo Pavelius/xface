@@ -7,6 +7,7 @@ using namespace draw::controls;
 static control*	current_hilite;
 static control*	current_focus;
 static control::fncmd current_execute;
+static control::fnset current_execute_set;
 static control* current_execute_control;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
@@ -82,6 +83,10 @@ static void control_execute() {
 	(current_execute_control->*current_execute)(true);
 }
 
+static void control_execute_set() {
+	(current_execute_control->*current_execute_set)(hot.param);
+}
+
 const visual* visual::find(const char* id) const {
 	if(!this)
 		return 0;
@@ -130,6 +135,12 @@ void control::execute(control::fncmd proc) const {
 	current_execute = proc;
 	current_execute_control = const_cast<control*>(this);
 	domodal = control_execute;
+}
+
+void control::execute(control::fnset proc, int param) const {
+	current_execute_set = proc;
+	current_execute_control = const_cast<control*>(this);
+	draw::execute(control_execute_set, param);
 }
 
 void control::view(const rect& rc) {
