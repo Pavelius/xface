@@ -14,21 +14,6 @@ const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 BSMETA(datetime) = {{"datetime"}, {}};
 
 bool control_input() {
-	if(current_hilite) {
-		switch(hot.key & CommandMask) {
-		case MouseLeft:
-		case MouseRight:
-		case MouseLeftDBL:
-			current_hilite->mouseinput(hot.key, hot.mouse);
-			return true;
-		case MouseWheelDown:
-			current_hilite->mousewheel(hot.key, hot.mouse, 1);
-			return true;
-		case MouseWheelUp:
-			current_hilite->mousewheel(hot.key, hot.mouse, -1);
-			return true;
-		}
-	}
 	if(current_focus) {
 		if(current_focus->keyinput(hot.key))
 			return true;
@@ -59,22 +44,6 @@ bool control::isfocused() const {
 
 void control::setfocus(bool instant) {
 	draw::setfocus(anyval(this, 0, 0), instant);
-}
-
-void control::mouseinput(unsigned id, point position) {
-	switch(id) {
-	case MouseLeft:
-		if(hot.pressed)
-			setfocus(true);
-		break;
-	case MouseRight:
-		if(!hot.pressed) {
-			redraw();
-			updatewindow();
-			contextmenu(getcommands());
-		}
-		break;
-	}
 }
 
 static void control_execute() {
@@ -143,6 +112,13 @@ void control::execute(control::fncmd proc) const {
 	domodal = control_execute;
 }
 
+static void open_context_menu() {
+	auto p = (control*)hot.param;
+	p->redraw();
+	updatewindow();
+	p->contextmenu(p->getcommands());
+}
+
 void control::view(const rect& rc) {
 	if(isfocusable()) {
 		addelement(rc, *this);
@@ -151,8 +127,19 @@ void control::view(const rect& rc) {
 	}
 	if(isfocused())
 		current_focus = this;
-	if(ishilite(rc))
+	if(ishilite(rc)) {
 		current_hilite = this;
+		switch(hot.key) {
+		case MouseLeft:
+			if(hot.pressed)
+				setfocus(false);
+			break;
+		case MouseRight:
+			if(!hot.pressed)
+				draw::execute(open_context_menu, (int)this);
+			break;
+		}
+	}
 	if(show_background)
 		rectf(rc, colors::window);
 	if(show_border)

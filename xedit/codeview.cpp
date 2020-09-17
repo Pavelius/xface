@@ -8,6 +8,8 @@ using namespace draw::controls;
 //Number, String, Identifier,
 //OpenParam, CloseParam, OpenBlock, CloseBlock, OpenScope, CloseScope,
 
+static int common_padding = 4;
+
 BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"White space", {color::create(255, 255, 255)}},
 {"Operator", {color::create(255, 128, 0)}},
@@ -156,6 +158,36 @@ void codeview::redraw(const rect& rco) {
 	}
 }
 
+void codeview::pastecr() {
+	char temp[260];
+	auto p = temp;
+	auto pe = temp + sizeof(temp) - 1;
+	auto n = lineb(p1);
+	if(p < pe)
+		*p++ = '\n';
+	if(p < pe)
+		*p++ = '\r';
+	auto p1 = data + n;
+	while(*p1 && iswhitespace(*p1)) {
+		if(p < pe)
+			*p++ = *p1;
+		p1++;
+	}
+	//if(!isnextline(p1, 0)) {
+	//	if(true) {
+	//		for(auto i = 0; i < common_padding; i++) {
+	//			if(p < pe)
+	//				*p++ = ' ';
+	//		}
+	//	} else {
+	//		if(p < pe)
+	//			*p++ = '\t';
+	//	}
+	//}
+	*p = 0;
+	paste(temp);
+}
+
 bool codeview::keyinput(unsigned id) {
 	switch(id) {
 	case KeyRight:
@@ -191,6 +223,7 @@ bool codeview::keyinput(unsigned id) {
 		}
 		break;
 	case KeyPageDown:
+	case KeyPageDown | Shift:
 		if(true) {
 			auto pt = getcurrentpos();
 			auto n = origin.y + lines_per_page - 1;
@@ -203,9 +236,10 @@ bool codeview::keyinput(unsigned id) {
 		}
 		break;
 	case KeyPageUp:
+	case KeyPageUp | Shift:
 		if(true) {
 			auto pt = getcurrentpos();
-			auto n = origin.y - (lines_per_page - 1);
+			auto n = origin.y;
 			if(pt.y != n)
 				pt.y = n;
 			else
@@ -249,6 +283,9 @@ bool codeview::keyinput(unsigned id) {
 	case KeyEnd:
 	case KeyEnd | Shift:
 		set(linee(getcurrent()), (id&Shift) != 0);
+		break;
+	case KeyEnter:
+		pastecr();
 		break;
 	default:
 		return control::keyinput(id);

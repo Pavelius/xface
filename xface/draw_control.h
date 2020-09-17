@@ -124,7 +124,6 @@ struct control {
 	bool					ishilited() const;
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
 	virtual void			notify(const char* id, void* param) {} // Global control notifier
-	virtual void			mouseinput(unsigned id, point mouse); // Default behaivor set focus
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
 	virtual void			redraw() {}
 	virtual void			setfocus(bool instant);
@@ -173,7 +172,6 @@ struct list : control {
 	bool					isopen(int index) const;
 	bool					keyinput(unsigned id) override;
 	void					mousehiliting(const rect& rc, point mouse);
-	virtual void			mouseinput(unsigned id, point position) override;
 	virtual void			mouseselect(int id, bool pressed);
 	virtual void			mousewheel(unsigned id, point position, int step) override;
 	void					redraw() override;
@@ -429,6 +427,7 @@ public:
 	unsigned				select_all(bool run);
 	void					setcount(int value) {}
 	void					setrecordlist(const char* string);
+	void					setvalue(const char* id, int v) override;
 	void					updaterecords(bool setfilter);
 };
 struct form {

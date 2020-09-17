@@ -172,6 +172,13 @@ void textedit::invalidate() {
 	cashed_width = -1;
 }
 
+void textedit::setvalue(const char* id, int v) {
+	if(strcmp(id, "select") == 0)
+		select(v, false);
+	else if(strcmp(id, "select_range") == 0)
+		select(v, true);
+}
+
 void textedit::redraw(const rect& rcorigin) {
 	rect rc = rcorigin + rctext;
 	if(show_border)
@@ -207,6 +214,21 @@ void textedit::redraw(const rect& rcorigin) {
 		texte(rc, string, align, p1, p2);
 	} else
 		text(rc, string, align);
+	if(ishilite(rc)) {
+		switch(hot.key) {
+		case MouseLeft:
+			if(hot.pressed) {
+				auto i = hittest(rcclient, hot.mouse, 0);
+				if(i == -2)
+					setvalueasync("select", 0);
+				else if(i == -3)
+					setvalueasync("select", zlen(string));
+				else if(i >= 0)
+					setvalueasync("select", i);
+			}
+			break;
+		}
+	}
 }
 
 int textedit::getrecordsheight() const {
@@ -423,25 +445,6 @@ bool textedit::paste(bool run) {
 		delete p;
 	}
 	return true;
-}
-
-void textedit::mouseinput(unsigned id, point position) {
-	switch(id) {
-	case MouseLeft:
-		if(hot.pressed) {
-			auto i = hittest(rcclient, position, 0);
-			if(i == -2)
-				select(0, false);
-			else if(i == -3)
-				select(zlen(string), false);
-			else if(i >= 0)
-				select(i, false);
-		}
-		break;
-	default:
-		scrollable::mouseinput(id, position);
-		break;
-	}
 }
 
 bool textedit::cut(bool run) {

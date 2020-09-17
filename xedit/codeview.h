@@ -41,6 +41,7 @@ public:
 	void					open(const char* url);
 	bool					paste(bool run);
 	void					paste(const char* input);
+	void					pastecr();
 	void					redraw(const rect& rc);
 	void					right(bool shift, bool ctrl);
 	void					set(int index, bool shift);
