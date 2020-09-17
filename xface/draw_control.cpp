@@ -7,8 +7,6 @@ using namespace draw::controls;
 static control*	current_hilite;
 static control*	current_focus;
 static control::fncmd current_execute;
-static control* current_execute_control;
-static const char* current_control_id;
 const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 BSMETA(datetime) = {{"datetime"}, {}};
@@ -28,7 +26,7 @@ static struct control_plugin : draw::plugin {
 	}
 } plugin_instance;
 
-bool control::is(const char* s1, const char* s2) {
+bool control::equal(const char* s1, const char* s2) {
 	if(!s1 || !s2)
 		return false;
 	return strcmp(s1, s2) == 0;
@@ -47,19 +45,24 @@ void control::setfocus(bool instant) {
 }
 
 static void control_execute() {
-	hot.key = 0;
-	hot.param = 0;
-	(current_execute_control->*current_execute)(true);
+	(((control*)hot.object)->*current_execute)(true);
+}
+void control::postcmd(control::fncmd proc) const {
+	draw::execute(control_execute, 0, 0, const_cast<control*>(this));
+}
+
+static void control_execute_keyinput() {
+	((control*)hot.object)->keyinput(hot.param);
+}
+void control::postkeyinput(int value) const {
+	draw::execute(control_execute_keyinput, value, 0, const_cast<control*>(this));
 }
 
 static void control_execute_setvalue() {
-	current_execute_control->setvalue(current_control_id, hot.param);
+	((control*)hot.object)->setvalue((const char*)hot.param2, hot.param);
 }
-
-void control::setvalueasync(const char* id, int value) {
-	current_execute_control = const_cast<control*>(this);
-	current_control_id = id;
-	draw::execute(control_execute_setvalue, value);
+void control::postsetvalue(const char* id, int value) const {
+	draw::execute(control_execute_setvalue, value, (int)id, const_cast<control*>(this));
 }
 
 const visual* visual::find(const char* id) const {
@@ -104,12 +107,6 @@ const control::command* control::command::find(unsigned key) const {
 
 void control::icon(int x, int y, bool disabled, const command& cmd) const {
 	image(x, y, getimages(), cmd.image, 0, disabled ? 0x80 : 0xFF);
-}
-
-void control::execute(control::fncmd proc) const {
-	current_execute = proc;
-	current_execute_control = const_cast<control*>(this);
-	domodal = control_execute;
 }
 
 static void open_context_menu() {

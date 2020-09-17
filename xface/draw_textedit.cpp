@@ -173,9 +173,9 @@ void textedit::invalidate() {
 }
 
 void textedit::setvalue(const char* id, int v) {
-	if(strcmp(id, "select") == 0)
+	if(equal(id, "select"))
 		select(v, false);
-	else if(strcmp(id, "select_range") == 0)
+	else if(equal(id, "select_range"))
 		select(v, true);
 }
 
@@ -206,7 +206,10 @@ void textedit::redraw(const rect& rcorigin) {
 					right(true, true);
 					break;
 				default:
-					//select(index, (hot.key&Shift) != 0);
+					if(hot.key&Shift)
+						postsetvalue("select_range", index);
+					else
+						postsetvalue("select", index);
 					break;
 				}
 			}
@@ -220,11 +223,11 @@ void textedit::redraw(const rect& rcorigin) {
 			if(hot.pressed) {
 				auto i = hittest(rcclient, hot.mouse, 0);
 				if(i == -2)
-					setvalueasync("select", 0);
+					postsetvalue("select", 0);
 				else if(i == -3)
-					setvalueasync("select", zlen(string));
+					postsetvalue("select", zlen(string));
 				else if(i >= 0)
-					setvalueasync("select", i);
+					postsetvalue("select", i);
 			}
 			break;
 		}

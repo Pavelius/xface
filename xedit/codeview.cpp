@@ -56,17 +56,17 @@ void codeview::open(const char* url) {
 }
 
 void codeview::setvalue(const char* id, int value) {
-	if(strcmp(id, "text") == 0)
+	if(equal(id, "text"))
 		codemodel::set((const char*)value);
-	else if(strcmp(id, "lex") == 0)
+	else if(equal(id, "lex"))
 		codemodel::set((const lexer*)value);
-	else if(strcmp(id, "parser") == 0)
+	else if(equal(id, "parser"))
 		codemodel::set((const parseri*)value);
-	else if(strcmp(id, "open") == 0)
+	else if(equal(id, "open"))
 		open((const char*)value);
-	else if(strcmp(id, "select") == 0)
+	else if(equal(id, "select"))
 		set(value, false);
-	else if(strcmp(id, "select_range") == 0)
+	else if(equal(id, "select_range"))
 		set(value, true);
 }
 
@@ -74,10 +74,10 @@ void codeview::invalidate() {
 	cash_origin = -1;
 }
 
-bool codeview::wordselect(bool run) {
-	left(false, true);
-	right(true, true);
-	return 0;
+static void execute_wordselect() {
+	auto p = (codeview*)hot.object;
+	p->left(false, true);
+	p->right(true, true);
 }
 
 void codeview::redraw(const rect& rco) {
@@ -105,20 +105,20 @@ void codeview::redraw(const rect& rco) {
 			if(hot.pressed) {
 				auto i = getindex(mpos);
 				if(hot.key&Shift)
-					setvalueasync("select_range", i);
+					postsetvalue("select_range", i);
 				else
-					setvalueasync("select", i);
+					postsetvalue("select", i);
 			}
 			break;
 		case MouseMove:
 			if(hot.pressed) {
 				auto i = getindex(mpos);
-				setvalueasync("select_range", i);
+				postsetvalue("select_range", i);
 			}
 			break;
 		case MouseLeftDBL:
 			if(hot.pressed)
-				execute((fncmd)&codeview::wordselect);
+				draw::execute(execute_wordselect, 0, 0, this);
 			break;
 		}
 	}

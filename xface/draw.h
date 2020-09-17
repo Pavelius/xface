@@ -146,7 +146,8 @@ struct hoti {
 	unsigned			key; // if pressed key or mouse this field has key
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed
-	int					param; // command context or parameters
+	int					param, param2; // command context or parameters
+	void*				object; // command object
 	explicit operator bool() const { return key != 0; }
 	void				zero() { key = InputUpdate; }
 };
@@ -274,7 +275,7 @@ bool					dragactive(const void* p);
 bool					dragactive();
 void					dragbegin(const void* p);
 extern point			dragmouse;
-void					execute(fnevent proc, int value = 0);
+void					execute(fnevent proc, int value = 0, int value2 = 0, void* object = 0);
 bool					execute(const shortcut* p);
 rect					getarea();
 int						getbpp();

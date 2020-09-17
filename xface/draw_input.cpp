@@ -141,10 +141,12 @@ void draw::setfocus(const anyval& value, bool instant) {
 	}
 }
 
-void draw::execute(fnevent proc, int param) {
+void draw::execute(fnevent proc, int param, int param2, void* object) {
 	domodal = proc;
 	hot.key = 0;
 	hot.param = param;
+	hot.param2 = param2;
+	hot.object = object;
 }
 
 plugin::plugin(int priority) : next(0), priority(priority) {

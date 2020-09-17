@@ -161,8 +161,13 @@ void list::view(const rect& rcorigin) {
 				&& (!scrollh.ishilite() || hot.mouse.y < rc.y2 - metrics::scroll))
 				mousehiliting(rc, hot.mouse);
 		}
-		if(rk == MouseLeft || rk == MouseRight)
-			mouseselect(rk, hot.pressed);
+		if(rk == MouseLeft || rk == MouseRight) {
+			if(current_hilite_treemark != -1) {
+
+			} else
+				mouseselect(rk, hot.pressed);
+		} else if(rk==MouseLeftDBL)
+			postkeyinput(KeyEnter);
 	}
 	if(true) {
 		draw::state push;
@@ -257,23 +262,6 @@ bool list::keyinput(unsigned id) {
 		return control::keyinput(id);
 	}
 	return true;
-}
-
-void list::mouseinput(unsigned id, point position) {
-	switch(id) {
-	case MouseLeftDBL:
-		keyinput(KeyEnter);
-		break;
-	case MouseLeft:
-		if(ishilited() && hot.pressed && current_hilite_treemark != -1)
-			toggle(current_hilite_treemark);
-		else
-			control::mouseinput(id, position);
-		break;
-	default:
-		control::mouseinput(id, position);
-		break;
-	}
 }
 
 void list::mousewheel(unsigned id, point position, int step) {

@@ -109,26 +109,26 @@ struct control {
 	virtual ~control() {}
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);
-	void					execute(control::fncmd proc) const;
+	static bool				equal(const char* s1, const char* s2);
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
 	virtual const char*		getlabel(stringbuilder& sb) const { return 0; }
 	static const char*		getlabel(const void* object, stringbuilder& sb);
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
-	static bool				is(const char* s1, const char* s2);
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool			isdisabled() const { return false; }
 	virtual bool			isfocusable() const { return true; }
 	virtual bool			isfocused() const;
 	bool					ishilited() const;
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
-	virtual void			notify(const char* id, void* param) {} // Global control notifier
 	virtual void			mousewheel(unsigned id, point mouse, int value) {}
+	void					postcmd(fncmd proc) const;
+	void					postkeyinput(int value) const;
+	void					postsetvalue(const char* id, int value) const;
 	virtual void			redraw() {}
 	virtual void			setfocus(bool instant);
 	virtual void			setvalue(const char* id, int value) {}
-	void					setvalueasync(const char* id, int value);
 	int						toolbar(int x, int y, int width) const;
 	virtual void			view(const rect& rc);
 	virtual void			write(serializer& sr) const {}
