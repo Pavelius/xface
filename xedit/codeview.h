@@ -44,8 +44,6 @@ public:
 	void					redraw(const rect& rc);
 	void					right(bool shift, bool ctrl);
 	void					set(int index, bool shift);
-	void					setnorm(int index) { set(index, false); }
-	void					setshift(int index) { set(index, true); }
 	unsigned				select_all(bool run);
 	void					setvalue(const char* id, int value) override;
 	bool					wordselect(bool run);

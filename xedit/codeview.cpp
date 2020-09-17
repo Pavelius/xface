@@ -79,23 +79,39 @@ bool codeview::wordselect(bool run) {
 }
 
 void codeview::redraw(const rect& rco) {
+	if(!fontsize.x || !fontsize.y)
+		return;
 	draw::state push;
 	draw::font = this->font;
 	rect rc = rco + rctext;
 	// Mouse input handle
-	if(ishilite(rc)) {
+	rect r1 = rc;
+	rc.y1 -= origin.y * fontsize.y;
+	rc.x1 -= origin.x;
+	auto x = rc.x1, y = rc.y1;
+	if(ishilite(r1)) {
+		point mpos;
+		mpos.x = (hot.mouse.x - r1.x1 + origin.x + fontsize.x / 2) / fontsize.x;
+		mpos.y = (hot.mouse.y - r1.y1) / fontsize.y + origin.y;
+		auto x1 = rc.x1 + mpos.x * fontsize.x;
+		auto y1 = rc.y1 + mpos.y * fontsize.y;
+		rect r2 = {x1, y1, x1 + fontsize.x, y1 + fontsize.y};
+		ishilite(r2);
 		switch(hot.key) {
 		case MouseLeft:
 		case MouseLeft | Shift:
 			if(hot.pressed) {
-				point pt;
-				pt.x = (hot.mouse.x - rc.x1 + fontsize.x / 2) / fontsize.x;
-				pt.y = (hot.mouse.y - rc.y1) / fontsize.y + origin.y;
-				auto i = getindex(pt);
+				auto i = getindex(mpos);
 				if(hot.key&Shift)
-					execute((fnset)&codeview::setshift, i);
+					setvalueasync("select_range", i);
 				else
-					execute((fnset)&codeview::setnorm, i);
+					setvalueasync("select", i);
+			}
+			break;
+		case MouseMove:
+			if(hot.pressed) {
+				auto i = getindex(mpos);
+				setvalueasync("select_range", i);
 			}
 			break;
 		case MouseLeftDBL:
@@ -104,9 +120,6 @@ void codeview::redraw(const rect& rco) {
 			break;
 		}
 	}
-	rc.y1 -= origin.y * fontsize.y;
-	rc.x1 -= origin.x;
-	auto x = rc.x1, y = rc.y1;
 	point pos = {};
 	group_s type;
 	auto ps = data;
@@ -173,6 +186,30 @@ bool codeview::keyinput(unsigned id) {
 		if(getcurrentpos().y < maximum.y) {
 			auto pt = getcurrentpos();
 			pt.y += 1;
+			set(getindex(pt), (id&Shift) != 0);
+			ensurevisible(pt.y);
+		}
+		break;
+	case KeyPageDown:
+		if(true) {
+			auto pt = getcurrentpos();
+			auto n = origin.y + lines_per_page - 1;
+			if(pt.y != n)
+				pt.y = n;
+			else
+				pt.y += lines_per_page - 1;
+			set(getindex(pt), (id&Shift) != 0);
+			ensurevisible(pt.y);
+		}
+		break;
+	case KeyPageUp:
+		if(true) {
+			auto pt = getcurrentpos();
+			auto n = origin.y - (lines_per_page - 1);
+			if(pt.y != n)
+				pt.y = n;
+			else
+				pt.y -= lines_per_page - 1;
 			set(getindex(pt), (id&Shift) != 0);
 			ensurevisible(pt.y);
 		}
