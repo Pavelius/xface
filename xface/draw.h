@@ -308,7 +308,6 @@ void					linet(int x1, int y1, int x2, int y2);
 inline void				linet(point p1, point p2) { linet(p1.x, p1.y, p2.x, p2.y); }
 extern float			linw;
 extern char				link[4096];
-extern bool				mouseinput;
 extern color*			palt;
 void					pixel(int x, int y);
 void					pixel(int x, int y, unsigned char alpha);

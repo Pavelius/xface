@@ -34,7 +34,6 @@ color				draw::fore;
 color				draw::fore_stroke;
 const sprite*		draw::font;
 float				draw::linw = 1.0;
-bool				draw::mouseinput = true;
 color*				draw::palt;
 rect				draw::clipping;
 char				draw::link[4096];
@@ -1398,8 +1397,6 @@ bool draw::ishilite(const rect& rc) {
 	if(dragactive())
 		return false;
 	if(!hot.mouse.in(clipping))
-		return false;
-	if(!mouseinput)
 		return false;
 	if(hot.mouse.in(rc))
 		return true;
