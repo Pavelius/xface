@@ -430,9 +430,6 @@ static struct widget_application : draw::controls::control {
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Главный";
 	}
-	const command* getcommands() const override {
-		return 0;
-	}
 	static int find(control** source, control* value) {
 		for(auto p = source; *p; p++) {
 			if(p[0] == value)
@@ -501,6 +498,25 @@ static struct widget_application : draw::controls::control {
 		workspace(rct, allow_multiply_window);
 	}
 
+	static control::command widget_application::commands_general[];
+	static control::command widget_application::commands[];
+
+	const command* getcommands() const override {
+		return commands;
+	}
+
+	bool create_window(bool run) {
+		return true;
+	}
+
+	bool open_window(bool run) {
+		return true;
+	}
+
+	bool save_window(bool run) {
+		return false;
+	}
+
 	widget_application() {
 		show_background = false;
 		show_border = false;
@@ -509,6 +525,13 @@ static struct widget_application : draw::controls::control {
 	}
 
 } widget_application_control;
+
+control::command widget_application::commands_general[] = {{"create", "Создать", 0, &widget_application::create_window, 9},
+{"open", "Открыть", 0, &widget_application::open_window, 9},
+{"save", "Сохранить", 0, &widget_application::save_window, 9},
+{}};
+control::command widget_application::commands[] = {{"*", "", commands_general},
+{}};
 
 void set_light_theme();
 void set_dark_theme();
@@ -589,7 +612,10 @@ void draw::application(bool allow_multiply_window, fnevent heartproc, shortcut* 
 		if(metrics::show::statusbar)
 			rc.y2 -= draw::statusbardw();
 		rect rt = rc;
-		rt.y2 = rt.y1 + (tb ? (tb->get(0).sy + 4 * 2) : 24);
+		if(tb)
+			rt.y2 = rt.y1 + tb->get(0).getrect(0, 0, 0).height() + 4;
+		else
+			rt.y2 = rt.y1 + 24 + 4 * 2;
 		sheetline(rt, true);
 		rc.y1 += rt.height();
 		rt.x1 += 2; rt.y1 += 1; rt.y2 -= 3; rt.x2 -= 2;
@@ -801,9 +827,9 @@ static struct controls_settings_strategy : io::strategy {
 		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));
 		if(!e)
 			return;
-		else if(szcmpi(n.name, "Docking") == 0)
+		else if(n == "Docking")
 			e->dock = (dock_s)sz2num(value);
-		else if(szcmpi(n.name, "Visible") == 0)
+		else if(n == "Visible")
 			e->visible = getnum(value);
 	}
 	controls_settings_strategy() : strategy("controls", "settings") {}

@@ -47,16 +47,20 @@ struct toolbar_builder : control::command::builder {
 
 };
 
-int	draw::controls::control::toolbar(int x, int y, int width) const {
+int	draw::controls::control::toolbar(int x, int y, int width, int* next_x) const {
 	auto commands = getcommands();
+	if(next_x)
+		*next_x = x;
 	if(!commands)
 		return 0;
 	auto images = getimages();
 	if(!images)
 		return 0;
-	short height = images->get(0).getrect(0, 0, 0).height() + 8;
+	short height = images->get(0).getrect(0, 0, 0).height();
 	toolbar_builder e(x, y, width, {height, height});
 	e.render(this, getcommands());
+	if(next_x)
+		*next_x = e.x;
 	if(e.x != x)
 		return height + metrics::padding;
 	return 0;
