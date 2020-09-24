@@ -7,8 +7,9 @@ struct focusable_element {
 	rect		rc;
 	anyval		value;
 };
-static anyval	current_focus;
+static anyval	current_field_focus;
 static anyval	cmd_value;
+static hoti		cmd_hot;
 extern rect		sys_static_area;
 static focusable_element elements[96];
 static focusable_element* render_control;
@@ -20,7 +21,7 @@ fnevent		draw::domodal;
 
 static void setfocus_callback() {
 	setfocus(cmd_value, true);
-	hot.key = 0;
+	hot = cmd_hot;
 }
 
 static focusable_element* getby(const anyval& value) {
@@ -103,40 +104,39 @@ static const focusable_element* getnext(const focusable_element* pc, int key) {
 }
 
 bool draw::isfocused() {
-	return static_cast<bool>(current_focus);
+	return static_cast<bool>(current_field_focus);
 }
 
 bool draw::isfocused(const anyval& v) {
-	return current_focus == v;
+	return current_field_focus == v;
 }
 
 bool draw::isfocused(const rect& rc, const anyval& value) {
 	addelement(rc, value);
 	if(!isfocused())
 		setfocus(value, true);
-	else if(ishilite(rc) && hot.key == MouseLeft && hot.pressed) {
+	else if(ishilite(rc) && hot.key == MouseLeft && hot.pressed)
 		setfocus(value, false);
-		hot.key = MouseLeft;
-	}
-	return current_focus == value;
+	return current_field_focus == value;
 }
 
-pushfocus::pushfocus() : value(const_cast<const anyval&>(current_focus)) {
-	current_focus.clear();
+pushfocus::pushfocus() : value(const_cast<const anyval&>(current_field_focus)) {
+	current_field_focus.clear();
 }
 
 pushfocus::~pushfocus() {
-	current_focus = value;
+	current_field_focus = value;
 }
 
 void draw::setfocus(const anyval& value, bool instant) {
-	if(current_focus==value)
+	if(current_field_focus==value)
 		return;
 	if(instant) {
 		savefocus();
-		current_focus = value;
+		current_field_focus = value;
 	} else {
 		cmd_value = value;
+		cmd_hot = hot;
 		execute(setfocus_callback);
 	}
 }
@@ -208,7 +208,7 @@ static void standart_domodal() {
 	case KeyRight:
 	case KeyLeft:
 		if(true) {
-			auto pc = getnext(getby(current_focus), hot.key);
+			auto pc = getnext(getby(current_field_focus), hot.key);
 			if(pc)
 				setfocus(pc->value, true);
 		}

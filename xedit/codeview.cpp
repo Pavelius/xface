@@ -1,4 +1,5 @@
 #include "codeview.h"
+#include "setting.h"
 
 using namespace draw;
 using namespace draw::controls;
@@ -9,6 +10,7 @@ using namespace draw::controls;
 //OpenParam, CloseParam, OpenBlock, CloseBlock, OpenScope, CloseScope,
 
 static int common_padding = 4;
+static bool use_space_instead_tab = false;
 
 BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 {"White space", {color::create(255, 255, 255)}},
@@ -158,6 +160,10 @@ void codeview::redraw(const rect& rco) {
 	}
 }
 
+void codeview::pastetab() {
+	char temp[260];
+}
+
 void codeview::pastecr() {
 	char temp[260];
 	auto p = temp;
@@ -285,7 +291,12 @@ bool codeview::keyinput(unsigned id) {
 		set(linee(getcurrent()), (id&Shift) != 0);
 		break;
 	case KeyEnter:
-		pastecr();
+		if(!readonly)
+			pastecr();
+		break;
+	case KeyTab:
+		if(!readonly)
+			paste("\t");
 		break;
 	default:
 		return control::keyinput(id);
@@ -505,3 +516,9 @@ control::command* codeview::getcommands() const {
 
 const sprite* codeview::font = (sprite*)loadb("art/fonts/code.pma");
 point codeview::fontsize;
+
+static setting::element format_setting[] = {{"Табуляция", {common_padding}},
+{"Использовать пробелы вместо табуляции", {use_space_instead_tab}},
+};
+static setting::header headers[] = {{"Редактор", "Общие", "Форматирование", format_setting},
+};

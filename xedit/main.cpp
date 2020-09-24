@@ -29,6 +29,7 @@ int main() {
 	e.add("for", Keyword);
 	e.add("in", Keyword);
 	e.add("if", Keyword);
+	e.add("else", Keyword);
 	e.add("return", Keyword);
 	e.add("while", Keyword);
 	e.add("impl", Keyword);

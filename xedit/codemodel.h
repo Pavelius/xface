@@ -59,13 +59,13 @@ public:
 	bool					istype(const char* source, const typei** pv) const;
 	bool					iswhitespace(char sym) const;
 	bool					iswhitespace(const char* sym, const char** v) const;
-	int						lineb(int index) const;
-	int						linee(int index) const;
 	const char*				get(int index) const { return data + index; }
 	int						getindex(point pt) const;
 	int						getlenght() const;
 	int						getnext(const char* ps, point& from, group_s& group) const;
 	void					getstate(int p1, point& pos1, int p2, point& pos2, point& size, const point origin, int& origin_index) const;
+	int						lineb(int index) const;
+	int						linee(int index) const;
 	void					set(const char* source);
 	void					set(const lexer* v) { lex = v; }
 	void					set(const parseri* v) { parser = v; }

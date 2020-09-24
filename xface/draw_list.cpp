@@ -264,15 +264,6 @@ bool list::keyinput(unsigned id) {
 	return true;
 }
 
-void list::mousewheel(unsigned id, point position, int step) {
-	origin += step;
-	auto maximum = getmaximum();
-	if(origin > maximum - lines_per_page)
-		origin = maximum - lines_per_page;
-	if(origin < 0)
-		origin = 0;
-}
-
 int list::find(int line, int column, const char* value, int lenght) const {
 	if(line < 0)
 		line = getline() + 1;

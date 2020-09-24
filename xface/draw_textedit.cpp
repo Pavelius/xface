@@ -177,6 +177,11 @@ void textedit::setvalue(const char* id, int v) {
 		select(v, false);
 	else if(equal(id, "select_range"))
 		select(v, true);
+	else if(equal(id, "select_word")) {
+		select(v, false);
+		left(false, true);
+		right(true, true);
+	}
 }
 
 void textedit::redraw(const rect& rcorigin) {
@@ -185,51 +190,29 @@ void textedit::redraw(const rect& rcorigin) {
 		rc.offset(-1, -1);
 	rc.y1 -= origin.y;
 	cashing(rc);
-	if(isfocused()) {
-		auto ev = hot.key&CommandMask;
-		if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight)
-			&& draw::mouseinput && hot.pressed) {
-			auto lenght = zlen(string);
-			auto index = hittest(rc, hot.mouse, align);
-			if(index == -3)
-				index = lenght;
-			else if(index == -2)
-				index = 0;
-			if(index >= 0) {
-				switch(hot.key&CommandMask) {
-				case MouseMove:
-					select(index, true);
-					break;
-				case MouseLeftDBL:
-					select(index, false);
-					left(false, true);
-					right(true, true);
-					break;
-				default:
-					if(hot.key&Shift)
-						postsetvalue("select_range", index);
-					else
-						postsetvalue("select", index);
-					break;
-				}
-			}
-		}
+	if(isfocused())
 		texte(rc, string, align, p1, p2);
-	} else
+	else
 		text(rc, string, align);
-	if(ishilite(rc)) {
-		switch(hot.key) {
-		case MouseLeft:
-			if(hot.pressed) {
-				auto i = hittest(rcclient, hot.mouse, 0);
-				if(i == -2)
-					postsetvalue("select", 0);
-				else if(i == -3)
-					postsetvalue("select", zlen(string));
-				else if(i >= 0)
-					postsetvalue("select", i);
+	auto ev = hot.key&CommandMask;
+	if((ev == MouseMove || ev == MouseLeft || ev == MouseLeftDBL || ev == MouseRight) && hot.pressed && ishilite(rc)) {
+		auto lenght = zlen(string);
+		auto index = hittest(rc, hot.mouse, align);
+		if(index == -3)
+			index = lenght;
+		else if(index == -2)
+			index = 0;
+		if(index >= 0) {
+			switch(hot.key&CommandMask) {
+			case MouseMove: postsetvalue("select_range", index); break;
+			case MouseLeftDBL: postsetvalue("select_word", index); break;
+			default:
+				if(hot.key&Shift)
+					postsetvalue("select_range", index);
+				else
+					postsetvalue("select", index);
+				break;
 			}
-			break;
 		}
 	}
 }

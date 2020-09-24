@@ -128,8 +128,11 @@ void control::view(const rect& rc) {
 		current_hilite = this;
 		switch(hot.key) {
 		case MouseLeft:
-			if(hot.pressed)
+			if(hot.pressed && !isfocused() && isfocusable()) {
+				auto old_hot = hot;
 				setfocus(false);
+				hot = old_hot;
+			}
 			break;
 		case MouseRight:
 			if(!hot.pressed)

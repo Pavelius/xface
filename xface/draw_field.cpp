@@ -61,7 +61,7 @@ public:
 		return false;
 	}
 	bool isfocused() const override {
-		return draw::isfocused(value);
+		return value && draw::isfocused(value);
 	}
 	void load() {
 		stringbuilder sb(source);

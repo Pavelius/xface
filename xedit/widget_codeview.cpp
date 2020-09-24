@@ -17,3 +17,7 @@ static struct widget_codeview : codeview, control::plugin, initplugin {
 	}
 
 } widget_control;
+
+codemodel& getcurrentmodel() {
+	return widget_control;
+}

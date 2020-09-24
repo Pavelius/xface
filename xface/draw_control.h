@@ -122,7 +122,6 @@ struct control {
 	virtual bool			isfocused() const;
 	bool					ishilited() const;
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
-	virtual void			mousewheel(unsigned id, point mouse, int value) {}
 	void					postcmd(fncmd proc) const;
 	void					postkeyinput(int value) const;
 	void					postsetvalue(const char* id, int value) const;
@@ -173,7 +172,6 @@ struct list : control {
 	bool					keyinput(unsigned id) override;
 	void					mousehiliting(const rect& rc, point mouse);
 	virtual void			mouseselect(int id, bool pressed);
-	virtual void			mousewheel(unsigned id, point position, int step) override;
 	void					redraw() override;
 	virtual void			row(const rect& rc, int index);
 	virtual int				rowheader(const rect& rc) const { return 0; }
@@ -418,7 +416,6 @@ public:
 	int						linee(int index) const;
 	int						linen(int index) const;
 	void					left(bool shift, bool ctrl);
-	void					mouseinput(unsigned id, point position);
 	bool					paste(bool run);
 	void					paste(const char* string);
 	void					redraw(const rect& rc) override;
