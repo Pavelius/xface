@@ -155,6 +155,9 @@ class control_properties : public markcontext, public control {
 			pages[0] = type;
 		return pages[page];
 	}
+	bool isfocusable() const override {
+		return false;
+	}
 	static const char* getpagename(const void* object, stringbuilder& sb) {
 		return gettitle(*((markup*)object));
 	}

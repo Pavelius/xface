@@ -162,10 +162,12 @@ void list::view(const rect& rcorigin) {
 				mousehiliting(rc, hot.mouse);
 		}
 		if(rk == MouseLeft || rk == MouseRight) {
-			if(current_hilite_treemark != -1) {
+			if(isfocused()) {
+				if(current_hilite_treemark != -1) {
 
-			} else
-				mouseselect(rk, hot.pressed);
+				} else
+					mouseselect(rk, hot.pressed);
+			}
 		} else if(rk==MouseLeftDBL)
 			postkeyinput(KeyEnter);
 	}

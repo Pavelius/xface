@@ -9,7 +9,6 @@ struct focusable_element {
 };
 static anyval	current_field_focus;
 static anyval	cmd_value;
-static hoti		cmd_hot;
 extern rect		sys_static_area;
 static focusable_element elements[96];
 static focusable_element* render_control;
@@ -21,7 +20,6 @@ fnevent		draw::domodal;
 
 static void setfocus_callback() {
 	setfocus(cmd_value, true);
-	hot = cmd_hot;
 }
 
 static focusable_element* getby(const anyval& value) {
@@ -115,8 +113,15 @@ bool draw::isfocused(const rect& rc, const anyval& value) {
 	addelement(rc, value);
 	if(!isfocused())
 		setfocus(value, true);
-	else if(ishilite(rc) && hot.key == MouseLeft && hot.pressed)
-		setfocus(value, false);
+	else if(ishilite(rc)) {
+		switch(hot.key) {
+		case MouseLeft:
+		case MouseRight:
+			if(hot.pressed)
+				setfocus(value, false);
+			break;
+		}
+	}
 	return current_field_focus == value;
 }
 
@@ -136,8 +141,9 @@ void draw::setfocus(const anyval& value, bool instant) {
 		current_field_focus = value;
 	} else {
 		cmd_value = value;
-		cmd_hot = hot;
+		auto old_hot = hot;
 		execute(setfocus_callback);
+		hot = old_hot;
 	}
 }
 

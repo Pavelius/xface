@@ -128,15 +128,17 @@ void control::view(const rect& rc) {
 		current_hilite = this;
 		switch(hot.key) {
 		case MouseLeft:
-			if(hot.pressed && !isfocused() && isfocusable()) {
-				auto old_hot = hot;
+			if(hot.pressed && !isfocused() && isfocusable())
 				setfocus(false);
-				hot = old_hot;
-			}
 			break;
 		case MouseRight:
-			if(!hot.pressed)
-				draw::execute(open_context_menu, (int)this);
+			if(hot.pressed) {
+				if(!isfocused() && isfocusable())
+					setfocus(false);
+			} else {
+				if(isfocused())
+					draw::execute(open_context_menu, (int)this);
+			}
 			break;
 		}
 	}

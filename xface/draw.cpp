@@ -1692,7 +1692,7 @@ int draw::hittest(rect rc, const char* string, unsigned state, point pt) {
 	if(state&TextSingleLine) {
 		auto c = zlen(string);
 		auto w1 = textw(string, c);
-		auto x0 = aligned(x1, w1, state, w1);
+		auto x0 = aligned(x1, rc.width(), state, w1);
 		return hittest(x0, pt.x, string, c);
 	} else {
 		while(y1 < rc.y2) {
