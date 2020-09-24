@@ -99,7 +99,7 @@ static int handle(MSG& msg) {
 		hot.mouse.y = HIWORD(msg.lParam);
 		if(draw::dragactive())
 			return MouseMove;
-		if(draw::mouseinput && sys_optimize_mouse_move) {
+		if(sys_optimize_mouse_move) {
 			if(hot.mouse.in(sys_static_area))
 				return InputNoUpdate;
 		}

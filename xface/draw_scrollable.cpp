@@ -29,7 +29,6 @@ void scrollable::view(const rect& rcc) {
 	scrollh.input();
 	control::view(rcc);
 	beforeredraw(rc);
-	// draw content
 	if(true) {
 		draw::state push;
 		setclip(rc);
