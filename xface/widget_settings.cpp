@@ -20,6 +20,8 @@ bool						metrics::show::padding;
 bool						metrics::show::statusbar;
 static const header*		current_header;
 static int					current_tab;
+static int					last_filter_index;
+static char					last_open_file[260];
 static controls::control*	active_workspace_tab;
 static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
 static const char*			settings_file_name = "settings.json";
@@ -430,6 +432,9 @@ static struct widget_application : draw::controls::control {
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Главный";
 	}
+	bool isfocusable() const override {
+		return false;
+	}
 	static int find(control** source, control* value) {
 		for(auto p = source; *p; p++) {
 			if(p[0] == value)
@@ -454,9 +459,7 @@ static struct widget_application : draw::controls::control {
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
 			auto result = draw::tabs(rct, false, false, (void**)p1, 0, c1.count,
-				current_select, &current_select,
-				control::getlabel,
-				{2, 0, 2, 0});
+				current_select, &current_select, control::getlabel, {2, 0, 2, 0});
 			//		if(c2 > c1)
 			//		{
 			//			rct.x1 += draw::tabs(rct, TabsControl, HideBackground, (void**)p1, c1, c2,
@@ -510,6 +513,10 @@ static struct widget_application : draw::controls::control {
 	}
 
 	bool open_window(bool run) {
+		if(run) {
+			if(!dialog::open("Открыть файл", last_open_file, 0, -1))
+				return false;
+		}
 		return true;
 	}
 
@@ -526,9 +533,9 @@ static struct widget_application : draw::controls::control {
 
 } widget_application_control;
 
-control::command widget_application::commands_general[] = {{"create", "Создать", 0, &widget_application::create_window, 9},
-{"open", "Открыть", 0, &widget_application::open_window, 9},
-{"save", "Сохранить", 0, &widget_application::save_window, 9},
+control::command widget_application::commands_general[] = {{"create", "Создать", 0, &widget_application::create_window, 0},
+{"open", "Открыть", 0, &widget_application::open_window, 1},
+{"save", "Сохранить", 0, &widget_application::save_window, 2},
 {}};
 control::command widget_application::commands[] = {{"*", "", commands_general},
 {}};
@@ -613,12 +620,12 @@ void draw::application(bool allow_multiply_window, fnevent heartproc, shortcut* 
 			rc.y2 -= draw::statusbardw();
 		rect rt = rc;
 		if(tb)
-			rt.y2 = rt.y1 + tb->get(0).getrect(0, 0, 0).height() + 4;
+			rt.y2 = rt.y1 + tb->get(0).getrect(0, 0, 0).height() + 4 * 2;
 		else
 			rt.y2 = rt.y1 + 24 + 4 * 2;
 		sheetline(rt, true);
 		rc.y1 += rt.height();
-		rt.x1 += 2; rt.y1 += 1; rt.y2 -= 3; rt.x2 -= 2;
+		rt.x1 += 2; rt.y1 += 1; rt.x2 -= 2;
 		if(metrics::show::padding)
 			rc.offset(metrics::padding);
 		pc->toolbar(rt.x1, rt.y1, rt.width());

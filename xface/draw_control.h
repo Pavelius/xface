@@ -65,6 +65,11 @@ struct control {
 		template<class T> constexpr proci(bool (T::*v)(bool run)) : cmd((fncmd)v), cmd_event(0), visible(0) {}
 	};
 	struct plugin {
+		struct builder {
+			virtual control* create(const char* url) = 0;
+			virtual void	destroy(control* v) = 0;
+			virtual void	getextensions(stringbuilder& sb) {}
+		};
 		const char*			id;
 		dock_s				dock;
 		bool				visible;
@@ -73,6 +78,7 @@ struct control {
 		plugin(const char* id, dock_s dock);
 		static const plugin* find(const char* id);
 		virtual control&	getcontrol() = 0;
+		virtual builder*	getbuilder() const { return 0; }
 	};
 	struct command {
 		class builder {

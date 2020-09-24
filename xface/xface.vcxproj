@@ -133,14 +133,12 @@
     <ClCompile Include="bsreq_parser.cpp" />
     <ClCompile Include="bsreq_txt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="datetime.cpp" />
     <ClCompile Include="draw_animation.cpp" />
     <ClCompile Include="draw_autocomplete.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
-    <ClCompile Include="draw_markup.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="draw_picker.cpp" />
     <ClCompile Include="draw_tableref.cpp" />
     <ClCompile Include="draw_tree.cpp" />

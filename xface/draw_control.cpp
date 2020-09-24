@@ -4,11 +4,11 @@
 using namespace draw;
 using namespace draw::controls;
 
-static control*	current_hilite;
-static control*	current_focus;
-static control::fncmd current_execute;
-const sprite* control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
-const sprite* control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
+static control*			current_hilite;
+static control*			current_focus;
+static control::fncmd	current_execute;
+const sprite*			control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
+const sprite*			control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
 BSMETA(datetime) = {{"datetime"}, {}};
 
 bool control_input() {
@@ -48,6 +48,7 @@ static void control_execute() {
 	(((control*)hot.object)->*current_execute)(true);
 }
 void control::postcmd(control::fncmd proc) const {
+	current_execute = proc;
 	draw::execute(control_execute, 0, 0, const_cast<control*>(this));
 }
 

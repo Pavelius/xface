@@ -5,16 +5,13 @@ using namespace draw::controls;
 
 struct toolbar_builder : control::command::builder {
 
-	int				x, y, x2;
-	point			size;
-
+	int		x, y, x2;
+	point	size;
 	constexpr toolbar_builder(int x, int y, int width, const point size) : x(x), y(y), x2(x + width), size(size) {}
-
 	void addseparator() override {
 		gradv({x + 2, y, x + 4, y + size.y}, colors::border, colors::border.lighten());
 		x += 5;
 	}
-
 	void add(const control* source, const control::command& cmd) override {
 		auto width = 0;
 		if(cmd.view == ViewIcon || cmd.view == ViewIconAndText)
@@ -44,7 +41,6 @@ struct toolbar_builder : control::command::builder {
 			draw::textc(x, y + (size.y - draw::texth()) / 2, rc.x2 - x, cmd.name);
 		x += width;
 	}
-
 };
 
 int	draw::controls::control::toolbar(int x, int y, int width, int* next_x) const {
@@ -56,7 +52,7 @@ int	draw::controls::control::toolbar(int x, int y, int width, int* next_x) const
 	auto images = getimages();
 	if(!images)
 		return 0;
-	short height = images->get(0).getrect(0, 0, 0).height();
+	short height = images->get(0).getrect(0, 0, 0).height() + 4;
 	toolbar_builder e(x, y, width, {height, height});
 	e.render(this, getcommands());
 	if(next_x)
