@@ -177,6 +177,7 @@ struct list : control {
 	virtual int				rowheader(const rect& rc) const { return 0; }
 	virtual void			rowhilite(const rect& rc, int index) const;
 	virtual void			select(int index, int column);
+	void					setvalue(const char* id, int v) override;
 	void					toggle(int index);
 	void					treemark(const rect& rc, int index, int level) const;
 	void					view(const rect& rc) override;

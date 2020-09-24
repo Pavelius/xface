@@ -30,6 +30,13 @@ void list::select(int index, int column) {
 	ensurevisible();
 }
 
+void list::setvalue(const char* id, int v) {
+	if(equal(id, "toggle"))
+		toggle(v);
+	else
+		control::setvalue(id, v);
+}
+
 void list::correction_width() {
 	auto maximum_width = getmaximumwidth();
 	if(pixels_per_width) {
@@ -161,15 +168,6 @@ void list::view(const rect& rcorigin) {
 				&& (!scrollh.ishilite() || hot.mouse.y < rc.y2 - metrics::scroll))
 				mousehiliting(rc, hot.mouse);
 		}
-		if(rk == MouseLeft || rk == MouseRight) {
-			if(isfocused()) {
-				if(current_hilite_treemark != -1) {
-
-				} else
-					mouseselect(rk, hot.pressed);
-			}
-		} else if(rk==MouseLeftDBL)
-			postkeyinput(KeyEnter);
 	}
 	if(true) {
 		draw::state push;
@@ -194,6 +192,25 @@ void list::view(const rect& rcorigin) {
 			y1 += pixels_per_line;
 			ix++;
 		}
+	}
+	// In the end handle input, where current_hilite is valid
+	switch(rk) {
+	case MouseLeft:
+	case MouseRight:
+		if(isfocused()) {
+			if(current_hilite_treemark != -1) {
+				if(rk == MouseLeft && hot.pressed)
+					postsetvalue("toggle", current_hilite_row);
+			} else
+				mouseselect(rk, hot.pressed);
+		}
+		break;
+	case MouseLeftDBL:
+		if(isfocused())
+			postkeyinput(KeyEnter);
+		break;
+	default:
+		break;
 	}
 	scrollv.view(isfocused());
 	scrollh.view(isfocused());
