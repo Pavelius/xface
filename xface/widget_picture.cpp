@@ -44,6 +44,3 @@ static struct picture_plugin : control::plugin, control::plugin::builder {
 		}
 	}
 } picture_plugin_instance;
-
-//void initialize_picture_widget() {
-//}

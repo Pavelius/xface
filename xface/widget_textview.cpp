@@ -11,6 +11,9 @@ class textview_widget : public scrollable {
 		if(source)
 			textf(rc.x1, rc.y1 - origin.y, rc.width(), source);
 	}
+	void invalidate() override {
+		cash_width = -1;
+	}
 	void beforeredraw(const rect& rc) override {
 		if(!source)
 			return;

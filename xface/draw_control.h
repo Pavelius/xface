@@ -9,13 +9,13 @@
 #pragma once
 
 namespace clipboard {
-void					copy(const void* string, int lenght);
-char*					paste();
+void						copy(const void* string, int lenght);
+char*						paste();
 }
 namespace metrics {
 namespace show {
-extern bool				left, right, top, bottom;
-extern bool				padding, statusbar;
+extern bool					left, right, top, bottom;
+extern bool					padding, statusbar;
 }
 }
 namespace draw {
@@ -113,8 +113,10 @@ struct control {
 	static const sprite*	standart_tree;
 	constexpr control() : show_border(true), show_background(true), show_toolbar(true), splitter(0) {}
 	virtual ~control() {}
+	virtual void			activating() {}
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);
+	virtual void			deactivating() {}
 	static bool				equal(const char* s1, const char* s2);
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
@@ -440,6 +442,7 @@ struct form {
 };
 void						activate(control* p);
 void						close(control* p);
+control*					getactivated();
 const char*					getlabel(const void* object, stringbuilder& sb);
 control*					openurl(const char* url);
 }

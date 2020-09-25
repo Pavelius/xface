@@ -52,11 +52,11 @@
     }
   },
   "window":{
-    "x":140,
-    "y":50,
-    "width":933,
-    "height":594,
-    "header_width":136,
+    "x":24,
+    "y":57,
+    "width":1000,
+    "height":555,
+    "header_width":221,
     "flags":48
   },
   "controls":{
@@ -71,7 +71,7 @@
         },
         "column":{
           "id":"Наименование",
-          "width":168,
+          "width":180,
           "size":4,
           "total":0
         }
@@ -109,7 +109,7 @@
       "dockbar":{
         "Dock0":{
           "current":0,
-          "size":188
+          "size":200
         },
         "Dock1":{
           "current":0,
@@ -117,7 +117,7 @@
         },
         "Dock2":{
           "current":0,
-          "size":200
+          "size":290
         },
         "Dock3":{
           "current":0,

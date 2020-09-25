@@ -580,6 +580,14 @@ static struct widget_application : draw::controls::control {
 		return true;
 	}
 	bool save_window(bool run) {
+		auto p = getactivated();
+		if(!p)
+			return false;
+		if(!p->ismodified())
+			return false;
+		if(run) {
+
+		}
 		return false;
 	}
 	widget_application() {
@@ -597,11 +605,18 @@ control::command widget_application::commands_general[] = {{"create", "Создать",
 control::command widget_application::commands[] = {{"*", "", commands_general},
 {}};
 
-static void activate_control(control* p) {
+control* controls::getactivated() {
+	return current_active_control;
 }
 
 void controls::activate(control* p) {
+	if(current_active_control)
+		current_active_control->deactivating();
 	current_active_control = p;
+	if(current_active_control) {
+		current_active_control->setfocus(true);
+		current_active_control->activating();
+	}
 }
 
 void controls::close(control* p) {
@@ -609,6 +624,12 @@ void controls::close(control* p) {
 	if(i == -1)
 		return;
 	active_controls.remove(i);
+	if(current_active_control == p) {
+		if(i > 0)
+			activate(active_controls[i - 1]);
+		else
+			activate(0);
+	}
 	delete p;
 }
 
