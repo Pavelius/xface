@@ -234,6 +234,9 @@
     <ClCompile Include="markup.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="widget_picture.cpp">
+      <Filter>draw\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

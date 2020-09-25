@@ -588,29 +588,6 @@ static header setting_headers[] = {{"Рабочий стол", "Общие", "Метрика", appearan
 {"Рабочий стол", "Окна", 0, plugin_elements},
 };
 
-static struct picture_plugin : control::plugin, control::plugin::builder {
-	picture_plugin() : plugin("picture",DockBottom) {}
-	control* getcontrol() {
-		return 0;
-	}
-	builder* getbuilder() {
-		return this;
-	}
-	control* create(const char* url) override {
-		return 0;
-	}
-	void destroy(control* p) override {
-	}
-	void getextensions(stringbuilder& sb) override {
-		for(auto pv = surface::plugin::first; pv; pv = pv->next) {
-			sb.add("Изображение %+1 (%2)", pv->name, pv->filter);
-			sb.addsz();
-			sb.add(pv->filter);
-			sb.addsz();
-		}
-	}
-} picture_plugin_instance;
-
 static struct application_plugin : draw::initplugin {
 	void initialize() override {
 		control_viewer.initialize();
