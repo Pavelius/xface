@@ -3,18 +3,18 @@
 
 using namespace code;
 
-INSTMETA(metadata) = {BSREQ(id),
+BSMETA(metadata) = {BSREQ(id),
 BSREQ(type),
 BSREQ(size),
 {}};
-INSTDATAC(metadata, 2048)
+BSDATAC(metadata, 2048)
 
-INSTMETA(requisit) = {BSREQ(id),
+BSMETA(requisit) = {BSREQ(id),
 BSREQ(type),
 BSREQ(count),
 BSREQ(offset),
 {}};
-INSTDATAC(requisit, 256*128)
+BSDATAC(requisit, 256*128)
 
 const unsigned			pointer_size = 4;
 const unsigned			array_size = sizeof(arem<char>);

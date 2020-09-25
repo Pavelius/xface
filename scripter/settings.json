@@ -1,36 +1,5 @@
 ﻿{
-  "dockbar":{
-    "Dock0":{
-      "current":0,
-      "size":139
-    },
-    "Dock1":{
-      "current":0,
-      "size":135
-    },
-    "Dock2":{
-      "current":0,
-      "size":318
-    },
-    "Dock3":{
-      "current":0,
-      "size":200
-    },
-    "Dock4":{
-      "current":0,
-      "size":271
-    },
-    "Dock5":{
-      "current":0,
-      "size":200
-    }
-  },
   "settings":{
-    "Редактор кода":{
-      "Метаданные":{
-        "Показывать типы в окне метаданных":1
-      }
-    },
     "Логирование":{
       "Общие":{
         "Сохранять файл сообщений после закрытия программы":1
@@ -49,6 +18,11 @@
           "Показывать нижнюю панель элементов":0,
           "Отступы на главном окне":1,
           "Использовать оптимизацию при движении мишки":1
+        },
+        "Закладки":{
+          "В имени закладки отображать только имя файла (без полного пути)":1,
+          "Не выводить в имя закладки расширение":1,
+          "Первую букву имени закладки выводить в верхнем регистре":1
         }
       },
       "Окна":{
@@ -72,59 +46,22 @@
         "Цвет подсказки":5263480,
         "Цвет текста подсказки":16777215
       }
+    },
+    "Редактор кода":{
+      "Метаданные":{
+        "Показывать типы в окне метаданных":1
+      }
     }
   },
   "window":{
-    "x":73,
-    "y":69,
-    "width":876,
-    "height":561,
+    "x":121,
+    "y":20,
+    "width":1114,
+    "height":634,
     "header_width":113,
     "flags":48
   },
   "controls":{
-    "code":{
-      "Docking":5,
-      "Visible":1
-    },
-    "metadata":{
-      "Docking":0,
-      "Visible":1,
-      "columns":{
-        "column":{
-          "width":20,
-          "size":3,
-          "total":0
-        },
-        "column":{
-          "id":"Наименование",
-          "width":119,
-          "size":4,
-          "total":0
-        }
-      }
-    },
-    "requisit":{
-      "Docking":1,
-      "Visible":1,
-      "columns":{
-        "column":{
-          "width":20,
-          "size":3,
-          "total":0
-        },
-        "column":{
-          "id":"Наименование",
-          "width":119,
-          "size":4,
-          "total":0
-        }
-      }
-    },
-    "properties":{
-      "Docking":2,
-      "Visible":1
-    },
     "logging":{
       "Docking":4,
       "Visible":1,
@@ -142,6 +79,74 @@
           "total":0
         }
       }
+    },
+    "properties":{
+      "Docking":2,
+      "Visible":1
+    },
+    "code":{
+      "Docking":5,
+      "Visible":1
+    },
+    "metadata":{
+      "Docking":0,
+      "Visible":1,
+      "columns":{
+        "column":{
+          "width":20,
+          "size":3,
+          "total":0
+        },
+        "column":{
+          "id":"Наименование",
+          "width":190,
+          "size":4,
+          "total":0
+        }
+      }
+    },
+    "requisit":{
+      "Docking":1,
+      "Visible":1,
+      "columns":{
+        "column":{
+          "width":20,
+          "size":3,
+          "total":0
+        },
+        "column":{
+          "id":"Наименование",
+          "width":190,
+          "size":4,
+          "total":0
+        }
+      }
+    }
+  },
+  "dockbar":{
+    "Dock0":{
+      "current":0,
+      "size":210
+    },
+    "Dock1":{
+      "current":0,
+      "size":118
+    },
+    "Dock2":{
+      "current":0,
+      "size":327
+    },
+    "Dock3":{
+      "current":0,
+      "size":200
+    },
+    "Dock4":{
+      "current":0,
+      "size":271
+    },
+    "Dock5":{
+      "current":0,
+      "size":200
     }
   }
 }

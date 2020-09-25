@@ -4,6 +4,7 @@
 #include "xface/point.h"
 #include "xface/stringbuilder.h"
 #include "xface/valuelist.h"
+#include "xface/markup.h"
 
 #pragma once
 
@@ -138,6 +139,10 @@ struct requisit {
 	requisit*				setoffset(unsigned v) { offset = v; return this; }
 	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
 };
+struct metatypei {
+	const char*				id;
+	const char*				name;
+};
 metadata*					addtype(const char* id);
 metadata*					addtype(const char* id, const metadata* type, unsigned size);
 metadata*					findtype(const char* id);
@@ -145,3 +150,5 @@ void						initialize();
 }
 void						run_main();
 void						logmsg(const char* format, ...);
+DGLNK(code::metatype_s, code::metatypei)
+BSLNK(code::metatype_s, code::metatypei)

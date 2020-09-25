@@ -146,10 +146,10 @@ static struct code_control : controls::control, controls::control::plugin {
 	const expression*	current_hilite;
 	rect				current_hilite_rect;
 
-	control& getcontrol() override {
-		return *this;
+	control* getcontrol() override {
+		return this;
 	}
-	const char* getlabel(char* result, const char* result_maximum) const override {
+	const char* getlabel(stringbuilder& sb) const override {
 		return "Скрипт";
 	}
 	static void select_mouse() {

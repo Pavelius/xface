@@ -56,8 +56,8 @@ public:
 };
 struct control_type : public tilesetview, controls::control::plugin {
 	tileset* selected;
-	control& getcontrol() override {
-		return *this;
+	control* getcontrol() override {
+		return this;
 	}
 	const char*	getlabel(stringbuilder& sb) const override {
 		return "Список тайлов";

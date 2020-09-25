@@ -8,11 +8,9 @@ static int			grid_size;
 using namespace draw;
 
 struct map_control_type : controls::scrollable, mapi, controls::control::plugin {
-
-	control& getcontrol() override {
-		return *this;
+	control* getcontrol() override {
+		return this;
 	}
-
 	point m2s(const rect& rc, const point pt) const {
 		point result;
 		auto center = true;
@@ -34,7 +32,6 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		result.y += rc.y1 - offset.y;
 		return result;
 	}
-
 	point getoffset(const rect& rc) const {
 		point result = {};
 		if(size.x == 0 || size.y == 0)
@@ -47,11 +44,9 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		}
 		return result;
 	}
-
 	point getcamera() const {
 		return {(short)origin.x, (short)origin.y};
 	}
-
 	void render_grid(const rect& rc) const {
 		auto push_fore = fore;
 		fore = colors::gray.mix(colors::window, 32);
@@ -79,16 +74,13 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		//line(p1.x + element.x, p1.y, p2.x + element.x, p2.y);
 		fore = push_fore;
 	}
-
 	void redraw(const rect& rc) override {
 		render_grid(rc);
 	}
-
 	void change_type() {
 		maximum.x = size.x * element.x;
 		maximum.y = size.y * element.y;
 	}
-
 	map_control_type() : plugin("map", DockWorkspace) {
 		type = IsometricRectangle;
 		show_grid = true;
@@ -98,7 +90,6 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		size.y = 4;
 		change_type();
 	}
-
 };
 static map_control_type map_control;
 

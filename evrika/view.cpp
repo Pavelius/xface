@@ -9,10 +9,10 @@ static struct header_control : controls::tree, controls::control::plugin {
 	};
 	void before_render() {
 	}
-	control& getcontrol() override {
-		return *this;
+	control* getcontrol() override {
+		return this;
 	}
-	const char* getlabel(char* result, const char* result_maximum) const override {
+	const char* getlabel(stringbuilder& sb) const override {
 		return "Типы";
 	}
 	command* getcommands() const override {

@@ -9,6 +9,11 @@
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="serial_pe.cpp" />
+    <ClCompile Include="properties.cpp" />
+    <ClCompile Include="..\xface\widget_logging.cpp" />
+    <ClCompile Include="..\xface\widget_settings.cpp" />
+    <ClCompile Include="..\xface\widget_properties.cpp" />
+    <ClCompile Include="metatype.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

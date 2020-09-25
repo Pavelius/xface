@@ -123,11 +123,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
+    <ClCompile Include="..\xface\widget_logging.cpp" />
+    <ClCompile Include="..\xface\widget_properties.cpp" />
+    <ClCompile Include="..\xface\widget_settings.cpp" />
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="expression.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="metadata.cpp" />
+    <ClCompile Include="metatype.cpp" />
     <ClCompile Include="point.cpp" />
+    <ClCompile Include="properties.cpp" />
     <ClCompile Include="serial_pe.cpp" />
     <ClCompile Include="view.cpp" />
   </ItemGroup>
