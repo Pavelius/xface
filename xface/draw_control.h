@@ -120,7 +120,6 @@ struct control {
 	virtual const command*	getcommands() const { return 0; }
 	virtual const sprite*	getimages() const { return standart_toolbar; }
 	virtual const char*		getlabel(stringbuilder& sb) const { return 0; }
-	static const char*		getlabel(const void* object, stringbuilder& sb);
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
 	virtual const char*		geturl() const { return 0; }
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
@@ -439,6 +438,9 @@ public:
 struct form {
 	virtual control*		getcontrol(const char* id) = 0;
 };
+void						activate(control* p);
+void						close(control* p);
+const char*					getlabel(const void* object, stringbuilder& sb);
 control*					openurl(const char* url);
 }
 void						addelement(const rect& rc, const anyval& value);

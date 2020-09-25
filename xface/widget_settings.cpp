@@ -18,6 +18,9 @@ struct application_window {
 extern bool					sys_optimize_mouse_move;
 bool						metrics::show::padding;
 bool						metrics::show::statusbar;
+static bool					use_short_name_label;
+static bool					use_no_extension_label;
+static bool					use_uppercase_label;
 static const header*		current_header;
 static int					current_tab;
 static int					last_filter_index;
@@ -359,6 +362,33 @@ int draw::field(int x, int y, int width, const char* label, color& value, int he
 	return rc.height() + metrics::padding * 2;
 }
 
+const char* draw::controls::getlabel(const void* object, stringbuilder& sb) {
+	auto pc = (controls::control*)object;
+	auto p = pc->getlabel(sb);
+	if(p != sb.begin())
+		sb.add(p);
+	p = pc->geturl();
+	if(p) {
+		if(use_short_name_label)
+			sb.add(szfname(p));
+		else
+			sb.add(p);
+		if(use_no_extension_label) {
+			char* p1 = (char*)szext(sb);
+			if(p1) {
+				while(p1 > sb.begin() && p1[-1] == '.')
+					p1--;
+				sb.set(p1);
+			}
+		}
+	}
+	if(pc->ismodified())
+		sb.add("*");
+	if(use_uppercase_label)
+		szupper(sb, 1);
+	return sb;
+}
+
 static struct widget_settings : controls::control {
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Настройки";
@@ -430,6 +460,14 @@ static struct widget_settings : controls::control {
 	}
 } widget_settings_control;
 
+static void postactivate() {
+	activate((control*)hot.object);
+}
+
+static void postclose() {
+	close((control*)hot.object);
+}
+
 static struct widget_application : draw::controls::control {
 	fnevent		heartproc;
 	control*		hotcontrols[48];
@@ -455,7 +493,12 @@ static struct widget_application : draw::controls::control {
 		auto c1 = getdocked(p1, DockWorkspace);
 		auto c2 = getactivepages({p1, sizeof(p1) / sizeof(p1[0]) - c1.count});
 		aref<control*> ct = {p1, c1.count + c2.count};
-		if(c1.count == 1 && !allow_multiply_window) {
+		if(!ct) {
+			auto push_fore = fore;
+			fore = colors::border;
+			text(rc, "Не найдено ни одного открытого документа", AlignCenterCenter);
+			fore = push_fore;
+		} else if(ct.count == 1 && !allow_multiply_window) {
 			current_active_control = p1[0];
 			current_active_control->view(rc);
 		} else if(ct) {
@@ -463,31 +506,22 @@ static struct widget_application : draw::controls::control {
 			auto current_select = ct.indexof(current_active_control);
 			if(current_select == -1)
 				current_select = 0;
-			current_active_control = p1[current_select];
-			auto ec = current_active_control;
+			auto ec = p1[current_select];
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
-			auto result = draw::tabs(rct, false, false, (void**)p1, 0, c1.count,
-				current_select, &current_select, control::getlabel, {2, 0, 2, 0}, &rct.x1);
+			auto current_hilite = -1;
+			auto result = draw::tabs(rct, false, false, (void**)ct.data, 0, c1.count,
+				current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
 			if(c2.count > 0) {
-				auto result = draw::tabs(rct, true, false, (void**)ct.data, c1.count, c2.count,
-					current_select, &current_select, control::getlabel, {2, 0, 2, 0}, &rct.x1);
+				auto r1 = draw::tabs(rct, true, false, (void**)ct.data, c1.count, c2.count,
+					current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
+				if(r1)
+					result = r1;
 			}
-			//		if(getcommand() == TabsControl)
-			//		{
-			//			if(current_select != -1)
-			//				active_workspace_tab = p1[current_select];
-			//		}
-			//		else if(getcommand() == TabsCloseControl)
-			//		{
-			//			if(current_select != -1)
-			//				close_workspace_tab = p1[current_select];
-			//		}
-			//		if(active_workspace_tab != last_active_workspace_tab)
-			//		{
-			//			if(active_workspace_tab)
-			//				active_workspace_tab->execute(Update, true);
-			//		}
+			switch(result) {
+			case 1: execute(postactivate, 0, 0, ct.data[current_hilite]); break;
+			case 2: execute(postclose, 0, 0, ct.data[current_hilite]); break;
+			}
 			rc.y1 += dy;
 			unsigned flags = ec->isfocused() ? Focused : 0;
 			anyval av(ec, 0, 0);
@@ -557,13 +591,30 @@ control::command widget_application::commands_general[] = {{"create", "Создать",
 control::command widget_application::commands[] = {{"*", "", commands_general},
 {}};
 
+static void activate_control(control* p) {
+}
+
+void controls::activate(control* p) {
+	current_active_control = p;
+}
+
+void controls::close(control* p) {
+	auto i = active_controls.indexof(p);
+	if(i == -1)
+		return;
+	active_controls.remove(i);
+	delete p;
+}
+
 control* controls::openurl(const char* url) {
 	for(auto p : active_controls) {
 		auto purl = p->geturl();
 		if(!purl)
 			continue;
-		if(szcmpi(purl, url) == 0)
+		if(szcmpi(purl, url) == 0) {
+			activate(p);
 			return p;
+		}
 	}
 	for(auto p = control::plugin::first; p; p = p->next) {
 		auto pc = p->getbuilder();
@@ -572,6 +623,7 @@ control* controls::openurl(const char* url) {
 		auto result = pc->create(url);
 		if(result) {
 			active_controls.add(result);
+			activate(result);
 			return result;
 		}
 	}
@@ -606,9 +658,14 @@ static const element appearance_general_view[] = {{"Показывать панель статуса", 
 {"Отступы на главном окне", metrics::show::padding},
 {"Использовать оптимизацию при движении мишки", sys_optimize_mouse_move},
 };
+static const element appearance_general_tabs[] = {{"В имени закладки отображать только имя файла (без полного пути)", use_short_name_label},
+{"Не выводить в имя закладки расширение", use_no_extension_label},
+{"Первую букву имени закладки выводить в верхнем регистре", use_uppercase_label},
+};
 static const element plugin_elements[] = {{0, {Control, static_cast<control*>(&control_viewer), 0}}};
 static header setting_headers[] = {{"Рабочий стол", "Общие", "Метрика", appearance_general_metrics},
 {"Рабочий стол", "Общие", "Внешний вид", appearance_general_view},
+{"Рабочий стол", "Общие", "Закладки", appearance_general_tabs},
 {"Цвета", "Общие", 0, colors_general},
 {"Цвета", "Формы", 0, colors_form},
 {"Рабочий стол", "Окна", 0, plugin_elements},
@@ -671,7 +728,7 @@ void draw::application(bool allow_multiply_window, fnevent heartproc, shortcut* 
 		auto hilite_tab = -1;
 		auto reaction = draw::tabs(rt, false, true, (void**)layouts, 0,
 			sizeof(layouts) / sizeof(layouts[0]), current_tab, &hilite_tab,
-			control::getlabel,
+			controls::getlabel,
 			{0, metrics::padding, 0, metrics::padding});
 		if(hilite_tab != -1)
 			get_control_status(layouts[hilite_tab]);

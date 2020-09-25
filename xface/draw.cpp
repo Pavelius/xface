@@ -1964,6 +1964,10 @@ void draw::blit(surface& ds, int x1, int y1, int w, int h, unsigned flags, surfa
 	int ox;
 	if(!correctb(x1, y1, w, h, ox))
 		return;
+	if(h > ss.height)
+		h = ss.height;
+	if(w > ss.width)
+		w = ss.width;
 	if(flags&ImageTransparent)
 		cpy32t(
 			ds.ptr(x1, y1), ds.scanline,

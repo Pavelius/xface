@@ -203,10 +203,3 @@ void control::contextmenu(const command* source, command::builder& pm) {
 			cmd->proc.cmd_event();
 	}
 }
-
-const char* control::getlabel(const void* object, stringbuilder& sb) {
-	auto p = ((controls::control*)object)->getlabel(sb);
-	if(!p)
-		return "No label";
-	return p;
-}

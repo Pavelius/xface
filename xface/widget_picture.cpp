@@ -6,8 +6,16 @@ using namespace draw::controls;
 class picture_widget : public scrollable {
 	surface			source;
 	const char*		url;
-	void redraw(const rect& rc) override {
-		draw::blit(*draw::canvas, rc.x1, rc.y1, rc.width(), rc.height(), 0, source, 0, 0);
+	void redraw(const rect& rco) override {
+		rect rc = centerview(rco);
+		draw::blit(*draw::canvas, rc.x1, rc.y1, rc.width(), rc.height(), 0, source, origin.x, origin.y);
+	}
+	void beforeredraw(const rect& rc) override {
+		maximum.x = source.width;
+		maximum.y = source.height;
+	}
+	const char* geturl() const {
+		return url;
 	}
 public:
 	picture_widget() : source(), url(0) {}
