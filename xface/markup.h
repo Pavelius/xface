@@ -76,6 +76,9 @@ struct markup {
 namespace draw {
 int						field(int x, int y, int width, markcontext& ctx, const markup* type);
 }
+const markup*			getpropertiesmarkup();
+void*					getpropertiesobject();
+void					setproperties(void* object, const markup* type);
 DGLNK(char, int)
 DGLNK(short, int)
 DGLNK(unsigned char, int)

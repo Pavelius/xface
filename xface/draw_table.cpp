@@ -446,11 +446,14 @@ column& table::addcol(const bsreq* metadata, const char* id, const char* name, c
 		p->flags.add(ColumnVisible);
 	} else
 		p->method = visuals;
+	auto text_width = draw::textw('0');
+	if(!text_width)
+		text_width = 7;
 	p->title = szdup(name);
 	p->size = p->method->size;
 	p->width = p->method->default_width;
 	if(p->width < 0)
-		p->width = -p->width * draw::textw('0') + 4;
+		p->width = -p->width * text_width + 4;
 	p->total = p->method->total;
 	p->align = p->method->align;
 	if(p->type)

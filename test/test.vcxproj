@@ -159,15 +159,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\xface\widget_directory.cpp" />
-    <ClCompile Include="..\xface\widget_logging.cpp" />
     <ClCompile Include="..\xface\widget_picture.cpp" />
-    <ClCompile Include="..\xface\widget_properties.cpp" />
-    <ClCompile Include="..\xface\widget_settings.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\xface\widget_textview.cpp" />
     <ClCompile Include="cultivated_lands.cpp" />
     <ClCompile Include="main.cpp" />

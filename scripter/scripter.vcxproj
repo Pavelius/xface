@@ -123,9 +123,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
-    <ClCompile Include="..\xface\widget_logging.cpp" />
-    <ClCompile Include="..\xface\widget_properties.cpp" />
-    <ClCompile Include="..\xface\widget_settings.cpp" />
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="expression.cpp" />
     <ClCompile Include="main.cpp" />

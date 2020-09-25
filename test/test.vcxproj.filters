@@ -37,16 +37,7 @@
     <ClCompile Include="..\xface\widget_directory.cpp">
       <Filter>Плагины\Виджеты</Filter>
     </ClCompile>
-    <ClCompile Include="..\xface\widget_logging.cpp">
-      <Filter>Плагины\Виджеты</Filter>
-    </ClCompile>
     <ClCompile Include="..\xface\widget_picture.cpp">
-      <Filter>Плагины\Виджеты</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xface\widget_properties.cpp">
-      <Filter>Плагины\Виджеты</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xface\widget_settings.cpp">
       <Filter>Плагины\Виджеты</Filter>
     </ClCompile>
     <ClCompile Include="..\xface\widget_textview.cpp">

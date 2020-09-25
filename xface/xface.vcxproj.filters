@@ -213,6 +213,15 @@
     <ClCompile Include="draw_tooltips.cpp">
       <Filter>draw</Filter>
     </ClCompile>
+    <ClCompile Include="widget_application.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="widget_logging.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="widget_properties.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

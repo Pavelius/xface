@@ -9,12 +9,6 @@ using namespace draw;
 
 static bool metadata_view_show_type = true;
 
-//static controls::properties::translate translate_data[] = {{"count", "Количество"},
-//{"id", "Идентификатор"},
-//{"parent", "Родитель"},
-//{"type", "Тип"},
-//};
-
 static class metadata_control : public controls::tableref, controls::control::plugin, initplugin {
 	void after_initialize() override {
 		auto meta = bsmeta<metadata>::meta;
@@ -141,10 +135,10 @@ public:
 
 static void heartproc() {
 	requisit_instance.set(metadata_instance.getcurrent());
-	//if(isfocused(anyval(&requisit_instance, 0, 0)))
-	//	properties_instance.set(requisit_instance.getcurrent(), bsmeta<requisit>::meta);
-	//else if(isfocused(anyval(&metadata_instance, 0, 0)))
-	//	properties_instance.set(metadata_instance.getcurrent(), bsmeta<metadata>::meta);
+	if(isfocused(anyval(&requisit_instance, 0, 0)))
+		setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
+	else if(isfocused(anyval(&metadata_instance, 0, 0)))
+		setproperties(metadata_instance.getcurrent(), dginf<metadata>::meta);
 }
 
 static void choose_metadata() {
@@ -155,8 +149,12 @@ static void choose_requisit() {
 	requisit_instance.setfocus(true);
 }
 
+static void focusproperties() {
+
+}
+
 static void choose_properties() {
-	//properties_instance.focusfirst();
+	focusproperties();
 }
 
 static void new_requisit() {
@@ -166,16 +164,16 @@ static void new_requisit() {
 	auto r = p->add("New1", metadata::type_text);
 	requisit_instance.update();
 	requisit_instance.set(r);
-	//properties_instance.set(requisit_instance.getcurrent(), bsmeta<requisit>::meta);
-	//properties_instance.focusfirst();
+	setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
+	focusproperties();
 }
 
 static void new_type() {
 	auto p = bsdata<metadata>::add();
 	p->id = szdup("Type1");
 	metadata_instance.add(p, true);
-	//properties_instance.set(metadata_instance.getcurrent(), bsmeta<metadata>::meta);
-	//properties_instance.focusfirst();
+	setproperties(metadata_instance.getcurrent(), dginf<metadata>::meta);
+	focusproperties();
 }
 
 static void remove_requisit() {

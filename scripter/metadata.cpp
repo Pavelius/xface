@@ -205,8 +205,8 @@ requisit* metadata::find(const char* id) const {
 
 void metadata::getname(stringbuilder& sb) const {
 	if(isreference()) {
-		sb.add(pointer_id);
 		type->getname(sb);
+		sb.add(pointer_id);
 	} else if(isarray()) {
 		type->getname(sb);
 		sb.add(array_id);

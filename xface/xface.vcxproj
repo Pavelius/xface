@@ -185,6 +185,14 @@
     <ClCompile Include="sz2numf.cpp" />
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="valuelist.cpp" />
+    <ClCompile Include="widget_application.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="widget_logging.cpp" />
+    <ClCompile Include="widget_properties.cpp" />
     <ClCompile Include="win_clipboard.cpp" />
     <ClCompile Include="win_cmd.cpp" />
     <ClCompile Include="win_datetime.cpp" />

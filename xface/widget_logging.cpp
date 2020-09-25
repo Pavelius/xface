@@ -56,35 +56,28 @@ static void before_application_exit() {
 }
 
 static struct widget_logging : control::plugin, draw::initplugin, table {
-
 	void after_initialize() override {
 		auto meta = bsmeta<logi>::meta;
 		addcol(meta, "stamp", "Дата").set(SizeFixed).set(AlignCenter);
 		addcol(meta, "text", "Сообщение").set(SizeAuto);
 		atexit(before_application_exit);
 	}
-
 	control* getcontrol() override { return this; }
-
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Список сообщений";
 	}
-
 	void* get(int line) const {
 		return messages.data + line;
 	}
-
 	int	getmaximum() const override {
 		return messages.getcount();
 	}
-
 	widget_logging() : control::plugin("logging", DockBottom) {
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;
 		show_toolbar = false;
 	}
-
 } logging_control;
 
 void logmsg(const char* format, ...) {

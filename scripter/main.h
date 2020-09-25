@@ -8,6 +8,8 @@
 
 #pragma once
 
+#define APLNK(e,t) DGLNK(e,t) BSLNK(e,t)
+
 namespace code {
 enum operator_s : unsigned char {
 	Determinal,
@@ -150,5 +152,4 @@ void						initialize();
 }
 void						run_main();
 void						logmsg(const char* format, ...);
-DGLNK(code::metatype_s, code::metatypei)
-BSLNK(code::metatype_s, code::metatypei)
+APLNK(code::metatype_s, code::metatypei)

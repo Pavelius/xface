@@ -173,7 +173,6 @@ class control_properties : public markcontext, public control {
 			draw::execute(setcurpage, current_hilite);
 		}
 		line(rct.x1, rct.y2, rct.x2, rct.y2, colors::border);
-		//line(rct.x1-1, rct.y2-1, rct.x2-1, rct.y2-1, colors::border.lighten());
 		y += dy + metrics::padding;
 		return pm;
 	}
@@ -199,6 +198,9 @@ public:
 		this->object = object;
 		this->type = type;
 	}
+	const markup* getmarkup() const {
+		return type;
+	}
 };
 
 static struct widget_properties : control_properties, control::plugin {
@@ -215,4 +217,12 @@ static struct widget_properties : control_properties, control::plugin {
 
 void setproperties(void* object, const markup* type) {
 	widget_control.set(object, type);
+}
+
+void* getpropertiesobject() {
+	return widget_control.object;
+}
+
+const markup* getpropertiesmarkup() {
+	return widget_control.getmarkup();
 }
