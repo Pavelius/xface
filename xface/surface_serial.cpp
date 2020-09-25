@@ -108,7 +108,7 @@ bool draw::surface::read(const char* url, color* pallette, int need_bpp) {
 
 static struct bmp_bitmap_plugin : public draw::surface::plugin {
 
-	bmp_bitmap_plugin() : plugin("bmp", "BMP images\0*.bmp\0") {
+	bmp_bitmap_plugin() : plugin("bmp", "*.bmp") {
 	}
 
 	bool decode(unsigned char* output, int output_bpp, const unsigned char* input, unsigned input_size) override {
@@ -145,4 +145,4 @@ static struct bmp_bitmap_plugin : public draw::surface::plugin {
 		return true;
 	}
 
-} instance;
+} bmp_bitmap_plugin_instance;

@@ -55,70 +55,73 @@
     "flags":48
   },
   "controls":{
-    "logging":{
+    "picture":{
       "Docking":4,
       "Visible":1,
-      "columns":{
-        "column":{
-          "id":"Дата",
-          "width":4,
-          "size":2,
-          "total":0
-        },
-        "column":{
-          "id":"Сообщение",
-          "width":200,
-          "size":4,
-          "total":0
+      "logging":{
+        "Docking":4,
+        "Visible":1,
+        "columns":{
+          "column":{
+            "id":"Дата",
+            "width":4,
+            "size":2,
+            "total":0
+          },
+          "column":{
+            "id":"Сообщение",
+            "width":200,
+            "size":4,
+            "total":0
+          }
+        }
+      },
+      "properties":{
+        "Docking":2,
+        "Visible":1
+      },
+      "directory":{
+        "Docking":0,
+        "Visible":1,
+        "columns":{
+          "column":{
+            "width":20,
+            "size":3,
+            "total":0
+          },
+          "column":{
+            "id":"Наименование",
+            "width":180,
+            "size":4,
+            "total":0
+          }
         }
       }
     },
-    "properties":{
-      "Docking":2,
-      "Visible":1
-    },
-    "directory":{
-      "Docking":0,
-      "Visible":1,
-      "columns":{
-        "column":{
-          "width":20,
-          "size":3,
-          "total":0
-        },
-        "column":{
-          "id":"Наименование",
-          "width":119,
-          "size":4,
-          "total":0
-        }
+    "dockbar":{
+      "Dock0":{
+        "current":0,
+        "size":200
+      },
+      "Dock1":{
+        "current":0,
+        "size":200
+      },
+      "Dock2":{
+        "current":0,
+        "size":312
+      },
+      "Dock3":{
+        "current":0,
+        "size":200
+      },
+      "Dock4":{
+        "current":0,
+        "size":0
+      },
+      "Dock5":{
+        "current":0,
+        "size":0
       }
-    }
-  },
-  "dockbar":{
-    "Dock0":{
-      "current":0,
-      "size":139
-    },
-    "Dock1":{
-      "current":0,
-      "size":361
-    },
-    "Dock2":{
-      "current":0,
-      "size":284
-    },
-    "Dock3":{
-      "current":0,
-      "size":200
-    },
-    "Dock4":{
-      "current":0,
-      "size":164
-    },
-    "Dock5":{
-      "current":0,
-      "size":200
     }
   }
-}

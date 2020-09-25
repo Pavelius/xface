@@ -202,8 +202,8 @@ public:
 };
 
 static struct widget_properties : control_properties, control::plugin {
-	control& getcontrol() override {
-		return *this;
+	control* getcontrol() override {
+		return this;
 	}
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Свойства";

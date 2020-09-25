@@ -64,9 +64,7 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 		atexit(before_application_exit);
 	}
 
-	control& getcontrol() override {
-		return *this;
-	}
+	control* getcontrol() override { return this; }
 
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Список сообщений";

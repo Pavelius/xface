@@ -27,9 +27,7 @@ static struct widget_directory : tree, control::plugin, initplugin {
 		expand(0);
 	}
 
-	control& getcontrol() override {
-		return *this;
-	}
+	control* getcontrol() override { return this; }
 
 	const char* getlabel(stringbuilder& sb) const override {
 		return "װאיכû";

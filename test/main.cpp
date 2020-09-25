@@ -581,11 +581,16 @@ static bool test_anyval() {
 
 void directory_initialize();
 
+static void test_surface() {
+	surface bm("test.bmp");
+}
+
 int main() {
 	if(!test_write_bin())
 		return -1;
 	if(!test_anyval())
 		return -1;
+	test_surface();
 	setproperties(&test_properties_value, dginf<markuptesti>::meta);
 	directory_initialize();
 	logmsg("Test %1i", 12);

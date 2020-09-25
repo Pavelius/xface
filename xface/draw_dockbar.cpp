@@ -45,11 +45,14 @@ aref<control*> getdocked(aref<control*> result, dock_s type) {
 	for(auto p = control::plugin::first; p; p = p->next) {
 		if(!p->visible)
 			continue;
-		if(p->getcontrol().isdisabled())
+		auto pc = p->getcontrol();
+		if(!pc)
+			continue;
+		if(pc->isdisabled())
 			continue;
 		if(p->dock == type) {
 			if(ps < pe)
-				*ps++ = &p->getcontrol();
+				*ps++ = pc;
 		}
 	}
 	result.count = ps - result.data;

@@ -32,7 +32,7 @@ enum select_mode_s : unsigned char {
 enum dock_s : unsigned char {
 	DockLeft, DockLeftBottom,
 	DockRight, DockRightBottom,
-	DockBottom, DockWorkspace,
+	DockBottom, DockWorkspace
 };
 enum column_s : unsigned char {
 	ColumnVisible, ColumnReadOnly,
@@ -77,8 +77,8 @@ struct control {
 		static plugin*		first;
 		plugin(const char* id, dock_s dock);
 		static const plugin* find(const char* id);
-		virtual control&	getcontrol() = 0;
-		virtual builder*	getbuilder() const { return 0; }
+		virtual control*	getcontrol() = 0;
+		virtual builder*	getbuilder() { return 0; }
 	};
 	struct command {
 		class builder {
@@ -127,6 +127,7 @@ struct control {
 	virtual bool			isfocusable() const { return true; }
 	virtual bool			isfocused() const;
 	bool					ishilited() const;
+	virtual bool			ismodified() const { return false; }
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
 	void					postcmd(fncmd proc) const;
 	void					postkeyinput(int value) const;

@@ -33,7 +33,7 @@ BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_right", "Присоединить справа"},
 {"dock_right_bottom", "Присоединить справа и снизу"},
 {"dock_bottom", "Присоединить снизу"},
-{"dock_workspace", "На рабочем столе"}
+{"dock_workspace", "На рабочем столе"},
 };
 assert_enum(dock, DockWorkspace);
 BSMETA(control::plugin) = {BSREQ(id), BSREQ(dock), BSREQ(visible), {}};
@@ -332,8 +332,12 @@ static struct widget_control_viewer : controls::tableref {
 		addcol(type, "id", "Наименование").set(ColumnReadOnly);
 		addcol(type, "dock", "Расположение");
 		addcol(type, "visible", "Видимость", "checkbox");
-		for(auto p = plugin::first; p; p = p->next)
+		for(auto p = plugin::first; p; p = p->next) {
+			auto pc = p->getcontrol();
+			if(!pc)
+				continue;
 			addref(p);
+		}
 	}
 } control_viewer;
 
@@ -493,44 +497,52 @@ static struct widget_application : draw::controls::control {
 
 	void view(const rect& rc) override {
 		auto rct = rc;
-		for(auto p = controls::control::plugin::first; p; p = p->next)
-			p->getcontrol().show_border = metrics::show::padding;
+		for(auto p = controls::control::plugin::first; p; p = p->next) {
+			auto pc = p->getcontrol();
+			if(!pc)
+				continue;
+			pc->show_border = metrics::show::padding;
+		}
 		if(heartproc)
 			heartproc();
 		dockbar(rct);
 		workspace(rct, allow_multiply_window);
 	}
-
-	static control::command widget_application::commands_general[];
-	static control::command widget_application::commands[];
-
+	static control::command commands_general[];
+	static control::command commands[];
 	const command* getcommands() const override {
 		return commands;
 	}
-
 	bool create_window(bool run) {
 		return true;
 	}
-
+	void create_filter(stringbuilder& sb) {
+		sb.add("Все файлы (*.*)"); sb.addsz(); sb.add("*.*"); sb.addsz();
+		for(auto p = plugin::first; p; p = p->next) {
+			auto pc = p->getbuilder();
+			if(!pc)
+				continue;
+			pc->getextensions(sb);
+		}
+		sb.addsz();
+	}
 	bool open_window(bool run) {
 		if(run) {
-			if(!dialog::open("Открыть файл", last_open_file, 0, -1))
+			char filter[1024 * 16]; stringbuilder sb(filter); create_filter(sb);
+			if(!dialog::open("Открыть файл", last_open_file, filter, -1))
 				return false;
 		}
 		return true;
 	}
-
 	bool save_window(bool run) {
 		return false;
 	}
-
 	widget_application() {
 		show_background = false;
 		show_border = false;
 		allow_multiply_window = true;
 		memset(hotcontrols, 0, sizeof(hotcontrols));
 	}
-
 } widget_application_control;
 
 control::command widget_application::commands_general[] = {{"create", "Создать", 0, &widget_application::create_window, 0},
@@ -575,6 +587,29 @@ static header setting_headers[] = {{"Рабочий стол", "Общие", "Метрика", appearan
 {"Цвета", "Формы", 0, colors_form},
 {"Рабочий стол", "Окна", 0, plugin_elements},
 };
+
+static struct picture_plugin : control::plugin, control::plugin::builder {
+	picture_plugin() : plugin("picture",DockBottom) {}
+	control* getcontrol() {
+		return 0;
+	}
+	builder* getbuilder() {
+		return this;
+	}
+	control* create(const char* url) override {
+		return 0;
+	}
+	void destroy(control* p) override {
+	}
+	void getextensions(stringbuilder& sb) override {
+		for(auto pv = surface::plugin::first; pv; pv = pv->next) {
+			sb.add("Изображение %+1 (%2)", pv->name, pv->filter);
+			sb.addsz();
+			sb.add(pv->filter);
+			sb.addsz();
+		}
+	}
+} picture_plugin_instance;
 
 static struct application_plugin : draw::initplugin {
 	void initialize() override {
@@ -824,7 +859,10 @@ static struct controls_settings_strategy : io::strategy {
 			file.open(id);
 			file.set("Docking", pp->dock);
 			file.set("Visible", pp->visible);
-			pp->getcontrol().write(file);
+			auto pc = pp->getcontrol();
+			if(!pc)
+				continue;
+			pc->write(file);
 			file.close(id);
 		}
 	}
