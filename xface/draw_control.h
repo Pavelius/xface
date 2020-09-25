@@ -122,6 +122,7 @@ struct control {
 	virtual const char*		getlabel(stringbuilder& sb) const { return 0; }
 	static const char*		getlabel(const void* object, stringbuilder& sb);
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
+	virtual const char*		geturl() const { return 0; }
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool			isdisabled() const { return false; }
 	virtual bool			isfocusable() const { return true; }
@@ -438,6 +439,7 @@ public:
 struct form {
 	virtual control*		getcontrol(const char* id) = 0;
 };
+control*					openurl(const char* url);
 }
 void						addelement(const rect& rc, const anyval& value);
 void						application(bool allow_multiply_windows, fnevent heartproc = 0, shortcut* shortcuts = 0);

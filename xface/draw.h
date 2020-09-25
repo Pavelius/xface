@@ -362,7 +362,7 @@ void					statusbar(const char* format, ...);
 void					statusbarv(const char* format, const char* format_param);
 int						statusbardw();
 int						tabs(int x, int y, int width, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, fntext gtext = 0, rect position = {0, 0, 0, 0});
-int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, fntext gtext, rect position = {0, 0, 0, 0});
+int						tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite, fntext gtext, rect position = {0, 0, 0, 0}, int* result_x1 = 0);
 bool					tool(const rect& rc, bool disabled, bool checked, bool press, bool focused = false, int key = 0);
 void					tooltips(const char* format, ...);
 void					tooltips(int x, int y, int width, const char* format, ...);

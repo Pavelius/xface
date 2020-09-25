@@ -41,7 +41,7 @@ static bool sheet(rect& rc, rect& rct, const char* string, bool* area_result, bo
 }
 
 int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start, int count, int current, int* hilite,
-	fntext gtext, rect position) {
+	fntext gtext, rect position, int* result_x1) {
 	draw::state push;
 	//rect rco = rc + position;
 	setclip(rc);
@@ -84,6 +84,8 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 			line(rcx.x2 - 4, rcx.y1 + 4, rcx.x1 + 4, rcx.y2 - 4, fore);
 		}
 	}
+	if(result_x1)
+		*result_x1 = rc.x1;
 	return result;
 }
 

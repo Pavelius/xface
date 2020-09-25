@@ -22,9 +22,10 @@ static const header*		current_header;
 static int					current_tab;
 static int					last_filter_index;
 static char					last_open_file[260];
-static controls::control*	active_workspace_tab;
+static controls::control*	current_active_control;
 static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
 static const char*			settings_file_name = "settings.json";
+static arem<controls::control*> active_controls;
 
 aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
 
@@ -439,36 +440,39 @@ static struct widget_application : draw::controls::control {
 	bool isfocusable() const override {
 		return false;
 	}
-	static int find(control** source, control* value) {
-		for(auto p = source; *p; p++) {
-			if(p[0] == value)
-				return p - source;
+	static aref<control*> getactivepages(aref<control*> result) {
+		auto ps = result.data;
+		auto pe = result.data + result.count;
+		for(auto p : active_controls) {
+			if(ps < pe)
+				*ps++ = p;
 		}
-		return -1;
+		result.count = ps - result.data;
+		return result;
 	}
 	static void workspace(rect rc, bool allow_multiply_window) {
 		control* p1[64];
 		auto c1 = getdocked(p1, DockWorkspace);
-		//int c2 = c1 + dialog::select(p1 + c1);
+		auto c2 = getactivepages({p1, sizeof(p1) / sizeof(p1[0]) - c1.count});
+		aref<control*> ct = {p1, c1.count + c2.count};
 		if(c1.count == 1 && !allow_multiply_window) {
-			active_workspace_tab = p1[0];
-			active_workspace_tab->view(rc);
-		} else if(c1) {
-			//auto last_active_workspace_tab = active_workspace_tab;
-			auto current_select = find(p1, active_workspace_tab);
+			current_active_control = p1[0];
+			current_active_control->view(rc);
+		} else if(ct) {
+			auto last_active_workspace_tab = current_active_control;
+			auto current_select = ct.indexof(current_active_control);
 			if(current_select == -1)
 				current_select = 0;
-			active_workspace_tab = p1[current_select];
-			auto ec = active_workspace_tab;
+			current_active_control = p1[current_select];
+			auto ec = current_active_control;
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
 			auto result = draw::tabs(rct, false, false, (void**)p1, 0, c1.count,
-				current_select, &current_select, control::getlabel, {2, 0, 2, 0});
-			//		if(c2 > c1)
-			//		{
-			//			rct.x1 += draw::tabs(rct, TabsControl, HideBackground, (void**)p1, c1, c2,
-			//				current_select, &current_select, get_control_name, get_control_info, 2);
-			//		}
+				current_select, &current_select, control::getlabel, {2, 0, 2, 0}, &rct.x1);
+			if(c2.count > 0) {
+				auto result = draw::tabs(rct, true, false, (void**)ct.data, c1.count, c2.count,
+					current_select, &current_select, control::getlabel, {2, 0, 2, 0}, &rct.x1);
+			}
 			//		if(getcommand() == TabsControl)
 			//		{
 			//			if(current_select != -1)
@@ -531,6 +535,7 @@ static struct widget_application : draw::controls::control {
 			char filter[1024 * 16]; stringbuilder sb(filter); create_filter(sb);
 			if(!dialog::open("Открыть файл", last_open_file, filter, -1))
 				return false;
+			openurl(last_open_file);
 		}
 		return true;
 	}
@@ -551,6 +556,27 @@ control::command widget_application::commands_general[] = {{"create", "Создать",
 {}};
 control::command widget_application::commands[] = {{"*", "", commands_general},
 {}};
+
+control* controls::openurl(const char* url) {
+	for(auto p : active_controls) {
+		auto purl = p->geturl();
+		if(!purl)
+			continue;
+		if(szcmpi(purl, url) == 0)
+			return p;
+	}
+	for(auto p = control::plugin::first; p; p = p->next) {
+		auto pc = p->getbuilder();
+		if(!pc)
+			continue;
+		auto result = pc->create(url);
+		if(result) {
+			active_controls.add(result);
+			return result;
+		}
+	}
+	return 0;
+}
 
 void set_light_theme();
 void set_dark_theme();
