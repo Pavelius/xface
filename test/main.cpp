@@ -585,14 +585,11 @@ static void test_surface() {
 	surface bm("test.bmp");
 }
 
-void initialize_picture_widget();
-
 int main() {
 	if(!test_write_bin())
 		return -1;
 	if(!test_anyval())
 		return -1;
-	initialize_picture_widget();
 	test_surface();
 	setproperties(&test_properties_value, dginf<markuptesti>::meta);
 	directory_initialize();

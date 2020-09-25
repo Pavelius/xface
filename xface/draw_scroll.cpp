@@ -6,8 +6,8 @@ static int					drag_value;
 static draw::scroll::proc	call_proc;
 static draw::scroll			call_object;
 
-scroll::scroll(int& origin, int page, int maximum, const rect& client, bool horizontal) :
-	origin(&origin), page(page), maximum(maximum), horizontal(horizontal), client(client) {
+scroll::scroll(int& origin, int page, int maximum, const rect& client, bool horizontal, int wheel) :
+	origin(&origin), page(page), maximum(maximum), horizontal(horizontal), client(client), wheel(wheel) {
 	if(maximum > page) {
 		if(horizontal)
 			work.set(client.x1, client.y2 - metrics::scroll, client.x2, client.y2);
@@ -133,11 +133,11 @@ void scroll::input() {
 			break;
 		case MouseWheelUp:
 			if(draw::ishilite(client))
-				execute(&scroll::setorigin, *origin - 1);
+				execute(&scroll::setorigin, *origin - wheel);
 			break;
 		case MouseWheelDown:
 			if(draw::ishilite(client))
-				execute(&scroll::setorigin, *origin + 1);
+				execute(&scroll::setorigin, *origin + wheel);
 			break;
 		}
 	}

@@ -612,6 +612,24 @@ void controls::close(control* p) {
 	delete p;
 }
 
+static bool canhandle(const char* url, control::plugin::builder* p) {
+	auto ext = szext(url);
+	if(!ext)
+		return false;
+	ext--;
+	char temp[1024 * 8]; stringbuilder sb(temp);
+	p->getextensions(sb);
+	sb.addsz();
+	auto ps = zend(temp);
+	while(ps[1]) {
+		auto pe = ps + 1;
+		if(szpmatch(ext, pe))
+			return true;
+		ps = zend(pe);
+	}
+	return false;
+}
+
 control* controls::openurl(const char* url) {
 	for(auto p : active_controls) {
 		auto purl = p->geturl();
@@ -625,6 +643,8 @@ control* controls::openurl(const char* url) {
 	for(auto p = control::plugin::first; p; p = p->next) {
 		auto pc = p->getbuilder();
 		if(!pc)
+			continue;
+		if(!canhandle(url, pc))
 			continue;
 		auto result = pc->create(url);
 		if(result) {

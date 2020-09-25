@@ -20,9 +20,8 @@ void scrollable::view(const rect& rcc) {
 	rect rc = rcc;
 	if(show_border)
 		rc.offset(1, 1);
-	// calculate scroll positions
-	draw::scroll scrollv(origin.y, rc.height(), maximum.y, rc, false);
-	draw::scroll scrollh(origin.x, rc.width(), maximum.x, rc, true);
+	draw::scroll scrollv(origin.y, rc.height(), maximum.y, rc, false, wheels.y);
+	draw::scroll scrollh(origin.x, rc.width(), maximum.x, rc, true, wheels.x);
 	scrollv.correct();
 	scrollh.correct();
 	scrollv.input();

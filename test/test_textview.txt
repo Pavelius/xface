@@ -1,0 +1,7 @@
+The '''Mouse Guard Roleplaying Game''' is a tabletop [role-playing game] created by Luke Crane based on the [Mouse Guard] comics and his own [Burning Wheel] system. [Boom! Studios|Boom! Studios'] imprint [Archaia Entertainment] released a second edition of the game on 3 November 2015.
+#The Game
+The game itself has been released in two editions - a hardback in 2008 and a deluxe boxed set was brought out in 2011.
+#Setting
+Mouse Guard is a pseudo-medieval setting about an order of [anthropomorphic] [mouse] [Ranger (Middle-earth)]s.  The setting itself was written by [David Petersen (comics)] in a series of [Eisner award] winning comics.  Many details of the setting such as "How does a mouse become a member of the Mouse Guard" were fleshed out specifically for the RPG.
+#System
+The game system is a simplified version of the [[Burning Wheel]] system, using standard six-sided [[dice]], with each result of a 4-6 being a success.  Each character has an overriding [[belief]], an immediate [[goal]], and an [[instinct]] that guides them, all with mechanical weight.

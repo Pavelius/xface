@@ -7,20 +7,11 @@
     <Filter Include="draw">
       <UniqueIdentifier>{c5783f4a-da17-40b9-88c6-e84ee9eac615}</UniqueIdentifier>
     </Filter>
-    <Filter Include="draw\core">
-      <UniqueIdentifier>{8b96c22e-0ff0-4623-aabb-a08fb4f3908e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="platform\windows">
       <UniqueIdentifier>{53785f07-c624-4618-b94e-ac9818f36e37}</UniqueIdentifier>
     </Filter>
     <Filter Include="support">
       <UniqueIdentifier>{77d5ce19-1ba6-4cdd-adf7-39071b6158cf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="draw\controls">
-      <UniqueIdentifier>{4e583cd2-c2b4-4c5b-9e23-e9e08fb827d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="draw\widgets">
-      <UniqueIdentifier>{08d7be51-ee03-4c85-bfe9-8dab638d2fe1}</UniqueIdentifier>
     </Filter>
     <Filter Include="collections">
       <UniqueIdentifier>{32b6fc22-5eb7-44ef-be4e-11fec932a46b}</UniqueIdentifier>
@@ -29,9 +20,6 @@
   <ItemGroup>
     <ClCompile Include="archive.cpp">
       <Filter>collections</Filter>
-    </ClCompile>
-    <ClCompile Include="draw.cpp">
-      <Filter>draw\core</Filter>
     </ClCompile>
     <ClCompile Include="win_draw.cpp">
       <Filter>platform\windows</Filter>
@@ -45,44 +33,11 @@
     <ClCompile Include="point.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="draw_input.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_text.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_textf.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_list.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_table.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_textedit.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_scrollable.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="screenshoot.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
     <ClCompile Include="win_clipboard.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="bsreq.cpp">
       <Filter>collections</Filter>
-    </ClCompile>
-    <ClCompile Include="resources.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
-    <ClCompile Include="resource_dynamic.cpp">
-      <Filter>draw\core</Filter>
-    </ClCompile>
-    <ClCompile Include="surface_serial.cpp">
-      <Filter>draw\core</Filter>
     </ClCompile>
     <ClCompile Include="converter.cpp">
       <Filter>support</Filter>
@@ -92,9 +47,6 @@
     </ClCompile>
     <ClCompile Include="requisit.cpp">
       <Filter>support</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_control.cpp">
-      <Filter>draw\controls</Filter>
     </ClCompile>
     <ClCompile Include="win_menu.cpp">
       <Filter>platform\windows</Filter>
@@ -117,15 +69,6 @@
     <ClCompile Include="io_plugin.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="draw_dockbar.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="widget_logging.cpp">
-      <Filter>draw\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="widget_settings.cpp">
-      <Filter>draw\widgets</Filter>
-    </ClCompile>
     <ClCompile Include="win_draw_dlg.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
@@ -134,9 +77,6 @@
     </ClCompile>
     <ClCompile Include="win_cmd.cpp">
       <Filter>platform\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_autocomplete.cpp">
-      <Filter>draw\controls</Filter>
     </ClCompile>
     <ClCompile Include="valuelist.cpp">
       <Filter>collections</Filter>
@@ -147,12 +87,6 @@
     <ClCompile Include="bsreq_txt.cpp">
       <Filter>collections</Filter>
     </ClCompile>
-    <ClCompile Include="draw_field.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tableref.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
     <ClCompile Include="anyreq.cpp">
       <Filter>support</Filter>
     </ClCompile>
@@ -161,48 +95,6 @@
     </ClCompile>
     <ClCompile Include="argw.cpp">
       <Filter>support</Filter>
-    </ClCompile>
-    <ClCompile Include="widget_directory.cpp">
-      <Filter>draw\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_button.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_clipart.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_dialog.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_dropdown.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_scroll.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_splitter.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_statusbar.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tabs.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_theme.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tool.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_toolbar.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tooltips.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_tree.cpp">
-      <Filter>draw\controls</Filter>
     </ClCompile>
     <ClCompile Include="bsreq_bin2.cpp">
       <Filter>collections</Filter>
@@ -219,31 +111,112 @@
     <ClCompile Include="szdup.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="draw_picker.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
-    <ClCompile Include="draw_animation.cpp">
-      <Filter>draw\controls</Filter>
-    </ClCompile>
     <ClCompile Include="bsreq_parser.cpp">
       <Filter>collections</Filter>
-    </ClCompile>
-    <ClCompile Include="widget_properties.cpp">
-      <Filter>draw\widgets</Filter>
     </ClCompile>
     <ClCompile Include="markup.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="widget_picture.cpp">
-      <Filter>draw\widgets</Filter>
+    <ClCompile Include="draw.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_input.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_text.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_textf.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_dynamic.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="resources.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="screenshoot.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="surface_serial.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tree.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_animation.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_autocomplete.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_button.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_clipart.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_control.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_dialog.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_dockbar.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_dropdown.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_field.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_list.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_picker.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_scroll.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_scrollable.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_splitter.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_statusbar.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_table.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tableref.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tabs.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_textedit.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_theme.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tool.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_toolbar.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_tooltips.cpp">
+      <Filter>draw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
       <Filter>collections</Filter>
-    </ClInclude>
-    <ClInclude Include="draw.h">
-      <Filter>draw\core</Filter>
     </ClInclude>
     <ClInclude Include="win.h">
       <Filter>platform\windows</Filter>
@@ -260,14 +233,8 @@
     <ClInclude Include="pointl.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="screenshoot.h">
-      <Filter>draw\core</Filter>
-    </ClInclude>
     <ClInclude Include="bsreq.h">
       <Filter>collections</Filter>
-    </ClInclude>
-    <ClInclude Include="resources.h">
-      <Filter>draw\core</Filter>
     </ClInclude>
     <ClInclude Include="converter.h">
       <Filter>support</Filter>
@@ -277,9 +244,6 @@
     </ClInclude>
     <ClInclude Include="requisit.h">
       <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="draw_control.h">
-      <Filter>draw\controls</Filter>
     </ClInclude>
     <ClInclude Include="strlib.h">
       <Filter>collections</Filter>
@@ -320,8 +284,20 @@
     <ClInclude Include="stringbuilder.h">
       <Filter>support</Filter>
     </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="resources.h">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="screenshoot.h">
+      <Filter>draw</Filter>
+    </ClInclude>
     <ClInclude Include="draw_animation.h">
-      <Filter>draw\controls</Filter>
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_control.h">
+      <Filter>draw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

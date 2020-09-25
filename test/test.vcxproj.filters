@@ -34,6 +34,24 @@
     <ClCompile Include="..\xface\io_plugin_xml.cpp">
       <Filter>Плагины\Сериализаторы</Filter>
     </ClCompile>
+    <ClCompile Include="..\xface\widget_directory.cpp">
+      <Filter>Плагины\Виджеты</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xface\widget_logging.cpp">
+      <Filter>Плагины\Виджеты</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xface\widget_picture.cpp">
+      <Filter>Плагины\Виджеты</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xface\widget_properties.cpp">
+      <Filter>Плагины\Виджеты</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xface\widget_settings.cpp">
+      <Filter>Плагины\Виджеты</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xface\widget_textview.cpp">
+      <Filter>Плагины\Виджеты</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Плагины">
@@ -50,6 +68,9 @@
     </Filter>
     <Filter Include="Плагины\Сериализаторы">
       <UniqueIdentifier>{677103a7-6313-4818-8a95-7d8cd70cb42c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Плагины\Виджеты">
+      <UniqueIdentifier>{bf618a25-9f9e-49c2-b675-8614f4d216a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -233,14 +233,14 @@ struct shortcut {
 };
 class scroll {
 	int*				origin;
-	int					page, maximum;
+	int					page, maximum, wheel;
 	rect				work, client;
 	bool				horizontal;
 	static void			callback();
 public:
 	typedef void (scroll::*proc)(int param);
-	constexpr scroll() : origin(0), page(), maximum(), work(), client(), horizontal(false) {}
-	scroll(int& origin, int page, int maximum, const rect& client, bool horizontal = false);
+	constexpr scroll() : origin(0), page(), maximum(), work(), client(), horizontal(false), wheel(1) {}
+	scroll(int& origin, int page, int maximum, const rect& client, bool horizontal = false, int wheel = 1);
 	void				correct();
 	void				execute(proc p, int param) const;
 	rect				getslide() const;
