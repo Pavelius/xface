@@ -518,6 +518,12 @@ static struct widget_application : draw::controls::control {
 				if(r1)
 					result = r1;
 			}
+			if(current_hilite != -1) {
+				auto pc = ct[current_hilite];
+				auto pu = pc->geturl();
+				if(pu)
+					statusbar("Данные из %1", pu);
+			}
 			switch(result) {
 			case 1: execute(postactivate, 0, 0, ct.data[current_hilite]); break;
 			case 2: execute(postclose, 0, 0, ct.data[current_hilite]); break;
