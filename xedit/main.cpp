@@ -10,7 +10,7 @@ static draw::controls::control* getwindow(const char* id) {
 	auto p = control::plugin::find(id);
 	if(!p)
 		return 0;
-	return &const_cast<control::plugin*>(p)->getcontrol();
+	return const_cast<control::plugin*>(p)->getcontrol();
 }
 
 static void setglob(const char* control_id, const char* id, int value) {

@@ -161,7 +161,6 @@ void codeview::redraw(const rect& rco) {
 }
 
 void codeview::pastetab() {
-	char temp[260];
 }
 
 void codeview::pastecr() {

@@ -5,6 +5,7 @@
     <ClCompile Include="codemodel.cpp" />
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="widget_codeview.cpp" />
+    <ClCompile Include="..\xface\widget_settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
