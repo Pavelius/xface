@@ -69,8 +69,9 @@ struct markup {
 	//
 	bool				is(const char* id) const;
 	bool				ischeckboxes() const { return is("chk"); }
+	bool				ischeckbox() const { return value.type != 0 && value.mask != 0; }
 	bool				isdecortext() const { return value.type == 0; }
-	bool				isgroup() const { return value.type != 0 && !list.getname && !value.istext() && !value.isnum(); }
+	bool				isgroup() const { return value.type != 0 && !list.getname && !value.istext() && !value.isnum() && value.mask==0; }
 	bool				ispage() const { return title && title[0] == '#'; }
 };
 namespace draw {
@@ -79,6 +80,7 @@ int						field(int x, int y, int width, markcontext& ctx, const markup* type);
 const markup*			getpropertiesmarkup();
 void*					getpropertiesobject();
 void					setproperties(void* object, const markup* type);
+void					setpropertiesfocus();
 DGLNK(char, int)
 DGLNK(short, int)
 DGLNK(unsigned char, int)

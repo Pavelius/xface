@@ -8,6 +8,37 @@ struct rowi {
 	void*			data;
 	int				index;
 };
+struct resulti {
+	void*			data;
+	unsigned char	size;
+	unsigned		param;
+	const markup*	type;
+	unsigned		count;
+	bool checkcount() {
+		if(count == 0xFFFFFFFF)
+			return false;
+		else if(count > 0) {
+			count--;
+			return false;
+		}
+		count = 0xFFFFFFFF;
+		return true;
+	}
+	void field(const markup& e, void* data, unsigned size, unsigned param) {
+		if(checkcount()) {
+			this->data = data;
+			this->size = size;
+			this->param = param;
+			this->type = &e;
+		}
+	}
+	bool field(const markup& e, void* object) {
+		if(!this)
+			return false;
+		field(e, e.value.ptr(object), e.value.size, e.value.mask);
+		return true;
+	}
+};
 }
 
 static fntext compare_callback;
@@ -58,31 +89,35 @@ static const char* gettitle(const markup& e) {
 	return e.title;
 }
 
-static int element(int x, int y, int width, const markcontext& ctx, const markup& e);
+static int element(int x, int y, int width, const markcontext& ctx, const markup& e, resulti* result_markup);
 
-static int group(int x, int y, int width, const markcontext& ctx, const markup* form) {
+static int group(int x, int y, int width, const markcontext& ctx, const markup* form, resulti* result_markup) {
 	if(!form)
 		return 0;
 	auto y0 = y;
 	for(auto f = form; *f; f++) {
 		if(f->ispage() && f != form)
 			break;
-		y += element(x, y, width, ctx, *f);
+		y += element(x, y, width, ctx, *f, result_markup);
 	}
 	return y - y0;
 }
 
-static int checkboxes(int x, int y, int width, const markup& e, void* object) {
+static int checkboxes(int x, int y, int width, const markup& e, void* object, resulti* result_markup) {
 	auto ar = e.value.source;
-	auto gn = e.list.getname;
 	auto pv = e.value.ptr(object);
 	rowi storage[512];
-	auto y0 = y;
-	auto y1 = y0 + 16 * (texth() + 2);
 	auto im = getrows(*ar, object, storage, sizeof(storage) / sizeof(storage[0]),
 		e.list.allow, e.list.getname);
 	if(im > 16)
 		width = width / 2;
+	if(result_markup) {
+		result_markup->field(e, (char*)pv + storage[0].index / 8, 1, 1 << (storage[0].index % 8));
+		return 0;
+	}
+	auto y0 = y;
+	auto y1 = y0 + 16 * (texth() + 2);
+	auto gn = e.list.getname;
 	for(unsigned i = 0; i < im; i++) {
 		auto v = storage[i].data;
 		char temp[260]; stringbuilder sb(temp);
@@ -92,35 +127,46 @@ static int checkboxes(int x, int y, int width, const markup& e, void* object) {
 	return y - y0;
 }
 
-static int element(int x, int y, int width, const markcontext& ctx, const markup& e) {
+static int element(int x, int y, int width, const markcontext& ctx, const markup& e, resulti* result_markup) {
 	if(e.proc.visible && !e.proc.visible(ctx.object))
 		return 0;
 	if(e.isgroup()) {
 		auto c1 = ctx;
 		c1.object = e.value.ptr(ctx.object);
-		return group(x, y, width, c1, e.value.type);
+		return group(x, y, width, c1, e.value.type, result_markup);
 	} else if(e.ischeckboxes())
-		return checkboxes(x, y, width, e, ctx.object);
-	else if(e.value.istext()) {
+		return checkboxes(x, y, width, e, ctx.object, result_markup);
+	else if(e.ischeckbox()) {
+		if(result_markup->field(e, ctx.object))
+			return 0;
+		const anyval av(e.value.ptr(ctx.object), e.value.size, e.value.mask);
+		return checkbox(x, y, width, av, gettitle(e), 0);
+	} else if(e.value.istext()) {
+		if(result_markup->field(e, ctx.object))
+			return 0;
 		char temp[260]; stringbuilder sb(temp);
 		auto pt = gettitle(e);
 		const anyval av(e.value.ptr(ctx.object), e.value.size, 0);
 		const char*& value = *((const char**)e.value.ptr(ctx.object));
 		return field(x, y, width, pt, value, ctx.title);
 	} else if(e.value.isnum()) {
+		if(result_markup->field(e, ctx.object))
+			return 0;
+		const anyval av(e.value.ptr(ctx.object), e.value.size, 0);
 		char temp[260]; stringbuilder sb(temp);
 		auto pt = gettitle(e);
-		const anyval av(e.value.ptr(ctx.object), e.value.size, 0);
 		auto digits = 8;
 		auto width_total = ctx.title + digits*textw('0') - metrics::edit.width() * 2 + 20;
 		if(width > width_total)
 			width = width_total;
 		return field(x, y, width, pt, av, ctx.title, digits);
 	} else {
-		auto pt = gettitle(e);
+		if(result_markup->field(e, ctx.object))
+			return 0;
 		const anyval av(e.value.ptr(ctx.object), e.value.size, 0);
+		auto pt = gettitle(e);
 		if(e.value.source)
-			return field(x, y, width, pt, av, ctx.title, *e.value.source, e.list.getname, 0, 0, e.list.allow);
+			return field(x, y, width, pt, av, ctx.title, *e.value.source, e.list.getname, 0, ctx.object, e.list.allow);
 	}
 	return 0;
 }
@@ -164,16 +210,18 @@ class control_properties : public markcontext, public control {
 	const markup* view_pages(int x, int& y, int width) {
 		const markup* pages[32];
 		auto pm = getcurrentpage(pages, sizeof(pages) / sizeof(pages[0]));
-		auto dy = texth() + metrics::padding;
-		rect rct = {x, y, x + width, y + dy};
-		int current_hilite = -1;
-		if(tabs(rct, false, false, (void**)&pages, 0, page_maximum,
-			page, &current_hilite, getpagename)) {
-			current_object = &page;
-			draw::execute(setcurpage, current_hilite);
+		if(page_maximum > 1) {
+			auto dy = texth() + metrics::padding;
+			rect rct = {x, y, x + width, y + dy};
+			int current_hilite = -1;
+			if(tabs(rct, false, false, (void**)&pages, 0, page_maximum,
+				page, &current_hilite, getpagename)) {
+				current_object = &page;
+				draw::execute(setcurpage, current_hilite);
+			}
+			line(rct.x1, rct.y2, rct.x2, rct.y2, colors::border);
+			y += dy + metrics::padding;
 		}
-		line(rct.x1, rct.y2, rct.x2, rct.y2, colors::border);
-		y += dy + metrics::padding;
 		return pm;
 	}
 	void view(const rect& rc) override {
@@ -190,10 +238,15 @@ class control_properties : public markcontext, public control {
 			if(show_border)
 				setposition(x, y, w);
 			auto pm = view_pages(x, y, w);
-			group(x, y, w, *this, pm);
+			group(x, y, w, *this, pm, 0);
 		}
 	}
 public:
+	void get(resulti& result) {
+		const markup* pages[32];
+		auto pm = getcurrentpage(pages, sizeof(pages) / sizeof(pages[0]));
+		group(0, 0, 320, *this, pm, &result);
+	}
 	void set(void* object, const markup* type) {
 		this->object = object;
 		this->type = type;
@@ -225,4 +278,13 @@ void* getpropertiesobject() {
 
 const markup* getpropertiesmarkup() {
 	return widget_control.getmarkup();
+}
+
+void setpropertiesfocus() {
+	resulti result = {};
+	widget_control.get(result);
+	if(result.data) {
+		const anyval av(result.data, result.size, result.param);
+		setfocus(av, true);
+	}
 }

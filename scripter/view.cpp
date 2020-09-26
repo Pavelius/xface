@@ -149,12 +149,8 @@ static void choose_requisit() {
 	requisit_instance.setfocus(true);
 }
 
-static void focusproperties() {
-
-}
-
 static void choose_properties() {
-	focusproperties();
+	setpropertiesfocus();
 }
 
 static void new_requisit() {
@@ -165,7 +161,7 @@ static void new_requisit() {
 	requisit_instance.update();
 	requisit_instance.set(r);
 	setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
-	focusproperties();
+	setpropertiesfocus();
 }
 
 static void new_type() {
@@ -173,7 +169,7 @@ static void new_type() {
 	p->id = szdup("Type1");
 	metadata_instance.add(p, true);
 	setproperties(metadata_instance.getcurrent(), dginf<metadata>::meta);
-	focusproperties();
+	setpropertiesfocus();
 }
 
 static void remove_requisit() {

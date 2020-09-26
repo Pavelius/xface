@@ -12,7 +12,7 @@ template<> const char* getnm<metadata>(const void* object, stringbuilder& sb) {
 }
 static bool allow_base_type(const void* object, int index) {
 	auto& e = bsdata<metadata>::elements[index];
-	if(e.isreference() || e.isarray() || e.ispredefined())
+	if(e.isreference() || e.isarray() || e.ispredefined() || e.is(Static) || &e==object)
 		return false;
 	return true;
 }
@@ -22,15 +22,23 @@ static bool allow_type(const void* object, int index) {
 		return false;
 	return true;
 }
+static bool allow_static_member(const void* object) {
+	auto p = (const requisit*)object;
+	if(p->parent->is(Static))
+		return false;
+	return true;
+}
 
 DGINF(metatypei) = {{"Наименование", DGREQ(id)},
 {}};
 DGINF(metadata) = {{"Наименование", DGREQ(id)},
-{"Тип", DGREQ(type), {getnm<metadata>, allow_base_type}},
-{"#chk Флаги", DGREQ(flags), {getnm<metatypei>}},
+{"Базовый тип", DGREQ(type), {getnm<metadata>, allow_base_type}},
+{"Статический модуль", DGCHK(flags, 1 << Static)},
 {}};
 DGINF(requisit) = {{"Наименование", DGREQ(id)},
 {"Тип", DGREQ(type), {getnm<metadata>, allow_type}},
 {"Количество", DGREQ(count)},
-{"#chk Флаги", DGREQ(flags), {getnm<metatypei>}},
+{"Публичный член класса", DGCHK(flags, 1 << Public)},
+{"Статический член класса", DGCHK(flags, 1 << Static), {}, {allow_static_member}},
+{"Поле является ключевым для поиска", DGCHK(flags, 1 << Dimension), {}, {allow_static_member}},
 {}};
