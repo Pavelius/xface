@@ -83,6 +83,8 @@ BSREQ(buffer),
 struct testinfo {
 	const char*		name;
 	int				value;
+	int				value2;
+	gender_s		gender;
 };
 struct markuptesti {
 	const char*		name;
@@ -487,19 +489,38 @@ static void start_menu() {
 	}
 }
 
-static void test_array() {
+static bool test_array() {
 	array a1(sizeof(testinfo));
 	auto p1 = (testinfo*)a1.add();
+	memset(p1, 0, sizeof(testinfo));
 	p1->name = "Test";
 	p1->value = 1;
 	auto test_count = a1.getcount();
+	if(test_count != 1)
+		return false;
 	p1 = (testinfo*)a1.add();
 	p1->name = "New test";
 	p1->value = 2;
+	test_count = a1.getcount();
+	if(test_count != 2)
+		return false;
 	testinfo b1 = {"Third test", 3};
-	p1 = (testinfo*)a1.insert(0, &b1);
-	p1->name = "Third test";
-	p1->value = 2;
+	auto p2 = (testinfo*)a1.insert(0, &b1);
+	p2->name = "Third test";
+	p2->value = 2;
+	p2->value2 = 4;
+	if(test_count != 2)
+		return false;
+	p1 = (testinfo*)a1.ptr(0);
+	if(p1->value2 != 4)
+		return false;
+	a1.change((int)&((testinfo*)0)->value2, -(int)sizeof(testinfo::value2));
+	p1 = (testinfo*)a1.ptr(0);
+	p2 = (testinfo*)a1.ptr(1);
+	a1.change((int)&((testinfo*)0)->value2, 12);
+	p1 = (testinfo*)a1.ptr(0);
+	p2 = (testinfo*)a1.ptr(1);
+	return true;
 }
 
 static void test_requisit() {
@@ -586,6 +607,8 @@ int main() {
 		return -1;
 	if(!test_anyval())
 		return -1;
+	if(!test_array())
+		return -1;
 	setproperties(&test_properties_value, dginf<markuptesti>::meta);
 	directory_initialize();
 	logmsg("Test %1i", 12);
@@ -593,7 +616,6 @@ int main() {
 	test_datetime();
 	test_data_access();
 	test_requisit();
-	test_array();
 	application_initialize();
 	// Создание окна
 	setcaption("X-Face C++ library samples");

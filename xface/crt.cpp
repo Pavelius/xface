@@ -329,7 +329,7 @@ int array::find(void* value, unsigned offset, unsigned size) const {
 	return -1;
 }
 
-void array::sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param) {
+void array::sort(int i1, int i2, pcompare compare, void* param) {
 	for(int i = i2; i > i1; i--) {
 		for(int j = i1; j < i; j++) {
 			auto t1 = ptr(j);
@@ -380,14 +380,83 @@ void array::shift(int i1, int i2, unsigned c1, unsigned c2) {
 		iswap(i2, i1);
 		iswap(c1, c2);
 	}
-	unsigned char* a1 = (unsigned char*)ptr(i1);
-	unsigned char* a2 = (unsigned char*)ptr(i2);
-	unsigned s1 = c1 * size;
-	unsigned s2 = c2 * size;
+	auto a1 = (char*)ptr(i1);
+	auto a2 = (char*)ptr(i2);
+	auto s1 = c1 * size;
+	auto s2 = c2 * size;
 	unsigned s = (a2 - a1) + s2 - 1;
 	for(unsigned i = 0; i < s1; i++) {
 		auto a = a1[0];
 		memcpy(a1, a1 + 1, s);
 		a1[s] = a;
 	}
+}
+
+void array::shrink(unsigned offset, unsigned delta) {
+	if(offset + delta > size)
+		return;
+	auto p1 = (char*)data;
+	auto p2 = (char*)data;
+	const auto s2 = size - delta - offset;
+	auto pe = p1 + count*size;
+	while(p1 < pe) {
+		if(offset) {
+			memcpy(p2, p1, offset);
+			p2 += offset; p1 += offset;
+		}
+		p1 += delta;
+		if(s2) {
+			memcpy(p2, p1, s2);
+			p2 += s2; p1 += s2;
+		}
+	}
+	auto new_size = size - delta;
+	count_maximum = count_maximum*size / new_size;
+	size = new_size;
+}
+
+void array::grow(unsigned offset, unsigned delta) {
+	if(!delta)
+		return;
+	if(!isgrowable())
+		return;
+	auto new_size = size + delta;
+	auto new_size_bytes = count_maximum*new_size;
+	if(data)
+		data = realloc(data, new_size_bytes);
+	else
+		data = malloc(new_size_bytes);
+	auto p1 = (char*)data + new_size*count;
+	auto p2 = (char*)data + size*count;
+	auto s2 = size - offset;
+	while(p1 > data) {
+		if(s2) {
+			memcpy(p1 - s2, p1 - s2, s2);
+			p2 -= s2; p1 -= s2;
+		}
+		p1 -= delta;
+		if(offset) {
+			memcpy(p1, p2, offset);
+			p2 -= offset; p1 -= offset;
+		}
+	}
+	size = new_size;
+}
+
+void array::zero(unsigned offset, unsigned delta) {
+	if(!delta)
+		return;
+	auto pe = (char*)data + size*count;
+	for(auto p = (char*)data + offset; p < pe; p += size)
+		memset(p, 0, delta);
+}
+
+void array::change(unsigned offset, int size) {
+	if(!size)
+		return;
+	if(size > 0) {
+		grow(offset, size);
+		zero(offset, size);
+	} else
+		shrink(offset, -size);
 }

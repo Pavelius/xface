@@ -200,7 +200,11 @@ class array {
 	unsigned				size;
 	unsigned				count_maximum;
 	bool					growable;
+	void					grow(unsigned offset, unsigned delta);
+	void					shrink(unsigned offset, unsigned delta);
+	void					zero(unsigned offset, unsigned delta);
 public:
+	typedef int(*pcompare)(const void* p1, const void* p2, void* param);
 	void*					data;
 	unsigned				count;
 	constexpr array(unsigned size = 0) : data(0), size(size), count(0), count_maximum(0), growable(true) {}
@@ -211,6 +215,7 @@ public:
 	void*					addz() { auto p = add(); memset(p, 0, size); return p; }
 	void*					add(const void* element);
 	char*					begin() const { return (char*)data; }
+	void					change(unsigned offset, int size);
 	void					clear();
 	char*					end() const { return (char*)data + size * count; }
 	int						find(const char* value, unsigned offset) const;
@@ -224,10 +229,10 @@ public:
 	void*					ptr(int index) const { return (char*)data + size * index; }
 	template<class T> aref<T> records() { return aref<T>((T*)data, count); }
 	void					remove(int index, int elements_count);
+	void					shift(int i1, int i2, unsigned c1, unsigned c2);
 	void					setcount(unsigned value) { count = value; }
 	void					setup(unsigned size);
-	void					shift(int i1, int i2, unsigned c1, unsigned c2);
-	void					sort(int i1, int i2, int(*compare)(const void* p1, const void* p2, void* param), void* param);
+	void					sort(int i1, int i2, pcompare compare, void* param);
 	void					swap(int i1, int i2);
 	void					reserve(unsigned count);
 };
