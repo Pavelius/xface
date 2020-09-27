@@ -64,7 +64,7 @@ static int buttonw(int x, int y, const char* text, fnevent proc, int key) {
 	return w;
 }
 
-void wizard::show(const char* title) {
+bool wizard::show(const char* title) {
 	auto p_start = getelements();
 	auto pc = getvalid(p_start);
 	if(pc)
@@ -125,4 +125,5 @@ void wizard::show(const char* title) {
 		default: break;
 		}
 	}
+	return getresult() != 0;
 }

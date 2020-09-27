@@ -116,10 +116,12 @@ void draw::savefocus() {
 static void execute_choose() {
 	if(!proc_choose)
 		return;
-	//proc_choose(cmb_var);
-	cedit.load();
-	cedit.select_all(true);
-	cedit.invalidate();
+	array source;
+	if(proc_choose(hot.object, source, cmb_var.getptr())) {
+		cedit.load();
+		cedit.select_all(true);
+		cedit.invalidate();
+	}
 }
 
 static void field_up() {
@@ -161,7 +163,7 @@ void draw::fieldf(const rect& rco, unsigned flags, const anyval& ev, int digits,
 		if(addbutton(rc, focused, "...", F4, "Выбрать")) {
 			cmb_var = ev;
 			proc_choose = pchoose;
-			draw::execute(execute_choose);
+			draw::execute(execute_choose, 0, 0, 0);
 		}
 	}
 	if(focused) {

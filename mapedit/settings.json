@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":310
+      "size":362
     },
     "Dock3":{
       "current":0,
@@ -28,7 +28,7 @@
   "settings":{
     "Рабочий стол":{
       "Пути":{
-        "Спрайты":"sprites"
+        "Спрайты":"D:\/projects\/xface\/mapedit\/sprites"
       },
       "Общие":{
         "Метрика":{
@@ -83,7 +83,7 @@
     "width":1037,
     "height":600,
     "header_width":160,
-    "flags":48
+    "flags":112
   },
   "controls":{
     "map":{

@@ -23,5 +23,5 @@ struct wizard {
 	virtual const element* getelements() const = 0;
 	const element*		getlast(const element* p) const;
 	const element*		getvalid(const element* p) const;
-	void				show(const char* title);
+	bool				show(const char* title);
 };

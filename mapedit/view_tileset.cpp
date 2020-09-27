@@ -22,7 +22,10 @@ class tilesetview : public controls::picker {
 		draw::state push; setclip(rc);
 		auto x = rc.x1 + rc.width() / 2;
 		auto y = rc.y1 + rc.height() / 2;
-		image(x, y, selected, index, 0);
+		auto& fr = selected->get(index);
+		x -= fr.sx / 2;
+		y -= fr.sy / 2;
+		image(x, y, selected, index, ImageNoOffset);
 		rect r1 = {rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1};
 		auto a = ishilite(r1);
 		if(index == current) {
@@ -116,7 +119,7 @@ struct spritei : sprite {
 BSMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
 {}};
 
-void add_tileset() {
+const char* tileset::choosenew() {
 	class view : public wizard {
 		vector<spritei>			sprites;
 		tilesetview				preview;
@@ -157,7 +160,6 @@ void add_tileset() {
 		}
 	public:
 		view() : list(sprites) {
-			//list.show_header = false;
 			list.read_only = true;
 			list.select_mode = SelectRow;
 			list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
@@ -165,7 +167,15 @@ void add_tileset() {
 			list.addcol(bsmeta<spritei>::meta, "size", "Размер");
 			readsprites();
 		}
+		const char* getcurrent() const {
+			auto p = (spritei*)list.getcurrent();
+			if(p)
+				return p->name;
+			return 0;
+		}
 	};
 	view object;
-	object.show("Добавение набора тайлов");
+	if(!object.show("Добавение набора тайлов"))
+		return 0;
+	return object.getcurrent();
 }

@@ -212,13 +212,15 @@ static void callback_button() {
 		((pcall)p->var.data)();
 }
 
-static void choose_folder(const anyval& ev) {
-	char temp[260];
-	auto p = (const char*)ev.get();
-	if(p)
-		zcpy(temp, p);
-	if(draw::dialog::folder("Укажите папку", temp))
-		ev.set((int)szdup(temp));
+static bool choose_folder(const void* object, array& source, void* pointer) {
+	auto p = (const char**)pointer;
+	char temp[260]; memset(temp, 0, sizeof(temp));
+	if(*p)
+		zcpy(temp, *p, sizeof(temp) - 1);
+	if(!draw::dialog::folder("Укажите папку", temp))
+		return false;
+	*p = szdup(temp);
+	return true;
 }
 
 static void callback_choose_color() {
@@ -272,7 +274,7 @@ static int render_element(int x, int y, int width, unsigned flags, const setting
 		y += field(x, y, width, e.name, *((const char**)e.var.data), title);
 		break;
 	case setting::Url:
-		//y += field(x, y, width, e.name, *((const char**)e.var.data), title, choose_folder);//callback_choose_folder
+		y += field(x, y, width, e.name, *((const char**)e.var.data), title, choose_folder);
 		break;
 	case setting::Control:
 		break;

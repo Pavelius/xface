@@ -3,7 +3,7 @@
 
 BSDATAC(tileset, 256);
 
-const char*	tileset::base_url = "sprites";
+const char*		tileset::base_url = "sprites";
 
 tileset::tileset() {
 	memset(this, 0, sizeof(*this));
@@ -51,3 +51,10 @@ static setting::element tileset_url[] = {{"Спрайты", {tileset::base_url, setting
 };
 static setting::header headers[] = {{"Рабочий стол", "Пути", 0, tileset_url},
 };
+
+void add_tileset() {
+	auto p = tileset::choosenew();
+	if(!p)
+		return;
+	tileset::add(p);
+}
