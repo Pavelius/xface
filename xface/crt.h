@@ -33,6 +33,7 @@ private:
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
 #define lenof(t) (sizeof(t)/sizeof(t[0]))
 #define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
+#define	FO(c,m) ((unsigned)&((c*)0)->m)
 #define BSDATA(e) template<> e bsdata<e>::elements[]
 #define BSDATAC(e, c) template<> e bsdata<e>::elements[c]; template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), 0, sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
 #define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};

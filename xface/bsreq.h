@@ -2,7 +2,7 @@
 
 #pragma once
 
-#define	BSREQ(fn) {#fn, (unsigned)&((data_type*)0)->fn,\
+#define	BSREQ(fn) {#fn, FO(data_type, fn),\
 sizeof(meta_size<decltype(data_type::fn)>::value),\
 sizeof(data_type::fn),\
 meta_count<decltype(data_type::fn)>::value,\
