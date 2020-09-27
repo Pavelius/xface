@@ -51,6 +51,7 @@ struct bsreq {
 	void					set(const void* p, int value) const;
 	bool					write(const char* url, void* object) const;
 };
+NOBSDATA(bsreq)
 // Abstract data source descriptor
 struct bsinf {
 	const char*				id;
@@ -131,4 +132,3 @@ template<class T, unsigned N> struct meta_kind<T[N]> : static_value<bstype_s, me
 template<class T, unsigned N> struct meta_kind<adat<T, N>> : static_value<bstype_s, KindADat> {};
 template<class T> struct meta_kind<aref<T>> : static_value<bstype_s, KindARef> {};
 template<class T, class DT> struct meta_kind<cflags<T, DT>> : static_value<bstype_s, KindCFlags> {};
-NOBSDATA(bsreq)
