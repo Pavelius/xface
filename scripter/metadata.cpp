@@ -77,6 +77,13 @@ bool metadata::istext() const {
 	return this == type_text;
 }
 
+bool metadata::isbasetype(const void* object) {
+	auto p = (metadata*)object;
+	if(p->is(Static))
+		return false;
+	return true;
+}
+
 bool metadata::isarray() const {
 	return id[0] == array_id[0];
 }

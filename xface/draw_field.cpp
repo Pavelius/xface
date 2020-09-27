@@ -92,6 +92,18 @@ public:
 		textedit::clear();
 		value.clear();
 	}
+	bool keyinput(unsigned id) override {
+		switch(id) {
+		case KeyEnter:
+			if(!readonly) {
+				save();
+				select_all(true);
+			}
+			break;
+		default:
+			return textedit::keyinput(id);
+		}
+	}
 } cedit;
 
 void draw::savefocus() {
@@ -146,7 +158,7 @@ void draw::fieldf(const rect& rco, unsigned flags, const anyval& ev, int digits,
 		}
 	}
 	if(pchoose) {
-		if(addbutton(rc, focused, "...", KeyEnter, "Выбрать")) {
+		if(addbutton(rc, focused, "...", F4, "Выбрать")) {
 			cmb_var = ev;
 			proc_choose = pchoose;
 			draw::execute(execute_choose);

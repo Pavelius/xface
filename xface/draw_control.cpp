@@ -153,7 +153,11 @@ bool control::keyinput(unsigned key) {
 	auto pn = getcommands()->find(key);
 	if(!pn)
 		return false;
-	return (this->*pn->proc.cmd)(true);
+	if(pn->proc.cmd_event) {
+		pn->proc.cmd_event();
+		return true;
+	} else
+		return (this->*pn->proc.cmd)(true);
 }
 
 void control::command::builder::render(const control* parent, const control::command* commands, bool& separator, int& count) {

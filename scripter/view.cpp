@@ -91,6 +91,9 @@ static class requisit_control : public controls::tableref, controls::control::pl
 		return commands_add;
 	}
 	int getimage(int index) const override {
+		auto p = (requisit*)get(index);
+		if(p->is(Method))
+			return 4;
 		return 0;
 	}
 public:
@@ -107,6 +110,8 @@ public:
 					addref(&e);
 			}
 		}
+		if(current >= getmaximum())
+			current = getmaximum() - 1;
 	}
 	int find(const requisit* v) const {
 		return tableref::find(v);
@@ -164,6 +169,18 @@ static void new_requisit() {
 	setpropertiesfocus();
 }
 
+static void new_method() {
+	auto p = metadata_instance.getcurrent();
+	if(!p)
+		return;
+	auto r = p->add("Proc1", metadata::type_text);
+	r->flags.add(Method);
+	requisit_instance.update();
+	requisit_instance.set(r);
+	setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
+	setpropertiesfocus();
+}
+
 static void new_type() {
 	auto p = bsdata<metadata>::add();
 	p->id = szdup("Type1");
@@ -173,16 +190,25 @@ static void new_type() {
 }
 
 static void remove_requisit() {
+	auto p = requisit_instance.getcurrent();
+	if(!p)
+		return;
+	p->clear();
+	requisit_instance.update();
+	setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
+	setpropertiesfocus();
 }
 
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
 {choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
 {choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
 {new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
+{new_method, "Добавить метод", Ctrl + Alpha + 'M'},
 {new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
 {}};
 
-controls::control::command requisit_control::commands_add[] = {{"add", "Добавить", 0, new_requisit, 9},
+controls::control::command requisit_control::commands_add[] = {{"add", "Добавить реквизит", 0, new_requisit, 9},
+{"add_method", "Добавить метод", 0, new_method, 9},
 {"remove", "Удалить", 0, remove_requisit, 19, KeyDelete},
 {}};
 

@@ -30,7 +30,7 @@ enum token_s : unsigned char {
 	NumberToken, TextToken, RequisitToken, MetadataToken,
 };
 enum metatype_s : unsigned char {
-	Static, Public, Dimension, ScalarType
+	Static, Public, Dimension, ScalarType, Method
 };
 struct metadata;
 struct requisit;
@@ -101,6 +101,7 @@ struct metadata {
 	bool					is(const char* id) const;
 	constexpr bool			is(metatype_s v) const { return flags.is(v); }
 	bool					isarray() const;
+	static bool				isbasetype(const void* object);
 	bool					isnumber() const { return flags.is(ScalarType); }
 	bool					isreference() const;
 	bool					ispredefined() const;

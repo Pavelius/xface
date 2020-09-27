@@ -18,7 +18,7 @@ static bool allow_base_type(const void* object, int index) {
 }
 static bool allow_type(const void* object, int index) {
 	auto& e = bsdata<metadata>::elements[index];
-	if(e.isreference() || e.isarray())
+	if(e.isreference() || e.isarray() || e.is(Static))
 		return false;
 	return true;
 }
@@ -32,7 +32,7 @@ static bool allow_static_member(const void* object) {
 DGINF(metatypei) = {{"Наименование", DGREQ(id)},
 {}};
 DGINF(metadata) = {{"Наименование", DGREQ(id)},
-{"Базовый тип", DGREQ(type), {getnm<metadata>, allow_base_type}},
+{"Базовый тип", DGREQ(type), {getnm<metadata>, allow_base_type}, {metadata::isbasetype}},
 {"Статический модуль", DGCHK(flags, 1 << Static)},
 {}};
 DGINF(requisit) = {{"Наименование", DGREQ(id)},
