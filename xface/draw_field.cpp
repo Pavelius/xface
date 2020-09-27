@@ -103,6 +103,7 @@ public:
 		default:
 			return textedit::keyinput(id);
 		}
+		return true;
 	}
 } cedit;
 

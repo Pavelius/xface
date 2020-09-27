@@ -246,14 +246,6 @@ template<class T> struct vector : array {
 	T*						end() { return (T*)data + count; }
 	T*						ptr(int index) const { return (T*)data + index; }
 };
-struct bsreq;
-// Abstract data source descriptor
-struct bsinf {
-	const char*				id;
-	array*					source;
-	const bsreq*			type;
-	constexpr explicit operator bool() const { return id != 0; }
-};
 // Abstract data access class
 template<typename T> struct bsdata {
 	static T				elements[];
@@ -264,6 +256,20 @@ template<typename T> struct bsdata {
 	static constexpr T*		begin() { return elements; }
 	static constexpr T*		end() { return elements + source.getcount(); }
 };
+template<> struct bsdata<int> { static constexpr array*	source_ptr = 0; };
+NOBSDATA(unsigned)
+NOBSDATA(short)
+NOBSDATA(unsigned short)
+NOBSDATA(char)
+NOBSDATA(unsigned char)
+NOBSDATA(const char*)
+NOBSDATA(bool)
+// Callback funtion of status probing. Return true if 'object' support 'index' status.
+typedef bool(*fnallow)(const void* object, int index);
+// Callback funtion of object comand executing
+typedef void(*fncommand)(void* object);
+// Callback function of source identification. Return property filled 'source'.
+typedef void(*fnsource)(const void* object, array& source);
 // Abstract serializer
 struct serializer {
 	enum type_s { Text, Number, Array, Struct };
@@ -274,7 +280,7 @@ struct serializer {
 		int					index;
 		void*				data; // application defined data
 		bool				skip; // set this if you want skip block
-		//
+								  //
 		constexpr node(type_s type = Text) : parent(0), name(""), type(type), index(0), skip(false), data(0) {}
 		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), skip(false), data(0) {}
 		bool				operator==(const char* name) const { return name && strcmp(this->name, name) == 0; }
@@ -292,51 +298,3 @@ struct serializer {
 	virtual void			set(const char* id, const char* v, type_s type = Text) = 0;
 	virtual void			close(const char* id, type_s type = Text) = 0;
 };
-template<> struct bsdata<int> { static constexpr array*	source_ptr = 0; };
-NOBSDATA(unsigned)
-NOBSDATA(short)
-NOBSDATA(unsigned short)
-NOBSDATA(char)
-NOBSDATA(unsigned char)
-NOBSDATA(const char*)
-NOBSDATA(bool)
-NOBSDATA(bsreq)
-// Abstract metadata class
-template<typename T> struct bsmeta {
-	typedef T				data_type;
-	static const bsreq		meta[];
-};
-template<> struct bsmeta<unsigned char> : bsmeta<int> {};
-template<> struct bsmeta<char> : bsmeta<int> {};
-template<> struct bsmeta<unsigned short> : bsmeta<int> {};
-template<> struct bsmeta<short> : bsmeta<int> {};
-template<> struct bsmeta<unsigned> : bsmeta<int> {};
-template<> struct bsmeta<bool> : bsmeta<int> {};
-// Get object presentation
-template<class T> const char* getstr(const T e) { return bsdata<T>::elements[e].name; }
-// Untility structures
-template<typename T, T v> struct static_value { static constexpr T value = v; };
-template<int v> struct static_int : static_value<int, v> {};
-// Get array elments
-template<class T> struct meta_count : static_int<1> {};
-template<class T, unsigned N> struct meta_count<T[N]> : static_int<N> {};
-template<class T> struct meta_count<T[]> : static_int<0> {};
-template<class T, unsigned N> struct meta_count<adat<T, N>> : static_int<N> {};
-// Get base type
-template<class T> struct meta_decoy { typedef T value; };
-template<> struct meta_decoy<const char*> { typedef const char* value; };
-template<class T> struct meta_decoy<T*> : meta_decoy<T> {};
-template<class T> struct meta_decoy<const T*> : meta_decoy<T> {};
-template<class T, unsigned N> struct meta_decoy<T[N]> : meta_decoy<T> {};
-template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
-template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
-template<class T> struct meta_decoy<aref<T>> : meta_decoy<T> {};
-template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
-template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
-template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};
-// Callback funtion of status probing. Return true if 'object' support 'index' status.
-typedef bool(*fnallow)(const void* object, int index);
-// Callback funtion of object comand executing
-typedef void(*fncommand)(void* object);
-// Callback function of source identification. Return property filled 'source'.
-typedef void(*fnsource)(const void* object, array& source);

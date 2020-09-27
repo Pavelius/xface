@@ -125,7 +125,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\xface\widget_settings.cpp" />
     <ClCompile Include="codemodel.cpp" />
     <ClCompile Include="codeview.cpp" />
     <ClCompile Include="main.cpp" />
