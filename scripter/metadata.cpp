@@ -21,13 +21,14 @@ const unsigned			array_size = sizeof(arem<char>);
 const metadata*			metadata::type_metadata;
 const metadata*			metadata::type_requisit;
 const metadata*			metadata::type_text;
+const metadata*			metadata::type_void;
 const char*				pointer_id = "*";
 const char*				array_id = "&";
-const char*				elements_id = "Elements";
-const char*				text_id = "Text";
-const char*				metadata_id = "Metadata";
-const char*				metadata_ptr_id = "*Metadata";
-const char*				unsigned_int_id = "UInteger";
+const char*				elements_id = "elements";
+const char*				text_id = "text";
+const char*				metadata_id = "metadata";
+const char*				metadata_ptr_id = "*metadata";
+const char*				unsigned_int_id = "u32";
 static const requisit*	requisit_data;
 
 static const metadata* add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
@@ -40,18 +41,19 @@ static const metadata* add_standart(const char* id, unsigned size, const cflags<
 void code::initialize() {
 	bsdata<metadata>::source.clear();
 	bsdata<requisit>::source.clear();
-	add_standart("Void", 0, {}); // Must be first metadata
-	add_standart("Char", pointer_size / 4, {ScalarType});
-	add_standart("UChar", pointer_size / 4, {ScalarType});
-	add_standart("Short", pointer_size/2, {ScalarType});
-	add_standart("UShort", pointer_size/2, {ScalarType});
-	add_standart("Integer", pointer_size, {ScalarType});
+	add_standart("void", 0, {}); // Must be first metadata
+	add_standart("i8", pointer_size / 4, {ScalarType});
+	add_standart("u8", pointer_size / 4, {ScalarType});
+	add_standart("i16", pointer_size/2, {ScalarType});
+	add_standart("u16", pointer_size/2, {ScalarType});
+	add_standart("i32", pointer_size, {ScalarType});
 	add_standart(unsigned_int_id, pointer_size, {ScalarType});
 	metadata::type_text = add_standart(text_id, pointer_size, {});
 	metadata::type_metadata = add_standart(metadata_id, sizeof(metadata), {});
 	add_standart(metadata_ptr_id, pointer_size, {});
-	metadata::type_requisit = add_standart("Requisit", sizeof(requisit), {});
-	auto p = addtype("Requisit");
+	metadata::type_requisit = add_standart("requisit", sizeof(requisit), {});
+	metadata::type_void = add_standart("void", 0, {});
+	auto p = addtype("requisit");
 	p->add("id", addtype(text_id))->add(Dimension);
 	p->add("type", addtype(metadata_ptr_id));
 	p->add("offset", addtype(unsigned_int_id));
@@ -120,6 +122,10 @@ metadata* code::addtype(const char* id) {
 	p = bsdata<metadata>::add();
 	p->id = szdup(id);
 	return p;
+}
+
+requisit* metadata::addm(const char* id, const metadata* type) {
+	return add(id, type)->set(Method);
 }
 
 requisit* metadata::add(::array* ptr) {
@@ -223,10 +229,14 @@ void metadata::getname(stringbuilder& sb) const {
 
 void requisit::getnameonly(stringbuilder& sb) const {
 	sb.add(id);
+	if(is(Method))
+		sb.add("()");
 }
 
 void requisit::getname(stringbuilder& sb) const {
 	sb.add(id);
+	if(is(Method))
+		sb.add("()");
 	sb.add(":");
 	type->getname(sb);
 	if(count > 1)

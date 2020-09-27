@@ -97,6 +97,7 @@ struct metadata {
 	void					add(stringbuilder& sb) const;
 	requisit*				add(const char* id, const metadata* type);
 	requisit*				add(array* p);
+	requisit*				addm(const char* id, const metadata* type);
 	metadata*				array() const;
 	bool					is(const char* id) const;
 	constexpr bool			is(metatype_s v) const { return flags.is(v); }
@@ -116,6 +117,7 @@ struct metadata {
 	static const metadata*	type_text;
 	static const metadata*	type_metadata;
 	static const metadata*	type_requisit;
+	static const metadata*	type_void;
 	void					update();
 	void					write(const char* url) const;
 };
@@ -141,6 +143,7 @@ struct requisit {
 	requisit*				setcount(int v) { if(this) count = v; return this; }
 	requisit*				setoffset(unsigned v) { offset = v; return this; }
 	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
+	requisit*				set(metatype_s v) { flags.add(v); return this; }
 };
 struct metatypei {
 	const char*				id;

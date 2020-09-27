@@ -162,7 +162,7 @@ static void new_requisit() {
 	auto p = metadata_instance.getcurrent();
 	if(!p)
 		return;
-	auto r = p->add("New1", metadata::type_text);
+	auto r = p->add("member1", metadata::type_text);
 	requisit_instance.update();
 	requisit_instance.set(r);
 	setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
@@ -173,7 +173,7 @@ static void new_method() {
 	auto p = metadata_instance.getcurrent();
 	if(!p)
 		return;
-	auto r = p->add("Proc1", metadata::type_text);
+	auto r = p->add("proc1", metadata::type_text);
 	r->flags.add(Method);
 	requisit_instance.update();
 	requisit_instance.set(r);
@@ -183,7 +183,7 @@ static void new_method() {
 
 static void new_type() {
 	auto p = bsdata<metadata>::add();
-	p->id = szdup("Type1");
+	p->id = szdup("type1");
 	metadata_instance.add(p, true);
 	setproperties(metadata_instance.getcurrent(), dginf<metadata>::meta);
 	setpropertiesfocus();
