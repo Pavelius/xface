@@ -1,7 +1,5 @@
 #include "main.h"
 
-tileset*			current_tileset;
-
 void run_main();
 
 int main() {

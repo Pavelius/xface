@@ -4,9 +4,9 @@ using namespace draw;
 using namespace draw::controls;
 
 static void choose_mouse() {
-	auto p = (picker*)hot.param;
-	if(p->ishilited() && p->current_hilite_row != -1)
-		p->current = p->current_hilite_row;
+	auto p = (picker*)hot.object;
+	p->current = p->current_hilite_row;
+	p->setfocus(true);
 }
 
 void picker::view(const rect& rcorigin) {
@@ -28,7 +28,7 @@ void picker::view(const rect& rcorigin) {
 	auto maximum_width = getmaximumwidth();
 	if(!pixels_per_line)
 		return;
-	scroll scrollv(origin, lines_per_page, maximum_height, rcorigin, false);
+	scroll scrollv(origin, 1, maximum_height, rcorigin, false);
 	scrollv.correct(); scrollv.input();
 	control::view(rcorigin);
 	draw::state push; setclip(rc);
@@ -47,7 +47,7 @@ void picker::view(const rect& rcorigin) {
 		if(ishilite(rc)) {
 			current_hilite_row = i;
 			if(hot.key == MouseLeft && hot.pressed)
-				draw::execute(choose_mouse, (int)static_cast<picker*>(this));
+				draw::execute(choose_mouse, 0, 0, this);
 		}
 		if(show_grid_lines) {
 			rectb(rc, colors::border);

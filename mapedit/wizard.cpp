@@ -73,22 +73,26 @@ void wizard::show(const char* title) {
 		if(!pc)
 			break;
 		rect rc = {0, 0, getwidth(), getheight()};
-		rectf(rc, colors::form); rc.offset(metrics::padding);
+		rectf(rc, colors::form);
 		if(title) {
 			state push;
+			auto c2 = colors::text.mix(colors::edit);
+			auto c1 = colors::border;
 			font = metrics::h2;
-			//fore = colors::form.mix(colors::text);
-			rect r1 = rc; r1.y2 = r1.y1 + texth();
+			rect r1 = rc; r1.y2 = r1.y1 + texth() + metrics::padding*2;
+			gradv(r1, c1, c2);
+			line(r1.x1, r1.y2, r1.x2, r1.y2, colors::border);
+			rc.y1 += r1.height() + metrics::padding * 4;
+			r1.offset(metrics::padding * 2, metrics::padding);
 			text(r1, title, AlignLeft);
-			line(r1.x1, r1.y2 + 1, r1.x2, r1.y2 + 1, colors::border);
-			rc.y1 += r1.height() + metrics::padding*2;
 		}
 		auto bottom_height = texth() + 8 + metrics::padding * 2;
-		rectb({rc.x1, rc.y1, rc.x1 + 250, rc.y2 - bottom_height - metrics::padding}, colors::border);
 		rect r2 = rc;
-		r2.x1 += 250 + metrics::padding;
-		if(pc->title)
-			r2.y1 += text(r2, pc->title, AlignLeft) + metrics::padding;
+		r2.offset(32 + metrics::padding, 0);
+		if(pc->title) {
+			r2.y1 += text(r2, pc->title, AlignLeft);
+			r2.offset(metrics::padding * 2, metrics::padding * 2);
+		}
 		if(pc->proc.call) {
 			rect r1 = r2;
 			r1.y1 += metrics::padding * 2;

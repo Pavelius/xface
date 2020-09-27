@@ -4,7 +4,8 @@
 
 using namespace draw;
 
-rect sprite_get_border_rect(const sprite* ps);
+rect		sprite_get_border_rect(const sprite* ps);
+tileset*	current_tileset;
 
 namespace {
 class tilesetview : public controls::picker {
@@ -141,10 +142,10 @@ void add_tileset() {
 		}
 		bool mainpage(const rect& rc, command_s id) {
 			if(id == Draw) {
-				auto x1 = rc.x2 - 200;
+				auto x2 = rc.x1 + 400;
+				list.view({rc.x1, rc.y1, x2 - metrics::padding, rc.y2});
 				preview.set(getcurrentsprite());
-				preview.view({x1, rc.y1, rc.x2, rc.y2});
-				list.view({rc.x1, rc.y1, x1 - metrics::padding, rc.y2});
+				preview.view({x2, rc.y1, rc.x2, rc.y2});
 			}
 			return true;
 		}
@@ -158,6 +159,7 @@ void add_tileset() {
 		view() : list(sprites) {
 			//list.show_header = false;
 			list.read_only = true;
+			list.select_mode = SelectRow;
 			list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
 			list.addcol(bsmeta<spritei>::meta, "count", "Спрайтов");
 			list.addcol(bsmeta<spritei>::meta, "size", "Размер");
@@ -165,5 +167,5 @@ void add_tileset() {
 		}
 	};
 	view object;
-	object.show("Добавение набора талов");
+	object.show("Добавение набора тайлов");
 }
