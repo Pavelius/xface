@@ -88,7 +88,7 @@ bool wizard::show(const char* title) {
 		}
 		auto bottom_height = texth() + 8 + metrics::padding * 2;
 		rect r2 = rc;
-		r2.offset(32 + metrics::padding, 0);
+		r2.offset(metrics::padding*2, 0);
 		if(pc->title) {
 			r2.y1 += text(r2, pc->title, AlignLeft);
 			r2.offset(metrics::padding * 2, metrics::padding * 2);

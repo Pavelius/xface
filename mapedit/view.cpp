@@ -7,6 +7,16 @@ static int			grid_size;
 
 using namespace draw;
 
+void object::draw(point camera) const {
+	auto ts = kind.getresource();
+	if(!ts)
+		return;
+	auto sp = ts->getsprite();
+	if(!sp)
+		return;
+	draw::image(x, y, sp, frame, flags);
+}
+
 struct map_control_type : controls::scrollable, mapi, controls::control::plugin {
 	control* getcontrol() override {
 		return this;
@@ -75,7 +85,13 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		fore = push_fore;
 	}
 	void redraw(const rect& rc) override {
-		render_grid(rc);
+		//render_grid(rc);
+		point camera;
+		camera.x = origin.x;
+		camera.y = origin.y;
+		for(auto& e : bsdata<object>()) {
+			e.draw(camera);
+		}
 	}
 	void change_type() {
 		maximum.x = size.x * element.x;
@@ -99,8 +115,6 @@ void tileset::import() {
 tileimport::tileimport() {
 	memset(this, 0, sizeof(*this));
 }
-
-#define STRQ(T,R) ((T*)0)->R
 
 static void testwizard() {
 	struct tileset_wizard : wizard, tileimport, fileimport {
