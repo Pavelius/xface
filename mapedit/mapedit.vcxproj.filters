@@ -22,4 +22,7 @@
     <ClInclude Include="wizard.h" />
     <ClInclude Include="fileimport.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="settings.json" />
+  </ItemGroup>
 </Project>

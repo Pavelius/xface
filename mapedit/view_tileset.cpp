@@ -57,6 +57,9 @@ public:
 	tilesetview() :selected(0) {
 		show_grid_lines = false;
 	}
+	int getcurrent() {
+		return current;
+	}
 };
 struct control_type : public tilesetview, controls::control::plugin {
 	tileset* selected;
@@ -83,6 +86,10 @@ struct control_type : public tilesetview, controls::control::plugin {
 };
 }
 static control_type object;
+
+int	tileset::getcurrentframe() {
+	return object.getcurrent();
+}
 
 void update_tileset() {
 	object.set(current_tileset);

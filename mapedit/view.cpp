@@ -4,6 +4,7 @@
 
 static bool			show_grid;
 static int			grid_size;
+static point		current_mouse;
 
 using namespace draw;
 
@@ -84,13 +85,29 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		//line(p1.x + element.x, p1.y, p2.x + element.x, p2.y);
 		fore = push_fore;
 	}
+	static void add_object() {
+		auto p = bsdata<object>::add();
+		p->kind = current_tileset;
+		p->x = current_mouse.x;
+		p->y = current_mouse.y;
+		p->frame = current_tileset->getcurrentframe();
+	}
 	void redraw(const rect& rc) override {
 		//render_grid(rc);
 		point camera;
 		camera.x = origin.x;
 		camera.y = origin.y;
-		for(auto& e : bsdata<object>()) {
+		for(auto& e : bsdata<object>())
 			e.draw(camera);
+		if(ishilite(rc)) {
+			current_mouse.x = hot.mouse.x - rc.x1 + camera.x;
+			current_mouse.y = hot.mouse.y - rc.y1 + camera.y;
+			switch(hot.key) {
+			case MouseLeft:
+				if(hot.pressed)
+					execute(add_object);
+				break;
+			}
 		}
 	}
 	void change_type() {

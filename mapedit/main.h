@@ -39,6 +39,7 @@ public:
 	static tileset*		add(const char* id);
 	static const char*	base_url;
 	static const char*	choosenew();
+	static int			getcurrentframe();
 	const char*			getname() { return name; }
 	static const char*	getname(const void* object, stringbuilder& sb);
 	const sprite*		getsprite();

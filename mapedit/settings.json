@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":400
+      "size":338
     },
     "Dock3":{
       "current":0,
@@ -28,7 +28,7 @@
   "settings":{
     "Рабочий стол":{
       "Пути":{
-        "Спрайты":"E:\/documents\/Visual Studio 2017\/Projects\/xface\/mapedit\/sprites"
+        "Спрайты":"sprites"
       },
       "Общие":{
         "Метрика":{
@@ -78,10 +78,10 @@
     }
   },
   "window":{
-    "x":58,
-    "y":69,
-    "width":1068,
-    "height":561,
+    "x":182,
+    "y":94,
+    "width":838,
+    "height":566,
     "header_width":160,
     "flags":48
   },

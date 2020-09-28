@@ -150,6 +150,9 @@
     <ClCompile Include="view_tileset.cpp" />
     <ClCompile Include="wizard.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="settings.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
