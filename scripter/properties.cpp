@@ -12,7 +12,7 @@ template<> const char* getnm<metadata>(const void* object, stringbuilder& sb) {
 }
 static bool allow_base_type(const void* object, int index) {
 	auto& e = bsdata<metadata>::elements[index];
-	if(e.isreference() || e.isarray() || e.ispredefined() || e.is(Static) || &e==object)
+	if(e.isreference() || e.isarray() || e.ispredefined() || e.is(Static) || &e == object)
 		return false;
 	return true;
 }
@@ -28,6 +28,12 @@ static bool allow_static_member(const void* object) {
 		return false;
 	return true;
 }
+static bool allow_count(const void* object) {
+	auto p = (const requisit*)object;
+	if(p->is(Method))
+		return false;
+	return true;
+}
 static bool allow_dimension_member(const void* object) {
 	auto p = (const requisit*)object;
 	if(p->is(Static))
@@ -35,16 +41,19 @@ static bool allow_dimension_member(const void* object) {
 	return true;
 }
 
-DGINF(metatypei) = {{"Наименование", DGREQ(id)},
-{}};
-DGINF(metadata) = {{"Наименование", DGREQ(id)},
-{"Базовый тип", DGREQ(type), {getnm<metadata>, allow_base_type}, {metadata::isbasetype}},
-{"Статический модуль", DGCHK(flags, 1 << Static)},
-{}};
-DGINF(requisit) = {{"Наименование", DGREQ(id)},
-{"Тип", DGREQ(type), {getnm<metadata>, allow_type}},
-{"Количество", DGREQ(count)},
-{"Публичный член класса", DGCHK(flags, 1 << Public)},
-{"Статический член класса", DGCHK(flags, 1 << Static), {}, {allow_static_member}},
-{"Поле является ключевым для поиска", DGCHK(flags, 1 << Dimension), {}, {allow_dimension_member}},
-{}};
+DGINF(metatypei) = {
+	{"Наименование", DGREQ(id)},
+	{}};
+DGINF(metadata) = {
+	{"Наименование", DGREQ(id)},
+	{"Базовый тип", DGREQ(type), {getnm<metadata>, allow_base_type}, {metadata::isbasetype}},
+	{"Статический модуль", DGCHK(flags, 1 << Static)},
+	{}};
+DGINF(requisit) = {
+	{"Наименование", DGREQ(id)},
+	{"Тип", DGREQ(type), {getnm<metadata>, allow_type}},
+	{"Количество", DGREQ(count), {}, {allow_count}},
+	{"Публичный член класса", DGCHK(flags, 1 << Public)},
+	{"Статический член класса", DGCHK(flags, 1 << Static), {}, {allow_static_member}},
+	{"Поле является ключевым для поиска", DGCHK(flags, 1 << Dimension), {}, {allow_dimension_member}},
+	{}};
