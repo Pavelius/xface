@@ -66,6 +66,7 @@ struct control {
 	};
 	struct plugin {
 		struct builder {
+			virtual bool	canopen(const char* url) const { return true; }
 			virtual control* create(const char* url) = 0;
 			virtual void	destroy(control* v) = 0;
 			virtual void	getextensions(stringbuilder& sb) {}
@@ -123,7 +124,7 @@ struct control {
 	virtual const sprite*	getimages() const { return standart_toolbar; }
 	virtual const char*		getlabel(stringbuilder& sb) const { return 0; }
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
-	virtual const char*		geturl() const { return 0; }
+	virtual const char*		geturl(stringbuilder& sb) const { return 0; }
 	virtual void			icon(int x, int y, bool disabled, const command& cmd) const;
 	virtual bool			isdisabled() const { return false; }
 	virtual bool			isfocusable() const { return true; }

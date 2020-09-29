@@ -24,7 +24,7 @@ class textview_widget : public scrollable {
 			wheels.y = 8;
 		}
 	}
-	const char* geturl() const {
+	const char* geturl(stringbuilder& sb) const override {
 		return url;
 	}
 public:

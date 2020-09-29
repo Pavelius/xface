@@ -369,14 +369,15 @@ const char* draw::controls::getlabel(const void* object, stringbuilder& sb) {
 	auto p = pc->getlabel(sb);
 	if(p != sb.begin())
 		sb.add(p);
-	p = pc->geturl();
+	char temp[260]; stringbuilder sb1(temp);
+	p = pc->geturl(sb1);
 	if(p) {
 		if(use_short_name_label)
 			sb.add(szfname(p));
 		else
 			sb.add(p);
 		if(use_no_extension_label) {
-			char* p1 = (char*)szext(sb);
+			char* p1 = (char*)szext(p);
 			if(p1) {
 				while(p1 > sb.begin() && p1[-1] == '.')
 					p1--;
@@ -490,6 +491,12 @@ static struct widget_application : draw::controls::control {
 		result.count = ps - result.data;
 		return result;
 	}
+	static void show_statusbar(const control* pc) {
+		char temp[260]; stringbuilder sb(temp);
+		auto pu = pc->geturl(sb);
+		if(pu)
+			statusbar("Данные из %1", pu);
+	}
 	static void workspace(rect rc, bool allow_multiply_window) {
 		control* p1[64];
 		auto c1 = getdocked(p1, DockWorkspace);
@@ -520,12 +527,8 @@ static struct widget_application : draw::controls::control {
 				if(r1)
 					result = r1;
 			}
-			if(current_hilite != -1) {
-				auto pc = ct[current_hilite];
-				auto pu = pc->geturl();
-				if(pu)
-					statusbar("Данные из %1", pu);
-			}
+			if(current_hilite != -1)
+				show_statusbar(ct[current_hilite]);
 			switch(result) {
 			case 1: execute(postactivate, 0, 0, ct.data[current_hilite]); break;
 			case 2: execute(postclose, 0, 0, ct.data[current_hilite]); break;
@@ -636,6 +639,8 @@ void controls::close(control* p) {
 }
 
 static bool canhandle(const char* url, control::plugin::builder* p) {
+	if(!p->canopen(url))
+		return false;
 	auto ext = szext(url);
 	if(!ext)
 		return false;
@@ -654,8 +659,10 @@ static bool canhandle(const char* url, control::plugin::builder* p) {
 }
 
 control* controls::openurl(const char* url) {
+	char temp[260];
 	for(auto p : active_controls) {
-		auto purl = p->geturl();
+		stringbuilder sb(temp);
+		auto purl = p->geturl(sb);
 		if(!purl)
 			continue;
 		if(szcmpi(purl, url) == 0) {

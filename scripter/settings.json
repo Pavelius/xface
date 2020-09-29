@@ -2,7 +2,7 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":133
+      "size":104
     },
     "Dock1":{
       "current":0,
@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":302
+      "size":260
     },
     "Dock3":{
       "current":0,
@@ -80,73 +80,76 @@
     }
   },
   "window":{
-    "x":140,
-    "y":43,
-    "width":829,
-    "height":595,
+    "x":114,
+    "y":35,
+    "width":1023,
+    "height":591,
     "header_width":113,
     "flags":48
   },
   "controls":{
-    "code":{
+    "reqtable":{
       "Docking":5,
-      "Visible":1
-    },
-    "metadata":{
-      "Docking":0,
       "Visible":1,
-      "columns":{
-        "column":{
-          "width":20,
-          "size":3,
-          "total":0
-        },
-        "column":{
-          "id":"Наименование",
-          "width":113,
-          "size":4,
-          "total":0
+      "code":{
+        "Docking":5,
+        "Visible":1
+      },
+      "metadata":{
+        "Docking":0,
+        "Visible":1,
+        "columns":{
+          "column":{
+            "width":20,
+            "size":3,
+            "total":0
+          },
+          "column":{
+            "id":"Наименование",
+            "width":84,
+            "size":4,
+            "total":0
+          }
         }
-      }
-    },
-    "requisit":{
-      "Docking":1,
-      "Visible":1,
-      "columns":{
-        "column":{
-          "width":20,
-          "size":3,
-          "total":0
-        },
-        "column":{
-          "id":"Наименование",
-          "width":113,
-          "size":4,
-          "total":0
+      },
+      "requisit":{
+        "Docking":1,
+        "Visible":1,
+        "columns":{
+          "column":{
+            "width":20,
+            "size":3,
+            "total":0
+          },
+          "column":{
+            "id":"Наименование",
+            "width":84,
+            "size":4,
+            "total":0
+          }
         }
-      }
-    },
-    "logging":{
-      "Docking":4,
-      "Visible":1,
-      "columns":{
-        "column":{
-          "id":"Дата",
-          "width":116,
-          "size":2,
-          "total":0
-        },
-        "column":{
-          "id":"Сообщение",
-          "width":200,
-          "size":4,
-          "total":0
+      },
+      "logging":{
+        "Docking":4,
+        "Visible":1,
+        "columns":{
+          "column":{
+            "id":"Дата",
+            "width":116,
+            "size":2,
+            "total":0
+          },
+          "column":{
+            "id":"Сообщение",
+            "width":200,
+            "size":4,
+            "total":0
+          }
         }
+      },
+      "properties":{
+        "Docking":2,
+        "Visible":1
       }
-    },
-    "properties":{
-      "Docking":2,
-      "Visible":1
     }
   }
-}

@@ -14,7 +14,7 @@ class picture_widget : public scrollable {
 		maximum.x = source.width;
 		maximum.y = source.height;
 	}
-	const char* geturl() const {
+	const char* geturl(stringbuilder& sb) const override {
 		return url;
 	}
 public:

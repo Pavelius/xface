@@ -2,7 +2,7 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":200
+      "size":176
     },
     "Dock1":{
       "current":0,
@@ -97,7 +97,7 @@
         },
         "column":{
           "id":"Наименование",
-          "width":180,
+          "width":156,
           "size":4,
           "total":0
         }
