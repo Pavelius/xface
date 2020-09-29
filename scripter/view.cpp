@@ -1,7 +1,6 @@
-#include "xface/crt.h"
-#include "xface/setting.h"
-#include "xface/draw_control.h"
-#include "xface/markup.h"
+#include "setting.h"
+#include "draw_control.h"
+#include "markup.h"
 #include "main.h"
 
 using namespace code;

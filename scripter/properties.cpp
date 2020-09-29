@@ -28,6 +28,12 @@ static bool allow_static_member(const void* object) {
 		return false;
 	return true;
 }
+static bool allow_dimension_member(const void* object) {
+	auto p = (const requisit*)object;
+	if(p->is(Static))
+		return false;
+	return true;
+}
 
 DGINF(metatypei) = {{"Наименование", DGREQ(id)},
 {}};
@@ -40,5 +46,5 @@ DGINF(requisit) = {{"Наименование", DGREQ(id)},
 {"Количество", DGREQ(count)},
 {"Публичный член класса", DGCHK(flags, 1 << Public)},
 {"Статический член класса", DGCHK(flags, 1 << Static), {}, {allow_static_member}},
-{"Поле является ключевым для поиска", DGCHK(flags, 1 << Dimension), {}, {allow_static_member}},
+{"Поле является ключевым для поиска", DGCHK(flags, 1 << Dimension), {}, {allow_dimension_member}},
 {}};

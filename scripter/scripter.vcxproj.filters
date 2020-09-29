@@ -11,6 +11,7 @@
     <ClCompile Include="properties.cpp" />
     <ClCompile Include="metatype.cpp" />
     <ClCompile Include="widget_codeview.cpp" />
+    <ClCompile Include="widget_reqtable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

@@ -1,10 +1,10 @@
-#include "xface/agrw.h"
-#include "xface/crt.h"
-#include "xface/bsreq.h"
-#include "xface/point.h"
-#include "xface/stringbuilder.h"
-#include "xface/valuelist.h"
-#include "xface/markup.h"
+#include "agrw.h"
+#include "crt.h"
+#include "bsreq.h"
+#include "point.h"
+#include "stringbuilder.h"
+#include "valuelist.h"
+#include "markup.h"
 
 #pragma once
 
