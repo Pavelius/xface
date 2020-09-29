@@ -23,7 +23,7 @@ const wizard::element* wizard::getvalid(const wizard::element* p) const {
 
 const wizard::element* wizard::getlast(const wizard::element* p) const {
 	if(!p)
-		return false;
+		return 0;
 	auto pc = const_cast<wizard*>(this);
 	const element* p1 = 0;
 	while(*p) {
