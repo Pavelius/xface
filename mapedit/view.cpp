@@ -94,14 +94,14 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 	}
 	void redraw(const rect& rc) override {
 		//render_grid(rc);
-		point camera;
-		camera.x = origin.x;
-		camera.y = origin.y;
+		point screen;
+		screen.x = rc.x1 - origin.x;
+		screen.y = rc.y1 - origin.y;
 		for(auto& e : bsdata<object>())
-			e.draw(camera);
+			e.draw(screen);
 		if(ishilite(rc)) {
-			current_mouse.x = hot.mouse.x - rc.x1 + camera.x;
-			current_mouse.y = hot.mouse.y - rc.y1 + camera.y;
+			current_mouse.x = screen.x + hot.mouse.x - rc.x1;
+			current_mouse.y = screen.y + hot.mouse.y - rc.y1;
 			switch(hot.key) {
 			case MouseLeft:
 				if(hot.pressed)

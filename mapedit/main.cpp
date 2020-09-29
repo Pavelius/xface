@@ -3,6 +3,7 @@
 void run_main();
 
 int main() {
+	current_tileset = tileset::add("monsters");
 	run_main();
 }
 
