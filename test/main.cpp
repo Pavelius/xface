@@ -76,9 +76,7 @@ struct metatest {
 	adat<char, 8>	source;
 	aref<char>		buffer;
 };
-BSMETA(metatest) = {BSREQ(source),
-BSREQ(buffer),
-{}};
+BSMETA(metatest) = {BSREQ(source), BSREQ(buffer), {}};
 
 struct testinfo {
 	const char*		name;
@@ -254,55 +252,6 @@ void apply_element(element* object) {
 	object->age = 12;
 }
 
-struct markupform : controls::form {
-	element				s1;
-	element				s2;
-	int					tabs;
-	vector<rowelement>	v1rows;
-	controls::tableview	v1;
-	markupform() : s1(), s2(), v1rows(), v1(v1rows), tabs(0) {
-		v1.show_header = true;
-		v1.show_toolbar = true;
-		auto m = bsmeta<rowelement>::meta;
-		v1.addcol(m, "name", "Наименование");
-		v1.addcol(m, "gender", "Пол");
-		v1.addcol(m, "age", "Возраст");
-		//v1.splitter = 200;
-	}
-	controls::control* getcontrol(const char* id) override {
-		if(strcmp(id, "v1") == 0)
-			return &v1;
-		return 0;
-	}
-};
-BSMETA(markupform) = {BSREQ(s1), BSREQ(s2), BSREQ(tabs),
-{}};
-
-//static void test_markup() {
-//	markupform source;
-//	static markup elements_left[] = {{0, "Имя", {"name"}},
-//	{0, "Фамилия", {"surname"}},
-//	{0, "Возраст", {"age"}},
-//	{0, "Тест", {"test"}},
-//	{0, "Принять", {}, 0, {}, apply_element},
-//	{}};
-//	static markup header[] = {{6, 0, {"s1", 0, elements_left}},
-//	{6, 0, {"s2", 0, elements_left}},
-//	{}};
-//	static markup tabs_controls[] = {{0, "Таблица", {"v1"}},
-//	{}};
-//	static markup elements[] = {{0, 0, {0, 0, header}},
-//	{0, "#tabs", {"tabs", 0, tabs_controls}},
-//	{}};
-//	while(ismodal()) {
-//		rect rc = {0, 0, getwidth(), getheight()};
-//		rectf(rc, colors::form);
-//		rc.offset(metrics::padding);
-//		field(rc.x1, rc.y1, rc.width(), elements, bsmeta<markupform>::meta, &source, 80, &source, rc.height());
-//		domodal();
-//	}
-//}
-
 static void test_list() {
 	struct test_class : controls::list {
 		const char* getname(stringbuilder& sb, int line, int column) const override {
@@ -329,7 +278,7 @@ static void test_drag_drop() {
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		rect rc = {x, y, x + 50, y + 25};
-		if(dragactive(test_drag_drop)) {
+		if(dragactive((void*)test_drag_drop)) {
 			auto sx = rc.width();
 			auto sy = rc.height();
 			rc.x1 = x + (hot.mouse.x - dragmouse.x);
@@ -340,8 +289,8 @@ static void test_drag_drop() {
 			sb.add("Начинаем тягать %1i, %2i", rc.x1, rc.y1);
 			text(10, 42, sb);
 		} else if(ishilite(rc) && hot.key == MouseLeft && hot.pressed)
-			dragbegin(test_drag_drop);
-		if(dragactive(test_drag_drop)) {
+			dragbegin((void*)test_drag_drop);
+		if(dragactive((void*)test_drag_drop)) {
 			line(rc.x1, rc.y1, dragmouse.x, dragmouse.y, colors::red);
 			line(rc.x2, rc.y1, dragmouse.x, dragmouse.y, colors::blue);
 			line(rc.x1, rc.y2, dragmouse.x, dragmouse.y, colors::green);

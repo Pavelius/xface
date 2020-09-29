@@ -7,7 +7,7 @@ static draw::scroll::proc	call_proc;
 static draw::scroll			call_object;
 
 scroll::scroll(int& origin, int page, int maximum, const rect& client, bool horizontal, int wheel) :
-	origin(&origin), page(page), maximum(maximum), horizontal(horizontal), client(client), wheel(wheel) {
+	origin(&origin), page(page), maximum(maximum), wheel(wheel), client(client), horizontal(horizontal) {
 	if(maximum > page) {
 		if(horizontal)
 			work.set(client.x1, client.y2 - metrics::scroll, client.x2, client.y2);

@@ -2,22 +2,23 @@
 
 #ifdef _MSC_VER
 namespace std {
-template<class T> class initializer_list {	// list of pointers to elements
+template<class T>
+class initializer_list {	// list of pointers to elements
 public:
-	typedef T				value_type;
-	typedef const T&		reference;
-	typedef const T&		const_reference;
-	typedef unsigned		size_type;
-	typedef const T*		iterator;
-	typedef const T*		const_iterator;
+	typedef T						value_type;
+	typedef const T&				reference;
+	typedef const T&				const_reference;
+	typedef unsigned				size_type;
+	typedef const T*				iterator;
+	typedef const T*				const_iterator;
 	constexpr initializer_list() noexcept : first(0), last(0) {}
 	constexpr initializer_list(const T *first_arg, const T *last_arg) noexcept : first(first_arg), last(last_arg) {}
-	constexpr const T*		begin() const noexcept { return first; }
-	constexpr const T*		end() const noexcept { return last; }
-	constexpr unsigned		size() const noexcept { return last - first; }
+	constexpr const T*				begin() const noexcept { return first; }
+	constexpr const T*				end() const noexcept { return last; }
+	constexpr unsigned				size() const noexcept { return last - first; }
 private:
-	const T*				first;
-	const T*				last;
+	const T*						first;
+	const T*						last;
 };
 }
 #else
@@ -208,9 +209,9 @@ public:
 	typedef int(*pcompare)(const void* p1, const void* p2, void* param);
 	void*					data;
 	unsigned				count;
-	constexpr array(unsigned size = 0) : data(0), size(size), count(0), count_maximum(0), growable(true) {}
-	constexpr array(void* data, unsigned size, unsigned count) : data(data), size(size), count(count), count_maximum(0), growable(false) {}
-	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : data(data), size(size), count(count), count_maximum(count_maximum), growable(false) {}
+	constexpr array(unsigned size = 0) : size(size), count_maximum(0), growable(true), data(0), count(0) {}
+	constexpr array(void* data, unsigned size, unsigned count) : size(size), count_maximum(0), growable(false), data(data), count(count) {}
+	constexpr array(void* data, unsigned size, unsigned count, unsigned count_maximum) : size(size), count_maximum(count_maximum), growable(false), data(data), count(count) {}
 	~array();
 	void*					add();
 	void*					addz() { auto p = add(); memset(p, 0, size); return p; }
@@ -265,9 +266,13 @@ NOBSDATA(char)
 NOBSDATA(unsigned char)
 NOBSDATA(const char*)
 NOBSDATA(bool)
-// Callback funtion of status probing. Return true if 'object' support 'index' status.
+// Callback function of status probing. Return true if `object` support `index` status.
 typedef bool(*fnallow)(const void* object, int index);
-// Callback funtion of object comand executing
+// Callback function of choosing one element from array of many elements and storing it into `pointer`
+typedef bool(*fnchoose)(const void* object, array& source, void* pointer);
+// Callback function of checking some functionality of `object`
+typedef bool(*fnvisible)(const void* object);
+// Callback funtion of object command executing
 typedef void(*fncommand)(void* object);
 // Callback function of source identification. Return property filled 'source'.
 typedef void(*fnsource)(const void* object, array& source);
@@ -282,8 +287,8 @@ struct serializer {
 		void*				data; // application defined data
 		bool				skip; // set this if you want skip block
 								  //
-		constexpr node(type_s type = Text) : parent(0), name(""), type(type), index(0), skip(false), data(0) {}
-		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), skip(false), data(0) {}
+		constexpr node(type_s type = Text) : parent(0), name(""), type(type), index(0), data(0), skip(false) {}
+		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), data(0), skip(false) {}
 		bool				operator==(const char* name) const { return name && strcmp(this->name, name) == 0; }
 		//
 		bool				isparent(const char* id) const { return parent && *parent == id; }

@@ -37,7 +37,7 @@ static struct textview_plugin : control::plugin, control::plugin::builder {
 	control* getcontrol() {
 		return 0;
 	}
-	builder* getbuilder() {
+	control::plugin::builder* getbuilder() {
 		return this;
 	}
 	control* create(const char* url) override {

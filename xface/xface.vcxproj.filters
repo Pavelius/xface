@@ -16,9 +16,6 @@
     <Filter Include="collections">
       <UniqueIdentifier>{32b6fc22-5eb7-44ef-be4e-11fec932a46b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="files">
-      <UniqueIdentifier>{b457b918-efb0-4fe3-a89b-426720c2a6df}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="archive.cpp">

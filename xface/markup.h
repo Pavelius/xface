@@ -4,7 +4,7 @@
 #pragma once
 
 #define DGLNK(R,T) template<> struct dginf<R> : dginf<T> {};
-#define DGINF(T) const markup dginf<T>::meta[]
+#define DGINF(T) template<> const markup dginf<T>::meta[]
 #define DGGEN(R, T1, T2, MS) {dginf<meta_decoy<T1>::value>::meta,\
 bsdata<meta_decoy<T2>::value>::source_ptr,\
 (unsigned)&((data_type*)0)->R,\
@@ -21,8 +21,6 @@ sizeof(R),\
 struct markup;
 
 typedef int(*fndraw)(int x, int y, int width, const void* object); // Custom draw
-typedef bool(*fnchoose)(const void* object, array& source, void* pointer);
-typedef bool(*fnvisible)(const void* object);
 
 struct fnlist {
 	fntext				getname;

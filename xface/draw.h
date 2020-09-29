@@ -239,7 +239,7 @@ class scroll {
 	static void			callback();
 public:
 	typedef void (scroll::*proc)(int param);
-	constexpr scroll() : origin(0), page(), maximum(), work(), client(), horizontal(false), wheel(1) {}
+	constexpr scroll() : origin(0), page(), maximum(), wheel(1), work(), client(), horizontal(false) {}
 	scroll(int& origin, int page, int maximum, const rect& client, bool horizontal = false, int wheel = 1);
 	void				correct();
 	void				execute(proc p, int param) const;

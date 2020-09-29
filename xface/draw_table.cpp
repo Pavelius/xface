@@ -72,18 +72,18 @@ int	column::get(const void* object) const {
 	return type->get(type->ptr(object));
 }
 
-void column::set(const void* object, int v) {
-	if(!type)
-		return;
-	type->set(type->ptr(object), v);
-}
-
 const char* column::get(const void* object, stringbuilder& sb) const {
 	if(getpresent)
 		return getpresent(object, sb);
 	if(type)
 		return type->gets(type->ptr(object));
 	return "";
+}
+
+void column::set(const void* object, int v) {
+	if(!type)
+		return;
+	type->set(type->ptr(object), v);
 }
 
 void table::update_columns(const rect& rc) {
@@ -220,8 +220,8 @@ int table::rowheader(const rect& rc) const {
 		// Нарисуем границу только когда она далеко от края
 		// Чтобы она была не видна, если ширина элемента впритык к краю.
 		line(r1.x2 - 1, r1.y1, r1.x2 - 1, r1.y2, colors::border);
-		temp[0] = 0;
-		auto p = getheader(temp, temp + sizeof(temp) / sizeof(temp[0]) - 1, i);
+		temp[0] = 0; stringbuilder sb(temp);
+		auto p = getheader(sb, i);
 		if(p)
 			textc(r1.x1 + metrics::edit.x1, r1.y1 + metrics::edit.y1, r1.width() + metrics::edit.width(), p);
 		a = ishilite({r1.x2 + metrics::edit.x2 - 1, r1.y1, r1.x2 + metrics::edit.x2 + 1, r1.y2});
@@ -468,9 +468,9 @@ column& table::addstdimage() {
 	return addcol(0, "image", 0, "standart_image");
 }
 
-bool table::changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum) {
+bool table::changefield(const rect& rc, unsigned flags, stringbuilder& sb) {
 	pushfocus pf;
-	textedit te(result, result_maximum - result - 1, true);
+	textedit te(sb.begin(), sb.getmaximum(), true);
 	te.setfocus(true);
 	te.show_border = false;
 	te.post_escape = false;
@@ -479,20 +479,20 @@ bool table::changefield(const rect& rc, unsigned flags, char* result, const char
 }
 
 void table::changenumber(const rect& rc, int line, int column) {
-	char temp[32];
-	zprint(temp, "%1i", columns[column].get(get(line)));
-	if(changefield(rc, columns[column].align, temp, zendof(temp)))
+	char temp[32]; stringbuilder sb(temp);
+	sb.add("%1i", columns[column].get(get(line)));
+	if(changefield(rc, columns[column].align, sb))
 		columns[column].set(get(line), sz2num(temp));
 }
 
 void table::changetext(const rect& rc, int line, int column) {
-	char temp[8192];
+	char temp[8192]; stringbuilder sb(temp);
 	auto value = (const char*)columns[column].get(get(line));
 	if(!value)
 		temp[0] = 0;
 	else
-		zcpy(temp, value, sizeof(temp) - 1);
-	if(changefield(rc, columns[column].align, temp, zendof(temp)))
+		sb.add(value);
+	if(changefield(rc, columns[column].align, sb))
 		columns[column].set(get(line), (int)szdup(temp));
 }
 

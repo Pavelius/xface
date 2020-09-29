@@ -1,3 +1,4 @@
+#include "anyreq.h"
 #include "anyval.h"
 #include "bsreq.h"
 #include "crt.h"
@@ -213,6 +214,7 @@ struct column {
 	unsigned				param;
 	array*					source;
 	fntext					getpresent;
+	anyreq					path;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, stringbuilder& sb) const;
@@ -261,7 +263,7 @@ struct table : list {
 	void					celltext(const rect& rc, int line, int column);
 	bool					change(bool run);
 	void					changecheck(const rect& rc, int line, int column);
-	bool					changefield(const rect& rc, unsigned flags, char* result, const char* result_maximum);
+	bool					changefield(const rect& rc, unsigned flags, stringbuilder& sb);
 	void					changenumber(const rect& rc, int line, int column);
 	void					changetext(const rect& rc, int line, int column);
 	void					changeref(const rect& rc, int line, int column);
@@ -281,7 +283,7 @@ struct table : list {
 	void*					getcurrent() const;
 	static const char*		getenumname(const void* object, stringbuilder& sb);
 	static const char*		getenumid(const void* object, stringbuilder& sb);
-	virtual const char*		getheader(char* result, const char* result_maximum, int column) const { return columns[column].title; }
+	virtual const char*		getheader(stringbuilder& sb, int column) const { return columns[column].title; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
 	rect					getrect(int row, int column) const;
 	virtual const char*		getserialid() const { return 0; }
@@ -438,9 +440,9 @@ public:
 	void					setvalue(const char* id, int v) override;
 	void					updaterecords(bool setfilter);
 };
-struct form {
+/*struct form {
 	virtual control*		getcontrol(const char* id) = 0;
-};
+};*/
 void						activate(control* p);
 void						close(control* p);
 control*					getactivated();
@@ -461,7 +463,6 @@ int							field(int x, int y, int width, const char* label, color& value, int he
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* header_label, char* sev, unsigned size, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
-//int						field(int x, int y, int width, const markup* elements, const bsreq* type, void* object, int title_width = 80, controls::form* form = 0, int height = 0);
 int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips = 0, const void* param = 0, fnallow allow = 0);
 void						fieldf(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose choose_proc);
 void						fieldm(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow_proc);

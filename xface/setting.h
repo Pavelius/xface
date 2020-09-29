@@ -44,7 +44,7 @@ public:
 	const T*		begin() const { return data; }
 	const T*		end() const { return data + count; }
 	list() = default;
-	template<class T, unsigned N> constexpr list(T(&data)[N]) : data(data), count(N) {};
+	template<class M, unsigned N> constexpr list(M(&data)[N]) : data(data), count(N) {};
 };
 typedef list<element> elementa;
 struct header {

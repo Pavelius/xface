@@ -116,7 +116,7 @@ static int checkboxes(int x, int y, int width, const markup& e, void* object, re
 		return 0;
 	}
 	auto y0 = y;
-	auto y1 = y0 + 16 * (texth() + 2);
+	//auto y1 = y0 + 16 * (texth() + 2);
 	auto gn = e.list.getname;
 	for(unsigned i = 0; i < im; i++) {
 		auto v = storage[i].data;

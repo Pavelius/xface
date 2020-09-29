@@ -23,7 +23,6 @@ static bool					use_no_extension_label;
 static bool					use_uppercase_label;
 static const header*		current_header;
 static int					current_tab;
-static int					last_filter_index;
 static char					last_open_file[260];
 static controls::control*	current_active_control;
 static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
@@ -511,7 +510,6 @@ static struct widget_application : draw::controls::control {
 			current_active_control = p1[0];
 			current_active_control->view(rc);
 		} else if(ct) {
-			auto last_active_workspace_tab = current_active_control;
 			auto current_select = ct.indexof(current_active_control);
 			if(current_select == -1)
 				current_select = 0;

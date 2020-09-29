@@ -1,5 +1,5 @@
-#include "xface/point.h"
-#include "xface/bsreq.h"
+#include "point.h"
+#include "bsreq.h"
 
 const bsreq bsmeta<point>::meta[] = {
 	BSREQ(x),

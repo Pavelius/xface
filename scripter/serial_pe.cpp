@@ -1,5 +1,5 @@
-#include "xface/crt.h"
-#include "xface/io.h"
+#include "crt.h"
+#include "io.h"
 #include "main.h"
 
 using namespace code;
