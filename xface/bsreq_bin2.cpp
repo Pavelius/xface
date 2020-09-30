@@ -82,23 +82,6 @@ struct context {
 		for(unsigned j = 0; j < pv->count; j++)
 			serial(pv->data + size*j, type);
 	}
-	void serial_ref(aref<char>* pv, const bsreq* type, unsigned size) {
-		if(!writemode) {
-			decltype(pv->count) n = 0;
-			serial(&n, sizeof(n));
-			if(n > pv->count && pv->data) {
-				delete pv->data;
-				if(n)
-					pv->data = new char[n*size];
-				else
-					pv->data = 0;
-			}
-			pv->count = n;
-		} else
-			serial(&pv->count, sizeof(pv->count));
-		for(unsigned j = 0; j < pv->count; j++)
-			serial(pv->data + size*j, type);
-	}
 	void serial_rem(arem<char>* pv, const bsreq* type, unsigned size) {
 		if(!writemode) {
 			decltype(pv->count_maximum) n = 0;
@@ -139,8 +122,7 @@ struct context {
 			case KindADat:
 				serial_adat(((adat<char, 4>*)p->ptr(object)), p->type, p->size);
 				break;
-			case KindARef:
-				serial_ref(((aref<char>*)p->ptr(object)), p->type, p->size);
+			case KindList:
 				break;
 			case KindARem:
 				serial_rem(((arem<char>*)p->ptr(object)), p->type, p->size);

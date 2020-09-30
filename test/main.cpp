@@ -19,21 +19,21 @@ static const char* product_category[] = {"Shoe", "T-Short", "Cap", "Book", "Phon
 };
 
 BSDATA(genderi) = {{"NoGender", "Неизвестен"},
-{"Male", "Мужчина"},
-{"Female", "Женщина"},
+	{"Male", "Мужчина"},
+	{"Female", "Женщина"},
 };
 assert_enum(gender, Female)
 DGLNK(gender_s, genderi)
 
 BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
-{"Lawful Good", "Законопослушный добрый"},
-{"Neutral Good", "Нейтрально добрый"},
-{"Chaotic Good", "Хаотично добрый"},
-{"Lawful Neutral", "Законопослушный нейтральный"},
-{"Chaotic Neutral", "Хаотично нейтральный"},
-{"Lawful Evil", "Законопослушный злой"},
-{"Neutral Evil", "Нейтрально злой"},
-{"Chaotic Evil", "Хаотично злой"},
+	{"Lawful Good", "Законопослушный добрый"},
+	{"Neutral Good", "Нейтрально добрый"},
+	{"Chaotic Good", "Хаотично добрый"},
+	{"Lawful Neutral", "Законопослушный нейтральный"},
+	{"Chaotic Neutral", "Хаотично нейтральный"},
+	{"Lawful Evil", "Законопослушный злой"},
+	{"Neutral Evil", "Нейтрально злой"},
+	{"Chaotic Evil", "Хаотично злой"},
 };
 assert_enum(alignment, ChaoticEvil)
 DGLNK(alignment_s, alignmenti)
@@ -46,7 +46,7 @@ BSREQ(radio),
 BSREQ(age),
 BSREQ(gender),
 BSREQ(alignment),
-{}};
+	{}};
 BSDATAC(element, 32);
 
 template<class T> const char* getnm(const void* object, stringbuilder& sb) {
@@ -60,45 +60,45 @@ BSREQ(image),
 BSREQ(age),
 BSREQ(flags),
 BSREQ(date),
-{}};
+	{}};
 BSDATAC(rowelement, 64);
 
 struct treerow : controls::tree::element {
-	const char*		name;
+	const char* name;
 	int				value;
 };
 BSMETA(treerow) = {BSREQ(image),
 BSREQ(name),
 BSREQ(value),
-{}};
+	{}};
 
 struct metatest {
-	adat<char, 8>	source;
-	aref<char>		buffer;
+	adat<char, 8>					source;
+	std::initializer_list<char>		buffer;
 };
 BSMETA(metatest) = {BSREQ(source), BSREQ(buffer), {}};
 
 struct testinfo {
-	const char*		name;
+	const char* name;
 	int				value;
 	int				value2;
 	gender_s		gender;
 };
 struct markuptesti {
-	const char*		name;
+	const char* name;
 	int				value;
-	alignmenti*		alignment;
+	alignmenti* alignment;
 	gender_s		gender;
 	cflags<alignment_s> alignments;
 };
 DGINF(alignmenti) = {{"Наименование", DGREQ(name)}, {}};
 DGINF(genderi) = {{"Наименование", DGREQ(name)}, {}};
 DGINF(markuptesti) = {{"Наименование", DGREQ(name)},
-{"Значение", DGREQ(value)},
-{"Мировозрение", DGREQ(alignment), {getnm<alignmenti>}},
-{"Пол", DGREQ(gender), {getnm<genderi>}},
-{"#chk Характер", DGREQ(alignments), {getnm<alignmenti>}},
-{}};
+	{"Значение", DGREQ(value)},
+	{"Мировозрение", DGREQ(alignment), {getnm<alignmenti>}},
+	{"Пол", DGREQ(gender), {getnm<genderi>}},
+	{"#chk Характер", DGREQ(alignments), {getnm<alignmenti>}},
+	{}};
 
 static markuptesti test_properties_value = {"Плутон", 12};
 
@@ -412,22 +412,22 @@ static void simple_controls() {
 
 static void start_menu() {
 	struct element {
-		const char*		name;
+		const char* name;
 		fnevent			proc;
-		const char*		tips;
+		const char* tips;
 	};
 	static element element_data[] = {{"Графические примитивы", basic_drawing},
-	{"Перетаскивание", test_drag_drop},
-	{"Простые элементы", simple_controls},
-	{"Список", test_list},
-	{"Таблица с ячейками", test_tableref},
-	{"Дерево", test_tree},
-	{"Поле ввода", test_edit_field},
-	//{"Тайлы", test_tile_manager},
-	//{"Разметка", test_markup},
-	{"Приложение", draw::application},
-	{"Автосписок", test_autocomplite},
-	{0}};
+		{"Перетаскивание", test_drag_drop},
+		{"Простые элементы", simple_controls},
+		{"Список", test_list},
+		{"Таблица с ячейками", test_tableref},
+		{"Дерево", test_tree},
+		{"Поле ввода", test_edit_field},
+		//{"Тайлы", test_tile_manager},
+		//{"Разметка", test_markup},
+		{"Приложение", draw::application},
+		{"Автосписок", test_autocomplite},
+		{0}};
 	while(ismodal()) {
 		rectf({0, 0, getwidth(), getheight()}, colors::window);
 		statusbardw();
@@ -526,7 +526,7 @@ static bool test_write_bin() {
 	bsmeta<element>::meta->write("element.bin", &e1);
 	bsmeta<element>::meta->read("element.bin", &e2);
 	auto result = memcmp(&e1, &e2, sizeof(element));
-	return (result==0);
+	return (result == 0);
 }
 
 static bool test_data_access() {
@@ -546,7 +546,43 @@ static bool test_anyval() {
 	int a = 10;
 	const anyval v2(a);
 	const anyval v1(v2);
-	return v1==v2;
+	return v1 == v2;
+}
+struct testlisti {
+	const char* id;
+	int			value;
+	int			count;
+	const std::initializer_list<int> elements;
+};
+static auto test_i35 = {3, 3, 3, 3, 3};
+static testlisti test_list_data[] = {
+	{"Now", 3, 5, test_i35},
+	{"Thing", 2, 3, {2, 2, 2}},
+	{}
+};
+
+static bool test_initialize_list() {
+	for(auto& e : test_list_data) {
+		if(e.count != e.elements.size())
+			return false;
+		for(auto a : e.elements) {
+			if(e.value != a)
+				return false;
+		}
+	}
+	return true;
+}
+
+static bool test_reestr() {
+	reestr e;
+	auto p1 = e.add(0xFFFFFFFF, "Root");
+	auto p2 = e.add(p1, "Tables");
+	auto p3 = e.add(p2, "New way");
+	auto p4 = e.add(p3, "Columns");
+	auto p5 = e.add(p4, "Columns");
+	for(auto p : std::initializer_list<const char*>{"Name", "Id", "Text", "Value"})
+		e.add(p5, p, 12);
+	return true;
 }
 
 void directory_initialize();
@@ -558,6 +594,9 @@ int main() {
 		return -1;
 	if(!test_array())
 		return -1;
+	if(!test_reestr())
+		return -1;
+	test_initialize_list();
 	setproperties(&test_properties_value, dginf<markuptesti>::meta);
 	directory_initialize();
 	logmsg("Test %1i", 12);

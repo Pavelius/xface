@@ -5,12 +5,12 @@
 
 // Fast and simple driver for streaming binary data
 struct archive {
-	typedef aref<void*> arrayref;
+	typedef std::initializer_list<void*> arrayref;
 	io::stream&			source;
 	bool				writemode;
-	aref<arrayref>		pointers;
+	std::initializer_list<arrayref> pointers;
 	constexpr archive(io::stream& source, bool writemode) : source(source), writemode(writemode), pointers() {}
-	constexpr archive(io::stream& source, bool writemode, const aref<arrayref>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
+	constexpr archive(io::stream& source, bool writemode, const std::initializer_list<arrayref>& pointers) : source(source), writemode(writemode), pointers(pointers) {}
 	virtual void		set(void* value, unsigned size);
 	virtual void		setpointer(void** value);
 	virtual void		setstring(const char** value);
@@ -41,11 +41,6 @@ struct archive {
 			value.reserve(value.count);
 		for(auto& e : value)
 			set(e);
-	}
-	// Custom aref collection
-	template<typename T> void set(aref<T>& value) {
-		set(value.count);
-		set(value.data);
 	}
 	// All simple types and requisites
 	template<class T> void set(T& value) {

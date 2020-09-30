@@ -16,7 +16,7 @@ BSMETA(e##i) = {BSREQ(id), BSREQ(name), {}}; BSHEAD(e##i);
 enum bstype_s : unsigned char {
 	KindNoType,
 	KindNumber, KindText, KindScalar, KindEnum, KindReference,
-	KindADat, KindARef, KindARem, KindCFlags
+	KindADat, KindList, KindARem, KindCFlags
 };
 // Metadata field descriptor
 struct bsreq {
@@ -104,7 +104,7 @@ template<class T> struct meta_decoy<const T*> : meta_decoy<T> {};
 template<class T, unsigned N> struct meta_decoy<T[N]> : meta_decoy<T> {};
 template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
 template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
-template<class T> struct meta_decoy<aref<T>> : meta_decoy<T> {};
+template<class T> struct meta_decoy<std::initializer_list<T>> : meta_decoy<T> {};
 template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
 template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
 template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};
@@ -130,5 +130,5 @@ template<class T> struct meta_kind<const T*> : static_value<bstype_s, KindRefere
 template<class T> struct meta_kind<const T> : static_value<bstype_s, meta_kind<T>::value> {};
 template<class T, unsigned N> struct meta_kind<T[N]> : static_value<bstype_s, meta_kind<T>::value> {};
 template<class T, unsigned N> struct meta_kind<adat<T, N>> : static_value<bstype_s, KindADat> {};
-template<class T> struct meta_kind<aref<T>> : static_value<bstype_s, KindARef> {};
+template<class T> struct meta_kind<std::initializer_list<T>> : static_value<bstype_s, KindList> {};
 template<class T, class DT> struct meta_kind<cflags<T, DT>> : static_value<bstype_s, KindCFlags> {};

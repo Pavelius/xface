@@ -257,7 +257,7 @@ void szencode(char* output, int output_count, codepages output_code, const char*
 }
 
 void* array::add() {
-	if(count >= count_maximum) {
+	if(count >= getmaximum()) {
 		if(isgrowable())
 			reserve(count + 1);
 		else
@@ -299,7 +299,7 @@ void array::reserve(unsigned count) {
 		return;
 	if(!size)
 		return;
-	if(data && count < count_maximum)
+	if(data && count < getmaximum())
 		return;
 	count_maximum = rmoptimal(count);
 	if(data)
@@ -323,7 +323,7 @@ int array::find(const char* value, unsigned offset) const {
 int array::find(void* value, unsigned offset, unsigned size) const {
 	auto m = getcount();
 	for(unsigned i = 0; i < m; i++) {
-		if(memcmp(data, (char*)ptr(i) + offset, size) == 0)
+		if(memcmp(value, (char*)ptr(i) + offset, size) == 0)
 			return i;
 	}
 	return -1;
@@ -411,7 +411,7 @@ void array::shrink(unsigned offset, unsigned delta) {
 		}
 	}
 	auto new_size = size - delta;
-	count_maximum = count_maximum*size / new_size;
+	count_maximum = getmaximum()*size / new_size;
 	size = new_size;
 }
 

@@ -48,6 +48,14 @@ void archive::setstring(const char** e) {
 	}
 }
 
+static int find_index(const std::initializer_list<void*>& e, void* v) {
+	for(auto& ev : e) {
+		if(ev == v)
+			return &ev - e.begin();
+	}
+	return -1;
+}
+
 void archive::setpointer(void** value) {
 	unsigned pid;
 	if(writemode) {
@@ -55,7 +63,7 @@ void archive::setpointer(void** value) {
 		auto j = 0;
 		auto v = *value;
 		for(auto& e : pointers) {
-			auto i = e.indexof(v);
+			auto i = find_index(e, v);
 			if(i != -1) {
 				pid = (j << 24) | i;
 				break;
@@ -69,7 +77,9 @@ void archive::setpointer(void** value) {
 		if(pid != 0xFFFFFFFF) {
 			auto bi = pid >> 24;
 			auto ii = pid & 0xFFFFFF;
-			*value = pointers[bi][ii];
+			auto pi = const_cast<arrayref*>(pointers.begin()) + bi;
+			auto pv = const_cast<void**>(pi->begin() + bi);
+			*value = pv;
 		}
 	}
 }

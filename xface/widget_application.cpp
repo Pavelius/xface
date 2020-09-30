@@ -29,7 +29,7 @@ static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
 static const char*			settings_file_name = "settings.json";
 static arem<controls::control*> active_controls;
 
-aref<controls::control*>	getdocked(aref<controls::control*> result, dock_s type);
+std::initializer_list<controls::control*> getdocked(control** result, unsigned count, dock_s type);
 
 BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_left_bottom", "Присоединить слева и снизу"},
@@ -480,15 +480,14 @@ static struct widget_application : draw::controls::control {
 	bool isfocusable() const override {
 		return false;
 	}
-	static aref<control*> getactivepages(aref<control*> result) {
-		auto ps = result.data;
-		auto pe = result.data + result.count;
+	static std::initializer_list<control*> getactivepages(control** result, unsigned count) {
+		auto ps = result;
+		auto pe = result + count;
 		for(auto p : active_controls) {
 			if(ps < pe)
 				*ps++ = p;
 		}
-		result.count = ps - result.data;
-		return result;
+		return std::initializer_list<control*>(result, ps);
 	}
 	static void show_statusbar(const control* pc) {
 		char temp[260]; stringbuilder sb(temp);
@@ -496,40 +495,47 @@ static struct widget_application : draw::controls::control {
 		if(pu)
 			statusbar("Данные из %1", pu);
 	}
+	static int indexof(const std::initializer_list<control*>& e, control* v) {
+		for(auto& ev : e) {
+			if(ev == v)
+				return &ev - e.begin();
+		}
+		return -1;
+	}
 	static void workspace(rect rc, bool allow_multiply_window) {
 		control* p1[64];
-		auto c1 = getdocked(p1, DockWorkspace);
-		auto c2 = getactivepages({p1, sizeof(p1) / sizeof(p1[0]) - c1.count});
-		aref<control*> ct = {p1, c1.count + c2.count};
-		if(!ct) {
+		auto c1 = getdocked(p1, sizeof(p1)/sizeof(p1[0]), DockWorkspace);
+		auto c2 = getactivepages(p1, sizeof(p1) / sizeof(p1[0]) - c1.size());
+		std::initializer_list<control*> ct(c1.begin(), c2.end());
+		if(!ct.size()) {
 			auto push_fore = fore;
 			fore = colors::border;
 			text(rc, "Не найдено ни одного открытого документа", AlignCenterCenter);
 			fore = push_fore;
-		} else if(ct.count == 1 && !allow_multiply_window) {
+		} else if(ct.size() == 1 && !allow_multiply_window) {
 			current_active_control = p1[0];
 			current_active_control->view(rc);
-		} else if(ct) {
-			auto current_select = ct.indexof(current_active_control);
+		} else if(ct.size()>0) {
+			auto current_select = indexof(ct, current_active_control);
 			if(current_select == -1)
 				current_select = 0;
 			auto ec = p1[current_select];
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
 			auto current_hilite = -1;
-			auto result = draw::tabs(rct, false, false, (void**)ct.data, 0, c1.count,
+			auto result = draw::tabs(rct, false, false, (void**)ct.begin(), 0, c1.size(),
 				current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
-			if(c2.count > 0) {
-				auto r1 = draw::tabs(rct, true, false, (void**)ct.data, c1.count, c2.count,
+			if(c2.size() > 0) {
+				auto r1 = draw::tabs(rct, true, false, (void**)ct.begin(), c1.size(), c2.size(),
 					current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
 				if(r1)
 					result = r1;
 			}
 			if(current_hilite != -1)
-				show_statusbar(ct[current_hilite]);
+				show_statusbar(ct.begin()[current_hilite]);
 			switch(result) {
-			case 1: execute(postactivate, 0, 0, ct.data[current_hilite]); break;
-			case 2: execute(postclose, 0, 0, ct.data[current_hilite]); break;
+			case 1: execute(postactivate, 0, 0, ct.begin()[current_hilite]); break;
+			case 2: execute(postclose, 0, 0, ct.begin()[current_hilite]); break;
 			}
 			rc.y1 += dy;
 			unsigned flags = ec->isfocused() ? Focused : 0;
