@@ -30,7 +30,7 @@ static void apply_value(const char* id, const char* id_value, const char** requi
 			if(!pf)
 				continue;
 			auto string_value = szdup(strings[i]);
-			for(unsigned j = 0; j < pp->source->count; j++) {
+			for(unsigned j = 0; j < pp->source->getcount(); j++) {
 				auto pv = pp->source->ptr(j);
 				auto j_id = (const char*)pfid->get(pfid->ptr(pv));
 				if(!j_id)

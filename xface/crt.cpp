@@ -261,7 +261,7 @@ void* array::add() {
 		if(isgrowable())
 			reserve(count + 1);
 		else
-			return (char*)data;
+			return data;
 	}
 	return (char*)data + size * (count++);
 }
@@ -322,9 +322,31 @@ int array::find(const char* value, unsigned offset) const {
 
 int array::find(void* value, unsigned offset, unsigned size) const {
 	auto m = getcount();
-	for(unsigned i = 0; i < m; i++) {
-		if(memcmp(value, (char*)ptr(i) + offset, size) == 0)
-			return i;
+	switch(size) {
+	case 4:
+		for(unsigned i = 0; i < m; i++) {
+			if(*((int*)value)==*((int*)((char*)ptr(i) + offset)))
+				return i;
+		}
+		break;
+	case 2:
+		for(unsigned i = 0; i < m; i++) {
+			if(*((int*)value) == *((int*)((char*)ptr(i) + offset)))
+				return i;
+		}
+		break;
+	case 1:
+		for(unsigned i = 0; i < m; i++) {
+			if(*((int*)value) == *((int*)((char*)ptr(i) + offset)))
+				return i;
+		}
+		break;
+	default:
+		for(unsigned i = 0; i < m; i++) {
+			if(memcmp(value, (char*)ptr(i) + offset, size) == 0)
+				return i;
+		}
+		break;
 	}
 	return -1;
 }

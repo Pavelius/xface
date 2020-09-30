@@ -28,6 +28,6 @@ public:
 	unsigned			add(unsigned parent, const char* id, const char* value) { return add(parent, id, Text, strings.add(value)); }
 	unsigned			add(unsigned parent, const char* id, int value) { return add(parent, id, Number, value); }
 	unsigned			next(unsigned parent, unsigned i) const;
-	const char*			getid(unsigned i) { return (i == 0xFFFFFFFF) ? "" : strings.get((((element*)elements.data) + i)->id); }
-	unsigned			getparent(unsigned i) { return (i == 0xFFFFFFFF) ? i : (((element*)elements.data) + i)->parent; }
+	const char*			getid(unsigned i) { return (i == 0xFFFFFFFF) ? "" : strings.get((((element*)elements.begin()) + i)->id); }
+	unsigned			getparent(unsigned i) { return (i == 0xFFFFFFFF) ? i : (((element*)elements.begin()) + i)->parent; }
 };

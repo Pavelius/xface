@@ -215,6 +215,7 @@ struct column {
 	array*					source;
 	fntext					getpresent;
 	anyreq					path;
+	fnlist					plist;
 	explicit operator bool() const { return method != 0; }
 	int						get(const void* object) const;
 	const char*				get(const void* object, stringbuilder& sb) const;
@@ -226,6 +227,7 @@ struct column {
 	column&					set(total_s v) { total = v; return *this; }
 	column&					set(array* v) { source = v; return *this; }
 	column&					set(fntext v) { getpresent = v; return *this; }
+	column&					set(const fnlist& v) { plist = v; return *this; }
 	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
@@ -247,6 +249,7 @@ struct table : list {
 		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
+	virtual column&			addcol(const char* name, const anyreq& req, const char* visual_id, array* source = 0);
 	column&					addstdimage();
 	virtual void*			addrow() { return 0; } // Need override
 	virtual bool			addrow(bool run);

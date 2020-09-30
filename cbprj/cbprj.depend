@@ -1,0 +1,58 @@
+# depslib dependency file v1.0
+1582624996 source:e:\documents\visual studio 2017\projects\xface\xface\anyreq.cpp
+	"anyreq.h"
+
+1601449487 e:\documents\visual studio 2017\projects\xface\xface\anyreq.h
+
+1582624996 source:e:\documents\visual studio 2017\projects\xface\xface\anyval.cpp
+	"anyval.h"
+
+1591090050 e:\documents\visual studio 2017\projects\xface\xface\anyval.h
+
+1601457195 source:e:\documents\visual studio 2017\projects\xface\xface\archive.cpp
+	"archive.h"
+
+1601456363 e:\documents\visual studio 2017\projects\xface\xface\archive.h
+	"crt.h"
+	"io.h"
+
+1601458633 e:\documents\visual studio 2017\projects\xface\xface\crt.h
+	<initializer_list>
+
+1582624996 e:\documents\visual studio 2017\projects\xface\xface\io.h
+
+1582624996 source:e:\documents\visual studio 2017\projects\xface\xface\argw.cpp
+	"agrw.h"
+
+1582624996 e:\documents\visual studio 2017\projects\xface\xface\agrw.h
+	"crt.h"
+
+1591090050 source:e:\documents\visual studio 2017\projects\xface\xface\bitops.cpp
+	"crt.h"
+	"bitops.h"
+
+1582624996 e:\documents\visual studio 2017\projects\xface\xface\bitops.h
+	"color.h"
+	"point.h"
+
+1591090050 e:\documents\visual studio 2017\projects\xface\xface\color.h
+
+1591090050 e:\documents\visual studio 2017\projects\xface\xface\point.h
+	"rect.h"
+
+1582624996 e:\documents\visual studio 2017\projects\xface\xface\rect.h
+
+1599222362 source:e:\documents\visual studio 2017\projects\xface\xface\bsreq.cpp
+	"bsreq.h"
+	"stringbuilder.h"
+
+1601457247 e:\documents\visual studio 2017\projects\xface\xface\bsreq.h
+	"crt.h"
+
+1601449487 e:\documents\visual studio 2017\projects\xface\xface\stringbuilder.h
+
+1601457308 source:e:\documents\visual studio 2017\projects\xface\xface\bsreq_bin2.cpp
+	"crt.h"
+	"bsreq.h"
+	"io.h"
+

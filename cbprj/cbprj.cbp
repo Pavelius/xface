@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="cbprj" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/cbprj" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/cbprj" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../xface/agrw.h" />
+		<Unit filename="../xface/anyreq.cpp" />
+		<Unit filename="../xface/anyreq.h" />
+		<Unit filename="../xface/anyval.cpp" />
+		<Unit filename="../xface/anyval.h" />
+		<Unit filename="../xface/archive.cpp" />
+		<Unit filename="../xface/archive.h" />
+		<Unit filename="../xface/argw.cpp" />
+		<Unit filename="../xface/bitops.cpp" />
+		<Unit filename="../xface/bitops.h" />
+		<Unit filename="../xface/bsreq.cpp" />
+		<Unit filename="../xface/bsreq.h" />
+		<Unit filename="../xface/bsreq_bin2.cpp" />
+		<Unit filename="../xface/bsreq_parser.cpp" />
+		<Unit filename="../xface/bstream.cpp" />
+		<Unit filename="../xface/bstream.h" />
+		<Unit filename="../xface/color.cpp" />
+		<Unit filename="../xface/color.h" />
+		<Unit filename="../xface/converter.cpp" />
+		<Unit filename="../xface/converter.h" />
+		<Unit filename="../xface/crt.cpp" />
+		<Unit filename="../xface/crt.h" />
+		<Unit filename="../xface/crt_memory.cpp" />
+		<Unit filename="../xface/datetime.cpp" />
+		<Unit filename="../xface/datetime.h" />
+		<Unit filename="../xface/dice.cpp" />
+		<Unit filename="../xface/dice.h" />
+		<Unit filename="../xface/draw.cpp" />
+		<Unit filename="../xface/draw.h" />
+		<Unit filename="../xface/draw_animation.cpp" />
+		<Unit filename="../xface/draw_animation.h" />
+		<Unit filename="../xface/draw_autocomplete.cpp" />
+		<Unit filename="../xface/draw_button.cpp" />
+		<Unit filename="../xface/draw_clipart.cpp" />
+		<Unit filename="../xface/draw_cmd.cpp" />
+		<Unit filename="../xface/draw_control.cpp" />
+		<Unit filename="../xface/draw_control.h" />
+		<Unit filename="../xface/draw_dialog.cpp" />
+		<Unit filename="../xface/draw_dockbar.cpp" />
+		<Unit filename="../xface/draw_dropdown.cpp" />
+		<Unit filename="../xface/draw_field.cpp" />
+		<Unit filename="../xface/draw_input.cpp" />
+		<Unit filename="../xface/draw_list.cpp" />
+		<Unit filename="../xface/draw_picker.cpp" />
+		<Unit filename="../xface/draw_scroll.cpp" />
+		<Unit filename="../xface/draw_scrollable.cpp" />
+		<Unit filename="../xface/draw_splitter.cpp" />
+		<Unit filename="../xface/draw_statusbar.cpp" />
+		<Unit filename="../xface/draw_table.cpp" />
+		<Unit filename="../xface/draw_tableref.cpp" />
+		<Unit filename="../xface/draw_tabs.cpp" />
+		<Unit filename="../xface/draw_text.cpp" />
+		<Unit filename="../xface/draw_textedit.cpp" />
+		<Unit filename="../xface/draw_textf.cpp" />
+		<Unit filename="../xface/draw_theme.cpp" />
+		<Unit filename="../xface/draw_tool.cpp" />
+		<Unit filename="../xface/draw_toolbar.cpp" />
+		<Unit filename="../xface/draw_tooltips.cpp" />
+		<Unit filename="../xface/draw_tree.cpp" />
+		<Unit filename="../xface/io.cpp" />
+		<Unit filename="../xface/io.h" />
+		<Unit filename="../xface/io_plugin.cpp" />
+		<Unit filename="../xface/io_plugin.h" />
+		<Unit filename="../xface/io_plugin_json.cpp" />
+		<Unit filename="../xface/io_plugin_xml.cpp" />
+		<Unit filename="../xface/markup.cpp" />
+		<Unit filename="../xface/markup.h" />
+		<Unit filename="../xface/markup_old.cpp" />
+		<Unit filename="../xface/markup_old.h" />
+		<Unit filename="../xface/point.cpp" />
+		<Unit filename="../xface/point.h" />
+		<Unit filename="../xface/pointl.h" />
+		<Unit filename="../xface/rect.h" />
+		<Unit filename="../xface/reestr.cpp" />
+		<Unit filename="../xface/reestr.h" />
+		<Unit filename="../xface/requisit.cpp" />
+		<Unit filename="../xface/requisit.h" />
+		<Unit filename="../xface/resource_dynamic.cpp" />
+		<Unit filename="../xface/resources.cpp" />
+		<Unit filename="../xface/resources.h" />
+		<Unit filename="../xface/screenshoot.cpp" />
+		<Unit filename="../xface/screenshoot.h" />
+		<Unit filename="../xface/setting.cpp" />
+		<Unit filename="../xface/setting.h" />
+		<Unit filename="../xface/string.h" />
+		<Unit filename="../xface/string_value.cpp" />
+		<Unit filename="../xface/stringbuilder.cpp" />
+		<Unit filename="../xface/stringbuilder.h" />
+		<Unit filename="../xface/strlib.cpp" />
+		<Unit filename="../xface/strlib.h" />
+		<Unit filename="../xface/surface_serial.cpp" />
+		<Unit filename="../xface/sz2numf.cpp" />
+		<Unit filename="../xface/szdup.cpp" />
+		<Unit filename="../xface/valuelist.cpp" />
+		<Unit filename="../xface/valuelist.h" />
+		<Unit filename="../xface/widget_application.cpp" />
+		<Unit filename="../xface/widget_directory.cpp" />
+		<Unit filename="../xface/widget_logging.cpp" />
+		<Unit filename="../xface/widget_picture.cpp" />
+		<Unit filename="../xface/widget_properties.cpp" />
+		<Unit filename="../xface/widget_textview.cpp" />
+		<Unit filename="../xface/win.h" />
+		<Unit filename="../xface/win_clipboard.cpp" />
+		<Unit filename="../xface/win_cmd.cpp" />
+		<Unit filename="../xface/win_datetime.cpp" />
+		<Unit filename="../xface/win_draw.cpp" />
+		<Unit filename="../xface/win_draw_dlg.cpp" />
+		<Unit filename="../xface/win_draw_shell.cpp" />
+		<Unit filename="../xface/win_io_file.cpp" />
+		<Unit filename="../xface/win_menu.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

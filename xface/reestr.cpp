@@ -14,9 +14,9 @@ unsigned reestr::stridx::find(const void* p, unsigned c) {
 }
 
 const char* reestr::stridx::get(unsigned id) const {
-	if(id >= count)
+	if(id >= getcount())
 		return "";
-	return (char*)data + id;
+	return (char*)begin() + id;
 }
 
 unsigned reestr::stridx::add(const char* id) {
@@ -26,7 +26,7 @@ unsigned reestr::stridx::add(const char* id) {
 	auto i = find(id, c);
 	if(i != 0xFFFFFFFF)
 		return i;
-	i = count;
+	i = getcount();
 	reserve(i + c);
 	memcpy(ptr(i), id, c);
 	return i;

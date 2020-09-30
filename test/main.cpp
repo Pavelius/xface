@@ -182,17 +182,30 @@ static void test_tableref() {
 	elements.add({"Valentin", Male, NeutralGood, 1, 20, 0, datetime::now() - 3 * 24 * 60});
 	elements.add({"Jorgun", Male, LawfulGood, 0, 16, 0, datetime::now() - 4 * 24 * 60});
 	controls::tableref test;
-	auto pm = bsmeta<rowelement>::meta;
-	test.addcol(pm, "#", "rownumber");
-	test.addcol(pm, "image", "Из", "image");
-	test.addcol(pm, "name", "Наименование").set(SizeAuto);
-	test.addcol(pm, "flags", "УУ", "checkbox").setparam(1);
-	test.addcol(pm, "flags", "БУ", "checkbox").setparam(2);
-	test.addcol(pm, "flags", "МУ", "checkbox").setparam(4);
-	test.addcol(pm, "age", "Возраст");
-	test.addcol(pm, "gender", "Пол").set(bsdata<genderi>::source_ptr);
-	test.addcol(pm, "alignment", "Мировозрение").set(bsdata<alignmenti>::source_ptr);
-	test.addcol(pm, "date", "Дата", "datetime");
+	if(true) {
+		auto pm = bsmeta<rowelement>::meta;
+		test.addcol(pm, "#", "rownumber");
+		test.addcol(pm, "image", "Из", "image");
+		test.addcol(pm, "name", "Наименование").set(SizeAuto);
+		test.addcol(pm, "flags", "УУ", "checkbox").setparam(1);
+		test.addcol(pm, "flags", "БУ", "checkbox").setparam(2);
+		test.addcol(pm, "flags", "МУ", "checkbox").setparam(4);
+		test.addcol(pm, "age", "Возраст");
+		test.addcol(pm, "gender", "Пол").set(bsdata<genderi>::source_ptr);
+		test.addcol(pm, "alignment", "Мировозрение").set(bsdata<alignmenti>::source_ptr);
+		test.addcol(pm, "date", "Дата", "datetime");
+	} else {
+		test.addcol("#", {}, "rownumber");
+		test.addcol("Из", {FO(rowelement,image)}, "image");
+		//test.addcol(pm, "name", "Наименование").set(SizeAuto);
+		//test.addcol(pm, "flags", "УУ", "checkbox").setparam(1);
+		//test.addcol(pm, "flags", "БУ", "checkbox").setparam(2);
+		//test.addcol(pm, "flags", "МУ", "checkbox").setparam(4);
+		//test.addcol(pm, "age", "Возраст");
+		//test.addcol(pm, "gender", "Пол").set(bsdata<genderi>::source_ptr);
+		//test.addcol(pm, "alignment", "Мировозрение").set(bsdata<alignmenti>::source_ptr);
+		//test.addcol(pm, "date", "Дата", "datetime");
+	}
 	for(auto& e : elements)
 		test.addref(&e);
 	for(auto& e : elements)
@@ -203,21 +216,6 @@ static void test_tableref() {
 	test.no_change_count = false;
 	show_table(test);
 }
-
-//static void test_grid_ref() {
-//	controls::gridref test(bsmeta<cultivatedi>::meta);
-//	test.addcol("name", "Наименование", "text", SizeAuto);
-//	test.addcol("cult_land", "Обрабатывается", "number");
-//	test.addcol("cult_land_percent", "Обрабатывается (%)", "percent");
-//	test.add(bsmeta<cultivatedi>::data.get(0));
-//	test.add(bsmeta<cultivatedi>::data.get(1));
-//	test.add(bsmeta<cultivatedi>::data.get(1));
-//	test.no_change_order = false;
-//	test.show_grid_lines = true;
-//	test.read_only = false;
-//	test.no_change_count = false;
-//	show_table(test);
-//}
 
 static void test_tree() {
 	struct test_tree_control : controls::tree {
@@ -329,31 +327,6 @@ static int run_wizard(fnevent proc) {
 		domodal();
 	}
 }
-
-//static void test_tile_manager() {
-//	pushfocus pf;
-//	char filename[260];
-//	point tile = {};
-//	point origin = {};
-//	color transparent = {160, 160, 0};
-//	auto use_transparent = false;
-//	while(ismodal()) {
-//		rectf({0, 0, getwidth(), getheight()}, colors::window);
-//		auto x = 20, y = 20;
-//		auto h = draw::texth();
-//		y += field(x, y, 380, "Файл тайлов", filename, sizeof(filename), 100, choose_folder);
-//		y += checkbox(x, y, 380, use_transparent, "Использовать прозрачный цвет");
-//		if(use_transparent) {
-//			y += field(x, y, 380, "Цвет", transparent, 100);
-//			y += button(x + 100, y, 280, choose_transparent_color, "Выбрать цвет с картнки");
-//		}
-//		auto y0 = y;
-//		y += point_input(x, y, tile, 180, 100, "Ширина (точек)", "Высота (точек)");
-//		point_input(x + 200, y0, origin, 180, 100, "Смещение", "Отступ");
-//		y += button(x, y, 300, buttonok, "Принять");
-//		domodal();
-//	}
-//}
 
 static void test_autocomplite() {
 	valuelist e;
@@ -554,14 +527,14 @@ struct testlisti {
 	int			count;
 	const std::initializer_list<int> elements;
 };
-static auto test_i35 = {3, 3, 3, 3, 3};
-static testlisti test_list_data[] = {
-	{"Now", 3, 5, test_i35},
-	{"Thing", 2, 3, {2, 2, 2}},
-	{}
-};
 
 static bool test_initialize_list() {
+	static auto test_i35 = {3, 3, 3, 3, 3};
+	static testlisti test_list_data[] = {
+		{"Now", 3, 5, test_i35},
+		{"Thing", 2, 3, {2, 2, 2}},
+		{}
+	};
 	for(auto& e : test_list_data) {
 		if(e.count != e.elements.size())
 			return false;

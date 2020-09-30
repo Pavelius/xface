@@ -427,6 +427,40 @@ static const char* get_visual_default(const bsreq* type) {
 	return "enum";
 }
 
+column&	table::addcol(const char* name, const anyreq& req, const char* visual_id, array* source) {
+	const visual* pf = 0;
+	auto p = columns.add();
+	memset(p, 0, sizeof(column));
+	if(visual_id) {
+		for(auto pp = getvisuals(); pp && *pp; pp++) {
+			pf = (*pp)->find(visual_id);
+			if(pf)
+				break;
+		}
+	}
+	p->path = req;
+	if(pf) {
+		p->method = pf;
+		p->flags.add(ColumnVisible);
+	} else
+		p->method = visuals;
+	auto text_width = draw::textw('0');
+	if(!text_width)
+		text_width = 7;
+	p->title = szdup(name);
+	p->size = p->method->size;
+	p->width = p->method->default_width;
+	if(p->width < 0)
+		p->width = -p->width * text_width + 4;
+	p->total = p->method->total;
+	p->align = p->method->align;
+	p->source = source;
+	if(!p->width)
+		p->width = 100;
+	current_column = getvalid(current_column, 1);
+	return *p;
+}
+
 column& table::addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id) {
 	const visual* pf = 0;
 	auto p = columns.add();
