@@ -222,6 +222,9 @@
     <ClCompile Include="widget_properties.cpp">
       <Filter>draw</Filter>
     </ClCompile>
+    <ClCompile Include="reestr.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
@@ -307,6 +310,9 @@
     </ClInclude>
     <ClInclude Include="draw_control.h">
       <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="reestr.h">
+      <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
