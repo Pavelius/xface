@@ -67,23 +67,25 @@ void table::clickcolumn(int column) const {
 }
 
 int	column::get(const void* object) const {
-	if(!type)
-		return 0;
-	return type->get(type->ptr(object));
+	//if(type)
+	//	return type->get(type->ptr(object));
+	return path.get(path.ptr(object));
 }
 
 const char* column::get(const void* object, stringbuilder& sb) const {
 	if(getpresent)
 		return getpresent(object, sb);
-	if(type)
-		return type->gets(type->ptr(object));
-	return "";
+	//if(type)
+	//	return type->gets(type->ptr(object));
+	//else
+		return path.gets(path.ptr(object));
 }
 
 void column::set(const void* object, int v) {
-	if(!type)
-		return;
-	type->set(type->ptr(object), v);
+	//if(type)
+	//	type->set(type->ptr(object), v);
+	//else
+		path.set(path.ptr(object), v);
 }
 
 void table::update_columns(const rect& rc) {
@@ -415,18 +417,6 @@ bool table::keyinput(unsigned id) {
 	return true;
 }
 
-static const char* get_visual_default(const bsreq* type) {
-	if(!type)
-		return 0;
-	if(type->type == bsmeta<int>::meta)
-		return "number";
-	else if(type->type == bsmeta<const char*>::meta)
-		return "text";
-	else if(type->type == bsmeta<datetime>::meta)
-		return "datetime";
-	return "enum";
-}
-
 column&	table::addcol(const char* name, const anyreq& req, const char* visual_id, array* source) {
 	const visual* pf = 0;
 	auto p = columns.add();
@@ -461,45 +451,45 @@ column&	table::addcol(const char* name, const anyreq& req, const char* visual_id
 	return *p;
 }
 
-column& table::addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id) {
-	const visual* pf = 0;
-	auto p = columns.add();
-	memset(p, 0, sizeof(column));
-	p->type = metadata->find(id);
-	if(!visual_id)
-		visual_id = get_visual_default(p->type);
-	if(visual_id) {
-		for(auto pp = getvisuals(); pp && *pp; pp++) {
-			pf = (*pp)->find(visual_id);
-			if(pf)
-				break;
-		}
-	}
-	if(pf) {
-		p->method = pf;
-		p->flags.add(ColumnVisible);
-	} else
-		p->method = visuals;
-	auto text_width = draw::textw('0');
-	if(!text_width)
-		text_width = 7;
-	p->title = szdup(name);
-	p->size = p->method->size;
-	p->width = p->method->default_width;
-	if(p->width < 0)
-		p->width = -p->width * text_width + 4;
-	p->total = p->method->total;
-	p->align = p->method->align;
-	if(p->type)
-		p->source = p->type->source;
-	if(!p->width)
-		p->width = 100;
-	current_column = getvalid(current_column, 1);
-	return *p;
-}
+//column& table::addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id) {
+//	const visual* pf = 0;
+//	auto p = columns.add();
+//	memset(p, 0, sizeof(column));
+//	p->type = metadata->find(id);
+//	if(!visual_id)
+//		visual_id = get_visual_default(p->type);
+//	if(visual_id) {
+//		for(auto pp = getvisuals(); pp && *pp; pp++) {
+//			pf = (*pp)->find(visual_id);
+//			if(pf)
+//				break;
+//		}
+//	}
+//	if(pf) {
+//		p->method = pf;
+//		p->flags.add(ColumnVisible);
+//	} else
+//		p->method = visuals;
+//	auto text_width = draw::textw('0');
+//	if(!text_width)
+//		text_width = 7;
+//	p->title = szdup(name);
+//	p->size = p->method->size;
+//	p->width = p->method->default_width;
+//	if(p->width < 0)
+//		p->width = -p->width * text_width + 4;
+//	p->total = p->method->total;
+//	p->align = p->method->align;
+//	if(p->type)
+//		p->source = p->type->source;
+//	if(!p->width)
+//		p->width = 100;
+//	current_column = getvalid(current_column, 1);
+//	return *p;
+//}
 
 column& table::addstdimage() {
-	return addcol(0, "image", 0, "standart_image");
+	return addcol(0, {}, "standart_image");
 }
 
 bool table::changefield(const rect& rc, unsigned flags, stringbuilder& sb) {
@@ -538,7 +528,7 @@ const char* table::getenumid(const void* object, stringbuilder& sb) {
 
 const char* table::getenumname(const void* object, stringbuilder& sb) {
 	if(!object)
-		return "Пусто";
+		return "Нет";
 	return ((enumi*)object)->name;
 }
 
@@ -546,14 +536,14 @@ void table::changeref(const rect& rc, int line, int column) {
 	if(!columns[column].source)
 		return;
 	auto p = get(line);
-	const anyval av((char*)p + columns[column].type->offset, columns[column].type->size, 0);
+	const anyval av((char*)p + columns[column].path.offset, columns[column].path.size, 0);
 	fieldm(rc, av, *columns[column].source, getenumname, true, 0, 0);
 }
 
 void table::changecheck(const rect& rc, int line, int column) {
 	auto p = get(line);
 	auto v = columns[column].get(p);
-	auto b = 1 << columns[column].param;
+	auto b = 1 << columns[column].path.bit;
 	if((v & b) != 0)
 		columns[column].set(p, v & (~b));
 	else
@@ -667,9 +657,8 @@ void table::celldate(const rect& rc, int line, int column) {
 	datetime d(columns[column].get(get(line)));
 	if(!d)
 		return;
-	char temp[260];
-	zprint(temp, "%1.2i.%2.2i.%3.2i",
-		d.day(), d.month(), d.year());
+	char temp[260]; stringbuilder sb(temp);
+	sb.add("%1.2i.%2.2i.%3.4i", d.day(), d.month(), d.year());
 	cell(rc, line, column, temp);
 }
 
@@ -677,8 +666,8 @@ void table::celldatetime(const rect& rc, int line, int column) {
 	datetime d(columns[column].get(get(line)));
 	if(!d)
 		return;
-	char temp[260];
-	zprint(temp, "%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
+	char temp[260]; stringbuilder sb(temp);
+	sb.add("%1.2i.%2.2i.%3.2i %4.2i:%5.2i",
 		d.day(), d.month(), d.year(), d.hour(), d.minute());
 	cell(rc, line, column, temp);
 }
@@ -686,7 +675,7 @@ void table::celldatetime(const rect& rc, int line, int column) {
 void table::cellbox(const rect& rc, int line, int column) {
 	unsigned flags = 0;
 	auto v = columns[column].get(get(line));
-	auto b = 1 << columns[column].param;
+	auto b = 1 << columns[column].path.bit;
 	if(v&b)
 		flags |= Checked;
 	cellhilite(rc, line, column, 0, AlignCenter);

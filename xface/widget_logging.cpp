@@ -16,11 +16,6 @@ struct logi {
 	const char*		text;
 };
 }
-BSMETA(logi) = {
-	BSREQ(stamp),
-	BSREQ(text),
-{}};
-
 static arem<logi>	messages;
 
 void logmsgv(const char* format, const char* arguments) {
@@ -57,9 +52,8 @@ static void before_application_exit() {
 
 static struct widget_logging : control::plugin, draw::initplugin, table {
 	void after_initialize() override {
-		auto meta = bsmeta<logi>::meta;
-		addcol(meta, "stamp", "Дата").set(SizeFixed).set(AlignCenter);
-		addcol(meta, "text", "Сообщение").set(SizeAuto);
+		addcol("Дата", ANREQ(logi, stamp), "date").set(SizeFixed).set(AlignCenter);
+		addcol("Сообщение", ANREQ(logi, text), "text").set(SizeAuto);
 		atexit(before_application_exit);
 	}
 	control* getcontrol() override { return this; }

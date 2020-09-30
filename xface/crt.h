@@ -40,7 +40,7 @@ private:
 #define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};
 #define BSMETA(e) template<> const bsreq bsmeta<e>::meta[]
 #define BSHEAD(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
-#define BSLNK(T1, T2) template<> struct bsmeta<T1> : bsmeta<T2> {}; template<> struct bsdata<T1> : bsdata<T2> {};
+#define BSLNK(T1, T2) template<> struct bsdata<T1> : bsdata<T2> {};
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
 
 extern "C" int						atexit(void(*func)(void));
@@ -295,3 +295,15 @@ struct serializer {
 	virtual void					set(const char* id, const char* v, type_s type = Text) = 0;
 	virtual void					close(const char* id, type_s type = Text) = 0;
 };
+// Get base type
+template<class T> struct meta_decoy { typedef T value; };
+template<> struct meta_decoy<const char*> { typedef const char* value; };
+template<class T> struct meta_decoy<T*> : meta_decoy<T> {};
+template<class T> struct meta_decoy<const T*> : meta_decoy<T> {};
+template<class T, unsigned N> struct meta_decoy<T[N]> : meta_decoy<T> {};
+template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
+template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
+template<class T> struct meta_decoy<std::initializer_list<T>> : meta_decoy<T> {};
+template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
+template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
+template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};

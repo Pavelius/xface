@@ -1,6 +1,5 @@
 #include "anyreq.h"
 #include "anyval.h"
-#include "bsreq.h"
 #include "crt.h"
 #include "datetime.h"
 #include "draw.h"
@@ -210,8 +209,7 @@ struct column {
 	total_s					total;
 	cflags<column_s>		flags;
 	image_flag_s			align;
-	const bsreq*			type;
-	unsigned				param;
+	//const bsreq*			type;
 	array*					source;
 	fntext					getpresent;
 	anyreq					path;
@@ -228,7 +226,6 @@ struct column {
 	column&					set(array* v) { source = v; return *this; }
 	column&					set(fntext v) { getpresent = v; return *this; }
 	column&					set(const fnlist& v) { plist = v; return *this; }
-	column&					setparam(unsigned v) { param = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
 struct table : list {
@@ -248,7 +245,6 @@ struct table : list {
 	constexpr table() : current_column(0), current_column_maximum(0), maximum_width(0),
 		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
 		select_mode(SelectCell) {}
-	virtual column&			addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id = 0);
 	virtual column&			addcol(const char* name, const anyreq& req, const char* visual_id, array* source = 0);
 	column&					addstdimage();
 	virtual void*			addrow() { return 0; } // Need override
@@ -477,5 +473,3 @@ void						setfocus(const anyval& value, bool instant = false);
 void						setposition(int& x, int& y, int& width, int padding = -1);
 void						titletext(int& x, int y, int& width, unsigned flags, const char* label, int title, const char* separator = 0);
 }
-NOBSDATA(datetime)
-BSLNK(draw::dock_s, draw::docki)

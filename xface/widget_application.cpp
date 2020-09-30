@@ -39,7 +39,6 @@ BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_workspace", "На рабочем столе"},
 };
 assert_enum(dock, DockWorkspace);
-BSMETA(control::plugin) = {BSREQ(id), BSREQ(dock), BSREQ(visible), {}};
 
 struct streca {
 	const element*	e;
@@ -331,12 +330,11 @@ static struct widget_settings_header : controls::list {
 
 static struct widget_control_viewer : controls::tableref {
 	void initialize() {
-		auto type = bsmeta<control::plugin>::meta;
 		no_change_order = true;
 		no_change_count = true;
-		addcol(type, "id", "Наименование").set(ColumnReadOnly);
-		addcol(type, "dock", "Расположение");
-		addcol(type, "visible", "Видимость", "checkbox");
+		addcol("Наименование", ANREQ(plugin, id), "text").set(ColumnReadOnly);
+		addcol("Расположение", ANREQ(plugin, dock), "enum");
+		//addcol(type, "visible", "Видимость", "checkbox");
 		for(auto p = plugin::first; p; p = p->next) {
 			auto pc = p->getcontrol();
 			if(!pc)

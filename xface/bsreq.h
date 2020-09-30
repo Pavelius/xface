@@ -96,18 +96,6 @@ template<class T> struct meta_count : static_int<1> {};
 template<class T, unsigned N> struct meta_count<T[N]> : static_int<N> {};
 template<class T> struct meta_count<T[]> : static_int<0> {};
 template<class T, unsigned N> struct meta_count<adat<T, N>> : static_int<N> {};
-// Get base type
-template<class T> struct meta_decoy { typedef T value; };
-template<> struct meta_decoy<const char*> { typedef const char* value; };
-template<class T> struct meta_decoy<T*> : meta_decoy<T> {};
-template<class T> struct meta_decoy<const T*> : meta_decoy<T> {};
-template<class T, unsigned N> struct meta_decoy<T[N]> : meta_decoy<T> {};
-template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
-template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
-template<class T> struct meta_decoy<std::initializer_list<T>> : meta_decoy<T> {};
-template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
-template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
-template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};
 // Get base size
 template<class T> struct meta_size : meta_decoy<T> {};
 template<class T> struct meta_size<T*> { typedef T* value; };

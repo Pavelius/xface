@@ -2,7 +2,7 @@
 
 static_assert(sizeof(anyreq) == sizeof(int), "Size anyreq class can't be different from integer size");
 
-int anyreq::get(void* object) const {
+int anyreq::get(const void* object) const {
 	switch(size) {
 	case 1: return *((char*)object);
 	case 2: return *((short*)object);
@@ -11,7 +11,7 @@ int anyreq::get(void* object) const {
 	}
 }
 
-const char* anyreq::gets(void* object) const {
+const char* anyreq::gets(const void* object) const {
 	if(size != sizeof(char*))
 		return "";
 	auto p = *((const char**)object);

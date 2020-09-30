@@ -12,8 +12,8 @@ struct anyreq {
 	//constexpr anyreq(unsigned short offset, unsigned char size) : offset(offset), size(size), bit(0) {}
 	//constexpr anyreq(unsigned short offset, unsigned char size, unsigned char bit) : offset(offset), size(size), bit(bit) {}
 	constexpr bool operator==(const anyreq& e) { return e.offset == offset; }
-	int						get(void* object) const;
-	const char*				gets(void* object) const;
-	constexpr char*			ptr(void* object) const { return (char*)object + offset; }
+	int						get(const void* object) const;
+	const char*				gets(const void* object) const;
+	constexpr char*			ptr(const void* object) const { return (char*)object + offset; }
 	void					set(void* object, int value) const;
 };

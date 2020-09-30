@@ -14,16 +14,14 @@ struct header : tree::element {
 	const char*		getname() const { return name; }
 };
 }
-BSMETA(header) = {BSREQ(name), BSREQ(image), {}};
 
 static const char*		base_url = "D:/projects";
 
 static struct widget_directory : tree, control::plugin, initplugin {
 
 	void after_initialize() override {
-		auto meta = bsmeta<header>::meta;
 		addstdimage();
-		addcol(meta, "name", "Наименование").set(SizeAuto);
+		addcol("Наименование", ANREQ(header, name), "text").set(SizeAuto);
 		expand(0);
 	}
 

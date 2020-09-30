@@ -9,7 +9,6 @@ static control*			current_focus;
 static control::fncmd	current_execute;
 const sprite*			control::standart_toolbar = (sprite*)loadb("art/tools/toolbar.pma");
 const sprite*			control::standart_tree = (sprite*)loadb("art/tools/tree.pma");
-BSMETA(datetime) = {{"datetime"}, {}};
 
 bool control_input() {
 	if(current_focus) {

@@ -1,4 +1,3 @@
-#include "bsreq.h"
 #include "datetime.h"
 #include "reestr.h"
 
@@ -54,5 +53,3 @@ struct element {
 	gender_s		gender;
 	alignment_s		alignment;
 };
-BSLNK(alignment_s, alignmenti)
-BSLNK(gender_s, genderi)
