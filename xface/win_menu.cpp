@@ -48,10 +48,11 @@ struct menu_builder : control::command::builder {
 		mi.fMask = MIIM_STRING | MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_SUBMENU | MIIM_DATA;
 		mi.fType = MFT_STRING;
 		char temp[260]; temp[0] = 0;
+		stringbuilder sb(temp);
 		if(cmd.name)
-			zcpy(temp, cmd.name, sizeof(temp) - 1);
+			sb.add(cmd.name, sizeof(temp) - 1);
 		if(cmd.key) {
-			zcat(temp, "\t");
+			sb.add("\t");
 			draw::key2str(zend(temp), cmd.key);
 		}
 		szupper(temp, 1);

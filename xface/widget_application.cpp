@@ -351,7 +351,8 @@ int draw::field(int x, int y, int width, const char* label, color& value, int he
 	if(label && label[0])
 		titletext(x, y, width, 0, label, header_width);
 	rect rc = {x, y, x + width, y + draw::texth() + 8};
-	char temp[128]; szprint(temp, zendof(temp), "%1i, %2i, %3i", value.r, value.g, value.b);
+	char temp[128]; stringbuilder sb(temp);
+	sb.add("%1i, %2i, %3i", value.r, value.g, value.b);
 	anyval av(value, 0);
 	auto focused = isfocused(rc, av);
 	if(buttonh(rc,

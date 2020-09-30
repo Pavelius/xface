@@ -46,3 +46,4 @@ public:
 };
 // Callback function for title, header or getting name
 typedef const char* (*fntext)(const void* object, stringbuilder& sb);
+template<class T> const char* getnm(const void* object, stringbuilder& sb) { return ((T*)object)->name; }

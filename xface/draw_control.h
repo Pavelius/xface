@@ -209,7 +209,6 @@ struct column {
 	total_s					total;
 	cflags<column_s>		flags;
 	image_flag_s			align;
-	//const bsreq*			type;
 	array*					source;
 	fntext					getpresent;
 	anyreq					path;
@@ -461,7 +460,7 @@ bool						dropdown(const rect& rc, controls::control& e);
 int							field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips = 0);
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* header_label, char* sev, unsigned size, int header_width, fnchoose choose_proc = 0);
-int							field(int x, int y, int width, const char* label, const anyval& ev, int header_width, int digits);
+int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, int digits);
 int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips = 0, const void* param = 0, fnallow allow = 0);
 void						fieldf(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose choose_proc);
 void						fieldm(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow_proc);

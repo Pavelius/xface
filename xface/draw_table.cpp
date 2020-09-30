@@ -67,25 +67,17 @@ void table::clickcolumn(int column) const {
 }
 
 int	column::get(const void* object) const {
-	//if(type)
-	//	return type->get(type->ptr(object));
 	return path.get(path.ptr(object));
 }
 
 const char* column::get(const void* object, stringbuilder& sb) const {
 	if(getpresent)
 		return getpresent(object, sb);
-	//if(type)
-	//	return type->gets(type->ptr(object));
-	//else
-		return path.gets(path.ptr(object));
+	return path.gets(path.ptr(object));
 }
 
 void column::set(const void* object, int v) {
-	//if(type)
-	//	type->set(type->ptr(object), v);
-	//else
-		path.set(path.ptr(object), v);
+	path.set(path.ptr(object), v);
 }
 
 void table::update_columns(const rect& rc) {
@@ -297,7 +289,8 @@ void table::rowtotal(const rect& rc) const {
 		auto result = gettotal(i);
 		temp[0] = 0;
 		if(result) {
-			zprint(temp, "%1i", result);
+			stringbuilder sb(temp);
+			sb.add("%1i", result);
 			auto r2 = r1 + metrics::edit;
 			draw::text(r2, temp, AlignRight | TextSingleLine);
 		}
@@ -637,19 +630,20 @@ void table::cellimage(const rect& rc, int line, int column) {
 }
 
 void table::cellrownumber(const rect& rc, int line, int column) {
-	char temp[32]; zprint(temp, "%1i", line + 1);
+	char temp[32]; stringbuilder sb(temp);
+	sb.add("%1i", line + 1);
 	cell(rc, line, column, temp);
 }
 
 void table::cellnumber(const rect& rc, int line, int column) {
-	char temp[32];
-	zprint(temp, "%1i", columns[column].get(get(line)));
+	char temp[32]; stringbuilder sb(temp);
+	sb.add("%1i", columns[column].get(get(line)));
 	cell(rc, line, column, temp);
 }
 
 void table::cellpercent(const rect& rc, int line, int column) {
-	char temp[32];
-	zprint(temp, "%1i%%", columns[column].get(get(line)));
+	char temp[32]; stringbuilder sb(temp);
+	sb.add("%1i%%", columns[column].get(get(line)));
 	cell(rc, line, column, temp);
 }
 

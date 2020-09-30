@@ -93,8 +93,7 @@ bool								szmatch(const char* text, const char* name); //
 char*								sznum(char* result, int num, int precision = 0, const char* empthy = 0, int radix = 10);
 char*								sznum(char* result, float f, int precision = 0, const char* empthy = "0.00");
 bool								szpmatch(const char* text, const char* pattern);
-char*								szprint(char* result, const char* result_maximum, const char* format, ...);
-char*								szprintv(char* result, const char* result_maximum, const char* format, const char* format_param);
+//char*								szprintv(char* result, const char* result_maximum, const char* format, const char* format_param);
 void								szput(char** output, unsigned u, codepages page = metrics::code);
 char*								szput(char* output, unsigned u, codepages page = metrics::code); // Fast symbol put function. Return 'output'.
 const char*							szskipcr(const char* p);
@@ -122,7 +121,6 @@ template<class T> inline T*			zend(T* p) { while(*p) p++; return p; }
 template<class T> inline void		zcat(T* p1, const T e) { p1 = zend(p1); p1[0] = e; p1[1] = 0; }
 template<class T> inline void		zcat(T* p1, const T* p2) { zcpy(zend(p1), p2); }
 template<class T> inline int		zlen(T* p) { return zend(p) - p; }
-template<unsigned N> inline char*	zprint(char(&result)[N], const char* format, ...) { return szprintv(result, result + N - 1, format, (const char*)&format + sizeof(format)); }
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
 template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
 template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
@@ -136,7 +134,7 @@ struct adat {
 	constexpr const T& operator[](unsigned index) const { return data[index]; }
 	constexpr T& operator[](unsigned index) { return data[index]; }
 	explicit operator bool() const { return count != 0; }
-	T*								add() { if(count < count_max) return data + (count++); return 0; }
+	T*								add() { if(count < count_max) return data + (count++); return data; }
 	void							add(const T& e) { if(count < count_max) data[count++] = e; }
 	T*								begin() { return data; }
 	const T*						begin() const { return data; }
@@ -151,7 +149,7 @@ struct adat {
 	bool							is(const T t) const { return indexof(t) != -1; }
 	void							remove(int index, int remove_count = 1) { if(index < 0) return; if(index<int(count - 1)) memcpy(data + index, data + index + 1, sizeof(data[0]) * (count - index - 1)); count--; }
 };
-typedef adat<void*, 64>		reflist;
+typedef adat<void*, 64>				reflist;
 // Autogrow typized array
 template<class T>
 struct arem {
@@ -233,11 +231,11 @@ template<class T> struct vector : array {
 	constexpr vector() : array(sizeof(T)) {}
 	~vector() { for(auto& e : *this) e.~T(); }
 	T*								add() { return (T*)array::add(); }
-	const T*						begin() const { return (T*)data; }
-	T*								begin() { return (T*)data; }
-	const T*						end() const { return (T*)data + count; }
-	T*								end() { return (T*)data + count; }
-	T*								ptr(int index) const { return (T*)data + index; }
+	const T*						begin() const { return (T*)begin(); }
+	T*								begin() { return (T*)begin(); }
+	const T*						end() const { return (T*)end(); }
+	T*								end() { return (T*)end(); }
+	T*								ptr(int index) const { return (T*)begin() + index; }
 };
 // Abstract data access class
 template<typename T> struct bsdata {

@@ -40,9 +40,6 @@ BSHEAD(alignmenti)
 DGLNK(alignment_s, alignmenti)
 BSLNK(alignment_s, alignmenti)
 BSDATAC(element, 32);
-template<class T> const char* getnm(const void* object, stringbuilder& sb) {
-	return ((T*)object)->name;
-}
 BSDATAC(rowelement, 64);
 struct treerow : controls::tree::element {
 	const char* name;
