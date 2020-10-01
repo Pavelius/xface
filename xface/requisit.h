@@ -23,8 +23,8 @@ struct requisit {
 };
 class manager {
 	strlib			strings;
-	arem<classtype>	classes;
-	arem<requisit>	requisits;
+	vector<classtype> classes;
+	vector<requisit> requisits;
 public:
 	unsigned		add(unsigned parent, const char* name, unsigned type, unsigned count = 1, unsigned size = 0);
 	unsigned		create(const char* id);

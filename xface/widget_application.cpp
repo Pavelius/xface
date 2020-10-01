@@ -27,7 +27,7 @@ static char					last_open_file[260];
 static controls::control*	current_active_control;
 static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
 static const char*			settings_file_name = "settings.json";
-static arem<controls::control*> active_controls;
+static vector<controls::control*> active_controls;
 
 aref<controls::control*> getdocked(control** result, unsigned count, dock_s type);
 
@@ -624,7 +624,7 @@ void controls::close(control* p) {
 	auto i = active_controls.indexof(p);
 	if(i == -1)
 		return;
-	active_controls.remove(i);
+	active_controls.remove(i, 1);
 	if(current_active_control == p) {
 		if(i > 0)
 			activate(active_controls[i - 1]);

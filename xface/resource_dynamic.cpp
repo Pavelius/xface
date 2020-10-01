@@ -4,7 +4,7 @@
 
 using namespace draw;
 
-static arem<resei> source;
+static vector<resei> source;
 
 static resei* find(const char* name, const char* folder) {
 	for(auto& e : source) {

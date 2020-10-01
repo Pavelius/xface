@@ -6,7 +6,7 @@ namespace {
 struct context {
 	io::stream&		file;
 	bool			writemode;
-	arem<void*>		references;
+	vector<void*>	references;
 	void serial(void* v, unsigned lenght) {
 		if(writemode)
 			file.write(v, lenght);
@@ -82,23 +82,18 @@ struct context {
 		for(unsigned j = 0; j < pv->count; j++)
 			serial(pv->data + size*j, type);
 	}
-	void serial_rem(arem<char>* pv, const bsreq* type, unsigned size) {
+	void serial_rem(vector<char>* pv, const bsreq* type, unsigned size) {
 		if(!writemode) {
-			decltype(pv->count_maximum) n = 0;
+			decltype(pv->getmaximum()) n = 0;
 			serial(&n, sizeof(n));
-			if(n > pv->count_maximum && pv->data) {
-				delete pv->data;
-				if(n)
-					pv->data = new char[n*size];
-				else
-					pv->data = 0;
-			}
-			pv->count_maximum = n;
-		} else
-			serial(&pv->count_maximum, sizeof(pv->count_maximum));
+			pv->reserve(n);
+		} else {
+			auto n = pv->getmaximum();
+			serial(&n, sizeof(n));
+		}
 		serial(&pv->count, sizeof(pv->count));
 		for(unsigned j = 0; j < pv->count; j++)
-			serial(pv->data + size*j, type);
+			serial(pv->ptr(j), type);
 	}
 	void serial(void* object, const bsreq* records, const bsreq* records_stop = 0) {
 		for(auto p = records; *p; p++) {
@@ -125,7 +120,7 @@ struct context {
 			case KindList:
 				break;
 			case KindARem:
-				serial_rem(((arem<char>*)p->ptr(object)), p->type, p->size);
+				serial_rem(((vector<char>*)p->ptr(object)), p->type, p->size);
 				break;
 			}
 		}

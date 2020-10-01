@@ -16,7 +16,7 @@ struct logi {
 	const char*		text;
 };
 }
-static arem<logi>	messages;
+static vector<logi>	messages;
 
 void logmsgv(const char* format, const char* arguments) {
 	logi e = {0};
@@ -61,7 +61,7 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 		return "Список сообщений";
 	}
 	void* get(int line) const {
-		return messages.data + line;
+		return messages.ptr(line);
 	}
 	int	getmaximum() const override {
 		return messages.getcount();

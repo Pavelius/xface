@@ -169,9 +169,9 @@ const char* tileset::choosenew() {
 		view() : list(sprites) {
 			list.read_only = true;
 			list.select_mode = SelectRow;
-			list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
-			list.addcol(bsmeta<spritei>::meta, "count", "Спрайтов");
-			list.addcol(bsmeta<spritei>::meta, "size", "Размер");
+			//list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
+			//list.addcol(bsmeta<spritei>::meta, "count", "Спрайтов");
+			//list.addcol(bsmeta<spritei>::meta, "size", "Размер");
 			readsprites();
 		}
 		const char* getcurrent() const {

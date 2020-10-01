@@ -8,25 +8,25 @@ using namespace draw::controls;
 
 namespace {
 struct autocomplete : list {
-	arem<listelement*>	source;
+	vector<listelement*> source;
 	bool				show_images;
 	const sprite*		images;
 	constexpr autocomplete() : source(), show_images(false), images() {}
 	const char*	getname(stringbuilder& sb, int line, int column) const override {
 		switch(column) {
-		case 0: return source.data[line]->text;
+		case 0: return source[line]->text;
 		}
 		return "";
 	}
 	int	getmaximum() const {
-		return source.count;
+		return source.getcount();
 	}
 	int getimage(int line) const {
-		return source.data[line]->image;
+		return source[line]->image;
 	}
 	listelement* getcurrent() const {
 		if(current < getmaximum())
-			return source.data[current];
+			return source[current];
 		return 0;
 	}
 	void row(const rect& rc, int index) override {
@@ -66,9 +66,9 @@ struct autocomplete : list {
 		}
 		if(!source)
 			return;
-		qsort(source.data, source.getcount(), sizeof(source.data[0]), compare);
+		qsort(source.data, source.getcount(), sizeof(source[0]), compare);
 		pixels_per_line = getrowheight();
-		lines_per_page = imin(source.getcount(), 7);
+		lines_per_page = imin((int)source.getcount(), 7);
 		rc.y2 = rc.y1 + lines_per_page*pixels_per_line + 1;
 		if(rc.y2 > getheight() - 2) {
 			rc.y2 = getheight() - 2;

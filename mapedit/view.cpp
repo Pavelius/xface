@@ -139,7 +139,7 @@ static void testwizard() {
 		struct file {
 			unsigned	id;
 		};
-		arem<file>		files;
+		vector<file>	files;
 		static const char* getdirectionname(const void* object, stringbuilder& sb) {
 			return ((directioni*)object)->name;
 		}

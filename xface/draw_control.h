@@ -237,7 +237,7 @@ struct table : list {
 		unsigned short		column;
 		short				multiplier; // 1 - ascending, -1 - descending
 	};
-	arem<column>			columns;
+	vector<column>			columns;
 	int						current_column, current_column_maximum, maximum_width;
 	bool					no_change_order, no_change_count, read_only, show_totals;
 	select_mode_s			select_mode;

@@ -20,13 +20,13 @@ struct serial {
 }
 
 unsigned manager::getsize(unsigned v) const {
-	return requisits.data[v].size;
+	return requisits[v].size;
 }
 
 unsigned manager::create(const char* name) {
 	auto p = classes.add();
 	p->id = get(name);
-	return p - classes.data;
+	return p - classes.begin();
 }
 
 unsigned manager::add(unsigned parent, const char* name, unsigned type, unsigned count, unsigned size) {
@@ -41,34 +41,34 @@ unsigned manager::add(unsigned parent, const char* name, unsigned type, unsigned
 	p->size = size;
 	if(!ispredefined(parent)) {
 		p->offset = getsize(parent);
-		requisits.data[parent].size += p->getlenght();
+		requisits[parent].size += p->getlenght();
 	}
-	return p - requisits.data;
+	return p - requisits.begin();
 }
 
 unsigned manager::reference(unsigned v) {
 	for(unsigned i = 0; i < requisits.count; i++) {
-		if(requisits.data[i].parent != Pointer)
+		if(requisits[i].parent != Pointer)
 			continue;
-		if(requisits.data[i].type == v)
+		if(requisits[i].type == v)
 			return i;
 	}
-	auto p = requisits.data + (requisits.count++);
+	auto p = requisits.ptr(requisits.count++);
 	p->id = Null;
 	p->parent = Pointer;
 	p->type = v;
 	p->count = 1;
 	p->size = pointer_size;
 	p->offset = 0;
-	return p - requisits.data;
+	return p - requisits.begin();
 }
 
 bool manager::isreference(unsigned v) const {
-	return !ispredefined(v) && requisits.data[v].parent == Pointer;
+	return !ispredefined(v) && requisits[v].parent == Pointer;
 }
 
 unsigned manager::dereference(unsigned v) const {
 	if(!isreference(v))
 		return Null;
-	return requisits.data[v].type;
+	return requisits[v].type;
 }

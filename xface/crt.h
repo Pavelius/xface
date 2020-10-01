@@ -149,7 +149,7 @@ template<class T, int count_max = 128>
 struct adat {
 	T								data[count_max];
 	unsigned						count;
-	constexpr adat() : count(0) {}
+	constexpr adat() : data{}, count(0) {}
 	constexpr adat(const std::initializer_list<T> list) : count(0) { for(auto& e : list) add(e); }
 	constexpr const T& operator[](unsigned index) const { return data[index]; }
 	constexpr T& operator[](unsigned index) { return data[index]; }
@@ -165,36 +165,11 @@ struct adat {
 	int								getcount() const { return count; }
 	int								getmaximum() const { return count_max; }
 	int								indexof(const T* e) const { if(e >= data && e < data + count) return e - data; return -1; }
-	int								indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
+	int								indexof(const T t) const { for(auto& e : *this) if(e == t) return &e - data; return -1; }
 	bool							is(const T t) const { return indexof(t) != -1; }
 	void							remove(int index, int remove_count = 1) { if(index < 0) return; if(index<int(count - 1)) memcpy(data + index, data + index + 1, sizeof(data[0]) * (count - index - 1)); count--; }
 };
 typedef adat<void*, 64>				reflist;
-// Autogrow typized array
-template<class T>
-struct arem {
-	T* data;
-	unsigned						count;
-	unsigned						count_maximum;
-	constexpr arem() : data(0), count(0), count_maximum(0) {}
-	~arem() { if(data && count_maximum) delete data; }
-	constexpr T& operator[](int index) { return data[index]; }
-	constexpr const T& operator[](int index) const { return data[index]; }
-	constexpr explicit operator bool() const { return count != 0; }
-	T*								add() { reserve(count + 1); return &data[count++]; }
-	void							add(const T& e) { *(add()) = e; }
-	constexpr T*					begin() { return data; }
-	constexpr const T*				begin() const { return data; }
-	void							clear() { count = 0; }
-	constexpr T*					end() { return data + count; }
-	constexpr const T*				end() const { return data + count; }
-	int								getcount() const { return count; }
-	int								indexof(const T* t) const { if(t<data || t>data + count) return -1; return t - data; }
-	int								indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
-	bool							is(const T t) const { return indexof(t) != -1; }
-	void							remove(int index, int elements_count = 1) { rmremove(data, sizeof(T), index, count, elements_count); }
-	void							reserve(unsigned count) { rmreserve((void**)&data, count, count_maximum, sizeof(T)); }
-};
 // Abstract flag data bazed on enumerator
 template<typename T, typename DT = unsigned>
 class cflags {
@@ -239,7 +214,7 @@ public:
 	bool							isgrowable() const { return (count_maximum & 0x80000000) == 0; }
 	void*							ptr(int index) const { return (char*)data + size * index; }
 	template<class T> aref<T> records() const { return aref<T>((T*)data, count); }
-	void							remove(int index, int elements_count);
+	void							remove(int index, int elements_count = 1);
 	void							shift(int i1, int i2, unsigned c1, unsigned c2);
 	void							setcount(unsigned value) { count = value; }
 	void							setup(unsigned size);
@@ -247,14 +222,22 @@ public:
 	void							swap(int i1, int i2);
 	void							reserve(unsigned count);
 };
-template<class T> struct vector : array {
+template<class T>
+class vector : public array {
+public:
 	constexpr vector() : array(sizeof(T)) {}
 	~vector() { for(auto& e : *this) e.~T(); }
+	constexpr T& operator[](int index) { return ((T*)data)[index]; }
+	constexpr const T& operator[](int index) const { return ((T*)data)[index]; }
+	constexpr explicit operator bool() const { return count != 0; }
 	T*								add() { return (T*)array::add(); }
+	void							add(const T& v) { *((T*)array::add()) = v; }
 	constexpr const T*				begin() const { return (T*)data; }
 	constexpr T*					begin() { return (T*)data; }
-	constexpr const T*				end() const { return (T*)data+count; }
-	constexpr T*					end() { return (T*)data+count; }
+	constexpr const T*				end() const { return (T*)data + count; }
+	constexpr T*					end() { return (T*)data + count; }
+	constexpr int					indexof(const T* e) const { if(e >= data && e < data + count) return e - data; return -1; }
+	constexpr int					indexof(const T t) const { for(auto& e : *this) if(e == t) return &e - (T*)data; return -1; }
 	constexpr T*					ptr(int index) const { return (T*)data + index; }
 };
 // Abstract data access class
@@ -322,6 +305,6 @@ template<class T, unsigned N> struct meta_decoy<T[N]> : meta_decoy<T> {};
 template<class T> struct meta_decoy<T[]> : meta_decoy<T> {};
 template<class T> struct meta_decoy<const T> : meta_decoy<T> {};
 template<class T> struct meta_decoy<std::initializer_list<T>> : meta_decoy<T> {};
-template<class T> struct meta_decoy<arem<T>> : meta_decoy<T> {};
+template<class T> struct meta_decoy<vector<T>> : meta_decoy<T> {};
 template<class T, unsigned N> struct meta_decoy<adat<T, N>> : meta_decoy<T> {};
 template<class T, class DT> struct meta_decoy<cflags<T, DT>> : meta_decoy<T> {};

@@ -193,7 +193,7 @@ int table::rowheader(const rect& rc) const {
 			auto pw = columns[i].method;
 			if(new_width < pw->minimal_width)
 				new_width = pw->minimal_width;
-			columns.data[i].width = new_width;
+			const_cast<column&>(columns[i]).width = new_width;
 		}
 		r1.x2 = r1.x2 + columns[i].width;
 		if(r1.x1 == (rch.x1 - origin_width))
@@ -306,7 +306,7 @@ void table::row(const rect& rc, int index) {
 	auto need_tree = true;
 	auto level_ident = 0;
 	for(unsigned i = 0; i < columns.count; i++) {
-		auto pc = columns.data + i;
+		auto pc = columns.ptr(i);
 		if(!pc->is(ColumnVisible))
 			continue;
 		if(need_tree) {
@@ -355,7 +355,7 @@ rect table::getrect(int row, int column) const {
 	rs.x2 = rs.x1;
 	rs.y1 = view_rect.y1 - origin + lines_per_page * row;
 	rs.y2 = rs.y1 + getrowheight();
-	if(column >= columns.getcount())
+	if(column >= (int)columns.getcount())
 		column = columns.getcount() - 1;
 	for(auto i = 0; i <= column; i++) {
 		if(!columns[i].is(ColumnVisible))

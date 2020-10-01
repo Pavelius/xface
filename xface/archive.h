@@ -35,7 +35,7 @@ struct archive {
 			set(e);
 	}
 	// Fixed amem collection
-	template<typename T> void set(arem<T>& value) {
+	template<typename T> void set(vector<T>& value) {
 		set(value.count);
 		if(!writemode)
 			value.reserve(value.count);
