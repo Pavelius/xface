@@ -150,7 +150,7 @@ struct adat {
 	T								data[count_max];
 	unsigned						count;
 	constexpr adat() : count(0) {}
-	constexpr adat(std::initializer_list<T> list) : count(0) { for(auto& e : list) *add() = e; }
+	constexpr adat(const std::initializer_list<T> list) : count(0) { for(auto& e : list) add(e); }
 	constexpr const T& operator[](unsigned index) const { return data[index]; }
 	constexpr T& operator[](unsigned index) { return data[index]; }
 	explicit operator bool() const { return count != 0; }
@@ -201,7 +201,7 @@ class cflags {
 	DT								data;
 public:
 	constexpr cflags() : data(0) {}
-	constexpr cflags(const std::initializer_list<T>& list) : data() { for(auto e : list) add(e); }
+	constexpr cflags(const std::initializer_list<T> list) : data() { for(auto e : list) add(e); }
 	constexpr void					add(const T id) { data |= 1 << id; }
 	constexpr void					clear() { data = 0; }
 	constexpr bool					is(const T id) const { return (data & (1 << id)) != 0; }
@@ -211,12 +211,12 @@ public:
 class array {
 	unsigned						size;
 	unsigned						count_maximum;
-	void*							data;
-	unsigned						count;
 	void							grow(unsigned offset, unsigned delta);
 	void							shrink(unsigned offset, unsigned delta);
 	void							zero(unsigned offset, unsigned delta);
 public:
+	void*							data;
+	unsigned						count;
 	typedef int(*pcompare)(const void* p1, const void* p2, void* param);
 	constexpr array(unsigned size = 0) : size(size), count_maximum(0), data(0), count(0) {}
 	constexpr array(void* data, unsigned size, unsigned count) : size(size), count_maximum(count | 0x80000000), data(data), count(count) {}
@@ -238,7 +238,7 @@ public:
 	void*							insert(int index, const void* element);
 	bool							isgrowable() const { return (count_maximum & 0x80000000) == 0; }
 	void*							ptr(int index) const { return (char*)data + size * index; }
-	template<class T> std::initializer_list<T> records() { return std::initializer_list<T>((T*)data, (T*)data+count); }
+	template<class T> aref<T> records() const { return aref<T>((T*)data, count); }
 	void							remove(int index, int elements_count);
 	void							shift(int i1, int i2, unsigned c1, unsigned c2);
 	void							setcount(unsigned value) { count = value; }
@@ -251,11 +251,11 @@ template<class T> struct vector : array {
 	constexpr vector() : array(sizeof(T)) {}
 	~vector() { for(auto& e : *this) e.~T(); }
 	T*								add() { return (T*)array::add(); }
-	const T*						begin() const { return (T*)begin(); }
-	T*								begin() { return (T*)begin(); }
-	const T*						end() const { return (T*)end(); }
-	T*								end() { return (T*)end(); }
-	T*								ptr(int index) const { return (T*)begin() + index; }
+	constexpr const T*				begin() const { return (T*)data; }
+	constexpr T*					begin() { return (T*)data; }
+	constexpr const T*				end() const { return (T*)data+count; }
+	constexpr T*					end() { return (T*)data+count; }
+	constexpr T*					ptr(int index) const { return (T*)data + index; }
 };
 // Abstract data access class
 template<typename T> struct bsdata {

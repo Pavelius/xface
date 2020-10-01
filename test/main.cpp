@@ -398,6 +398,8 @@ static bool test_array() {
 	a1.change((int)&((testinfo*)0)->value2, 12);
 	p1 = (testinfo*)a1.ptr(0);
 	p2 = (testinfo*)a1.ptr(1);
+	for(auto& e : a1.records<testinfo>())
+		e.value = 1;
 	return true;
 }
 
@@ -516,15 +518,24 @@ static bool test_reestr() {
 
 void directory_initialize();
 
+static bool test_vector() {
+	vector<rowelement> v1;
+	v1.addz(); v1.addz();
+	for(auto& e : v1) {
+		e.age = 12;
+		e.alignment = LawfulGood;
+	}
+	return true;
+}
+
 int main() {
-	if(!test_write_bin())
-		return -1;
-	if(!test_anyval())
-		return -1;
-	if(!test_array())
-		return -1;
-	if(!test_reestr())
-		return -1;
+	static auto tests = {test_write_bin, test_anyval, test_array,
+		test_reestr, test_vector
+	};
+	for(auto p : tests) {
+		if(!p())
+			return -1;
+	}
 	test_initialize_list();
 	setproperties(&test_properties_value, dginf<markuptesti>::meta);
 	directory_initialize();
