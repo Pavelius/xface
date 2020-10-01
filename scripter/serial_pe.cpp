@@ -9,7 +9,7 @@ class context {
 	typedef adat<requisit*, 64> keya;
 	io::stream&			file;
 	bool				writemode;
-	arem<void*>			references;
+	vector<void*>		references;
 	void serial(void* object, unsigned size) {
 		if(writemode)
 			file.write(object, size);

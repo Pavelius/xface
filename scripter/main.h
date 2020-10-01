@@ -149,6 +149,10 @@ struct metatypei {
 	const char*				id;
 	const char*				name;
 };
+class section : public vector<unsigned char> {
+public:
+	unsigned				add(unsigned n) { auto i = getcount(); reserve(i + n); memset(ptr(i), 0, n); return i; }
+};
 metadata*					addtype(const char* id);
 metadata*					addtype(const char* id, const metadata* type, unsigned size);
 metadata*					findtype(const char* id);

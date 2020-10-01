@@ -10,9 +10,8 @@ static bool metadata_view_show_type = true;
 
 static class metadata_control : public controls::tableref, controls::control::plugin, initplugin {
 	void after_initialize() override {
-		auto meta = bsmeta<metadata>::meta;
 		addstdimage();
-		addcol(meta, "id", "Наименование").set(SizeAuto);
+		addcol("Наименование", ANREQ(metadata, id), "text").set(SizeAuto);
 		update();
 	}
 	void update() {
@@ -75,9 +74,8 @@ static class requisit_control : public controls::tableref, controls::control::pl
 		return sb;
 	}
 	void after_initialize() override {
-		auto meta = bsmeta<requisit>::meta;
 		addstdimage();
-		addcol(meta, "id", "Наименование").set(SizeAuto).set(getpresent);
+		addcol("Наименование", ANREQ(requisit, id), "text").set(SizeAuto).set(getpresent);
 		update();
 	}
 	control* getcontrol() override {

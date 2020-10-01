@@ -2,9 +2,6 @@
 
 using namespace code;
 
-template<class T> const char* getnm(const void* object, stringbuilder& sb) {
-	return ((T*)object)->name;
-}
 template<> const char* getnm<metadata>(const void* object, stringbuilder& sb) {
 	auto p = (metadata*)object;
 	p->getname(sb);

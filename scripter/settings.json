@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":297
+      "size":274
     },
     "Dock3":{
       "current":0,
@@ -82,7 +82,7 @@
   "window":{
     "x":75,
     "y":51,
-    "width":964,
+    "width":1132,
     "height":607,
     "header_width":113,
     "flags":48
@@ -135,7 +135,7 @@
         "columns":{
           "column":{
             "id":"Дата",
-            "width":116,
+            "width":88,
             "size":2,
             "total":0
           },

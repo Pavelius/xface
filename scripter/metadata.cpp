@@ -16,7 +16,7 @@ BSREQ(offset),
 BSDATAC(requisit, 256*128)
 
 const unsigned			pointer_size = 4;
-const unsigned			array_size = sizeof(arem<char>);
+const unsigned			array_size = sizeof(vector<char>);
 const metadata*			metadata::type_metadata;
 const metadata*			metadata::type_requisit;
 const metadata*			metadata::type_text;
