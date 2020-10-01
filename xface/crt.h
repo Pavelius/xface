@@ -66,6 +66,7 @@ int									getdigitscount(unsigned number); // Get digits count of number. For 
 template<class T> const char*		getstr(T e); // Template to return string of small class
 bool								ischa(unsigned u); // is alphabetical character?
 inline bool							isnum(unsigned u) { return u >= '0' && u <= '9'; } // is numeric character?
+int									isqrt(const int x); // Return aquare root of 'x'
 void*								loadb(const char* url, int* size = 0, int additional_bytes_alloated = 0); // Load binary file.
 char*								loadt(const char* url, int* size = 0); // Load text file and decode it to system codepage.
 bool								matchuc(const char* name, const char* filter);
@@ -93,7 +94,6 @@ bool								szmatch(const char* text, const char* name); //
 char*								sznum(char* result, int num, int precision = 0, const char* empthy = 0, int radix = 10);
 char*								sznum(char* result, float f, int precision = 0, const char* empthy = "0.00");
 bool								szpmatch(const char* text, const char* pattern);
-//char*								szprintv(char* result, const char* result_maximum, const char* format, const char* format_param);
 void								szput(char** output, unsigned u, codepages page = metrics::code);
 char*								szput(char* output, unsigned u, codepages page = metrics::code); // Fast symbol put function. Return 'output'.
 const char*							szskipcr(const char* p);
@@ -124,6 +124,26 @@ template<class T> inline int		zlen(T* p) { return zend(p) - p; }
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
 template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
 template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
+// Light-weaight proxy container
+template<class T>
+class aref {
+	T*								data;
+	unsigned						count;
+public:
+	constexpr aref() : data(0), count(0) {}
+	constexpr aref(T* data, unsigned count) : data(data), count(count) {}
+	constexpr const T& operator[](unsigned index) const { return data[index]; }
+	constexpr T& operator[](unsigned index) { return data[index]; }
+	explicit operator bool() const { return count != 0; }
+	constexpr T*					begin() { return data; }
+	constexpr const T*				begin() const { return data; }
+	constexpr T*					end() { return data + count; }
+	constexpr const T*				end() const { return data + count; }
+	constexpr unsigned				getcount() const { return count; }
+	constexpr int					indexof(const T* e) const { if(e >= data && e < data + count) return e - data; return -1; }
+	constexpr int					indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
+	constexpr bool					is(const T t) const { return indexof(t) != -1; }
+};
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
