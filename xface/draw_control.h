@@ -377,6 +377,7 @@ struct visual {
 	fnrender				change;
 	table::fncompare		comparer;
 	bool					change_one_click;
+	fnlist					plist;
 	explicit operator bool() const { return render != 0; }
 	const visual*			find(const char* id) const;
 };

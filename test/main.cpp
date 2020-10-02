@@ -160,9 +160,9 @@ static void test_tableref() {
 	test.addcol("БУ", ANBIT(rowelement, flags, 2), "checkbox");
 	test.addcol("МУ", ANBIT(rowelement, flags, 3), "checkbox");
 	test.addcol("Возраст", ANBIT(rowelement, age, 3), "number");
-	//test.addcol(pm, "gender", "Пол").set(bsdata<genderi>::source_ptr);
-	//test.addcol(pm, "alignment", "Мировозрение").set(bsdata<alignmenti>::source_ptr);
-	//test.addcol(pm, "date", "Дата", "datetime");
+	test.addcol("Пол", ANREQ(rowelement, gender), "enum", bsdata<genderi>::source_ptr);
+	test.addcol("Пол", ANREQ(rowelement, alignment), "enum", bsdata<alignmenti>::source_ptr);
+	test.addcol("Дата", ANREQ(rowelement, date), "datetime");
 	for(auto& e : elements)
 		test.addref(&e);
 	for(auto& e : elements)
