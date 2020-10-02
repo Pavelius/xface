@@ -59,7 +59,7 @@
     "width":768,
     "height":498,
     "header_width":132,
-    "flags":48
+    "flags":112
   },
   "controls":{
     "code":{
@@ -134,7 +134,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":276
+      "size":354
     },
     "Dock3":{
       "current":0,

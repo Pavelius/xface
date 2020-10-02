@@ -118,21 +118,12 @@ public:
 				serial_ref((void**)&new_type, metadata::type_metadata);
 				if(!new_type)
 					return;
-				char temp[1024];
-				auto p = temp;
-				if(new_type->size > sizeof(temp))
-					p = new char[new_type->size];
-				serial(p, new_type);
+				// TODO: make compare by keys
 				auto pa = new_type->getelements();
-				requisit* keys[8];
-				auto keys_count = select(keys, keys + sizeof(keys)/sizeof(keys[0]), new_type);
-				auto pf = findbykey(*pa, p, {keys, keys_count});
-				if(!pf)
-					pf = pa->addz();
-				copy(pf, p, new_type);
-				*m = pf;
-				if(p != temp)
-					delete p;
+				auto p = pa->addz();
+				references.add(p);
+				serial(p, new_type);
+				*m = p;
 			}
 		}
 	}
