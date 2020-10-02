@@ -6,10 +6,10 @@ using namespace code;
 
 namespace {
 class context {
+	io::stream&					file;
 	typedef adat<requisit*, 64> keya;
-	io::stream&			file;
-	bool				writemode;
-	vector<void*>		references;
+	vector<void*>				references;
+	bool						writemode;
 	void serial(void* object, unsigned size) {
 		if(writemode)
 			file.write(object, size);

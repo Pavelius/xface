@@ -737,7 +737,8 @@ bool table::addrow(bool run) {
 	if(run) {
 		auto p = addrow();
 		if(p) {
-			select(current + 1, getcolumn());
+			if(getmaximum())
+				select(current + 1, getcolumn());
 			change(true);
 		}
 	}

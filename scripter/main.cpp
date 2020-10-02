@@ -41,7 +41,7 @@ int main() {
 	p3->add("Elements", addtype("Character"))->setcount(256)->set(Static);
 	p3->addm("New", p3)->set(Static)->set(Public);
 	p3->update();
-	//p3->write("character.mtd");
+	p3->write("character.mtd");
 	//p->write("rect.mtd");
 	//initialize();
 	//p->read("rect.mtd");
