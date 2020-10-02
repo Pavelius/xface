@@ -212,6 +212,7 @@ public:
 	unsigned						getsize() const { return size; }
 	int								indexof(const void* element) const;
 	void*							insert(int index, const void* element);
+	bool							is(const void* e) const { return e >= data && e < (char*)data + count*size; }
 	bool							isgrowable() const { return (count_maximum & 0x80000000) == 0; }
 	void*							ptr(int index) const { return (char*)data + size * index; }
 	template<class T> aref<T> records() const { return aref<T>((T*)data, count); }
@@ -240,6 +241,7 @@ public:
 	constexpr T*					end() { return (T*)data + count; }
 	constexpr int					indexof(const T* e) const { if(e >= data && e < data + count) return e - data; return -1; }
 	constexpr int					indexof(const T t) const { for(auto& e : *this) if(e == t) return &e - (T*)data; return -1; }
+	constexpr bool					is(const T* t) const { return e >= data && e < data + count; }
 	constexpr T*					ptr(int index) const { return (T*)data + index; }
 };
 // Abstract data access class

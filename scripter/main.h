@@ -98,7 +98,6 @@ struct metadata {
 	requisit*				add(const char* id, const metadata* type);
 	requisit*				add(array* p);
 	requisit*				addm(const char* id, const metadata* type);
-	metadata*				array() const;
 	bool					is(const char* id) const;
 	constexpr bool			is(metatype_s v) const { return flags.is(v); }
 	bool					isarray() const;
@@ -108,16 +107,22 @@ struct metadata {
 	bool					ispredefined() const;
 	bool					istext() const;
 	requisit*				find(const char* id) const;
+	static const metadata*	find(const metadata& e);
 	int						getid() const;
 	::array*				getelements() const;
 	void					getname(stringbuilder& sb) const;
 	const metadata*			gettype() const;
 	static void				read(const char* url);
+	metadata*				records() const;
 	metadata*				reference() const;
 	static const metadata*	type_text;
 	static const metadata*	type_metadata;
+	static const metadata*	type_metadata_ptr;
 	static const metadata*	type_requisit;
 	static const metadata*	type_void;
+	static const metadata*	type_u32;
+	static const metadata*	type_i32;
+	static const metadata*	type_sizet;
 	void					update();
 	void					write(const char* url) const;
 };
