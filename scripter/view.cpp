@@ -226,5 +226,5 @@ static setting::header headers[] = {{"Редактор кода", "Метаданные", 0, code_edit
 };
 
 void run_main() {
-	draw::application("Scripter", false, 0, heartproc, shortcuts);
+	draw::application("Scripter", 0, heartproc, shortcuts);
 }

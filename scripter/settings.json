@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":296
+      "size":318
     },
     "Dock3":{
       "current":0,
@@ -80,12 +80,12 @@
     }
   },
   "window":{
-    "x":26,
-    "y":83,
-    "width":784,
-    "height":561,
+    "x":123,
+    "y":79,
+    "width":995,
+    "height":606,
     "header_width":113,
-    "flags":112
+    "flags":48
   },
   "controls":{
     "reqtable":{

@@ -4,9 +4,29 @@
 using namespace code;
 using namespace draw;
 
+static bool istag(const char* p, const char* pv, const char** pr = 0) {
+	while(*pv) {
+		if(*p++ != *pv++)
+			return false;
+	}
+	if(pr)
+		*pr = p;
+	return true;
+}
+
+static const char* skiplit(const char* p, const char* symbols) {
+	while(ischa(*p) || isnum(*p) || zchr(symbols, *p))
+		p++;
+	return p;
+}
+
 class widget_reqtable : public controls::table {
 	const requisit*		source;
 	array				source_array;
+	const char* geturl(stringbuilder& sb) const override {
+		source->geturl(sb);
+		return sb;
+	}
 public:
 	widget_reqtable(const requisit* v) : source(v), source_array(v->getlenght()) {
 		auto parent_type = v->type;
@@ -23,22 +43,6 @@ public:
 		}
 	}
 };
-
-static bool istag(const char* p, const char* pv, const char** pr = 0) {
-	while(*pv) {
-		if(*p++ != *pv++)
-			return false;
-	}
-	if(pr)
-		*pr = p;
-	return true;
-}
-
-static const char* skiplit(const char* p, const char* symbols) {
-	while(ischa(*p) || isnum(*p) || zchr(symbols, *p))
-		p++;
-	return p;
-}
 
 static const metadata* parsemeta(const char* p, const char** pr) {
 	if(istag(p, "req://", &p)) {
@@ -80,8 +84,12 @@ static class plugin_reqtable : controls::control::plugin, controls::control::plu
 		auto type = parsemeta(p, &p);
 		if(!type)
 			return 0;
-		auto req = parsereq(p, type, &p);
+		if(p[0] != '/')
+			return 0;
+		auto req = parsereq(p+1, type, &p);
 		if(!req)
+			return 0;
+		if(req->is(Method))
 			return 0;
 		return new widget_reqtable(req);
 	}

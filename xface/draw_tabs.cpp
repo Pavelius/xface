@@ -61,7 +61,7 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 			fore = colors::tabs::text;
 		else
 			fore = colors::text;
-		bool a; rect element;
+		auto a = false; rect element;
 		if(sheet(rc, element, s, &a, (i == current), right_side, (show_close ? 16 : 0)))
 			result = 1;
 		if(a) {

@@ -470,9 +470,8 @@ static void postclose() {
 }
 
 static struct widget_application : draw::controls::control {
-	fnevent		heartproc;
+	fnevent			heartproc;
 	control*		hotcontrols[48];
-	bool			allow_multiply_window;
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Главный";
 	}
@@ -494,49 +493,47 @@ static struct widget_application : draw::controls::control {
 		if(pu)
 			statusbar("Данные из %1", pu);
 	}
-	static void workspace(rect rc, bool allow_multiply_window) {
+	static void workspace(rect rc) {
 		control* p1[64];
 		auto c1 = getdocked(p1, sizeof(p1)/sizeof(p1[0]), DockWorkspace);
-		auto c2 = getactivepages(p1, sizeof(p1) / sizeof(p1[0]) - c1.getcount());
+		auto c2 = getactivepages(c1.end(), (p1 + sizeof(p1) / sizeof(p1[0])) - c1.end());
 		aref<control*> ct(c1.begin(), c1.getcount() + c2.getcount());
 		if(!ct) {
 			auto push_fore = fore;
 			fore = colors::border;
 			text(rc, "Не найдено ни одного открытого документа", AlignCenterCenter);
 			fore = push_fore;
-		} else if(ct.getcount() == 1 && !allow_multiply_window) {
+		} else if(ct.getcount() == 1) {
 			current_active_control = p1[0];
 			current_active_control->view(rc);
 		} else if(ct) {
 			auto current_select = ct.indexof(current_active_control);
 			if(current_select == -1)
 				current_select = 0;
-			auto ec = p1[current_select];
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
 			auto current_hilite = -1;
-			auto result = draw::tabs(rct, false, false, (void**)ct.begin(), 0, c1.getcount(),
+			auto result = draw::tabs(rct, false, false, (void**)c1.begin(), 0, c1.getcount(),
 				current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
 			if(c2) {
-				auto r1 = draw::tabs(rct, true, false, (void**)ct.begin(), c1.getcount(), c2.getcount(),
-					current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
+				auto current_hilite2 = -1;
+				auto r1 = draw::tabs(rct, true, false, (void**)ct.begin(), c1.getcount(), ct.getcount(),
+					current_select, &current_hilite2, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
+				if(current_hilite2 != -1)
+					current_hilite = current_hilite2;
 				if(r1)
 					result = r1;
 			}
-			if(current_hilite != -1)
+			if(current_hilite != -1) {
 				show_statusbar(ct.begin()[current_hilite]);
-			switch(result) {
-			case 1: execute(postactivate, 0, 0, ct.begin()[current_hilite]); break;
-			case 2: execute(postclose, 0, 0, ct.begin()[current_hilite]); break;
+				switch(result) {
+				case 1: execute(postactivate, 0, 0, ct.begin()[current_hilite]); break;
+				case 2: execute(postclose, 0, 0, ct.begin()[current_hilite]); break;
+				}
 			}
 			rc.y1 += dy;
-			unsigned flags = ec->isfocused() ? Focused : 0;
-			anyval av(ec, 0, 0);
-			if(ec->isdisabled())
-				flags |= Disabled;
-			else
-				draw::isfocused(rc, av);
-			ec->view(rc);
+			if(current_active_control)
+				current_active_control->view(rc);
 		}
 	}
 
@@ -551,7 +548,7 @@ static struct widget_application : draw::controls::control {
 		if(heartproc)
 			heartproc();
 		dockbar(rct);
-		workspace(rct, allow_multiply_window);
+		workspace(rct);
 	}
 	static control::command commands_general[];
 	static control::command commands[];
@@ -594,7 +591,6 @@ static struct widget_application : draw::controls::control {
 	widget_application() {
 		show_background = false;
 		show_border = false;
-		allow_multiply_window = true;
 		memset(hotcontrols, 0, sizeof(hotcontrols));
 	}
 } widget_application_control;
@@ -735,10 +731,9 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
 }
 
-void draw::application(bool allow_multiply_window, fnevent heartproc, shortcut* shortcuts) {
+void draw::application(fnevent heartproc, shortcut* shortcuts) {
 	// Make header
 	setting_header.initialize();
-	widget_application_control.allow_multiply_window = allow_multiply_window;
 	widget_application_control.heartproc = heartproc;
 	auto current_tab = 0;
 	while(ismodal()) {
@@ -792,12 +787,12 @@ void draw::application_initialize() {
 	create(window.x, window.y, window.width, window.height, window.flags, 32);
 }
 
-void draw::application(const char* name, bool allow_multiply_window, fnevent showproc, fnevent heartproc, shortcut* shortcuts) {
+void draw::application(const char* name, fnevent showproc, fnevent heartproc, shortcut* shortcuts) {
 	application_initialize();
 	setcaption(name);
 	if(showproc)
 		showproc();
-	application(allow_multiply_window, heartproc, shortcuts);
+	application(heartproc, shortcuts);
 }
 
 static int getnum(const char* value) {

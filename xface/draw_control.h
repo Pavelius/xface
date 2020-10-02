@@ -449,9 +449,8 @@ const char*					getlabel(const void* object, stringbuilder& sb);
 control*					openurl(const char* url);
 }
 void						addelement(const rect& rc, const anyval& value);
-void						application(bool allow_multiply_windows, fnevent heartproc = 0, shortcut* shortcuts = 0);
-void						application(const char* name, bool allow_multiply_windows, fnevent showproc, fnevent heartproc, shortcut* shortcuts);
-inline void					application() { application(true); }
+void						application(fnevent heartproc = 0, shortcut* shortcuts = 0);
+void						application(const char* name, fnevent showproc, fnevent heartproc, shortcut* shortcuts);
 void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
 int							button(int x, int y, int width, fnevent proc, const char* label, const char* tips = 0, int key = 0);
