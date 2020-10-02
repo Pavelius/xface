@@ -97,9 +97,15 @@ bool metadata::ispredefined() const {
 	return this <= type_requisit;
 }
 
-void metadata::add(stringbuilder& sb) const {
-	for(auto t = this; t; t = t->type)
+void metadata::add(stringbuilder& sb, char sep) const {
+	if(!this)
+		return;
+	sb.add(id);
+	for(auto t = type; t; t = t->type) {
+		if(sep)
+			sb.add(sep);
 		sb.add(t->id);
+	}
 }
 
 metadata* code::findtype(const char* id) {
@@ -249,4 +255,13 @@ void requisit::clear() {
 
 bool requisit::ispredefined() const {
 	return this <= requisit_data;
+}
+
+void requisit::geturl(stringbuilder& sb) const {
+	if(!parent)
+		return;
+	sb.add("req://");
+	parent->add(sb, '.');
+	sb.add("/");
+	sb.add(id);
 }

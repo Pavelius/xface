@@ -2,7 +2,7 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":137
+      "size":97
     },
     "Dock1":{
       "current":0,
@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":274
+      "size":296
     },
     "Dock3":{
       "current":0,
@@ -80,12 +80,12 @@
     }
   },
   "window":{
-    "x":75,
-    "y":51,
-    "width":1132,
-    "height":607,
+    "x":26,
+    "y":83,
+    "width":784,
+    "height":561,
     "header_width":113,
-    "flags":48
+    "flags":112
   },
   "controls":{
     "reqtable":{
@@ -106,7 +106,7 @@
           },
           "column":{
             "id":"Наименование",
-            "width":117,
+            "width":77,
             "size":4,
             "total":0
           }
@@ -123,7 +123,7 @@
           },
           "column":{
             "id":"Наименование",
-            "width":117,
+            "width":77,
             "size":4,
             "total":0
           }

@@ -94,7 +94,7 @@ struct metadata {
 	unsigned				size;
 	metatypea				flags;
 	operator bool() const { return id != 0; }
-	void					add(stringbuilder& sb) const;
+	void					add(stringbuilder& sb, char sep = 0) const;
 	requisit*				add(const char* id, const metadata* type);
 	requisit*				add(array* p);
 	requisit*				addm(const char* id, const metadata* type);
@@ -138,6 +138,7 @@ struct requisit {
 	void					getnameonly(stringbuilder& sb) const;
 	unsigned				getsize() const;
 	unsigned				getsizeof() const { return getsize() * count; }
+	void					geturl(stringbuilder& sb) const;
 	constexpr void*			ptr(void* object) const { return (char*)object + offset; }
 	void*					ptr(void* object, unsigned index) const { return (char*)object + offset + index * getsize(); }
 	requisit*				setcount(int v) { if(this) count = v; return this; }

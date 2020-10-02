@@ -15,6 +15,7 @@ public:
 	template<unsigned N> constexpr stringbuilder(char(&result)[N]) : stringbuilder(result, result + N - 1) {}
 	constexpr operator char*() const { return pb; }
 	void				add(const char* format, ...) { addv(format, xva_start(format)); }
+	void				add(const char sep) { char temp[2] = {sep, 0}; addv(temp, 0); }
 	void				addby(const char* s);
 	virtual void		addidentifier(const char* identifier);
 	void				addicon(const char* id, int value);

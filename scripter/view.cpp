@@ -125,6 +125,17 @@ public:
 			return;
 		current = i;
 	}
+	bool change(bool run) override {
+		auto p = getcurrent();
+		if(!p)
+			return false;
+		if(run) {
+			char temp[260]; stringbuilder sb(temp);
+			p->geturl(sb);
+			controls::openurl(temp);
+		}
+		return true;
+	}
 	requisit_control() : plugin("requisit", DockLeftBottom) {
 		show_header = false;
 		show_toolbar = false;

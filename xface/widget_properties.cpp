@@ -166,7 +166,7 @@ static int element(int x, int y, int width, const markcontext& ctx, const markup
 		const anyval av(e.value.ptr(ctx.object), e.value.size, 0);
 		auto pt = gettitle(e);
 		if(e.value.source)
-			return field(x, y, width, pt, av, ctx.title, *e.value.source, e.list.getname, 0, ctx.object, e.list.allow);
+			return field(x, y, width, pt, av, ctx.title, *e.value.source, ctx.object, e.list);
 	}
 	return 0;
 }

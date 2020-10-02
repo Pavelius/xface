@@ -6,8 +6,7 @@
 using namespace draw;
 
 static fnchoose		proc_choose;
-static fntext		list_getname;
-static fnallow		list_allow;
+static fnlist		gplist;
 static rect			cmb_rect;
 static array		cmb_source;
 static anyval		cmb_var;
@@ -222,15 +221,15 @@ int draw::field(int x, int y, int width, const char* header_label, const char*& 
 
 struct combolist : controls::list, reflist {
 	const char* getname(stringbuilder& sb, int line, int column) const override {
-		return list_getname(data[line], sb);
+		return gplist.getname(data[line], sb);
 	}
 	static int compare_by_order(const void* v1, const void* v2) {
 		char t1[256]; stringbuilder sb1(t1);
 		char t2[256]; stringbuilder sb2(t2);
 		auto p1 = *((void**)v1);
 		auto p2 = *((void**)v2);
-		auto n1 = list_getname(p1, sb1);
-		auto n2 = list_getname(p2, sb2);
+		auto n1 = gplist.getname(p1, sb1);
+		auto n2 = gplist.getname(p2, sb2);
 		return strcmp(n1, n2);
 	}
 	int	getmaximum() const {
@@ -275,7 +274,7 @@ struct combolist : controls::list, reflist {
 		clear();
 		auto pe = cmb_source.end();
 		for(auto pb = cmb_source.begin(); pb < pe; pb += cmb_source.getsize()) {
-			if(list_allow && !list_allow(cmb_param, (int)cmb_source.indexof(pb)))
+			if(gplist.allow && !gplist.allow(cmb_param, (int)cmb_source.indexof(pb)))
 				continue;
 			add(pb);
 		}
@@ -317,20 +316,19 @@ static void show_combolist() {
 	}
 }
 
-void draw::fieldm(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow) {
+void draw::fieldm(const rect& rc, const anyval& av, const array& source, const void* object, const fnlist& plist, bool instant) {
 	cmb_var = av;
 	cmb_rect = rc;
 	cmb_source = source;
-	cmb_param = param;
-	list_getname = getname;
-	list_allow = allow;
+	cmb_param = object;
+	gplist = plist;
 	if(instant)
 		show_combolist();
 	else
 		execute(show_combolist);
 }
 
-void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext getname, const char* tips, const void* param, fnallow allow) {
+void draw::fieldc(const rect& rc, const anyval& av, const array& source, const void* object, const fnlist& plist, const char* tips) {
 	if(rc.width() <= 0)
 		return;
 	auto focused = isfocused(rc, av);
@@ -344,13 +342,6 @@ void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext 
 	} else
 		gradv(rc, colors::button.lighten(), colors::button.darken());
 	rectb(rc, colors::border);
-	auto execute_drop_down = false;
-	if(a && hot.key == MouseLeft && !hot.pressed)
-		execute_drop_down = true;
-	if(focused && hot.key == KeyEnter)
-		execute_drop_down = true;
-	if(execute_drop_down)
-		fieldm(rc, av, source, getname, false, param, allow);
 	rect rco = rc + metrics::edit;
 	if(focused)
 		rectx(rco, colors::black);
@@ -359,15 +350,22 @@ void draw::fieldc(const rect& rc, const anyval& av, const array& source, fntext 
 		v = (int)source.ptr(v);
 	char temp[260]; stringbuilder sb(temp);
 	auto pn = "Отсутствует";
-	if(v)
-		pn = getname((void*)v, sb);
+	if(v && plist.getname)
+		pn = plist.getname((void*)v, sb);
 	if(pn)
 		textc(rco.x1, rco.y1, rco.width(), pn);
 	if(tips && a && !hot.pressed)
 		tooltips(tips);
+	auto execute_drop_down = false;
+	if(a && hot.key == MouseLeft && !hot.pressed)
+		execute_drop_down = true;
+	if(focused && hot.key == KeyEnter)
+		execute_drop_down = true;
+	if(execute_drop_down)
+		fieldm(rc, av, source, object, plist, false);
 }
 
-int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips, const void* param, fnallow allow) {
+int draw::field(int x, int y, int width, const char* header_label, const anyval& av, int header_width, const array& source, const void* object, const fnlist& plist, const char* tips) {
 	draw::state push;
 	if(header_label && header_label[0]) {
 		setposition(x, y, width);
@@ -377,6 +375,6 @@ int draw::field(int x, int y, int width, const char* header_label, const anyval&
 	rect rc = {x, y, x + width, y + draw::texth() - metrics::edit.height()};
 	if(rc.width() <= 0)
 		return rc.height() - metrics::edit.height();
-	fieldc(rc, av, source, getname, tips, param, allow);
+	fieldc(rc, av, source, object, plist, tips);
 	return rc.height() - metrics::edit.height();
 }

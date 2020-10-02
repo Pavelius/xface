@@ -98,6 +98,7 @@ void								szput(char** output, unsigned u, codepages page = metrics::code);
 char*								szput(char* output, unsigned u, codepages page = metrics::code); // Fast symbol put function. Return 'output'.
 const char*							szskipcr(const char* p);
 const char*							szskipcrr(const char* p0, const char* p);
+bool								szstart(const char* text, const char* name);
 unsigned							szupper(unsigned u);
 char*								szupper(char* p, int count = 1); // to upper reg
 char*								szurl(char* p, const char* path, const char* name, const char* ext = 0, const char* suffix = 0);

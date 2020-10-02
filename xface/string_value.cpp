@@ -219,6 +219,14 @@ int sz2num(const char* p1, const char** pp1) {
 	return result;
 }
 
+bool szstart(const char* text, const char* name) {
+	while(*name) {
+		if(*name++ != *text++)
+			return false;
+	}
+	return true;
+}
+
 bool szmatch(const char* text, const char* name) {
 	while(*name) {
 		if(*name++ != *text++)

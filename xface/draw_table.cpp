@@ -534,7 +534,7 @@ void table::changeref(const rect& rc, int line, int column) {
 		return;
 	auto p = get(line);
 	const anyval av((char*)p + columns[column].path.offset, columns[column].path.size, 0);
-	fieldm(rc, av, *columns[column].source, getenumname, true, 0, 0);
+	fieldm(rc, av, *columns[column].source, p, columns[column].plist, true);
 }
 
 void table::changecheck(const rect& rc, int line, int column) {

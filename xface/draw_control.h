@@ -66,10 +66,10 @@ struct control {
 	};
 	struct plugin {
 		struct builder {
-			virtual bool	canopen(const char* url) const { return true; }
+			virtual bool	canopen(const char* url) const;
 			virtual control* create(const char* url) = 0;
 			virtual void	destroy(control* v) = 0;
-			virtual void	getextensions(stringbuilder& sb) {}
+			virtual void	getextensions(stringbuilder& sb) const {}
 		};
 		const char*			id;
 		dock_s				dock;
@@ -259,7 +259,7 @@ struct table : list {
 	void					cellnumber(const rect& rc, int line, int column);
 	void					cellpercent(const rect& rc, int line, int column);
 	void					celltext(const rect& rc, int line, int column);
-	bool					change(bool run);
+	virtual bool			change(bool run);
 	void					changecheck(const rect& rc, int line, int column);
 	bool					changefield(const rect& rc, unsigned flags, stringbuilder& sb);
 	void					changenumber(const rect& rc, int line, int column);
@@ -462,10 +462,10 @@ int							field(int x, int y, int width, const char* label, color& value, int he
 int							field(int x, int y, int width, const char* label, const char*& sev, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* header_label, char* sev, unsigned size, int header_width, fnchoose choose_proc = 0);
 int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, int digits);
-int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const array& source, fntext getname, const char* tips = 0, const void* param = 0, fnallow allow = 0);
+int							field(int x, int y, int width, const char* label, const anyval& av, int header_width, const array& source, const void* object, const fnlist& plist, const char* tips = 0);
 void						fieldf(const rect& rc, unsigned flags, const anyval& ev, int digits, bool increment, bool istext, fnchoose choose_proc);
-void						fieldm(const rect& rc, const anyval& av, const array& source, fntext getname, bool instant, const void* param, fnallow allow_proc);
-void						fieldc(const rect& rc, const anyval& av, const array& source, fntext getname, const char* tips, const void* param, fnallow allow);
+void						fieldm(const rect& rc, const anyval& av, const array& source, const void* object, const fnlist& plist, bool instant);
+void						fieldc(const rect& rc, const anyval& av, const array& source, const void* object, const fnlist& plist, const char* tips);
 bool						isfocused(const anyval& value);
 bool						isfocused(const rect& rc, const anyval& value);
 int							radio(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);

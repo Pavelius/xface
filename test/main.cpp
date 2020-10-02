@@ -311,7 +311,7 @@ static void test_edit_field() {
 		y += field(x, y, 300, "Еще тест", surname, 100);
 		y += field(x, y, 300, "Еще поле", lastname, 100);
 		y += field(x, y, 300, "Путь к папке", anystr, 100);
-		y += field(x, y, 300, "Пол", combo, 100, bsdata<genderi>::source, controls::table::getenumname, 0);
+		y += field(x, y, 300, "Пол", combo, 100, bsdata<genderi>::source, 0, {controls::table::getenumname}, "Это подсказка, которая появляется при наведении на [элемент управления]. Причем эта подсказка имеет **форматированный** вывод.");
 		y += field(x, y, 300, "Скорость", number, 100, 4);
 		y += button(x, y, 300, buttonok, "Принять", "Такая подсказка должна появляться всегда");
 		domodal();

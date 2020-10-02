@@ -635,23 +635,7 @@ void controls::close(control* p) {
 }
 
 static bool canhandle(const char* url, control::plugin::builder* p) {
-	if(!p->canopen(url))
-		return false;
-	auto ext = szext(url);
-	if(!ext)
-		return false;
-	ext--;
-	char temp[1024 * 8]; stringbuilder sb(temp);
-	p->getextensions(sb);
-	sb.addsz();
-	auto ps = zend(temp);
-	while(ps[1]) {
-		auto pe = ps + 1;
-		if(szpmatch(ext, pe))
-			return true;
-		ps = zend(pe);
-	}
-	return false;
+	return p->canopen(url);
 }
 
 control* controls::openurl(const char* url) {

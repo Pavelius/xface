@@ -206,3 +206,21 @@ void control::contextmenu(const command* source, command::builder& pm) {
 			cmd->proc.cmd_event();
 	}
 }
+
+bool control::plugin::builder::canopen(const char* url) const {
+	auto ext = szext(url);
+	if(!ext)
+		return false;
+	ext--;
+	char temp[1024 * 8]; stringbuilder sb(temp);
+	getextensions(sb);
+	sb.addsz();
+	auto ps = zend(temp);
+	while(ps[1]) {
+		auto pe = ps + 1;
+		if(szpmatch(ext, pe))
+			return true;
+		ps = zend(pe);
+	}
+	return false;
+}
