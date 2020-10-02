@@ -733,6 +733,38 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
 }
 
+bool draw::controls::edit(control& e) {
+	while(ismodal()) {
+		auto tb = e.getimages();
+		rect rc = {0, 0, draw::getwidth(), draw::getheight()};
+		draw::rectf(rc, colors::form);
+		if(metrics::show::statusbar)
+			rc.y2 -= draw::statusbardw();
+		rect rt = rc;
+		if(tb)
+			rt.y2 = rt.y1 + tb->get(0).getrect(0, 0, 0).height() + 4 * 2;
+		else
+			rt.y2 = rt.y1 + 24 + 4 * 2;
+		sheetline(rt, true);
+		rc.y1 += rt.height();
+		rt.x1 += 2; rt.y1 += 1; rt.x2 -= 2;
+		auto dx = draw::texth() + metrics::padding + 4*2;
+		auto y2 = rc.y2 - dx; rc.y2 = y2;
+		if(metrics::show::padding) {
+			rc.x1 += metrics::padding;
+			rc.x2 -= metrics::padding;
+			rc.y1 += metrics::padding;
+		}
+		auto x2 = rc.x2;
+		e.toolbar(rt.x1, rt.y1, rt.width());
+		e.view(rc);
+		draw::buttonr(x2, y2, buttoncancel, "Cancel", &e, KeyEscape);
+		draw::buttonr(x2, y2, buttonok, "OK", &e, Ctrl + KeyEnter);
+		domodal();
+	}
+	return getresult() != 0;
+}
+
 void draw::application(fnevent heartproc, shortcut* shortcuts) {
 	// Make header
 	setting_header.initialize();

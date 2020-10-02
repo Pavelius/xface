@@ -131,6 +131,7 @@ struct requisit {
 	constexpr operator bool() const { return id != 0; }
 	requisit*				add(metatype_s v) { flags.add(v); return this; }
 	void					clear();
+	bool					edit();
 	constexpr bool			is(metatype_s v) const { return flags.is(v); }
 	bool					ispredefined() const;
 	unsigned				getlenght() const { return type->size*count; }

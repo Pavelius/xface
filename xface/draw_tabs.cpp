@@ -53,7 +53,7 @@ int draw::tabs(rect rc, bool show_close, bool right_side, void** data, int start
 	// Получим выравнивание
 	//int ox1 = rc.x1;
 	for(int i = start; i < count; i++) {
-		if(rc.x1 >= rc.x2 || rc.x2 <= rc.x1)
+		if(rc.x1 >= rc.x2)
 			break;
 		auto object = data[i]; sb.clear();
 		auto s = gtext(object, sb);

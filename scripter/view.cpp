@@ -127,7 +127,7 @@ public:
 	}
 	void set(const requisit* v) {
 		auto i = find(v);
-		if(i==-1)
+		if(i == -1)
 			return;
 		current = i;
 	}
@@ -135,11 +135,8 @@ public:
 		auto p = getcurrent();
 		if(!p)
 			return false;
-		if(run) {
-			char temp[260]; stringbuilder sb(temp);
-			p->geturl(sb);
-			controls::openurl(temp);
-		}
+		if(run)
+			p->edit();
 		return true;
 	}
 	requisit_control() : plugin("requisit", DockLeftBottom) {
@@ -214,18 +211,18 @@ static void remove_requisit() {
 }
 
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
-{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
-{choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
-{new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
-{new_method, "Добавить метод", Ctrl + Alpha + 'M'},
-{new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
-{}};
-
+	{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
+	{choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
+	{new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
+	{new_method, "Добавить метод", Ctrl + Alpha + 'M'},
+	{new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
+	{}};
 controls::control::command requisit_control::commands_add[] = {{"add", "Добавить реквизит", 0, new_requisit, 9},
-{"add_method", "Добавить метод", 0, new_method, 9},
-{"remove", "Удалить", 0, remove_requisit, 19, KeyDelete},
-{}};
-
+	{"add_method", "Добавить метод", 0, new_method, 9},
+	{"remove", "Удалить", 0, remove_requisit, 19, KeyDelete},
+	{"moveup", "Переместить вверх", 0, &requisit_control::moveup, 19},
+	{"movedown", "Переместить вниз", 0, &requisit_control::movedown, 19},
+	{}};
 static setting::element code_editor_metadata[] = {{"Показывать типы в окне метаданных", metadata_view_show_type},
 };
 static setting::header headers[] = {{"Редактор кода", "Метаданные", 0, code_editor_metadata},

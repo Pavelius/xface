@@ -231,6 +231,7 @@ public:
 	constexpr T& operator[](int index) { return ((T*)data)[index]; }
 	constexpr const T& operator[](int index) const { return ((T*)data)[index]; }
 	constexpr explicit operator bool() const { return count != 0; }
+	constexpr operator aref<T>() const { return aref<T>((T*)data, count); }
 	T*								add() { return (T*)array::add(); }
 	void							add(const T& v) { *((T*)array::add()) = v; }
 	constexpr const T*				begin() const { return (T*)data; }

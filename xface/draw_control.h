@@ -439,11 +439,9 @@ public:
 	void					setvalue(const char* id, int v) override;
 	void					updaterecords(bool setfilter);
 };
-/*struct form {
-	virtual control*		getcontrol(const char* id) = 0;
-};*/
 void						activate(control* p);
 void						close(control* p);
+bool						edit(control& e);
 control*					getactivated();
 const char*					getlabel(const void* object, stringbuilder& sb);
 control*					openurl(const char* url);
@@ -455,6 +453,7 @@ inline void					application() { application(0, 0); }
 void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
 int							button(int x, int y, int width, fnevent proc, const char* label, const char* tips = 0, int key = 0);
+bool						buttonr(int & x, int y, fnevent proc, const char* label, void* object, int key);;
 int							checkbox(int x, int y, int width, const anyval& value, const char* label, const char* tips = 0);
 void						dockbar(rect& rc);
 bool						dropdown(const rect& rc, controls::control& e);
