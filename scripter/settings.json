@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":318
+      "size":352
     },
     "Dock3":{
       "current":0,
@@ -80,10 +80,10 @@
     }
   },
   "window":{
-    "x":123,
-    "y":79,
-    "width":995,
-    "height":606,
+    "x":186,
+    "y":28,
+    "width":1117,
+    "height":593,
     "header_width":113,
     "flags":48
   },

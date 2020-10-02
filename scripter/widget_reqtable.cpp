@@ -23,6 +23,11 @@ static const char* skiplit(const char* p, const char* symbols) {
 class widget_reqtable : public controls::table {
 	const requisit*		source;
 	array				source_array;
+	void* addrow() override { return source_array.addz(); }
+	int getmaximum() const override { return source_array.getcount(); }
+	void* get(int index) const override { return source_array.ptr(index); }
+	void remove(int index) override { source_array.remove(index); }
+	void swap(int i1, int i2) override { source_array.swap(i1, i2); }
 	const char* geturl(stringbuilder& sb) const override {
 		source->geturl(sb);
 		return sb;

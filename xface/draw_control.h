@@ -246,7 +246,7 @@ struct table : list {
 		select_mode(SelectCell) {}
 	virtual column&			addcol(const char* name, const anyreq& req, const char* visual_id, array* source = 0);
 	column&					addstdimage();
-	virtual void*			addrow() { return 0; } // Need override
+	virtual void*			addrow() = 0;
 	virtual bool			addrow(bool run);
 	void					cell(const rect& rc, int line, int column, const char* text);
 	void					cellbox(const rect& rc, int line, int column);
@@ -275,7 +275,7 @@ struct table : list {
 	virtual void			ensurevisible() override;
 	bool					isaddable() const { return !no_change_count; }
 	bool					ismoveable() const { return !no_change_order; }
-	virtual void*			get(int index) const { return 0; }
+	virtual void*			get(int index) const = 0;
 	virtual int				getcolumn() const override { return current_column; }
 	const command*			getcommands() const override { return commands; }
 	void*					getcurrent() const;
@@ -292,7 +292,7 @@ struct table : list {
 	bool					movedown(bool run);
 	bool					moveup(bool run);
 	void					mouseselect(int id, bool pressed) override;
-	virtual void			remove(int index) {} // Need override
+	virtual void			remove(int index) = 0;
 	virtual bool			removerow(bool);
 	virtual void			row(const rect& rc, int index) override; // Draw single row - part of list
 	virtual int				rowheader(const rect& rc) const override; // Draw header row
@@ -303,7 +303,7 @@ struct table : list {
 	void					sort(int column, bool ascending);
 	bool					sortas(bool run);
 	bool					sortds(bool run);
-	virtual void			swap(int i1, int i2) {} // Need override
+	virtual void			swap(int i1, int i2) = 0;
 	void					view(const rect& rc) override;
 	static const visual		visuals[];
 	void					write(serializer& sr) const override;
@@ -449,8 +449,9 @@ const char*					getlabel(const void* object, stringbuilder& sb);
 control*					openurl(const char* url);
 }
 void						addelement(const rect& rc, const anyval& value);
-void						application(fnevent heartproc = 0, shortcut* shortcuts = 0);
+void						application(fnevent heartproc, shortcut* shortcuts);
 void						application(const char* name, fnevent showproc, fnevent heartproc, shortcut* shortcuts);
+inline void					application() { application(0, 0); }
 void						application_initialize();
 int							button(int x, int y, int width, const anyval& value, bool& result, const char* label, const char* tips = 0, int key = 0);
 int							button(int x, int y, int width, fnevent proc, const char* label, const char* tips = 0, int key = 0);

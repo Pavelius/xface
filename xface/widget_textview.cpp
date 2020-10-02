@@ -45,7 +45,7 @@ static struct textview_plugin : control::plugin, control::plugin::builder {
 	}
 	void destroy(control* p) override {
 	}
-	void getextensions(stringbuilder& sb) override {
+	void getextensions(stringbuilder& sb) const override {
 		sb.add("Текстовый документ (*.txt)");
 		sb.addsz();
 		sb.add("*.txt");

@@ -352,8 +352,6 @@ static void start_menu() {
 	{"Таблица с ячейками", test_tableref},
 	{"Дерево", test_tree},
 	{"Поле ввода", test_edit_field},
-		//{"Тайлы", test_tile_manager},
-		//{"Разметка", test_markup},
 	{"Приложение", draw::application},
 	{"Автосписок", test_autocomplite},
 	{0}};
@@ -529,8 +527,11 @@ static bool test_vector() {
 }
 
 int main() {
-	static auto tests = {test_write_bin, test_anyval, test_array,
-		test_reestr, test_vector
+	static auto tests = {test_write_bin,
+		test_anyval,
+		test_array,
+		test_reestr,
+		test_vector
 	};
 	for(auto p : tests) {
 		if(!p())

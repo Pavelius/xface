@@ -9,6 +9,9 @@ using namespace draw;
 static bool metadata_view_show_type = true;
 
 static class metadata_control : public controls::tableref, controls::control::plugin, initplugin {
+	void* addrow() override {
+		return 0;
+	}
 	void after_initialize() override {
 		addstdimage();
 		addcol("Наименование", ANREQ(metadata, id), "text").set(SizeAuto);
@@ -91,6 +94,9 @@ static class requisit_control : public controls::tableref, controls::control::pl
 		auto p = (requisit*)get(index);
 		if(p->is(Method))
 			return 4;
+		return 0;
+	}
+	void* addrow() override {
 		return 0;
 	}
 public:

@@ -63,6 +63,13 @@ static struct widget_logging : control::plugin, draw::initplugin, table {
 	void* get(int line) const {
 		return messages.ptr(line);
 	}
+	void* addrow() override {
+		return 0;
+	}
+	void remove(int index) override {
+	}
+	void swap(int i1, int i2) override {
+	}
 	int	getmaximum() const override {
 		return messages.getcount();
 	}

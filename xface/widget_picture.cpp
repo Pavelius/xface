@@ -35,7 +35,7 @@ static struct picture_plugin : control::plugin, control::plugin::builder {
 	}
 	void destroy(control* p) override {
 	}
-	void getextensions(stringbuilder& sb) override {
+	void getextensions(stringbuilder& sb) const override {
 		for(auto pv = surface::plugin::first; pv; pv = pv->next) {
 			sb.add("Изображение %+1 (%2)", pv->name, pv->filter);
 			sb.addsz();

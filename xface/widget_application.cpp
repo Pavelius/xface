@@ -342,6 +342,8 @@ static struct widget_control_viewer : controls::tableref {
 			addref(p);
 		}
 	}
+	void* addrow() override { return 0; }
+	void remove(int index) override {}
 } control_viewer;
 
 int draw::field(int x, int y, int width, const char* label, color& value, int header_width, const char* tips) {
