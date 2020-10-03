@@ -17,18 +17,23 @@ BSDATAC(requisit, 256 * 128)
 
 const unsigned			pointer_size = 4;
 const unsigned			array_size = sizeof(vector<char>);
+const metadata*			metadata::type_void;
+const metadata*			metadata::type_i8;
+const metadata*			metadata::type_u8;
+const metadata*			metadata::type_i16;
+const metadata*			metadata::type_u16;
+const metadata*			metadata::type_i32;
+const metadata*			metadata::type_u32;
+const metadata*			metadata::type_text;
+const metadata*			metadata::type_sizet;
 const metadata*			metadata::type_metadata;
 const metadata*			metadata::type_metadata_ptr;
+const metadata*			metadata::type_metadata_array;
 const metadata*			metadata::type_requisit;
-const metadata*			metadata::type_text;
-const metadata*			metadata::type_void;
-const metadata*			metadata::type_u32;
-const metadata*			metadata::type_i32;
-const metadata*			metadata::type_sizet;
 const char*				pointer_id = "*";
 const char*				array_id = "&";
 const char*				elements_id = "Elements";
-static const requisit*	requisit_data;
+static const requisit*	last_standart_requisit;
 
 static const metadata* add_standart(const char* id, unsigned size, const cflags<metatype_s>& mf) {
 	auto p = addtype(id);
@@ -41,18 +46,19 @@ void code::initialize() {
 	bsdata<metadata>::source.clear();
 	bsdata<requisit>::source.clear();
 	metadata::type_void = add_standart("void", 0, {}); // Must be first metadata
-	add_standart("i8", pointer_size / 4, {ScalarType});
-	add_standart("u8", pointer_size / 4, {ScalarType});
-	add_standart("i16", pointer_size / 2, {ScalarType});
-	add_standart("u16", pointer_size / 2, {ScalarType});
+	metadata::type_i8 = add_standart("i8", pointer_size / 4, {ScalarType});
+	metadata::type_u8 = add_standart("u8", pointer_size / 4, {ScalarType});
+	metadata::type_i16 = add_standart("i16", pointer_size / 2, {ScalarType});
+	metadata::type_u16 = add_standart("u16", pointer_size / 2, {ScalarType});
 	metadata::type_i32 = add_standart("i32", pointer_size, {ScalarType});
 	metadata::type_u32 = add_standart("u32", pointer_size, {ScalarType});
 	metadata::type_sizet = metadata::type_u32;
 	metadata::type_text = add_standart("Text", pointer_size, {});
 	metadata::type_metadata = add_standart("Metadata", sizeof(metadata), {});
 	metadata::type_metadata_ptr = metadata::type_metadata->reference();
+	metadata::type_metadata_array = metadata::type_metadata->records();
 	metadata::type_requisit = add_standart("Requisit", sizeof(requisit), {});
-	auto p = addtype("Requisit");
+	auto p = const_cast<metadata*>(metadata::type_requisit);
 	p->add("id", metadata::type_text)->add(Dimension);
 	p->add("Type", metadata::type_metadata_ptr);
 	p->add("Offset", metadata::type_sizet);
@@ -64,9 +70,10 @@ void code::initialize() {
 	p = const_cast<metadata*>(metadata::type_metadata);
 	p->add("id", metadata::type_text)->add(Dimension);
 	p->add("Type", metadata::type_metadata_ptr)->add(Dimension);
+	p->add("Count", metadata::type_sizet)->add(Dimension);
 	p->add("Size", metadata::type_sizet);
 	p->add("Flags", metadata::type_u32);
-	requisit_data = p->add(bsdata<metadata>::source_ptr);
+	last_standart_requisit = p->add(bsdata<metadata>::source_ptr);
 	p->update();
 }
 
@@ -126,6 +133,7 @@ metadata* code::addtype(const char* id) {
 		return p;
 	p = bsdata<metadata>::add();
 	p->id = szdup(id);
+	p->count = 1;
 	return p;
 }
 
@@ -192,14 +200,15 @@ const metadata* metadata::gettype() const {
 	return this;
 }
 
-metadata* code::addtype(const char* id, const metadata* type, unsigned size) {
+metadata* code::addtype(const char* id, const metadata* type, unsigned size, unsigned count) {
 	for(auto& e : bsdata<metadata>()) {
-		if(e && e.type == type && e.is(id))
+		if(e && e.type == type  && e.count == count && e.is(id))
 			return &e;
 	}
 	auto p = bsdata<metadata>::add();
 	p->id = szdup(id);
 	p->size = size;
+	p->count = count;
 	p->type = const_cast<metadata*>(type);
 	return p;
 }
@@ -264,7 +273,7 @@ void requisit::clear() {
 }
 
 bool requisit::ispredefined() const {
-	return this <= requisit_data;
+	return this <= last_standart_requisit;
 }
 
 void requisit::geturl(stringbuilder& sb) const {

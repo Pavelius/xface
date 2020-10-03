@@ -68,8 +68,9 @@ struct control {
 		struct builder {
 			virtual bool	canopen(const char* url) const;
 			virtual control* create(const char* url) = 0;
-			virtual void	destroy(control* v) = 0;
+			virtual void	destroy(control* v) {}
 			virtual void	getextensions(stringbuilder& sb) const {}
+			virtual bool	read(const char* url) { return false; }
 		};
 		const char*			id;
 		dock_s				dock;

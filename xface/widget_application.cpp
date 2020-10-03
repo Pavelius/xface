@@ -38,7 +38,7 @@ BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_bottom", "Присоединить снизу"},
 {"dock_workspace", "На рабочем столе"},
 };
-assert_enum(dock, DockWorkspace);
+assert_enum(dock, DockWorkspace)
 
 struct streca {
 	const element*	e;
@@ -632,10 +632,6 @@ void controls::close(control* p) {
 	delete p;
 }
 
-static bool canhandle(const char* url, control::plugin::builder* p) {
-	return p->canopen(url);
-}
-
 control* controls::openurl(const char* url) {
 	char temp[260];
 	for(auto p : active_controls) {
@@ -652,8 +648,10 @@ control* controls::openurl(const char* url) {
 		auto pc = p->getbuilder();
 		if(!pc)
 			continue;
-		if(!canhandle(url, pc))
+		if(!pc->canopen(url))
 			continue;
+		if(pc->read(url))
+			return 0;
 		auto result = pc->create(url);
 		if(result) {
 			active_controls.add(result);

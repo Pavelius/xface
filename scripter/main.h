@@ -91,6 +91,7 @@ struct statement {
 struct metadata {
 	const char*				id;
 	metadata*				type;
+	unsigned				count;
 	unsigned				size;
 	metatypea				flags;
 	operator bool() const { return id != 0; }
@@ -109,20 +110,25 @@ struct metadata {
 	requisit*				find(const char* id) const;
 	static const metadata*	find(const metadata& e);
 	int						getid() const;
-	::array*				getelements() const;
+	array*					getelements() const;
 	void					getname(stringbuilder& sb) const;
 	const metadata*			gettype() const;
 	static void				read(const char* url);
 	metadata*				records() const;
 	metadata*				reference() const;
+	static const metadata*	type_void;
+	static const metadata*	type_i8;
+	static const metadata*	type_u8;
+	static const metadata*	type_i16;
+	static const metadata*	type_u16;
+	static const metadata*	type_i32;
+	static const metadata*	type_u32;
+	static const metadata*	type_sizet;
 	static const metadata*	type_text;
 	static const metadata*	type_metadata;
 	static const metadata*	type_metadata_ptr;
+	static const metadata*	type_metadata_array;
 	static const metadata*	type_requisit;
-	static const metadata*	type_void;
-	static const metadata*	type_u32;
-	static const metadata*	type_i32;
-	static const metadata*	type_sizet;
 	void					update();
 	void					write(const char* url) const;
 };
@@ -161,7 +167,7 @@ public:
 	unsigned				add(unsigned n) { auto i = getcount(); reserve(i + n); memset(ptr(i), 0, n); return i; }
 };
 metadata*					addtype(const char* id);
-metadata*					addtype(const char* id, const metadata* type, unsigned size);
+metadata*					addtype(const char* id, const metadata* type, unsigned size, unsigned count = 1);
 metadata*					findtype(const char* id);
 void						initialize();
 }

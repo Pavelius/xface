@@ -17,15 +17,6 @@ static class metadata_control : public controls::tableref, controls::control::pl
 		addcol("Наименование", ANREQ(metadata, id), "text").set(SizeAuto);
 		update();
 	}
-	void update() {
-		clear();
-		for(auto& e : bsdata<metadata>()) {
-			if(!e)
-				continue;
-			add(&e);
-		}
-		sort(0, true);
-	}
 	control* getcontrol() override {
 		return this;
 	}
@@ -39,6 +30,15 @@ static class metadata_control : public controls::tableref, controls::control::pl
 		return 2;
 	}
 public:
+	void update() {
+		clear();
+		for(auto& e : bsdata<metadata>()) {
+			if(!e)
+				continue;
+			add(&e);
+		}
+		sort(0, true);
+	}
 	void add(const metadata* v, bool interactive = false) {
 		if(!v || v->isreference() || v->isarray() || v->ispredefined())
 			return;
@@ -209,6 +209,32 @@ static void remove_requisit() {
 	setproperties(requisit_instance.getcurrent(), dginf<requisit>::meta);
 	setpropertiesfocus();
 }
+
+static class plugin_metadata : controls::control::plugin, controls::control::plugin::builder {
+	controls::control* create(const char* url) override {
+		return 0;
+	}
+	bool read(const char* url) override {
+		metadata::read(url);
+		metadata_instance.update();
+		return true;
+	}
+	controls::control::plugin::builder* getbuilder() override {
+		return this;
+	}
+	void getextensions(stringbuilder& sb) const override {
+		sb.add("Файлы классов (*.mtd)");
+		sb.addsz();
+		sb.add("*.mtd");
+		sb.addsz();
+	}
+	controls::control* getcontrol() override {
+		return 0;
+	}
+public:
+	plugin_metadata() : plugin("metadata_loader", DockWorkspace) {
+	}
+} plugin_control;
 
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
 	{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},

@@ -54,12 +54,12 @@
     }
   },
   "window":{
-    "x":248,
-    "y":58,
-    "width":768,
-    "height":498,
+    "x":238,
+    "y":53,
+    "width":784,
+    "height":592,
     "header_width":132,
-    "flags":112
+    "flags":48
   },
   "controls":{
     "code":{
@@ -77,7 +77,7 @@
         },
         "column":{
           "id":"Наименование",
-          "width":133,
+          "width":180,
           "size":4,
           "total":0
         }
@@ -94,59 +94,62 @@
         },
         "column":{
           "id":"Наименование",
-          "width":133,
+          "width":180,
           "size":4,
           "total":0
         }
       }
     },
-    "logging":{
-      "Docking":4,
+    "metadata_loader":{
+      "Docking":5,
       "Visible":1,
-      "columns":{
-        "column":{
-          "id":"Дата",
-          "width":88,
-          "size":2,
-          "total":0
-        },
-        "column":{
-          "id":"Сообщение",
-          "width":200,
-          "size":4,
-          "total":0
+      "logging":{
+        "Docking":4,
+        "Visible":1,
+        "columns":{
+          "column":{
+            "id":"Дата",
+            "width":88,
+            "size":2,
+            "total":0
+          },
+          "column":{
+            "id":"Сообщение",
+            "width":200,
+            "size":4,
+            "total":0
+          }
         }
+      },
+      "properties":{
+        "Docking":2,
+        "Visible":1
       }
     },
-    "properties":{
-      "Docking":2,
-      "Visible":1
-    }
-  },
-  "dockbar":{
-    "Dock0":{
-      "current":0,
-      "size":153
-    },
-    "Dock1":{
-      "current":0,
-      "size":127
-    },
-    "Dock2":{
-      "current":0,
-      "size":354
-    },
-    "Dock3":{
-      "current":0,
-      "size":200
-    },
-    "Dock4":{
-      "current":0,
-      "size":294
-    },
-    "Dock5":{
-      "current":0,
-      "size":200
+    "dockbar":{
+      "Dock0":{
+        "current":0,
+        "size":200
+      },
+      "Dock1":{
+        "current":0,
+        "size":200
+      },
+      "Dock2":{
+        "current":0,
+        "size":200
+      },
+      "Dock3":{
+        "current":0,
+        "size":200
+      },
+      "Dock4":{
+        "current":0,
+        "size":0
+      },
+      "Dock5":{
+        "current":0,
+        "size":0
+      }
     }
   }
-}
