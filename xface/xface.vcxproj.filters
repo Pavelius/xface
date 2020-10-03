@@ -225,6 +225,9 @@
     <ClCompile Include="reestr.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="draw_form.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

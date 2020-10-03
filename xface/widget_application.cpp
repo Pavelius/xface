@@ -731,7 +731,7 @@ static void get_control_status(controls::control* object) {
 	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
 }
 
-bool draw::controls::edit(control& e) {
+bool draw::controls::edit(control& e, fnevent heartbeat) {
 	while(ismodal()) {
 		auto tb = e.getimages();
 		rect rc = {0, 0, draw::getwidth(), draw::getheight()};
@@ -759,6 +759,8 @@ bool draw::controls::edit(control& e) {
 		draw::buttonr(x2, y2, buttoncancel, "Cancel", &e, KeyEscape);
 		draw::buttonr(x2, y2, buttonok, "OK", &e, Ctrl + KeyEnter);
 		domodal();
+		if(heartbeat)
+			heartbeat();
 	}
 	return getresult() != 0;
 }

@@ -322,6 +322,7 @@ struct tableref : table, private array {
 	};
 	constexpr tableref(unsigned size = sizeof(element)) : array(size) {}
 	void*					addref(void* object);
+	void*					addrow() override { return 0; };
 	void					clear() { array::clear(); }
 	int						find(const void* object) const;
 	void*					get(int index) const override { return ((element*)array::ptr(index))->object; }
@@ -440,9 +441,21 @@ public:
 	void					setvalue(const char* id, int v) override;
 	void					updaterecords(bool setfilter);
 };
+class form {
+	rect					rc;
+	int						title;
+public:
+	virtual void			before() {}
+	int						edit();
+	void					field(const char* title, const anyval& ev);
+	void					field(control& ev);
+	virtual bool			keyinput(unsigned id) {}
+	virtual void			view() {}
+	constexpr form() : rc{}, title(100) {}
+};
 void						activate(control* p);
 void						close(control* p);
-bool						edit(control& e);
+bool						edit(control& e, fnevent heatbeat = 0);
 control*					getactivated();
 const char*					getlabel(const void* object, stringbuilder& sb);
 control*					openurl(const char* url);

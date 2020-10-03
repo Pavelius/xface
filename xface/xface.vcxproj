@@ -149,6 +149,7 @@
     <ClCompile Include="draw_animation.cpp" />
     <ClCompile Include="draw_autocomplete.cpp" />
     <ClCompile Include="draw_dockbar.cpp" />
+    <ClCompile Include="draw_form.cpp" />
     <ClCompile Include="draw_picker.cpp" />
     <ClCompile Include="draw_tableref.cpp" />
     <ClCompile Include="draw_tree.cpp" />
