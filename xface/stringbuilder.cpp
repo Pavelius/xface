@@ -441,6 +441,15 @@ void stringbuilder::addicon(const char* id, int value) {
 		adds(":%1:%2i", id, value);
 }
 
+void stringbuilder::change(char s1, char s2) {
+	for(auto p = pb; p < pe; p++) {
+		if(*p == 0)
+			break;
+		if(*p == s1)
+			*p == s2;
+	}
+}
+
 void stringbuilder::add(const char* s, const grammar* source, const char* def) {
 	auto ps = skip_space(s);
 	while(*ps) {

@@ -37,7 +37,7 @@ public:
 				continue;
 			add(&e);
 		}
-		sort(0, true);
+		sort(1, true);
 	}
 	void add(const metadata* v, bool interactive = false) {
 		if(!v || v->isreference() || v->isarray() || v->ispredefined())
@@ -217,6 +217,7 @@ static class plugin_metadata : controls::control::plugin, controls::control::plu
 	bool read(const char* url) override {
 		metadata::read(url);
 		metadata_instance.update();
+		requisit_instance.update();
 		return true;
 	}
 	controls::control::plugin::builder* getbuilder() override {
@@ -237,23 +238,35 @@ public:
 } plugin_control;
 
 static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
-	{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
-	{choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
-	{new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
-	{new_method, "Добавить метод", Ctrl + Alpha + 'M'},
-	{new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
-	{}};
+{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
+{choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
+{new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
+{new_method, "Добавить метод", Ctrl + Alpha + 'M'},
+{new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
+{}};
 controls::control::command requisit_control::commands_add[] = {{"add", "Добавить реквизит", 0, new_requisit, 9},
-	{"add_method", "Добавить метод", 0, new_method, 9},
-	{"remove", "Удалить", 0, remove_requisit, 19, KeyDelete},
-	{"moveup", "Переместить вверх", 0, &requisit_control::moveup, 19},
-	{"movedown", "Переместить вниз", 0, &requisit_control::movedown, 19},
-	{}};
+{"add_method", "Добавить метод", 0, new_method, 9},
+{"remove", "Удалить", 0, remove_requisit, 19, KeyDelete},
+{"moveup", "Переместить вверх", 0, &requisit_control::moveup, 19},
+{"movedown", "Переместить вниз", 0, &requisit_control::movedown, 19},
+{}};
+static setting::element code_editor_url[] = {{"Путь к библиотеке", {metadata::classes_url, setting::Url}},
+{"Путь к проектам", {metadata::projects_url, setting::Url}},
+};
 static setting::element code_editor_metadata[] = {{"Показывать типы в окне метаданных", metadata_view_show_type},
 };
+static setting::element project_common[] = {{"Имя", project::main.name},
+{"Описание", project::main.description},
+};
 static setting::header headers[] = {{"Редактор кода", "Метаданные", 0, code_editor_metadata},
+{"Редактор кода", "Пути", 0, code_editor_url},
+{"Проект", "Общие", "Заголовок", project_common},
 };
 
+static void improt_test() {
+	project::import();
+}
+
 void run_main() {
-	draw::application("Scripter", 0, heartproc, shortcuts);
+	draw::application("Scripter", improt_test, heartproc, shortcuts);
 }

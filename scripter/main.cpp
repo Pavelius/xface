@@ -48,8 +48,8 @@ int main() {
 		p2->write("file.mtd");
 		p1->write("point.mtd");
 		p4->write("item.mtd");
-	} else
-		metadata::read("character.mtd");
+	} /*else
+		metadata::read("character.mtd");*/
 	logmsg("Размер метаданных %1i", sizeof(metadata));
 	logmsg("Размер реквизита %1i", sizeof(requisit));
 	setcode(0);

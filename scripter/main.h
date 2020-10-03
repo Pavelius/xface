@@ -129,6 +129,9 @@ struct metadata {
 	static const metadata*	type_metadata_ptr;
 	static const metadata*	type_metadata_array;
 	static const metadata*	type_requisit;
+	static const metadata*	type_project;
+	static const char*		classes_url;
+	static const char*		projects_url;
 	void					update();
 	void					write(const char* url) const;
 };
@@ -158,13 +161,17 @@ struct requisit {
 	requisit*				set(expression* v) {/* if(this) code = v;*/ return this; }
 	requisit*				set(metatype_s v) { flags.add(v); return this; }
 };
+struct project {
+	const char*				name;
+	const char*				description;
+	vector<const char*>		modules;
+	static void				import();
+	static project			main;
+	void					write(const char* url);
+};
 struct metatypei {
 	const char*				id;
 	const char*				name;
-};
-class section : public vector<unsigned char> {
-public:
-	unsigned				add(unsigned n) { auto i = getcount(); reserve(i + n); memset(ptr(i), 0, n); return i; }
 };
 metadata*					addtype(const char* id);
 metadata*					addtype(const char* id, const metadata* type, unsigned size, unsigned count = 1);

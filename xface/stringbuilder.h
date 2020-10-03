@@ -32,6 +32,7 @@ public:
 	void				adduint(unsigned value, int precision, const int radix);
 	char*				begin() { return pb; }
 	const char*			begin() const { return pb; }
+	void				change(char s1, char s2);
 	void				clear() { pb[0] = 0; p = pb; }
 	const char*			end() const { return pe; }
 	char*				get() const { return p; }

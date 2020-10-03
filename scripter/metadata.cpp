@@ -30,6 +30,9 @@ const metadata*			metadata::type_metadata;
 const metadata*			metadata::type_metadata_ptr;
 const metadata*			metadata::type_metadata_array;
 const metadata*			metadata::type_requisit;
+const metadata*			metadata::type_project;
+const char*				metadata::classes_url;
+const char*				metadata::projects_url;
 const char*				pointer_id = "*";
 const char*				array_id = "&";
 const char*				elements_id = "Elements";
@@ -58,6 +61,7 @@ void code::initialize() {
 	metadata::type_metadata_ptr = metadata::type_metadata->reference();
 	metadata::type_metadata_array = metadata::type_metadata->records();
 	metadata::type_requisit = add_standart("Requisit", sizeof(requisit), {});
+	//metadata::type_project = add_standart("Project", sizeof(project), {});
 	auto p = const_cast<metadata*>(metadata::type_requisit);
 	p->add("id", metadata::type_text)->add(Dimension);
 	p->add("Type", metadata::type_metadata_ptr);
@@ -75,6 +79,11 @@ void code::initialize() {
 	p->add("Flags", metadata::type_u32);
 	last_standart_requisit = p->add(bsdata<metadata>::source_ptr);
 	p->update();
+	//p = const_cast<metadata*>(metadata::type_project);
+	//p->add("Name", metadata::type_text);
+	//p->add("Description", metadata::type_text);
+	//p->add("Modules", metadata::type_text->records());
+	//p->update();
 }
 
 int	metadata::getid() const {

@@ -41,8 +41,9 @@ class context {
 		if(!keys_count)
 			return 0;
 		aref<requisit*> k1(keys, keys_count);
-		for(int i = source.getcount() - 1; i >= 0; i--) {
-			auto p1 = source.ptr(i);
+		auto pe = source.end();
+		auto size = source.getsize();
+		for(auto p1 = source.begin(); p1 < pe; p1 += size) {
 			if(isequal(p1, p, k1))
 				return p1;
 		}
@@ -136,6 +137,8 @@ public:
 				if(p1 && p1 != p) {
 					copy(p1, p, type, true);
 					pa->remove(pa->indexof(p));
+					references[i] = p1;
+					p = p1;
 					// TODO: change references to self
 				}
 				*m = p;

@@ -12,6 +12,8 @@
     <ClCompile Include="widget_codeview.cpp" />
     <ClCompile Include="widget_reqtable.cpp" />
     <ClCompile Include="metadata_bin.cpp" />
+    <ClCompile Include="project.cpp" />
+    <ClCompile Include="view_import.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
