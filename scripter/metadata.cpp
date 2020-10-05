@@ -2,17 +2,7 @@
 
 using namespace code;
 
-BSMETA(metadata) = {BSREQ(id),
-BSREQ(type),
-BSREQ(size),
-{}};
 BSDATAC(metadata, 2048)
-
-BSMETA(requisit) = {BSREQ(id),
-BSREQ(type),
-BSREQ(count),
-BSREQ(offset),
-{}};
 BSDATAC(requisit, 256 * 128)
 
 const unsigned			pointer_size = 4;
@@ -30,6 +20,7 @@ const metadata*			metadata::type_metadata;
 const metadata*			metadata::type_metadata_ptr;
 const metadata*			metadata::type_metadata_array;
 const metadata*			metadata::type_requisit;
+const metadata*			metadata::type_import;
 const metadata*			metadata::type_project;
 const char*				metadata::classes_url;
 const char*				metadata::projects_url;
@@ -61,7 +52,8 @@ void code::initialize() {
 	metadata::type_metadata_ptr = metadata::type_metadata->reference();
 	metadata::type_metadata_array = metadata::type_metadata->records();
 	metadata::type_requisit = add_standart("Requisit", sizeof(requisit), {});
-	//metadata::type_project = add_standart("Project", sizeof(project), {});
+	metadata::type_import = add_standart("import", sizeof(importi), {});
+	metadata::type_project = add_standart("Project", sizeof(project), {});
 	auto p = const_cast<metadata*>(metadata::type_requisit);
 	p->add("id", metadata::type_text)->add(Dimension);
 	p->add("Type", metadata::type_metadata_ptr);
@@ -77,7 +69,12 @@ void code::initialize() {
 	p->add("Count", metadata::type_sizet)->add(Dimension);
 	p->add("Size", metadata::type_sizet);
 	p->add("Flags", metadata::type_u32);
-	last_standart_requisit = p->add(bsdata<metadata>::source_ptr);
+	p->add(bsdata<metadata>::source_ptr);
+	p->update();
+	p = const_cast<metadata*>(metadata::type_import);
+	p->add("parent", metadata::type_metadata)->add(Dimension);
+	p->add("url", metadata::type_text)->add(Dimension);
+	last_standart_requisit = p->add(bsdata<importi>::source_ptr);
 	p->update();
 	//p = const_cast<metadata*>(metadata::type_project);
 	//p->add("Name", metadata::type_text);
@@ -110,7 +107,7 @@ bool metadata::isreference() const {
 }
 
 bool metadata::ispredefined() const {
-	return this <= type_requisit;
+	return this <= type_project;
 }
 
 void metadata::add(stringbuilder& sb, char sep) const {

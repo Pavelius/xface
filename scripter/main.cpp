@@ -4,15 +4,7 @@ using namespace code;
 
 void setcode(requisit* v);
 
-static bool test_metadata() {
-	auto u = sizeof(meta_size<decltype(metadata::type)>::value);
-	auto u1 = sizeof(meta_size<metadata*>::value);
-	return u == sizeof(unsigned);
-}
-
 int main() {
-	if(!test_metadata())
-		return -1;
 	initialize();
 	if(false) {
 		auto p1 = addtype("Point");

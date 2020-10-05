@@ -1,6 +1,5 @@
 #include "agrw.h"
 #include "crt.h"
-#include "bsreq.h"
 #include "point.h"
 #include "stringbuilder.h"
 #include "valuelist.h"
@@ -9,6 +8,7 @@
 #pragma once
 
 #define APLNK(e,t) DGLNK(e,t) BSLNK(e,t)
+#define assert_enum(e, last) static_assert(sizeof(bsdata<e##i>::elements) / sizeof(bsdata<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements"); BSHEAD(e##i);
 
 namespace code {
 enum operator_s : unsigned char {
@@ -129,6 +129,7 @@ struct metadata {
 	static const metadata*	type_metadata_ptr;
 	static const metadata*	type_metadata_array;
 	static const metadata*	type_requisit;
+	static const metadata*	type_import;
 	static const metadata*	type_project;
 	static const char*		classes_url;
 	static const char*		projects_url;
