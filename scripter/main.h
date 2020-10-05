@@ -170,7 +170,7 @@ struct project {
 	void					write(const char* url);
 };
 struct importi {
-	const char*				id;
+	const metadata*			parent;
 	const char*				url;
 };
 struct metatypei {
