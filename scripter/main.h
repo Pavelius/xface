@@ -169,6 +169,10 @@ struct project {
 	static project			main;
 	void					write(const char* url);
 };
+struct importi {
+	const char*				id;
+	const char*				url;
+};
 struct metatypei {
 	const char*				id;
 	const char*				name;

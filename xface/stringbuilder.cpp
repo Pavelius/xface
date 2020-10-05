@@ -446,7 +446,7 @@ void stringbuilder::change(char s1, char s2) {
 		if(*p == 0)
 			break;
 		if(*p == s1)
-			*p == s2;
+			*p++ = s2;
 	}
 }
 

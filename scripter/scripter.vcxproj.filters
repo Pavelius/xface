@@ -14,6 +14,7 @@
     <ClCompile Include="metadata_bin.cpp" />
     <ClCompile Include="project.cpp" />
     <ClCompile Include="view_import.cpp" />
+    <ClCompile Include="import.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

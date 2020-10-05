@@ -264,7 +264,7 @@ static setting::header headers[] = {{"Редактор кода", "Метаданные", 0, code_edit
 };
 
 static void improt_test() {
-	project::import();
+	//project::import();
 }
 
 void run_main() {
