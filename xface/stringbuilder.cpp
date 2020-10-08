@@ -1,11 +1,67 @@
+#include "crt.h"
 #include "stringbuilder.h"
 
-extern "C" int		memcmp(const void* p1, const void* p2, unsigned size);
-extern "C" void*	memmove(void* destination, const void* source, unsigned size);
-extern "C" void*	memcpy(void* destination, const void* source, unsigned size);
-static const char	spaces[] = " \n\t\r.,!?;:";
-static constexpr const char* zend(const char* p) { while(*p) p++; return p; }
-static constexpr unsigned zlen(const char* p) { return zend(p) - p; }
+static const char spaces[] = " \n\t\r.,!?;:";
+
+static const char* psnum16(const char* p, int& value) {
+	int result = 0;
+	const int radix = 16;
+	while(*p) {
+		char a = *p;
+		if(a >= '0' && a <= '9') {
+			result = result * radix;
+			result += a - '0';
+		} else if(a >= 'a' && a <= 'f') {
+			result = result * radix;
+			result += a - 'a' + 10;
+		} else if(a >= 'A' && a <= 'F') {
+			result = result * radix;
+			result += a - 'A' + 10;
+		} else
+			break;
+		p++;
+	}
+	value = result;
+	return p;
+}
+
+static const char* psnum10(const char* p, int& value) {
+	int result = 0;
+	const int radix = 10;
+	while(*p) {
+		char a = *p;
+		if(a >= '0' && a <= '9') {
+			result = result * radix;
+			result += a - '0';
+		} else
+			break;
+		p++;
+	}
+	value = result;
+	return p;
+}
+
+// Parse string to number
+const char* stringbuilder::readnum(const char* p, int& value) {
+	value = 0;
+	if(!p)
+		return 0;
+	bool sign = false;
+	// Установка знака
+	if(*p == '-') {
+		sign = true;
+		p++;
+	}
+	// Перегрузка числовой системы
+	if(p[0] == '0' && p[1] == 'x') {
+		p += 2;
+		p = psnum16(p, value);
+	} else
+		p = psnum10(p, value);
+	if(sign)
+		value = -value;
+	return p;
+}
 
 static const char* word_end(const char* ps) {
 	while(*ps) {
@@ -50,6 +106,201 @@ const char* skipcr(const char* p) {
 	return p;
 }
 
+// Parse string to string (from c/json format)
+const char* psstr(const char* p, char* r, char end_symbol) {
+	r[0] = 0;
+	if(!p)
+		return 0;
+	while(*p) {
+		if(*p == end_symbol) {
+			*r++ = 0;
+			return p + 1;
+		} else if(*p != '\\') {
+			*r++ = *p++;
+			continue;
+		}
+		p++;
+		int value;
+		switch(*p) {
+		case 'n':
+			*r++ = '\n';
+			p++;
+			break;
+		case 'r':
+			*r++ = '\r';
+			p++;
+			break;
+		case 't':
+			*r++ = '\t';
+			p++;
+			break;
+		case 'b':
+			*r++ = '\b';
+			p++;
+			break;
+		case 'f':
+			*r++ = '\f';
+			p++;
+			break;
+		case 'v':
+			*r++ = '\v';
+			p++;
+			break;
+			// Число в кодировке UNICODE
+		case '0': case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
+			p = psnum10(p, value);
+			r = szput(r, value);
+			break;
+			// Число в кодировке UNICODE (16-ричная система)
+		case 'x': case 'u':
+			p = psnum16(p + 1, value);
+			r = szput(r, value);
+			break;
+		case '\n': case '\r':
+			// Перевод строки в конце
+			while(*p == '\n' || *p == '\r')
+				p = skipcr(p);
+			break;
+		default:
+			// Любой символ, который будет экранирован ( \', \", \\)
+			*r++ = *p++;
+			break;
+		}
+	}
+	return p;
+}
+
+char* sznum(char* result, int num, int precision, const char* empthy, int radix) {
+	char* p1 = result;
+	if(num == 0) {
+		if(empthy)
+			zcpy(p1, empthy);
+		else {
+			zcpy(p1, "0");
+			while(--precision > 0)
+				zcat(p1, "0");
+		}
+		p1 = zend(p1);
+	} else {
+		char temp[32];
+		int p = 0;
+		if(num < 0) {
+			*p1++ = '-';
+			num = -num;
+		}
+		switch(radix) {
+		case 16:
+			while(num) {
+				int a = (num%radix);
+				if(a > 9)
+					temp[p++] = 'A' - 10 + a;
+				else
+					temp[p++] = '0' + a;
+				num /= radix;
+			}
+			break;
+		default:
+			while(num) {
+				temp[p++] = '0' + (num%radix);
+				num /= radix;
+			}
+			break;
+		}
+		while(precision-- > p)
+			*p1++ = '0';
+		while(p)
+			*p1++ = temp[--p];
+		p1[0] = 0;
+	}
+	return result;
+}
+
+int sz2num(const char* p1, const char** pp1) {
+	int result = 0;
+	bool sign = false;
+	const int radix = 10;
+	while(*p1 && *p1 != '-' && (*p1 < '0' || *p1 > '9'))
+		p1++;
+	if(*p1 == '-') {
+		sign = true;
+		p1++;
+	}
+	while(*p1) {
+		char a = *p1;
+		if(a < '0' || a > '9')
+			break;
+		result = result * radix;
+		result += a - '0';
+		p1++;
+	}
+	if(sign)
+		result = -result;
+	if(pp1)
+		*pp1 = p1;
+	return result;
+}
+
+bool szstart(const char* text, const char* name) {
+	while(*name) {
+		if(*name++ != *text++)
+			return false;
+	}
+	return true;
+}
+
+bool szmatch(const char* text, const char* name) {
+	while(*name) {
+		if(*name++ != *text++)
+			return false;
+	}
+	if(ischa(*text))
+		return false;
+	return true;
+}
+
+static bool szpmatch(const char* text, const char* s, const char* s2) {
+	while(true) {
+		const char* d = text;
+		while(s < s2) {
+			if(*d == 0)
+				return false;
+			unsigned char c = *s;
+			if(c == '?') {
+				s++;
+				d++;
+			} else if(c == '*') {
+				s++;
+				if(s == s2)
+					return true;
+				while(*d) {
+					if(*d == *s)
+						break;
+					d++;
+				}
+			} else {
+				if(*d++ != *s++)
+					return false;
+			}
+		}
+		return true;
+	}
+}
+
+bool szpmatch(const char* text, const char* pattern) {
+	const char* p = pattern;
+	while(true) {
+		const char* p2 = zchr(p, ',');
+		if(!p2)
+			p2 = zend(p);
+		if(szpmatch(text, p, p2))
+			return true;
+		if(*p2 == 0)
+			return false;
+		p = skipsp(p2 + 1);
+	}
+}
+
 struct stringbuilder::grammar {
 	const char*		name;
 	const char*		change;
@@ -57,7 +308,8 @@ struct stringbuilder::grammar {
 	unsigned		change_size;
 	constexpr grammar() : name(0), change(0), name_size(0), change_size(0) {}
 	grammar(const char* name, const char* change) :
-		name(name), change(change), name_size(zlen(name)), change_size(zlen(change)) {}
+		name(name), change(change), name_size(zlen(name)), change_size(zlen(change)) {
+	}
 	operator bool() const { return name != 0; }
 };
 
@@ -143,29 +395,6 @@ void stringbuilder::addint(int value, int precision, const int radix) {
 	adduint(value, precision, radix);
 }
 
-const char* stringbuilder::readnum(const char* p1, int& result) {
-	result = 0;
-	bool sign = false;
-	const int radix = 10;
-	while(*p1 && *p1 != '-' && (*p1 < '0' || *p1 > '9'))
-		p1++;
-	if(*p1 == '-') {
-		sign = true;
-		p1++;
-	}
-	while(*p1) {
-		char a = *p1;
-		if(a < '0' || a > '9')
-			break;
-		result = result * radix;
-		result += a - '0';
-		p1++;
-	}
-	if(sign)
-		result = -result;
-	return p1;
-}
-
 const char* stringbuilder::readformat(const char* src, const char* vl) {
 	if(*src == '%') {
 		src++;
@@ -179,15 +408,11 @@ const char* stringbuilder::readformat(const char* src, const char* vl) {
 	if(*src == '+' || *src == '-')
 		prefix = *src++;
 	if(*src >= '0' && *src <= '9') {
-		// Если число, просто подставим нужный параметр
 		int pn = 0, pnp = 0;
-		while(isnum(*src))
-			pn = pn * 10 + (*src++) - '0';
-		if(src[0] == '.' && (src[1] >= '0' && src[1] <= '9')) {
-			src++;
-			while(*src >= '0' && *src <= '9')
-				pnp = pnp * 10 + (*src++) - '0';
-		}
+		if(isnum(*src))
+			src = psnum10(src, pn);
+		if(src[0] == '.' && isnum(src[1]))
+			src = psnum10(src + 1, pnp);
 		if(*src == 'i') {
 			src++;
 			auto value = ((int*)vl)[pn - 1];

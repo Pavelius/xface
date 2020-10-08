@@ -185,7 +185,6 @@
     <ClCompile Include="screenshoot.cpp" />
     <ClCompile Include="setting.cpp" />
     <ClCompile Include="stringbuilder.cpp" />
-    <ClCompile Include="string_value.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="draw_input.cpp" />
     <ClCompile Include="draw_text.cpp" />

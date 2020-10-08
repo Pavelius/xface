@@ -102,9 +102,6 @@
     <ClCompile Include="setting.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="string_value.cpp">
-      <Filter>support</Filter>
-    </ClCompile>
     <ClCompile Include="stringbuilder.cpp">
       <Filter>support</Filter>
     </ClCompile>
