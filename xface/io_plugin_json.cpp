@@ -15,6 +15,17 @@
 #include "crt.h"
 #include "io_plugin.h"
 
+static const char* psidn(const char* p, char* ps, const char* pe) {
+	while(*p && (ischa(*p) || isnum(*p) || *p == '_')) {
+		if(ps < pe)
+			*ps++ = *p++;
+		else
+			break;
+	}
+	*ps = 0;
+	return p;
+}
+
 static bool equal(const char* p, const char* s) {
 	while(*s && *p)
 		if(szupper(szget(&s)) != szupper(szget(&p)))
@@ -27,7 +38,7 @@ static const char* read_name(const char* p, io::reader::node& n) {
 	if(*p == '\"' || *p == '\'')
 		p = psstr(p + 1, temp, *p);
 	else if(ischa(*p))
-		p = psidn(p, temp);
+		p = psidn(p, temp, temp + sizeof(temp) - 1);
 	else
 		return p;
 	n.name = szdup(temp);
@@ -44,7 +55,7 @@ static const char* read_array(const char* p, io::reader::node& pn, io::reader& e
 		n.index = index;
 		p = read_object(p, n, e);
 		if(*p == ',') {
-			p = zskipspcr(p + 1);
+			p = skipspcr(p + 1);
 			index++;
 			continue;
 		}
@@ -61,14 +72,14 @@ static const char* read_dictionary(const char* p, io::reader::node& pn, io::read
 	while(*p) {
 		io::reader::node n(pn);
 		n.index = index;
-		p = zskipspcr(read_name(p, n));
+		p = skipspcr(read_name(p, n));
 		if(*p == ':')
-			p = zskipspcr(p + 1);
+			p = skipspcr(p + 1);
 		p = read_object(p, n, e);
 		if(!p)
 			return 0;
 		if(*p == ',') {
-			p = zskipspcr(p + 1);
+			p = skipspcr(p + 1);
 			index++;
 			continue;
 		}
@@ -96,13 +107,13 @@ static const char* read_number(const char* p, io::reader::node& n, io::reader& e
 	auto ps = temp;
 	auto pe = temp + sizeof(temp) - 2;
 	ps[0] = 0;
-	if(*p=='-') {
-		if(ps<pe)
+	if(*p == '-') {
+		if(ps < pe)
 			*ps++ = *p;
 		p++;
 	}
 	while(isnum(*p)) {
-		if(ps<pe)
+		if(ps < pe)
 			*ps++ = *p;
 		p++;
 	}
@@ -134,11 +145,11 @@ static const char* read_object(const char* p, io::reader::node& n, io::reader& e
 		n.type = serializer::Struct;
 		if(!n.skip)
 			e.open(n);
-		p = zskipspcr(p + 1);
+		p = skipspcr(p + 1);
 		if(*p == '}') {
 			if(!n.skip)
 				e.close(n);
-			return zskipspcr(p + 1);
+			return skipspcr(p + 1);
 		}
 		p = read_dictionary(p, n, e);
 		if(!n.skip)
@@ -147,17 +158,17 @@ static const char* read_object(const char* p, io::reader::node& n, io::reader& e
 		n.type = serializer::Array;
 		if(!n.skip)
 			e.open(n);
-		p = zskipspcr(p + 1);
+		p = skipspcr(p + 1);
 		if(*p == ']') {
 			if(!n.skip)
 				e.close(n);
-			return zskipspcr(p + 1);
+			return skipspcr(p + 1);
 		}
 		p = read_array(p, n, e);
 		if(!n.skip)
 			e.close(n);
 	}
-	return zskipspcr(p);
+	return skipspcr(p);
 }
 
 struct json_writer : serializer {

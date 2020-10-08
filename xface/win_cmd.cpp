@@ -9,7 +9,7 @@ char** szcmdargv(int& argc) {
 	while(*p) {
 		if((unsigned)argc >= sizeof(argv) / sizeof(argv[0]))
 			break;
-		p = szskipcr(p);
+		p = skipcr(p);
 		const char* pe = 0;
 		if(*p == '\"' || *p == '\'') {
 			char t = *p++;
@@ -23,7 +23,7 @@ char** szcmdargv(int& argc) {
 		argv[argc++] = psz;
 		if(pe[0] == 0)
 			break;
-		p = zskipspcr(pe + 1);
+		p = skipspcr(pe + 1);
 	}
 	return argv;
 }

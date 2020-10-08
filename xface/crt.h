@@ -70,15 +70,15 @@ int									isqrt(const int x); // Return aquare root of 'x'
 void*								loadb(const char* url, int* size = 0, int additional_bytes_alloated = 0); // Load binary file.
 char*								loadt(const char* url, int* size = 0); // Load text file and decode it to system codepage.
 bool								matchuc(const char* name, const char* filter);
-const char*							psidn(const char* p, char* result, char* result_end); // safe parse identifier name from string
-inline const char*					psidn(const char* p, char* result) { return psidn(p, result, result + 128); }
-const char*							psnum(const char* p, int& value); // Parse number from string
 const char*							psstr(const char* p, char* value, char end_symbol = '\"'); // Parse string from string (like c format "Some\nstring")
 unsigned							rmoptimal(unsigned need_count);
 void								rmremove(void* data, unsigned size, unsigned index, unsigned& count, int elements_count);
 void*								rmreserve(void* data, unsigned new_size);
 void								rmreserve(void** data, unsigned count, unsigned& count_maximum, unsigned size);
 float								sqrt(const float x); // Return aquare root of 'x'
+inline const char*					skipsp(const char* p) { if(p) while(*p == ' ' || *p == '\t') p++; return p; }
+inline const char*					skipspcr(const char* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
+const char*							skipcr(const char* p);
 int									sz2num(const char* p1, const char** pp1 = 0);
 void								szencode(char* output, int output_count, codepages output_code, const char* input, int input_count, codepages input_code);
 unsigned							szget(const char** input, codepages page = metrics::code);
@@ -96,8 +96,6 @@ char*								sznum(char* result, float f, int precision = 0, const char* empthy 
 bool								szpmatch(const char* text, const char* pattern);
 void								szput(char** output, unsigned u, codepages page = metrics::code);
 char*								szput(char* output, unsigned u, codepages page = metrics::code); // Fast symbol put function. Return 'output'.
-const char*							szskipcr(const char* p);
-const char*							szskipcrr(const char* p0, const char* p);
 bool								szstart(const char* text, const char* name);
 unsigned							szupper(unsigned u);
 char*								szupper(char* p, int count = 1); // to upper reg
@@ -123,8 +121,6 @@ template<class T> inline void		zcat(T* p1, const T e) { p1 = zend(p1); p1[0] = e
 template<class T> inline void		zcat(T* p1, const T* p2) { zcpy(zend(p1), p2); }
 template<class T> inline int		zlen(T* p) { return zend(p) - p; }
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
-template<class T> inline T*			zskipsp(T* p) { if(p) while(*p == 32 || *p == 9) p++; return p; }
-template<class T> inline T*			zskipspcr(T* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
 // Light-weaight proxy container
 template<class T>
 class aref {

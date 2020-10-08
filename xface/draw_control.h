@@ -364,6 +364,7 @@ struct tree : table, protected array {
 	element*				insert(int& index, int level);
 	bool					isgroup(int index) const override;
 	bool					keyinput(unsigned id) override;
+	void					remove(int index) override {}
 	void					swap(int i1, int i2) override;
 };
 // Cell visual drawing

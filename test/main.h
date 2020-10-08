@@ -1,3 +1,4 @@
+#include "bsreq.h"
 #include "datetime.h"
 #include "reestr.h"
 

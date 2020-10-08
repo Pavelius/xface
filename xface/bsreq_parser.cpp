@@ -11,11 +11,7 @@ static const char* read_string(const char* p, char* ps, const char* pe) {
 		p++;
 	}
 	ps[0] = 0;
-	while(p[0] == '\n' || p[0] == '\r') {
-		p = szskipcr(p);
-		p = zskipsp(p);
-	}
-	return p;
+	return skipspcr(p);
 }
 
 static void apply_value(const char* id, const char* id_value, const char** requisits, const char** strings, const bsinf* sources) {
@@ -56,7 +52,7 @@ bool bsparse::read(const char* url, const char* id, const char** requisits) {
 		p = stringbuilder::readidn(p, name, zendof(name));
 		if(p[0] != ':')
 			break;
-		p = zskipsp(p + 1);
+		p = skipsp(p + 1);
 		p = read_string(p, value, zendof(value));
 		const char* strings[maximum_strings] = {};
 		auto count = 0;
@@ -65,12 +61,12 @@ bool bsparse::read(const char* url, const char* id, const char** requisits) {
 		while(pt[0]) {
 			if(pt[0] == '.' && requisits_count > 1) {
 				pt[0] = 0;
-				pt = zskipsp(pt + 1);
+				pt = (char*)skipsp(pt + 1);
 				strings[requisits_count - 1] = pt;
 				break;
 			} else if(pt[0] == '|') {
 				pt[0] = 0;
-				pt = zskipsp(pt + 1);
+				pt = (char*)skipsp(pt + 1);
 				if(count < maximum_strings)
 					count++;
 				strings[count] = pt;

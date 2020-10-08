@@ -85,7 +85,7 @@ static const char* gettitle(const markup& e) {
 	if(!e.title)
 		return "";
 	if(e.title[0] == '#')
-		return zskipsp(e.title + 4);
+		return skipsp(e.title + 4);
 	return e.title;
 }
 

@@ -1,6 +1,6 @@
 #include "crt.h"
 
-const char* psnum16(const char* p, int& value) {
+static const char* psnum16(const char* p, int& value) {
 	int result = 0;
 	const int radix = 16;
 	while(*p) {
@@ -22,7 +22,7 @@ const char* psnum16(const char* p, int& value) {
 	return p;
 }
 
-const char* psnum10(const char* p, int& value) {
+static const char* psnum10(const char* p, int& value) {
 	int result = 0;
 	const int radix = 10;
 	while(*p) {
@@ -39,7 +39,7 @@ const char* psnum10(const char* p, int& value) {
 }
 
 // Parse string to number
-const char* psnum(const char* p, int& value) {
+static const char* psnum(const char* p, int& value) {
 	value = 0;
 	if(!p)
 		return 0;
@@ -101,30 +101,20 @@ const char* psstr(const char* p, char* r, char end_symbol) {
 			p++;
 			break;
 			// Число в кодировке UNICODE
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
+		case '0': case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
 			p = psnum10(p, value);
 			r = szput(r, value);
 			break;
 			// Число в кодировке UNICODE (16-ричная система)
-		case 'x':
-		case 'u':
+		case 'x': case 'u':
 			p = psnum16(p + 1, value);
 			r = szput(r, value);
 			break;
-		case '\n':
-		case '\r':
+		case '\n': case '\r':
 			// Перевод строки в конце
 			while(*p == '\n' || *p == '\r')
-				p = szskipcr(p);
+				p = skipcr(p);
 			break;
 		default:
 			// Любой символ, который будет экранирован ( \', \", \\)
@@ -132,20 +122,6 @@ const char* psstr(const char* p, char* r, char end_symbol) {
 			break;
 		}
 	}
-	return p;
-}
-
-const char* psidn(const char* p, char* r, char* re) {
-	*r = 0;
-	while(*p) {
-		if((*p >= '0' && *p <= '9') || *p == '_' || ischa(*p)) {
-			if(r < re)
-				*r++ = *p;
-			p++;
-		} else
-			break;
-	}
-	*r = 0;
 	return p;
 }
 
@@ -275,6 +251,6 @@ bool szpmatch(const char* text, const char* pattern) {
 			return true;
 		if(*p2 == 0)
 			return false;
-		p = zskipsp(p2 + 1);
+		p = skipsp(p2 + 1);
 	}
 }

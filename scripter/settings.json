@@ -66,9 +66,9 @@
     }
   },
   "window":{
-    "x":133,
-    "y":61,
-    "width":809,
+    "x":59,
+    "y":109,
+    "width":1000,
     "height":548,
     "header_width":120,
     "flags":48
@@ -127,7 +127,7 @@
           },
           "column":{
             "id":"Сообщение",
-            "width":309,
+            "width":300,
             "size":4,
             "total":0
           }
@@ -149,7 +149,7 @@
       },
       "Dock2":{
         "current":0,
-        "size":200
+        "size":400
       },
       "Dock3":{
         "current":0,

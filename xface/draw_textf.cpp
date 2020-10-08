@@ -44,15 +44,15 @@ static int render_control(const char** result, int x, int y, int width) {
 	auto p = *result;
 	auto pb = buffer;
 	auto pe = buffer + sizeof(buffer) - 1;
-	p = psidn(p, type, type + sizeof(type) - 1);
-	p = zskipsp(p);
+	p = stringbuilder::readidn(p, type, type + sizeof(type) - 1);
+	p = skipsp(p);
 	while(*p && *p != ')') {
-		p = psidn(p, name, name + sizeof(name) - 1);
-		p = zskipsp(p);
+		p = stringbuilder::readidn(p, name, name + sizeof(name) - 1);
+		p = skipsp(p);
 		int value_number = 1;
 		const char* value_text = 0;
 		if(*p == '=') {
-			p = zskipsp(p + 1);
+			p = skipsp(p + 1);
 			if(isnum(*p) || *p == '-')
 				value_number = sz2num(p, &p);
 			else if(*p == '\"' || *p == '\'') {
@@ -66,7 +66,7 @@ static int render_control(const char** result, int x, int y, int width) {
 				while(*p != ')' && *p)
 					p++;
 			}
-			p = zskipsp(p);
+			p = skipsp(p);
 		}
 		if(strcmp("id", name) == 0)
 			e.id = value_text;
@@ -79,7 +79,7 @@ static int render_control(const char** result, int x, int y, int width) {
 	}
 	if(*p == ')')
 		p++;
-	p = szskipcr(p);
+	p = skipcr(p);
 	*result = p;
 	auto pm = draw::textplugin::find(type);
 	if(pm)
@@ -209,7 +209,7 @@ static int textfln(int x0, int y0, int width, const char** string, color c1, int
 		if(p[0] == ':' && p[1] >= 'a' && p[1] <= 'z') {
 			p++;
 			char temp[128];
-			p = psidn(p, temp, temp + sizeof(temp) - 1);
+			p = stringbuilder::readidn(p, temp, temp + sizeof(temp) - 1);
 			if(*p == ':')
 				p++;
 			w = 0;
@@ -250,7 +250,7 @@ static int textfln(int x0, int y0, int width, const char** string, color c1, int
 		// Отметим перевод строки и окончание строки
 		if(p[0] == 0 || p[0] == 10 || p[0] == 13) {
 			y += draw::texth();
-			p = szskipcr(p);
+			p = skipcr(p);
 			break;
 		}
 	}
@@ -280,22 +280,22 @@ int draw::textf(int x, int y, int width, const char* string, int* max_width,
 		}
 		if(match(&p, "###")) // Header 3
 		{
-			p = zskipsp(p);
+			p = skipsp(p);
 			font = metrics::h3;
 			y += textfln(x, y, width, &p, colors::h3, &mw2, tab_width);
 		} else if(match(&p, "##")) // Header 2
 		{
-			p = zskipsp(p);
+			p = skipsp(p);
 			font = metrics::h2;
 			y += textfln(x, y, width, &p, colors::h2, &mw2, tab_width);
 		} else if(match(&p, "#")) // Header 1
 		{
-			p = zskipsp(p);
+			p = skipsp(p);
 			font = metrics::h1;
 			y += textfln(x, y, width, &p, colors::h1, &mw2, tab_width);
 		} else if(match(&p, "...")) // Без форматирования
 		{
-			p = szskipcr(p);
+			p = skipcr(p);
 			font = metrics::font;
 			color c1 = colors::window.mix(colors::edit, 256 - 32);
 			y += texth() / 2;
@@ -308,7 +308,7 @@ int draw::textf(int x, int y, int width, const char* string, int* max_width,
 				y += texth();
 				p += c;
 				if(match(&p, "...")) {
-					p = szskipcr(p);
+					p = skipcr(p);
 					y += texth() / 2;
 					break;
 				}
@@ -321,7 +321,7 @@ int draw::textf(int x, int y, int width, const char* string, int* max_width,
 			circle(x + dx + 2, y + dx, rd, color_text);
 			y += textfln(x + texth(), y, width - texth(), &p, color_text, &mw2, tab_width);
 		} else if(p[0] == '$' && p[1] == '(') {
-			p = zskipsp(p + 2);
+			p = skipsp(p + 2);
 			y += render_control(&p, x, y, width);
 		} else {
 			y += textfln(x, y, width, &p, color_text, &mw2, tab_width);
