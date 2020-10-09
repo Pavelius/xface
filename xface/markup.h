@@ -3,7 +3,7 @@
 
 #pragma once
 
-#define DGLNK(R,T) template<> struct dginf<R> : dginf<T> {};
+#define DGLNK(L,T) template<> struct dginf<L> : dginf<T> {};
 #define DGINF(T) template<> const markup dginf<T>::meta[]
 #define DGGEN(R, T1, T2, MS) {dginf<meta_decoy<T1>::value>::meta,\
 bsdata<meta_decoy<T2>::value>::source_ptr,\

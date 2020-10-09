@@ -117,10 +117,10 @@ struct context {
 			case KindADat:
 				serial_adat(((adat<char, 4>*)p->ptr(object)), p->type, p->size);
 				break;
-			case KindList:
-				break;
 			case KindARem:
 				serial_rem(((vector<char>*)p->ptr(object)), p->type, p->size);
+				break;
+			case KindList:
 				break;
 			}
 		}

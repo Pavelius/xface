@@ -96,9 +96,6 @@
     <ClCompile Include="argw.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="bsreq_bin2.cpp">
-      <Filter>collections</Filter>
-    </ClCompile>
     <ClCompile Include="setting.cpp">
       <Filter>support</Filter>
     </ClCompile>
@@ -224,6 +221,9 @@
     </ClCompile>
     <ClCompile Include="draw_form.cpp">
       <Filter>draw</Filter>
+    </ClCompile>
+    <ClCompile Include="bsreq_bin.cpp">
+      <Filter>collections</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

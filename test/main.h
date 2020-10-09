@@ -12,7 +12,6 @@ enum alignment_s : unsigned char {
 enum gender_s : unsigned char {
 	NoGender, Male, Female,
 };
-
 struct genderi {
 	const char*		id;
 	const char*		name;

@@ -139,7 +139,7 @@
     <ClCompile Include="anyval.cpp" />
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="argw.cpp" />
-    <ClCompile Include="bsreq_bin2.cpp" />
+    <ClCompile Include="bsreq_bin.cpp" />
     <ClCompile Include="bsreq_parser.cpp" />
     <ClCompile Include="bsreq_txt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

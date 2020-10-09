@@ -1,7 +1,13 @@
-#include "draw_control.h"
-#include "requisit.h"
-#include "valuelist.h"
 #include "main.h"
+#include "draw_control.h"
+#include "valuelist.h"
+
+#define MNLNK(L, R) DGLNK(L, R) BSLNK(L, R) template<> struct bsmeta<L> : bsmeta<R> {};
+#define NOLNK(T) NOBSDATA(datetime) template<> struct bsmeta<T> : bsmeta<int> {};
+
+NOLNK(datetime)
+MNLNK(gender_s, genderi)
+MNLNK(alignment_s, alignmenti)
 
 using namespace draw;
 
@@ -23,8 +29,7 @@ BSDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Female", "Женщина"},
 };
 BSHEAD(genderi)
-DGLNK(gender_s, genderi)
-BSLNK(gender_s, genderi)
+BSMETA(genderi) = {BSREQ(id), BSREQ(name), {}};
 
 BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
@@ -37,17 +42,35 @@ BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Chaotic Evil", "Хаотично злой"},
 };
 BSHEAD(alignmenti)
-DGLNK(alignment_s, alignmenti)
-BSLNK(alignment_s, alignmenti)
+BSMETA(alignmenti) = {BSREQ(id), BSREQ(name), {}};
 BSDATAC(element, 32);
+BSMETA(element) = {
+	BSREQ(surname),
+	BSREQ(name),
+	BSREQ(mark),
+	BSREQ(radio),
+	BSREQ(age),
+	BSREQ(refery),
+	BSREQ(gender),
+	BSREQ(alignment),
+	{}};
 BSDATAC(rowelement, 64);
+BSMETA(rowelement) = {
+	BSREQ(name),
+	BSREQ(gender),
+	BSREQ(alignment),
+	BSREQ(image),
+	BSREQ(age),
+	BSREQ(flags),
+	BSREQ(date),
+	{}};
 struct treerow : controls::tree::element {
-	const char* name;
+	const char*		name;
 	int				value;
 };
 struct metatest {
-	adat<char, 8>					source;
-	std::initializer_list<char>		buffer;
+	adat<char, 8>	source;
+	std::initializer_list<char> buffer;
 };
 struct testinfo {
 	const char* name;
@@ -401,25 +424,25 @@ static bool test_array() {
 	return true;
 }
 
-static void test_requisit() {
-	using namespace compiler;
-	manager man;
-	auto s1 = man.get("Test");
-	auto s2 = man.get("Test");
-	auto s3 = man.get("Test2");
-	auto s4 = man.get("All correct");
-	auto p2 = man.create("pointer");
-	man.add(p2, "x", Number, 1, 2);
-	man.add(p2, "y", Number, 1, 2);
-	auto p1 = man.create("rect");
-	man.add(p1, "x1", Number, 1, 4);
-	man.add(p1, "y1", Number, 1, 4);
-	man.add(p1, "x2", Number, 1, 4);
-	man.add(p1, "y2", Number, 1, 4);
-	auto p3 = man.create("region");
-	man.add(p2, "rect", man.reference(p1));
-	man.add(p2, "point", man.reference(p2), 2);
-}
+//static void test_requisit() {
+//	using namespace compiler;
+//	manager man;
+//	auto s1 = man.get("Test");
+//	auto s2 = man.get("Test");
+//	auto s3 = man.get("Test2");
+//	auto s4 = man.get("All correct");
+//	auto p2 = man.create("pointer");
+//	man.add(p2, "x", Number, 1, 2);
+//	man.add(p2, "y", Number, 1, 2);
+//	auto p1 = man.create("rect");
+//	man.add(p1, "x1", Number, 1, 4);
+//	man.add(p1, "y1", Number, 1, 4);
+//	man.add(p1, "x2", Number, 1, 4);
+//	man.add(p1, "y2", Number, 1, 4);
+//	auto p3 = man.create("region");
+//	man.add(p2, "rect", man.reference(p1));
+//	man.add(p2, "point", man.reference(p2), 2);
+//}
 
 static bool test_datetime() {
 	datetime d = datetime::now().daybegin() + 24 * 60;
@@ -451,10 +474,10 @@ static bool test_write_bin() {
 	e1.surname = szdup("Lang");
 	e1.gender = Male;
 	e1.alignment = LawfulNeutral;
-	//bsmeta<element>::meta->write("element.bin", &e1);
-	//bsmeta<element>::meta->read("element.bin", &e2);
-	//auto result = memcmp(&e1, &e2, sizeof(element));
-	//return (result == 0);
+	bsmeta<element>::meta->write("element.bin", &e1);
+	bsmeta<element>::meta->read("element.bin", &e2);
+	auto result = memcmp(&e1, &e2, sizeof(element));
+	return (result == 0);
 	return true;
 }
 
@@ -531,7 +554,9 @@ int main() {
 		test_anyval,
 		test_array,
 		test_reestr,
-		test_vector
+		test_vector,
+		test_datetime,
+		test_data_access,
 	};
 	for(auto p : tests) {
 		if(!p())
@@ -542,9 +567,6 @@ int main() {
 	directory_initialize();
 	logmsg("Test %1i", 12);
 	logmsg("Size of column %1i", sizeof(draw::controls::column));
-	test_datetime();
-	test_data_access();
-	test_requisit();
 	application_initialize();
 	// Создание окна
 	setcaption("X-Face C++ library samples");
