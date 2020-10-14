@@ -1,6 +1,7 @@
 #include "crt.h"
 #include "io.h"
 
+static_assert(sizeof(anyreq) == sizeof(int), "Size anyreq class can't be different from integer size");
 extern "C" void* malloc(unsigned size);
 extern "C" void* realloc(void *ptr, unsigned size);
 extern "C" void	free(void* pointer);
@@ -282,6 +283,31 @@ void szencode(char* output, int output_count, codepages output_code, const char*
 		s1[0] = 0;
 		if((output_code == CPU16BE || output_code == CPU16LE) && (s1 + 1) < s2)
 			s1[1] = 0;
+	}
+}
+
+int anyreq::get(const void* object) const {
+	switch(size) {
+	case 1: return *((char*)object);
+	case 2: return *((short*)object);
+	case 4: return *((int*)object);
+	default: return 0;
+	}
+}
+
+const char* anyreq::gets(const void* object) const {
+	if(size != sizeof(char*))
+		return "";
+	auto p = *((const char**)object);
+	return p ? p : "";
+}
+
+void anyreq::set(void* object, int value) const {
+	switch(size) {
+	case 1: *((char*)object) = (char)value; break;
+	case 2: *((short*)object) = (short)value; break;
+	case 4: *((int*)object) = (int)value; break;
+	default: break;
 	}
 }
 

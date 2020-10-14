@@ -28,8 +28,8 @@ BSDATA(genderi) = {{"NoGender", "Неизвестен"},
 {"Male", "Мужчина"},
 {"Female", "Женщина"},
 };
-BSHEAD(genderi)
 BSMETA(genderi) = {BSREQ(id), BSREQ(name), {}};
+assert_enum(genderi, Female)
 
 BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Lawful Good", "Законопослушный добрый"},
@@ -41,8 +41,9 @@ BSDATA(alignmenti) = {{"Neutral", "Нейтральный"},
 {"Neutral Evil", "Нейтрально злой"},
 {"Chaotic Evil", "Хаотично злой"},
 };
-BSHEAD(alignmenti)
 BSMETA(alignmenti) = {BSREQ(id), BSREQ(name), {}};
+assert_enum(alignmenti, ChaoticEvil)
+
 BSDATAC(element, 32);
 BSMETA(element) = {
 	BSREQ(surname),

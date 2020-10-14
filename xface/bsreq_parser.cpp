@@ -49,11 +49,11 @@ bool bsparse::read(const char* url, const char* id, const char** requisits) {
 	auto requisits_count = zlen(requisits);
 	char name[128], value[8192];
 	while(*p) {
-		p = stringbuilder::readidn(p, name, zendof(name));
+		p = stringbuilder::readidn(p, name, name + sizeof(name) - 1);
 		if(p[0] != ':')
 			break;
 		p = skipsp(p + 1);
-		p = read_string(p, value, zendof(value));
+		p = read_string(p, value, value + sizeof(value) - 1);
 		const char* strings[maximum_strings] = {};
 		auto count = 0;
 		auto pt = value;

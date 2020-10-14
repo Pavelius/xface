@@ -32,16 +32,16 @@ private:
 #endif
 #define maptbl(t, id) (t[imax((unsigned)0, imin((unsigned)id, (sizeof(t)/sizeof(t[0])-1)))])
 #define maprnd(t) t[rand()%(sizeof(t)/sizeof(t[0]))]
-#define lenof(t) (sizeof(t)/sizeof(t[0]))
-#define zendof(t) (t + sizeof(t)/sizeof(t[0]) - 1)
 #define	FO(c,m) ((unsigned)&((c*)0)->m)
+#define ANREQ(c, f) {FO(c,f), sizeof(c::f)}
+#define ANBIT(c, f, b) {FO(c,f), sizeof(c::f), b}
 #define BSDATA(e) template<> e bsdata<e>::elements[]
-#define BSDATAC(e, c) template<> e bsdata<e>::elements[c] = {}; template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), 0, sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
+#define BSDATAE(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
+#define BSDATAC(e, c) template<> e bsdata<e>::elements[c] = {}; BSDATAE(e)
 #define NOBSDATA(e) template<> struct bsdata<e> : bsdata<int> {};
-#define BSHEAD(e) template<> array bsdata<e>::source(bsdata<e>::elements, sizeof(bsdata<e>::elements[0]), sizeof(bsdata<e>::elements)/sizeof(bsdata<e>::elements[0]));
 #define BSLNK(L, T) template<> struct bsdata<L> : bsdata<T> {};
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
-#define assert_enum(e, last) static_assert(sizeof(bsdata<e>::elements) / sizeof(bsdata<e>::elements[0]) == last + 1, "Invalid count of " #e " elements") BSHEAD(e)
+#define assert_enum(e, last) static_assert(sizeof(bsdata<e>::elements) / sizeof(bsdata<e>::elements[0]) == last + 1, "Invalid count of " #e " elements"); BSDATAE(e)
 
 extern "C" int						atexit(void(*func)(void));
 extern "C" void*					bsearch(const void* key, const void* base, unsigned num, unsigned size, int(*compar)(const void*, const void*));
@@ -268,20 +268,31 @@ typedef bool(*fnvisible)(const void* object);
 typedef void(*fncommand)(void* object);
 // Callback function of source identification. Return property filled 'source'.
 typedef void(*fnsource)(const void* object, array& source);
+// Requisit descriptor
+struct anyreq {
+	unsigned short					offset;
+	unsigned char					size;
+	unsigned char					bit;
+	constexpr bool operator==(const anyreq& e) { return e.offset == offset; }
+	int								get(const void* object) const;
+	const char*						gets(const void* object) const;
+	constexpr char*					ptr(const void* object) const { return (char*)object + offset; }
+	void							set(void* object, int value) const;
+};
 // Abstract serializer
 struct serializer {
 	enum type_s { Text, Number, Array, Struct };
 	struct node {
-		node* parent;
-		const char*					name;
 		type_s						type;
+		const char*					name;
+		node*						parent;
 		int							index;
-		void*						data; // application defined data
+		void*						object; // application defined data
 		bool						skip; // set this if you want skip block
 		//
-		constexpr node(type_s type = Text) : parent(0), name(""), type(type), index(0), data(0), skip(false) {}
-		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), data(0), skip(false) {}
-		bool				operator==(const char* name) const { return name && strcmp(this->name, name) == 0; }
+		constexpr node(type_s type = Text) : parent(0), name(""), type(type), index(0), object(0), skip(false) {}
+		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), object(0), skip(false) {}
+		bool						operator==(const char* name) const { return name && strcmp(this->name, name) == 0; }
 		//
 		bool						isparent(const char* id) const { return parent && *parent == id; }
 	};

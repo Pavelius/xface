@@ -87,9 +87,6 @@
     <ClCompile Include="bsreq_txt.cpp">
       <Filter>collections</Filter>
     </ClCompile>
-    <ClCompile Include="anyreq.cpp">
-      <Filter>support</Filter>
-    </ClCompile>
     <ClCompile Include="crt.cpp">
       <Filter>support</Filter>
     </ClCompile>
@@ -276,9 +273,6 @@
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="anyval.h">
-      <Filter>support</Filter>
-    </ClInclude>
-    <ClInclude Include="anyreq.h">
       <Filter>support</Filter>
     </ClInclude>
     <ClInclude Include="crt.h">

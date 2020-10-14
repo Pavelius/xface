@@ -135,7 +135,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="anyreq.cpp" />
     <ClCompile Include="anyval.cpp" />
     <ClCompile Include="archive.cpp" />
     <ClCompile Include="argw.cpp" />
@@ -215,7 +214,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="agrw.h" />
-    <ClInclude Include="anyreq.h" />
     <ClInclude Include="anyval.h" />
     <ClInclude Include="archive.h" />
     <ClInclude Include="datetime.h" />
