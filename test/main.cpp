@@ -79,9 +79,9 @@ struct testinfo {
 	gender_s		gender;
 };
 struct markuptesti {
-	const char* name;
+	const char*		name;
 	int				value;
-	alignmenti* alignment;
+	alignmenti*		alignment;
 	gender_s		gender;
 	cflags<alignment_s> alignments;
 };

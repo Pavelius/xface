@@ -1,5 +1,6 @@
 #include "crt.h"
 #include "draw_control.h"
+#include "io_plugin.h"
 
 using namespace draw;
 using namespace draw::controls;
@@ -71,11 +72,11 @@ int	column::get(const void* object) const {
 }
 
 const char* column::get(const void* object, stringbuilder& sb) const {
-	if(getpresent)
-		return getpresent(object, sb);
-	else if(source && plist.getname)
-		return plist.getname(source->ptr(path.get(path.ptr(object))), sb);
-	else
+	if(plist.getname) {
+		if(source)
+			return plist.getname(source->ptr(path.get(path.ptr(object))), sb);
+		return plist.getname(object, sb);
+	} else
 		return path.gets(path.ptr(object));
 }
 
@@ -776,27 +777,86 @@ bool table::setting(bool run) {
 	return true;
 }
 
+bool table::write(const char* url, bool include_header) const {
+	auto pp = io::plugin::find(szext(url));
+	if(!pp)
+		return false;
+	io::file file(url, StreamWrite | StreamText);
+	if(!file)
+		return false;
+	auto pw = pp->write(file);
+	if(!pw)
+		return false;
+	pw->open("Table");
+	if(include_header) {
+		pw->open("Columns");
+		for(auto& e : columns) {
+			pw->open("Column");
+			pw->set("name", e.title);
+			pw->close("Column");
+		}
+		pw->close("Columns");
+	}
+	pw->open("Rows", serializer::Array);
+	auto mr = getmaximum();
+	for(auto i = 0; i < getmaximum(); i++) {
+		auto p = get(i);
+		pw->open("Row");
+		for(auto& e : columns) {
+			if(e.method->render == &table::cellnumber
+				|| e.method->render == &table::cellrownumber
+				|| e.method->render == &table::cellpercent
+				|| e.method->render == &table::celldate
+				|| e.method->render == &table::celldatetime) {
+				pw->set(e.title, e.get(p));
+			} else {
+				char temp[4096]; stringbuilder sb(temp);
+				pw->set(e.title, e.get(p, sb));
+			}
+		}
+		pw->close("Row");
+	}
+	pw->close("Rows", serializer::Array);
+	pw->close("Table");
+	return true;
+}
+
+bool table::saveas(bool run) {
+	static char url[261];
+	if(!getmaximum())
+		return false;
+	if(run) {
+		if(!dialog::save("Сохранить данные таблицы", url, 0, 0))
+			return false;
+		write(url, false);
+	}
+	return true;
+}
+
 control::command table::commands_add[] = {{"add", "Добавить", 0, &table::addrow, 9},
-	{"change", "Изменить", 0, &table::change, 10, F2},
-	{"remove", "Удалить", 0, &table::removerow, 19, KeyDelete},
-	{}};
+{"change", "Изменить", 0, &table::change, 10, F2},
+{"remove", "Удалить", 0, &table::removerow, 19, KeyDelete},
+{}};
 control::command table::commands_move[] = {{"moveup", "Переместить вверх", 0, &table::moveup, 21},
-	{"movedown", "Переместить вниз", 0, &table::movedown, 22},
-	{"sortas", "Сортировать по возрастанию", 0, &table::sortas, 11},
-	{"sortds", "Сортировать по убыванию", 0, &table::sortds, 12},
-	{}};
+{"movedown", "Переместить вниз", 0, &table::movedown, 22},
+{"sortas", "Сортировать по возрастанию", 0, &table::sortas, 11},
+{"sortds", "Сортировать по убыванию", 0, &table::sortds, 12},
+{}};
+control::command table::commands_ie[] = {{"export", "Экспорт данных", 0, &table::saveas, 21},
+{}};
 control::command table::commands[] = {{"*", "", commands_add, &table::isaddable},
-	{"*", "", commands_move, &table::ismoveable},
-	{"setting", "Настройки", 0, &table::setting, 16, 0},
-	{}};
+{"*", "", commands_move, &table::ismoveable},
+{"*", "", commands_ie},
+{"setting", "Настройки", 0, &table::setting, 16, 0},
+{}};
 const visual table::visuals[] = {{"number", "Числовое поле", AlignRight, 8, 80, SizeResized, TotalSummarize, &table::cellnumber, &table::changenumber, &table::comparenm},
-	{"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
-	{"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},
-	{"date", "Дата", AlignLeft, 8, -12, SizeResized, NoTotal, &table::celldate, 0, &table::comparenm},
-	{"datetime", "Дата и время", AlignLeft, 8, -16, SizeResized, NoTotal, &table::celldatetime, 0, &table::comparenm},
-	{"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, &table::comparest},
-	{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changeref, 0, false, {table::getenumname}},
-	{"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, &table::comparenm},
-	{"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, &table::comparenm},
-	{"standart_image", "Стандартное изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimagest, 0, 0},
-	{}};
+{"rownumber", "Номер рядка", AlignCenter, 8, 40, SizeResized, NoTotal, &table::cellrownumber},
+{"checkbox", "Пометка", AlignCenter, 28, 28, SizeFixed, NoTotal, &table::cellbox, &table::changecheck, 0, true},
+{"date", "Дата", AlignLeft, 8, -12, SizeResized, NoTotal, &table::celldate, 0, &table::comparenm},
+{"datetime", "Дата и время", AlignLeft, 8, -16, SizeResized, NoTotal, &table::celldatetime, 0, &table::comparenm},
+{"text", "Текстовое поле", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changetext, &table::comparest},
+{"enum", "Перечисление", AlignLeft, 8, 200, SizeResized, NoTotal, &table::celltext, &table::changeref, 0, false, {table::getenumname}},
+{"percent", "Процент", AlignRight, 40, 60, SizeResized, TotalAverage, &table::cellpercent, &table::changenumber, &table::comparenm},
+{"image", "Изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimage, 0, &table::comparenm},
+{"standart_image", "Стандартное изображение", AlignCenter, 20, 20, SizeInner, NoTotal, &table::cellimagest, 0, 0},
+{}};

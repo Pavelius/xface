@@ -21,9 +21,9 @@ bool	bottom;
 }
 
 static void enter_number(int& value) {
-	char temp[32];
+	char temp[32]; stringbuilder sb(temp);
 	rect rc = {getwidth() - 100, 4, getwidth() - 4, 4 + texth() + 8};
-	szprint(temp, zendof(temp), "%1i", value);
+	sb.add("%1i", value);
 	controls::textedit te(temp, sizeof(temp), true);
 	if(!te.editing(rc))
 		return;
@@ -56,8 +56,8 @@ void mainview(const char* url) {
 	unsigned char* pal = 0;
 	sprite* pi = (sprite*)loadb(url);
 	if(!pi) {
-		char temp[512];
-		szprint(temp, "File not found:\n\n%1", url);
+		char temp[512]; stringbuilder sb(temp);
+		sb.add("File not found:\n\n%1", url);
 		//dlgmsg("X-view", temp);
 		return;
 	}

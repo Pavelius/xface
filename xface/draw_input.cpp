@@ -16,7 +16,7 @@ static bool		break_modal;
 static int		break_result;
 plugin*			draw::plugin::first;
 initplugin*		draw::initplugin::first;
-fnevent		draw::domodal;
+fnevent			draw::domodal;
 
 static void setfocus_callback() {
 	setfocus(cmd_value, true);

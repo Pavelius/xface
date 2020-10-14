@@ -211,7 +211,6 @@ struct column {
 	cflags<column_s>		flags;
 	image_flag_s			align;
 	array*					source;
-	fntext					getpresent;
 	anyreq					path;
 	fnlist					plist;
 	explicit operator bool() const { return method != 0; }
@@ -224,7 +223,6 @@ struct column {
 	column&					set(column_s v) { flags.add(v); return *this; }
 	column&					set(total_s v) { total = v; return *this; }
 	column&					set(array* v) { source = v; return *this; }
-	column&					set(fntext v) { getpresent = v; return *this; }
 	column&					set(const fnlist& v) { plist = v; return *this; }
 	column&					setwidth(int v) { width = v; return *this; }
 };
@@ -269,6 +267,7 @@ struct table : list {
 	static command			commands[];
 	static command			commands_add[];
 	static command			commands_move[];
+	static command			commands_ie[];
 	int						comparenm(int i1, int i2, int column) const;
 	int						comparest(int i1, int i2, int column) const;
 	int						comparer(int i1, int i2, const sortparam* param, int count) const;
@@ -284,6 +283,9 @@ struct table : list {
 	static const char*		getenumid(const void* object, stringbuilder& sb);
 	virtual const char*		getheader(stringbuilder& sb, int column) const { return columns[column].title; }
 	virtual int				getmaximumwidth() const { return maximum_width; }
+	static const char*		getnum8(const void* object, stringbuilder& sb);
+	static const char*		getnum16(const void* object, stringbuilder& sb);
+	static const char*		getnum32(const void* object, stringbuilder& sb);
 	rect					getrect(int row, int column) const;
 	virtual const char*		getserialid() const { return 0; }
 	int						gettotal(int column) const;
@@ -300,6 +302,7 @@ struct table : list {
 	virtual void			rowtotal(const rect& rc) const; // Draw header row
 	void					select(int index, int column = 0) override;
 	bool					setting(bool run);
+	bool					saveas(bool run);
 	void					sort(int i1, int i2, sortparam* ps, int count);
 	void					sort(int column, bool ascending);
 	bool					sortas(bool run);
@@ -308,6 +311,7 @@ struct table : list {
 	void					view(const rect& rc) override;
 	static const visual		visuals[];
 	void					write(serializer& sr) const override;
+	bool					write(const char* url, bool include_header) const;
 private:
 	void					update_columns(const rect& rc);
 };

@@ -23,7 +23,7 @@ struct menu_builder : control::command::builder {
 		MENUITEMINFO mi = {0};
 		mi.cbSize = sizeof(mi);
 		mi.fMask = MIIM_DATA;
-		if(!GetMenuItemInfoA(handle, index - 1, 1, &mi))
+		if(!GetMenuItemInfoA(handle, index-1, 1, &mi))
 			return 0;
 		return mi.dwItemData;
 	}
@@ -67,7 +67,7 @@ struct menu_builder : control::command::builder {
 	}
 
 	void addseparator() override {
-		AppendMenuA(hMenu, MF_SEPARATOR, -1, 0);
+		AppendMenuA(hMenu, MF_SEPARATOR, ++count, 0);
 	}
 
 };
