@@ -562,7 +562,7 @@ static struct widget_application : draw::controls::control {
 		return true;
 	}
 	void create_filter(stringbuilder& sb) {
-		sb.add("Все файлы (*.*)"); sb.addsz(); sb.add("*.*"); sb.addsz();
+		io::plugin::addfilter(sb, "Все файлы", "*.*");
 		for(auto p = plugin::first; p; p = p->next) {
 			auto pc = p->getbuilder();
 			if(!pc)

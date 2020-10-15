@@ -297,6 +297,7 @@ struct serializer {
 		bool						isparent(const char* id) const { return parent && *parent == id; }
 	};
 	struct reader {
+		virtual int					getnum(const char* value) = 0;
 		virtual void				open(node& e) = 0;
 		virtual void				set(node& e, const char* value) = 0;
 		virtual void				close(node& e) = 0;

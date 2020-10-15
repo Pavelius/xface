@@ -37,6 +37,7 @@ struct plugin {
 	plugin*				next;
 	//
 	plugin();
+	static void			addfilter(stringbuilder& sb, const char* name, const char* find_path);
 	static plugin*		find(const char* name);
 	static void			getfilter(stringbuilder& sb);
 	virtual const char*	read(const char* source, reader& r) = 0;

@@ -3,8 +3,8 @@
 
 io::plugin* io::plugin::first;
 
-static void add_filter(stringbuilder& sb, const char* name, const char* filter) {
-	if(!filter)
+void io::plugin::addfilter(stringbuilder& sb, const char* name, const char* filter) {
+	if(!filter || !name || filter[0]==0 || name[0]==0)
 		return;
 	sb.add("%+1 (%2)", name, filter);
 	sb.addsz();
@@ -30,8 +30,9 @@ void io::plugin::getfilter(stringbuilder& sb) {
 	for(auto p = first; p; p = p->next) {
 		if(!p->name)
 			continue;
-		add_filter(sb, p->fullname, p->filter);
+		addfilter(sb, p->fullname, p->filter);
 	}
+	sb.addsz();
 }
 
 io::strategy* io::strategy::first;

@@ -818,6 +818,7 @@ bool table::write(const char* url, bool include_header) const {
 	}
 	pw->close("Rows", serializer::Array);
 	pw->close("Table");
+	delete pw;
 	return true;
 }
 
@@ -826,7 +827,9 @@ bool table::saveas(bool run) {
 	if(!getmaximum())
 		return false;
 	if(run) {
-		if(!dialog::save("Сохранить данные таблицы", url, 0, 0))
+		char filter[1024]; stringbuilder sb(filter);
+		io::plugin::getfilter(sb);
+		if(!dialog::save("Сохранить данные таблицы", url, filter, 0))
 			return false;
 		write(url, false);
 	}
