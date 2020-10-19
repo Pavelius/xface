@@ -96,6 +96,13 @@ int szcmpi(const char* p1, const char* p2, int max_count) {
 	return s1 - s2;
 }
 
+bool equal(const char* p, const char* s) {
+	while(*s && *p)
+		if(szupper(szget(&s)) != szupper(szget(&p)))
+			return false;
+	return true;
+}
+
 bool matchuc(const char* name, const char* filter) {
 	if(!name || name[0] == 0)
 		return false;
@@ -309,6 +316,13 @@ void anyreq::set(void* object, int value) const {
 	case 4: *((int*)object) = (int)value; break;
 	default: break;
 	}
+}
+
+int	serializer::node::getlevel() const {
+	auto result = 0;
+	for(auto p = parent; p; p = p->parent)
+		result++;
+	return result;
 }
 
 void* array::add() {

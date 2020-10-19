@@ -43,6 +43,9 @@
     <ClCompile Include="..\xface\widget_textview.cpp">
       <Filter>Плагины\Виджеты</Filter>
     </ClCompile>
+    <ClCompile Include="..\xface\io_plugin_csv.cpp">
+      <Filter>Плагины\Сериализаторы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Плагины">

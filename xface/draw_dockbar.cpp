@@ -142,8 +142,7 @@ void dockbar(rect& rc) {
 }
 
 static struct dockbar_settings_strategy : io::strategy {
-
-	int getindex(const io::reader::node& n, const char* name) const {
+	int getindex(const serializer::node& n, const char* name) const {
 		if(!n.parent)
 			return -1;
 		auto text = n.parent->name;
@@ -153,7 +152,6 @@ static struct dockbar_settings_strategy : io::strategy {
 		}
 		return sz2num(text);
 	}
-
 	void write(serializer& file, void* param) override {
 		for(auto i = DockLeft; i <= DockWorkspace; i = (dock_s)(i + 1)) {
 			char temp[32]; stringbuilder sb(temp);
@@ -164,8 +162,7 @@ static struct dockbar_settings_strategy : io::strategy {
 			file.close(temp);
 		}
 	}
-
-	void set(io::reader::node& n, const char* value) override {
+	void set(serializer::node& n, const char* value) override {
 		unsigned i = getindex(n, "Dock");
 		if(i == 0xFFFFFFFF || i >= sizeof(dock_data) / sizeof(dock_data[0]))
 			return;
@@ -174,7 +171,5 @@ static struct dockbar_settings_strategy : io::strategy {
 		else if(n=="size")
 			dock_data[i].size = sz2num(value);
 	}
-
 	dockbar_settings_strategy() : strategy("dockbar", "settings") {}
-
 } dockbar_settings_strategy_instance;

@@ -57,36 +57,7 @@ io::strategy* io::strategy::find(const char* name) {
 	return 0;
 }
 
-bool io::reader::node::operator==(const char* name) const {
-	return strcmp(this->name, name) == 0;
-}
-
-int io::reader::node::get(int n) const {
-	if((unsigned)n >= sizeof(params) / sizeof(params[0]))
-		return 0;
-	auto p = this;
-	while(p->parent) {
-		if(p->params[n])
-			return p->params[n];
-		p = p->parent;
-	}
-	return 0;
-}
-
-void io::reader::node::set(int n, int v) {
-	if((unsigned)n >= sizeof(params) / sizeof(params[0]))
-		return;
-	params[n] = v;
-}
-
-int io::reader::node::getlevel() const {
-	int result = 0;
-	for(auto p = parent; p; p = p->parent)
-		result++;
-	return result;
-}
-
-bool io::read(const char* url, io::reader& e) {
+bool io::read(const char* url, serializer::reader& e) {
 	auto pp = io::plugin::find(szext(url));
 	if(!pp)
 		return false;
@@ -99,11 +70,11 @@ bool io::read(const char* url, io::reader& e) {
 }
 
 bool io::read(const char* url, const char* root_name, void* param) {
-	struct proxy : io::reader {
+	struct proxy : serializer::reader {
 		const char*		root_name;
 		void*			param;
 		io::strategy*	st;
-		void open(node& e) {
+		void open(serializer::node& e) {
 			switch(e.getlevel()) {
 			case 0:
 				if(e.name[0] != 0 && strcmp(e.name, root_name) != 0)
@@ -123,18 +94,24 @@ bool io::read(const char* url, const char* root_name, void* param) {
 			}
 		}
 
-		void set(node& e, const char* value) {
+		void set(serializer::node& e, const char* value) override {
 			if(!st)
 				e.skip = true;
 			else
 				st->set(e, value);
 		}
 
-		void close(node& e) {
+		void close(serializer::node& e)  override {
 			if(!st)
 				e.skip = true;
 			else
 				st->close(e);
+		}
+
+		int getnum(const char* value) {
+			int result = 0;
+			stringbuilder::readnum(value, result);
+			return result;
 		}
 
 		proxy() : root_name(0), param(0), st(0) {
@@ -167,12 +144,4 @@ bool io::write(const char* url, const char* root_name, void* param) {
 	}
 	pw->close(root_name);
 	return true;
-}
-
-io::reader::node::node(serializer::type_s type) : parent(0), name(""), type(type), index(0), skip(false) {
-	memset(params, 0, sizeof(params));
-}
-
-io::reader::node::node(io::reader::node& parent, const char* name, serializer::type_s type) : parent(&parent), name(name), type(type), index(0), skip(parent.skip) {
-	memset(params, 0, sizeof(params));
 }

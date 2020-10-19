@@ -884,7 +884,7 @@ static struct settings_settings_strategy : io::strategy {
 			file.close(pd->division);
 		}
 	}
-	static const element* find(io::reader::node& n) {
+	static const element* find(serializer::node& n) {
 		auto name = n.name;
 		if(!name)
 			return 0;
@@ -926,7 +926,7 @@ static struct settings_settings_strategy : io::strategy {
 		}
 		return 0;
 	}
-	void set(io::reader::node& n, const char* value) override {
+	void set(serializer::node& n, const char* value) override {
 		auto e = find(n);
 		if(!e)
 			return;
@@ -959,7 +959,7 @@ static struct window_settings_strategy : io::strategy {
 		file.set("header_width", window.header_width);
 		file.set("flags", window.flags);
 	}
-	void set(io::reader::node& n, const char* value) override {
+	void set(serializer::node& n, const char* value) override {
 		if(n == "x")
 			window.x = getnum(value);
 		else if(n == "y")
@@ -992,7 +992,7 @@ static struct controls_settings_strategy : io::strategy {
 			file.close(id);
 		}
 	}
-	void set(io::reader::node& n, const char* value) override {
+	void set(serializer::node& n, const char* value) override {
 		if(!n.parent || !n.parent->parent)
 			return;
 		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));

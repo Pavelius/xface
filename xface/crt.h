@@ -62,6 +62,7 @@ namespace metrics {
 const codepages						code = CP1251;
 }
 //
+bool								equal(const char* s1, const char* s2);
 int									getdigitscount(unsigned number); // Get digits count of number. For example if number=100, result be 3.
 template<class T> const char*		getstr(T e); // Template to return string of small class
 bool								ischa(unsigned u); // is alphabetical character?
@@ -294,13 +295,13 @@ struct serializer {
 		constexpr node(node& parent, const char* name = "", type_s type = Text) : parent(&parent), name(name), type(type), index(0), object(0), skip(false) {}
 		bool						operator==(const char* name) const { return name && strcmp(this->name, name) == 0; }
 		//
+		int							getlevel() const;
 		bool						isparent(const char* id) const { return parent && *parent == id; }
 	};
 	struct reader {
-		virtual int					getnum(const char* value) = 0;
-		virtual void				open(node& e) = 0;
+		virtual void				open(node& e) {}
 		virtual void				set(node& e, const char* value) = 0;
-		virtual void				close(node& e) = 0;
+		virtual void				close(node& e) {}
 	};
 	virtual ~serializer() {}
 	virtual void					open(const char* id, type_s type = Text) = 0;

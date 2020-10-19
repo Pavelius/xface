@@ -8,27 +8,6 @@ namespace io {
 enum protocols { NoProtocol, TCP, UDP };
 // Application defined reader.
 // Plugin read file and post events to this class.
-struct reader {
-	struct node {
-		node*			parent;
-		const char*		name;
-		serializer::type_s type;
-		int				index;
-		bool			skip; // set this if you want skip block
-		int				params[12];
-		//
-		node(serializer::type_s type = serializer::Text);
-		node(node& parent, const char* name = "", serializer::type_s type = serializer::Text);
-		bool			operator==(const char* name) const;
-		//
-		int				get(int n) const;
-		int				getlevel() const;
-		void			set(int n, int v);
-	};
-	virtual void		open(node& e) {}
-	virtual void		set(node& e, const char* value) {};
-	virtual void		close(node& e) {}
-};
 struct plugin {
 	const char*			name;
 	const char*			fullname;
@@ -40,10 +19,10 @@ struct plugin {
 	static void			addfilter(stringbuilder& sb, const char* name, const char* find_path);
 	static plugin*		find(const char* name);
 	static void			getfilter(stringbuilder& sb);
-	virtual const char*	read(const char* source, reader& r) = 0;
+	virtual const char*	read(const char* source, serializer::reader& r) = 0;
 	virtual serializer*	write(stream& e) = 0;
 };
-struct strategy : public reader {
+struct strategy : public serializer::reader {
 	const char*			id; // Second level strategy name. If we have root level 'Setting' this can be 'Columns' or 'Windows'.
 	const char*			type; // First level 'Root Name', first level xml record etc. Like 'Settings'.
 	static strategy*	first;
@@ -78,7 +57,7 @@ struct socket : public stream, public address {
 private:
 	int					s;
 };
-bool					read(const char* url, io::reader& e);
+bool					read(const char* url, serializer::reader& e);
 bool					read(const char* url, const char* strategy_type, void* param);
 bool					write(const char* url, const char* strategy_type, void* param);
 }

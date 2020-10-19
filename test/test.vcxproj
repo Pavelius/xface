@@ -153,6 +153,7 @@
     <ClCompile Include="..\..\formats\convert\zip.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\xface\io_plugin_csv.cpp" />
     <ClCompile Include="..\xface\io_plugin_json.cpp" />
     <ClCompile Include="..\xface\io_plugin_xml.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

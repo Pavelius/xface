@@ -26,14 +26,7 @@ static const char* psidn(const char* p, char* ps, const char* pe) {
 	return p;
 }
 
-static bool equal(const char* p, const char* s) {
-	while(*s && *p)
-		if(szupper(szget(&s)) != szupper(szget(&p)))
-			return false;
-	return true;
-}
-
-static const char* read_name(const char* p, io::reader::node& n) {
+static const char* read_name(const char* p, serializer::node& n) {
 	char temp[256];
 	if(*p == '\"' || *p == '\'')
 		p = psstr(p + 1, temp, *p);
@@ -45,12 +38,12 @@ static const char* read_name(const char* p, io::reader::node& n) {
 	return p;
 }
 
-static const char* read_object(const char* p, io::reader::node& n, io::reader& e);
+static const char* read_object(const char* p, serializer::node& n, serializer::reader& e);
 
-static const char* read_array(const char* p, io::reader::node& pn, io::reader& e) {
+static const char* read_array(const char* p, serializer::node& pn, serializer::reader& e) {
 	int index = 0;
 	while(*p) {
-		io::reader::node n(pn);
+		serializer::node n(pn);
 		n.name = "element";
 		n.index = index;
 		p = read_object(p, n, e);
@@ -67,10 +60,10 @@ static const char* read_array(const char* p, io::reader::node& pn, io::reader& e
 	return p;
 }
 
-static const char* read_dictionary(const char* p, io::reader::node& pn, io::reader& e) {
+static const char* read_dictionary(const char* p, serializer::node& pn, serializer::reader& e) {
 	int index = 0;
 	while(*p) {
-		io::reader::node n(pn);
+		serializer::node n(pn);
 		n.index = index;
 		p = skipspcr(read_name(p, n));
 		if(*p == ':')
@@ -93,7 +86,7 @@ static const char* read_dictionary(const char* p, io::reader::node& pn, io::read
 	return p;
 }
 
-static const char* read_string(const char* p, char end_symbol, io::reader::node& n, io::reader& e) {
+static const char* read_string(const char* p, char end_symbol, serializer::node& n, serializer::reader& e) {
 	char temp[256 * 64];
 	p = psstr(p, temp, end_symbol);
 	n.type = serializer::Text;
@@ -102,7 +95,7 @@ static const char* read_string(const char* p, char end_symbol, io::reader::node&
 	return p;
 }
 
-static const char* read_number(const char* p, io::reader::node& n, io::reader& e) {
+static const char* read_number(const char* p, serializer::node& n, serializer::reader& e) {
 	char temp[64];
 	auto ps = temp;
 	auto pe = temp + sizeof(temp) - 2;
@@ -124,7 +117,7 @@ static const char* read_number(const char* p, io::reader::node& n, io::reader& e
 	return p;
 }
 
-static const char* read_object(const char* p, io::reader::node& n, io::reader& e) {
+static const char* read_object(const char* p, serializer::node& n, serializer::reader& e) {
 	if(!p)
 		return 0;
 	else if(*p == '\"' || *p == '\'')
@@ -274,21 +267,17 @@ struct json_writer : serializer {
 };
 
 static struct json_reader_parser : public io::plugin {
-
-	const char* read(const char* p, io::reader& e) override {
-		io::reader::node root;
+	const char* read(const char* p, serializer::reader& e) override {
+		serializer::node root;
 		root.type = serializer::Struct;
 		return read_object(p, root, e);
 	}
-
 	serializer* write(io::stream& e) override {
 		return new json_writer(e);
 	}
-
 	json_reader_parser() {
 		name = "json";
 		fullname = "JSON data object";
 		filter = "*.json";
 	}
-
 } reader_parser_instance;
