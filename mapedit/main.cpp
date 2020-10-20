@@ -3,7 +3,7 @@
 void run_main();
 
 int main() {
-	current_tileset = tileset::add("monsters");
+	current_tileset = tileset::add("Monsters");
 	run_main();
 }
 

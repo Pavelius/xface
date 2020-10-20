@@ -71,8 +71,9 @@ struct control_type : public tilesetview, controls::control::plugin {
 	}
 	void view(const rect& rc) override {
 		rect r1 = rc;
-		r1.y1 += field(r1.x1, r1.y1, r1.width(), "Набор", current_tileset, 50,
-			bsdata<tileset>::source, 0, {tileset::getname}, 0);
+		fnlist plist = {tileset::getname};
+		r1.y1 += draw::field(r1.x1, r1.y1, r1.width(), "Набор", current_tileset, 50,
+			bsdata<tileset>::source, 0, plist, 0);
 		tilesetview::view(r1);
 	}
 	void set(tileset* v) {
@@ -169,9 +170,9 @@ const char* tileset::choosenew() {
 		view() : list(sprites) {
 			list.read_only = true;
 			list.select_mode = SelectRow;
-			//list.addcol(bsmeta<spritei>::meta, "name", "Наименование");
-			//list.addcol(bsmeta<spritei>::meta, "count", "Спрайтов");
-			//list.addcol(bsmeta<spritei>::meta, "size", "Размер");
+			list.addcol("Наименование", ANREQ(spritei, name), "text");
+			list.addcol("Спрайтов", ANREQ(spritei, count), "number");
+			list.addcol("Размер", ANREQ(spritei, size), "number");
 			readsprites();
 		}
 		const char* getcurrent() const {
@@ -182,7 +183,7 @@ const char* tileset::choosenew() {
 		}
 	};
 	view object;
-	if(!object.show("Добавение набора тайлов"))
+	if(!object.show("Добавление набора тайлов из библиотеки"))
 		return 0;
 	return object.getcurrent();
 }
