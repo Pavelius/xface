@@ -9,8 +9,8 @@ struct toolbar_builder : control::command::builder {
 	point	size;
 	constexpr toolbar_builder(int x, int y, int width, const point size) : x(x), y(y), x2(x + width), size(size) {}
 	void addseparator() override {
-		gradv({x + 2, y, x + 4, y + size.y}, colors::border, colors::border.lighten());
-		x += 5;
+		gradv({x + 3, y + 4, x + 5, y + size.y - 4}, colors::border.lighten(), colors::border);
+		x += 7;
 	}
 	void add(const control* source, const control::command& cmd) override {
 		auto width = 0;
