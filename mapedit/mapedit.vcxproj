@@ -154,6 +154,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map_type.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="properties.cpp" />
     <ClCompile Include="tileimport.cpp" />
     <ClCompile Include="tileset.cpp" />
     <ClCompile Include="variant.cpp" />

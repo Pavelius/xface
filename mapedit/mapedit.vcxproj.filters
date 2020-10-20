@@ -16,6 +16,7 @@
     <ClCompile Include="direction.cpp" />
     <ClCompile Include="view_tileset.cpp" />
     <ClCompile Include="..\..\formats\util\sprite_util.cpp" />
+    <ClCompile Include="properties.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />

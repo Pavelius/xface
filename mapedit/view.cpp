@@ -8,6 +8,15 @@ static point		current_mouse;
 
 using namespace draw;
 
+object*	object::add(point pt) {
+	auto p = bsdata<object>::add();
+	p->kind = current_tileset;
+	p->frame = current_tileset->getcurrentframe();
+	p->x = pt.x;
+	p->y = pt.y;
+	return p;
+}
+
 void object::draw(point camera) const {
 	auto ts = kind.getresource();
 	if(!ts)
@@ -86,11 +95,7 @@ struct map_control_type : controls::scrollable, mapi, controls::control::plugin 
 		fore = push_fore;
 	}
 	static void add_object() {
-		auto p = bsdata<object>::add();
-		p->kind = current_tileset;
-		p->x = current_mouse.x;
-		p->y = current_mouse.y;
-		p->frame = current_tileset->getcurrentframe();
+		object::add(current_mouse);
 	}
 	void redraw(const rect& rc) override {
 		//render_grid(rc);

@@ -65,6 +65,7 @@ struct object : point {
 	short unsigned		frame;
 	short unsigned		flags;
 	explicit operator bool() const { return kind.operator bool(); }
+	static object*		add(point pt);
 	void				draw(point camera) const;
 };
 struct mapi : resourcei {

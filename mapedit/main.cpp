@@ -1,9 +1,11 @@
 #include "main.h"
+#include "markup.h"
 
 void run_main();
 
 int main() {
 	current_tileset = tileset::add("Monsters");
+	setproperties(bsdata<object>::elements, dginf<object>::meta);
 	run_main();
 }
 
