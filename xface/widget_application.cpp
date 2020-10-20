@@ -539,7 +539,6 @@ static struct widget_application : draw::controls::control {
 				current_active_control->view(rc);
 		}
 	}
-
 	void view(const rect& rc) override {
 		auto rct = rc;
 		for(auto p = controls::control::plugin::first; p; p = p->next) {
@@ -591,6 +590,24 @@ static struct widget_application : draw::controls::control {
 		}
 		return false;
 	}
+	bool cut(bool run) {
+		auto p = getfocus();
+		if(!p)
+			return false;
+		return p->cut(run);
+	}
+	bool copy(bool run) {
+		auto p = getfocus();
+		if(!p)
+			return false;
+		return p->copy(run);
+	}
+	bool paste(bool run) {
+		auto p = getfocus();
+		if(!p)
+			return false;
+		return p->paste(run);
+	}
 	widget_application() {
 		show_background = false;
 		show_border = false;
@@ -603,6 +620,7 @@ control::command widget_application::commands_general[] = {{"create", "Создать",
 {"save", "Сохранить", 0, &widget_application::save_window, 2},
 {}};
 control::command widget_application::commands[] = {{"*", "", commands_general},
+{"*", "", commands_edit},
 {}};
 
 control* controls::getactivated() {
@@ -729,7 +747,7 @@ static controls::control* layouts[] = {&widget_application_control, &widget_sett
 
 static void get_control_status(controls::control* object) {
 	char temp[260]; stringbuilder sb(temp);
-	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
+	draw::statusbar("Переключить вид на **%1**", object->getlabel(sb));
 }
 
 bool draw::controls::edit(control& e, fnevent heartbeat) {
@@ -789,8 +807,8 @@ void draw::application(fnevent heartproc, shortcut* shortcuts) {
 		rt.x1 += 2; rt.y1 += 1; rt.x2 -= 2;
 		if(metrics::show::padding)
 			rc.offset(metrics::padding);
-		pc->toolbar(rt.x1, rt.y1, rt.width());
 		pc->view(rc);
+		pc->toolbar(rt.x1, rt.y1, rt.width());
 		auto hilite_tab = -1;
 		auto reaction = draw::tabs(rt, false, true, (void**)layouts, 0,
 			sizeof(layouts) / sizeof(layouts[0]), current_tab, &hilite_tab,

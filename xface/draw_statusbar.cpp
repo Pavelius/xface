@@ -44,7 +44,7 @@ static struct statusbar_plugin : draw::plugin {
 		if(!statusbar_rect)
 			return;
 		if(statusbar_text[0])
-			draw::text(statusbar_rect, statusbar_text);
+			draw::textf(statusbar_rect.x1, statusbar_rect.y1, statusbar_rect.width(), statusbar_text);
 	}
 
 } plugin_instance;

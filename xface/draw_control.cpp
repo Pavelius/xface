@@ -39,6 +39,10 @@ bool control::isfocused() const {
 	return draw::isfocused(*const_cast<control*>(this));
 }
 
+control* control::getfocus() {
+	return current_focus;
+}
+
 void control::setfocus(bool instant) {
 	draw::setfocus(anyval(this, 0, 0), instant);
 }
@@ -224,3 +228,20 @@ bool control::plugin::builder::canopen(const char* url) const {
 	}
 	return false;
 }
+
+bool control::cut(bool run) {
+	return false;
+}
+
+bool control::copy(bool run) {
+	return false;
+}
+
+bool control::paste(bool run) {
+	return false;
+}
+
+control::command control::commands_edit[] = {{"cut", "Вырезать", 0, &control::cut, 3, Ctrl + Alpha + 'X'},
+{"copy", "Копировать", 0, &control::copy, 4, Ctrl + Alpha + 'C'},
+{"paste", "Вставить", 0, &control::paste, 5, Ctrl + Alpha + 'V'},
+{}};

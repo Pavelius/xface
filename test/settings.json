@@ -2,7 +2,7 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":117
+      "size":190
     },
     "Dock1":{
       "current":0,
@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":268
+      "size":307
     },
     "Dock3":{
       "current":0,
@@ -78,12 +78,12 @@
     }
   },
   "window":{
-    "x":237,
-    "y":110,
-    "width":784,
-    "height":579,
-    "header_width":89,
-    "flags":48
+    "x":272,
+    "y":106,
+    "width":838,
+    "height":541,
+    "header_width":185,
+    "flags":112
   },
   "controls":{
     "directory":{
@@ -97,7 +97,7 @@
         },
         "column":{
           "id":"Наименование",
-          "width":200,
+          "width":170,
           "size":4,
           "total":0
         }
@@ -125,7 +125,7 @@
             },
             "column":{
               "id":"Сообщение",
-              "width":200,
+              "width":769,
               "size":4,
               "total":0
             }

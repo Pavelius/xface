@@ -7,7 +7,7 @@ struct focusable_element {
 	rect		rc;
 	anyval		value;
 };
-static anyval	current_field_focus;
+static anyval	current_focus;
 static anyval	cmd_value;
 extern rect		sys_static_area;
 static focusable_element elements[96];
@@ -102,11 +102,11 @@ static const focusable_element* getnext(const focusable_element* pc, int key) {
 }
 
 bool draw::isfocused() {
-	return static_cast<bool>(current_field_focus);
+	return static_cast<bool>(current_focus);
 }
 
 bool draw::isfocused(const anyval& v) {
-	return current_field_focus == v;
+	return current_focus == v;
 }
 
 bool draw::isfocused(const rect& rc, const anyval& value) {
@@ -122,23 +122,23 @@ bool draw::isfocused(const rect& rc, const anyval& value) {
 			break;
 		}
 	}
-	return current_field_focus == value;
+	return current_focus == value;
 }
 
-pushfocus::pushfocus() : value(const_cast<const anyval&>(current_field_focus)) {
-	current_field_focus.clear();
+pushfocus::pushfocus() : value(const_cast<const anyval&>(current_focus)) {
+	current_focus.clear();
 }
 
 pushfocus::~pushfocus() {
-	current_field_focus = value;
+	current_focus = value;
 }
 
 void draw::setfocus(const anyval& value, bool instant) {
-	if(current_field_focus==value)
+	if(current_focus==value)
 		return;
 	if(instant) {
 		savefocus();
-		current_field_focus = value;
+		current_focus = value;
 	} else {
 		cmd_value = value;
 		auto old_hot = hot;
@@ -214,7 +214,7 @@ static void standart_domodal() {
 	case KeyRight:
 	case KeyLeft:
 		if(true) {
-			auto pc = getnext(getby(current_field_focus), hot.key);
+			auto pc = getnext(getby(current_focus), hot.key);
 			if(pc)
 				setfocus(pc->value, true);
 		}

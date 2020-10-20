@@ -93,30 +93,20 @@ bool io::read(const char* url, const char* root_name, void* param) {
 				break;
 			}
 		}
-
 		void set(serializer::node& e, const char* value) override {
 			if(!st)
 				e.skip = true;
 			else
 				st->set(e, value);
 		}
-
 		void close(serializer::node& e)  override {
 			if(!st)
 				e.skip = true;
 			else
 				st->close(e);
 		}
-
-		int getnum(const char* value) {
-			int result = 0;
-			stringbuilder::readnum(value, result);
-			return result;
-		}
-
 		proxy() : root_name(0), param(0), st(0) {
 		}
-
 	};
 	proxy reader_proxy;
 	reader_proxy.root_name = root_name;

@@ -117,10 +117,14 @@ struct control {
 	virtual void			activating() {}
 	void					contextmenu(const command* source);
 	void					contextmenu(const command* source, command::builder& builder);
+	virtual bool			copy(bool run);
+	virtual bool			cut(bool run);
+	static command			commands_edit[];
 	virtual void			deactivating() {}
 	static bool				equal(const char* s1, const char* s2);
 	const command*			getcommand(const char* id) const { return getcommands()->find(id); }
 	virtual const command*	getcommands() const { return 0; }
+	static control*			getfocus();
 	virtual const sprite*	getimages() const { return standart_toolbar; }
 	virtual const char*		getlabel(stringbuilder& sb) const { return 0; }
 	virtual const sprite*	gettreeimages() const { return standart_tree; }
@@ -132,6 +136,7 @@ struct control {
 	bool					ishilited() const;
 	virtual bool			ismodified() const { return false; }
 	virtual bool			keyinput(unsigned id); // Default behaivor call shortcut function
+	virtual bool			paste(bool run);
 	void					postcmd(fncmd proc) const;
 	void					postkeyinput(int value) const;
 	void					postsetvalue(const char* id, int value) const;
@@ -416,9 +421,9 @@ public:
 	//
 	void					clear();
 	virtual void			cashing(rect rc);
-	bool					copy(bool run);
+	bool					copy(bool run) override;
 	void					correct();
-	bool					cut(bool run);
+	bool					cut(bool run) override;
 	bool					editing(rect rc);
 	void					ensurevisible(int linenumber);
 	int						getbegin() const;
@@ -434,7 +439,7 @@ public:
 	int						linee(int index) const;
 	int						linen(int index) const;
 	void					left(bool shift, bool ctrl);
-	bool					paste(bool run);
+	bool					paste(bool run) override;
 	void					paste(const char* string);
 	void					redraw(const rect& rc) override;
 	void					right(bool shift, bool ctrl);
