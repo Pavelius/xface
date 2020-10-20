@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":357
+      "size":284
     },
     "Dock3":{
       "current":0,
@@ -78,12 +78,12 @@
     }
   },
   "window":{
-    "x":182,
-    "y":94,
-    "width":838,
-    "height":566,
+    "x":143,
+    "y":31,
+    "width":921,
+    "height":651,
     "header_width":160,
-    "flags":112
+    "flags":48
   },
   "controls":{
     "map":{

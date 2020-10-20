@@ -167,9 +167,9 @@ static void testwizard() {
 				auto x = rc.x1, y = rc.y1, w = rc.x2 - x;
 				auto w1 = imin(w/2, 350);
 				auto w2 = imin(w/2, 350);
-				field(x, y, w1, "Смещение по горизонтале", base_x, 180, bsdata<directioni>::source, getdirectionname, 0, 0, horizallow);
+				field(x, y, w1, "Смещение по горизонтале", base_x, 180, bsdata<directioni>::source, 0, {getdirectionname, horizallow});
 				y += field(x + w1 + metrics::padding, y, w1, "на значение", offset.x, 100, 4);
-				field(x, y, w1, "Смещение по вертикале", base_y, 180, bsdata<directioni>::source, getdirectionname, 0, 0, vertallow);
+				field(x, y, w1, "Смещение по вертикале", base_y, 180, bsdata<directioni>::source, 0, {getdirectionname, vertallow});
 				y += field(x + w1 + metrics::padding, y, w1, "на значение", offset.y, 100, 4);
 			}
 			return true;
@@ -214,5 +214,5 @@ void run_main() {
 	{add_tileset, "Тестирование добавление спрайтов", Ctrl + Alpha + '2'},
 	{}};
 	logmsg("Старт системы");
-	draw::application("X-Map editor", false, 0, heartbreak, keys);
+	draw::application("X-Map editor",0, heartbreak, keys);
 }

@@ -8,7 +8,6 @@
 #pragma once
 
 #define APLNK(e,t) DGLNK(e,t) BSLNK(e,t)
-#define assert_enum(e, last) static_assert(sizeof(bsdata<e##i>::elements) / sizeof(bsdata<e##i>::elements[0]) == last + 1, "Invalid count of " #e " elements"); BSHEAD(e##i);
 
 namespace code {
 enum operator_s : unsigned char {

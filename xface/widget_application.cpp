@@ -747,7 +747,7 @@ static controls::control* layouts[] = {&widget_application_control, &widget_sett
 
 static void get_control_status(controls::control* object) {
 	char temp[260]; stringbuilder sb(temp);
-	draw::statusbar("Переключить вид на **%1**", object->getlabel(sb));
+	draw::statusbar("Переключить вид на '%1'", object->getlabel(sb));
 }
 
 bool draw::controls::edit(control& e, fnevent heartbeat) {

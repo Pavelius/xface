@@ -7,4 +7,4 @@ BSDATA(metatypei) = {{"Static", "Статический"},
 {"Dimension", "Измерение"},
 {"Scalar", "Скалярный тип"},
 };
-assert_enum(metatype, ScalarType)
+assert_enum(metatypei, ScalarType)

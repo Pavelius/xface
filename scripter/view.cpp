@@ -78,7 +78,7 @@ static class requisit_control : public controls::tableref, controls::control::pl
 	}
 	void after_initialize() override {
 		addstdimage();
-		addcol("Наименование", ANREQ(requisit, id), "text").set(SizeAuto).set(getpresent);
+		addcol("Наименование", ANREQ(requisit, id), "text").set(SizeAuto).set({getpresent});
 		update();
 	}
 	control* getcontrol() override {

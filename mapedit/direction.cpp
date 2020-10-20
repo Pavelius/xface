@@ -6,4 +6,4 @@ BSDATA(directioni) = {{"Center", "Центр"},
 {"Right", "Право"},
 {"Down", "Низ"},
 };
-assert_enum(direction, Down);
+assert_enum(directioni, Down);

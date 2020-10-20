@@ -72,7 +72,7 @@ struct control_type : public tilesetview, controls::control::plugin {
 	void view(const rect& rc) override {
 		rect r1 = rc;
 		r1.y1 += field(r1.x1, r1.y1, r1.width(), "Набор", current_tileset, 50,
-			bsdata<tileset>::source, tileset::getname, 0, 0, 0);
+			bsdata<tileset>::source, 0, {tileset::getname}, 0);
 		tilesetview::view(r1);
 	}
 	void set(tileset* v) {
