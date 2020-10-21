@@ -4,7 +4,7 @@
 void run_main();
 
 int main() {
-	current_tileset = tileset::add("Monsters");
+	tileset::setcurrent(tileset::add("Monsters"));
 	setproperties(bsdata<object>::elements, dginf<object>::meta);
 	run_main();
 }

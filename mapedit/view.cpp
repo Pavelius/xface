@@ -9,9 +9,10 @@ static point		current_mouse;
 using namespace draw;
 
 object*	object::add(point pt) {
+	auto ps = tileset::getcurrent();
 	auto p = bsdata<object>::add();
-	p->kind = current_tileset;
-	p->frame = current_tileset->getcurrentframe();
+	p->kind = ps;
+	p->frame = ps->getcurrentframe();
 	p->x = pt.x;
 	p->y = pt.y;
 	return p;
@@ -208,10 +209,8 @@ static void testwizard() {
 }
 
 void directory_initialize();
-void update_tileset();
 
 static void heartbreak() {
-	update_tileset();
 }
 
 void run_main() {

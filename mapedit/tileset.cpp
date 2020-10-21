@@ -43,6 +43,7 @@ tileset* tileset::add(const char* id) {
 			return &e;
 	}
 	auto p = bsdata<tileset>::add();
+	p->type = Rectangle;
 	zcpy(p->name, id);
 	return p;
 }

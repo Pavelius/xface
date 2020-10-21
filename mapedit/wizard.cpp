@@ -94,12 +94,12 @@ bool wizard::show(const char* title) {
 			auto c2 = colors::border.mix(colors::edit);
 			auto c1 = colors::form.mix(colors::edit);
 			font = metrics::h2;
-			rect r1 = rc; r1.y2 = r1.y1 + texth() + metrics::padding*2;
+			rect r1 = rc; r1.y2 = r1.y1 + texth() + metrics::padding*4;
 			gradv(r1, c1, c2);
 			line(r1.x1, r1.y2, r1.x2, r1.y2, colors::border);
 			rc.y1 += r1.height() + metrics::padding * 4;
 			r1.offset(metrics::padding * 2, metrics::padding);
-			text(r1, title, AlignLeft|TextBold);
+			text(r1, title, AlignLeftCenter|TextBold);
 		}
 		auto bottom_height = texth() + 8 + metrics::padding * 2;
 		rect r2 = rc;

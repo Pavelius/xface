@@ -1,5 +1,4 @@
 #include "archive.h"
-#include "bsreq.h"
 #include "crt.h"
 #include "point.h"
 #include "setting.h"
@@ -39,12 +38,14 @@ public:
 	static tileset*		add(const char* id);
 	static const char*	base_url;
 	static const char*	choosenew();
+	static tileset*		getcurrent();
 	static int			getcurrentframe();
 	const char*			getname() { return name; }
 	static const char*	getname(const void* object, stringbuilder& sb);
 	const sprite*		getsprite();
 	static const char*	geturl(char* buffer, const char* name);
 	void				import();
+	static void			setcurrent(tileset* v);
 };
 struct variant {
 	variant_s			type;
@@ -83,5 +84,4 @@ struct tileimport {
 	int					getcenter(int dimension, direction_s link, int value) const;
 };
 void					add_tileset();
-extern tileset*			current_tileset;
 void					logmsg(const char* format, ...);

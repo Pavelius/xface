@@ -4,28 +4,32 @@
 
 using namespace draw;
 
-rect		sprite_get_border_rect(const sprite* ps);
-tileset*	current_tileset;
+rect			sprite_get_border_rect(const sprite* ps);
+static tileset*	current_tileset;
 
 namespace {
 class tilesetview : public controls::picker {
-	const sprite* selected;
+	const sprite* cashed;
 	const char*	getlabel(stringbuilder& sb) const override {
 		return "Набор тайлов";
 	}
 	int getmaximum() const override {
-		if(!selected)
+		auto ps = getsprite();
+		if(!ps)
 			return 0;
-		return selected->count;
+		return ps->count;
 	}
 	void row(const rect& rc, int index) override {
+		auto ps = getsprite();
+		if(!ps)
+			return;
 		draw::state push; setclip(rc);
 		auto x = rc.x1 + rc.width() / 2;
 		auto y = rc.y1 + rc.height() / 2;
-		auto& fr = selected->get(index);
+		auto& fr = ps->get(index);
 		x -= fr.sx / 2;
 		y -= fr.sy / 2;
-		image(x, y, selected, index, ImageNoOffset);
+		image(x, y, ps, index, ImageNoOffset);
 		rect r1 = {rc.x1, rc.y1, rc.x2 - 1, rc.y2 - 1};
 		auto a = ishilite(r1);
 		if(index == current) {
@@ -35,14 +39,20 @@ class tilesetview : public controls::picker {
 		}
 	}
 public:
-	void set(const sprite* v) {
-		if(selected == v)
+	virtual const sprite* getsprite() const = 0;
+	void view(const rect& rc) override {
+		update();
+		picker::view(rc);
+	}
+	void update() {
+		auto ps = getsprite();
+		if(ps == cashed)
 			return;
-		selected = v;
-		if(v) {
-			pixels_per_line = selected->height;
-			pixels_per_column = selected->width;
-			auto rc = sprite_get_border_rect(selected);
+		cashed = ps;
+		if(ps) {
+			pixels_per_line = cashed->height;
+			pixels_per_column = cashed->width;
+			auto rc = sprite_get_border_rect(cashed);
 			rc.offset(-2);
 			if(pixels_per_line <= rc.height())
 				pixels_per_line = rc.height();
@@ -54,15 +64,14 @@ public:
 				pixels_per_column = 196;
 		}
 	}
-	tilesetview() :selected(0) {
+	tilesetview() :cashed(0) {
 		show_grid_lines = false;
 	}
-	int getcurrent() {
+	int getcurrentframe() {
 		return current;
 	}
 };
 struct control_type : public tilesetview, controls::control::plugin {
-	tileset* selected;
 	control* getcontrol() override {
 		return this;
 	}
@@ -76,24 +85,27 @@ struct control_type : public tilesetview, controls::control::plugin {
 			bsdata<tileset>::source, 0, plist, 0);
 		tilesetview::view(r1);
 	}
-	void set(tileset* v) {
-		if(selected == v)
-			return;
-		selected = v;
-		tilesetview::set(selected->getsprite());
+	const sprite* getsprite() const override {
+		if(!current_tileset)
+			return 0;
+		return current_tileset->getsprite();
 	}
-	control_type() : plugin("tile_list", DockRight), selected(0) {
+	control_type() : plugin("tile_list", DockRight) {
 	}
 };
 }
 static control_type object;
 
-int	tileset::getcurrentframe() {
-	return object.getcurrent();
+tileset* tileset::getcurrent() {
+	return current_tileset;
 }
 
-void update_tileset() {
-	object.set(current_tileset);
+int	tileset::getcurrentframe() {
+	return object.getcurrentframe();
+}
+
+void tileset::setcurrent(tileset* v) {
+	current_tileset = v;
 }
 
 struct spritei : sprite {
@@ -124,13 +136,21 @@ struct spritei : sprite {
 			delete data;
 	}
 };
-BSMETA(spritei) = {BSREQ(name), BSREQ(size), BSREQ(count),
-{}};
+
+struct spriteview : tilesetview {
+	const sprite*				selected;
+	const sprite* getsprite() const override {
+		return selected;
+	}
+	void set(const sprite* v) {
+		selected = v;
+	}
+};
 
 const char* tileset::choosenew() {
 	class view : public wizard {
 		vector<spritei>			sprites;
-		tilesetview				preview;
+		spriteview				preview;
 		controls::tableview		list;
 		void readsprites() {
 			sprites.clear();
