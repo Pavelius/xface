@@ -79,21 +79,34 @@ void textedit::ensurevisible(int linenumber) {
 	// 2) Вычислить количество строк на экране.
 }
 
-void textedit::select(int index, bool shift) {
+bool textedit::select(int index, bool shift) {
 	int lenght = zlen(string);
 	if(index < 0)
 		index = 0;
 	else if(index > lenght)
 		index = lenght;
+	bool change = false;
 	if(shift) {
-		if(p2 == -1)
-			p2 = p1;
-	} else
-		p2 = -1;
-	p1 = index;
+		if(p2 == -1) {
+			if(p2 != p1) {
+				p2 = p1;
+				change = true;
+			}
+		}
+	} else {
+		if(p2 != -1) {
+			p2 = -1;
+			change = true;
+		}
+	}
+	if(p1 != index) {
+		p1 = index;
+		change = true;
+	}
+	return change;
 }
 
-void textedit::left(bool shift, bool ctrl) {
+bool textedit::left(bool shift, bool ctrl) {
 	int n = p1;
 	if(!ctrl)
 		n -= 1;
@@ -101,10 +114,10 @@ void textedit::left(bool shift, bool ctrl) {
 		for(; n > 0 && isspace(string[n - 1]); n--);
 		for(; n > 0 && !isspace(string[n - 1]); n--);
 	}
-	select(n, shift);
+	return select(n, shift);
 }
 
-void textedit::right(bool shift, bool ctrl) {
+bool textedit::right(bool shift, bool ctrl) {
 	int n = p1;
 	if(!ctrl)
 		n += 1;
@@ -112,7 +125,7 @@ void textedit::right(bool shift, bool ctrl) {
 		for(; string[n] && !isspace(string[n]); n++);
 		for(; string[n] && isspace(string[n]); n++);
 	}
-	select(n, shift);
+	return select(n, shift);
 }
 
 int	textedit::lineb(int index) const {
@@ -358,13 +371,15 @@ bool textedit::keyinput(unsigned id) {
 	case KeyRight | Shift:
 	case KeyRight | Ctrl:
 	case KeyRight | Shift | Ctrl:
-		right((id&Shift) != 0, (id&Ctrl) != 0);
+		if(!right((id&Shift) != 0, (id&Ctrl) != 0))
+			return scrollable::keyinput(id);
 		break;
 	case KeyLeft:
 	case KeyLeft | Shift:
 	case KeyLeft | Ctrl:
 	case KeyLeft | Shift | Ctrl:
-		left((id&Shift) != 0, (id&Ctrl) != 0);
+		if(!left((id&Shift) != 0, (id&Ctrl) != 0))
+			return scrollable::keyinput(id);
 		break;
 	case KeyBackspace:
 		if(!readonly) {

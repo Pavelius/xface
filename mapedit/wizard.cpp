@@ -11,6 +11,21 @@ enum command_s : unsigned char {
 
 static command_s current_command;
 
+const wizard::element* wizard::getvalidb(const wizard::element* p) const {
+	auto pc = const_cast<wizard*>(this);
+	auto pb = pc->getelements();
+	if(pb > p)
+		return 0;
+	while(p && *p) {
+		if(pb > p)
+			return 0;
+		if((pc->*p->proc.call)({}, Try))
+			return p;
+		p--;
+	}
+	return 0;
+}
+
 const wizard::element* wizard::getvalid(const wizard::element* p) const {
 	auto pc = const_cast<wizard*>(this);
 	while(p && *p) {
@@ -77,10 +92,11 @@ bool wizard::show(const char* title) {
 		if(title) {
 			state push;
 			auto c2 = colors::border.mix(colors::edit);
-			auto c1 = colors::form;
+			auto c1 = colors::form.mix(colors::edit);
 			font = metrics::h2;
 			rect r1 = rc; r1.y2 = r1.y1 + texth() + metrics::padding*2;
-			gradv(r1, c2, c1);
+			gradv(r1, c1, c2);
+			line(r1.x1, r1.y2, r1.x2, r1.y2, colors::border);
 			rc.y1 += r1.height() + metrics::padding * 4;
 			r1.offset(metrics::padding * 2, metrics::padding);
 			text(r1, title, AlignLeft|TextBold);
@@ -114,14 +130,21 @@ bool wizard::show(const char* title) {
 		current_command = NoCommand;
 		domodal();
 		switch(current_command) {
-		case Previous: break;
+		case Previous:
+			pc = getvalid(pc - 1);
+			if(pc)
+				(this->*pc->proc.call)({}, Initialize);
+			break;
 		case Next:
 			pc = getvalid(pc + 1);
 			if(pc)
 				(this->*pc->proc.call)({}, Initialize);
 			break;
-		case Finish: breakmodal(1); break;
-		default: break;
+		case Finish:
+			breakmodal(1);
+			break;
+		default:
+			break;
 		}
 	}
 	return getresult() != 0;

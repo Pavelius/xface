@@ -438,12 +438,12 @@ public:
 	int						lineb(int index) const;
 	int						linee(int index) const;
 	int						linen(int index) const;
-	void					left(bool shift, bool ctrl);
+	bool					left(bool shift, bool ctrl);
 	bool					paste(bool run) override;
 	void					paste(const char* string);
 	void					redraw(const rect& rc) override;
-	void					right(bool shift, bool ctrl);
-	void					select(int index, bool shift);
+	bool					right(bool shift, bool ctrl);
+	bool					select(int index, bool shift);
 	unsigned				select_all(bool run);
 	void					setcount(int value) {}
 	void					setrecordlist(const char* string);

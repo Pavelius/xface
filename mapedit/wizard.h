@@ -23,5 +23,6 @@ struct wizard {
 	virtual const element* getelements() const = 0;
 	const element*		getlast(const element* p) const;
 	const element*		getvalid(const element* p) const;
+	const element*		getvalidb(const element* p) const;
 	bool				show(const char* title);
 };
