@@ -118,6 +118,8 @@ void mainview(const char* url) {
 		}
 		sb.clear();
 		sb.add("[%2i/%3i](%4i,%5i, size=%6ix%7i)", szfname(url), current, maximum, sx, sy, cx, cy);
+		if(animated_sprite)
+			sb.addn("frames total %1i", pi->count);
 		if(setting::show::center)
 			sb.adds("center");
 		auto frame_name = pi->getstring(current);
