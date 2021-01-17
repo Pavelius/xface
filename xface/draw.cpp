@@ -1720,11 +1720,11 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 	if(y2<clipping.y1 || y>clipping.y2 || x2<clipping.x1 || x>clipping.x2)
 		return;
 	if(y < clipping.y1) {
-		if((flags&ImageMirrorV) == 0) {
+		if((flags & ImageMirrorV) == 0) {
 			switch(f.encode) {
 			case sprite::ALC: s = skip_alc(s, clipping.y1 - y); break;
-			case sprite::RAW: s += (clipping.y1 - y)*f.sx * 3; break;
-			case sprite::RAW8: s += (clipping.y1 - y)*f.sx; break;
+			case sprite::RAW: s += (clipping.y1 - y) * f.sx * 3; break;
+			case sprite::RAW8: s += (clipping.y1 - y) * f.sx; break;
 			case sprite::RLE8: s = skip_v3(s, clipping.y1 - y); break;
 			case sprite::RLE: s = skip_rle32(s, clipping.y1 - y); break;
 			default: break;
@@ -1733,11 +1733,11 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 		y = clipping.y1;
 	}
 	if(y2 > clipping.y2) {
-		if(flags&ImageMirrorV) {
+		if(flags & ImageMirrorV) {
 			switch(f.encode) {
 			case sprite::ALC: s = skip_alc(s, y2 - clipping.y2); break;
-			case sprite::RAW: s += (y2 - clipping.y2)*f.sx * 3; break;
-			case sprite::RAW8: s += (y2 - clipping.y2)*f.sx; break;
+			case sprite::RAW: s += (y2 - clipping.y2) * f.sx * 3; break;
+			case sprite::RAW8: s += (y2 - clipping.y2) * f.sx; break;
 			case sprite::RLE8: s = skip_v3(s, y2 - clipping.y2); break;
 			case sprite::RLE: s = skip_rle32(s, y2 - clipping.y2); break;
 			default: break;
@@ -1747,24 +1747,28 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 	}
 	if(y >= y2)
 		return;
-	int wd = (flags&ImageMirrorV) ? -canvas->scanline : canvas->scanline;
-	int sy = (flags&ImageMirrorV) ? y2 - 1 : y;
+	int wd = (flags & ImageMirrorV) ? -canvas->scanline : canvas->scanline;
+	int sy = (flags & ImageMirrorV) ? y2 - 1 : y;
 	switch(f.encode) {
 	case sprite::RAW:
 		if(x < clipping.x1) {
-			s += (clipping.x1 - x) * 3;
+			if((flags & ImageMirrorH) == 0)
+				s += (clipping.x1 - x) * 3;
 			x = clipping.x1;
 		}
-		if(x2 > clipping.x2)
+		if(x2 > clipping.x2) {
+			if(flags & ImageMirrorH)
+				s += (x2 - clipping.x2) * 3;
 			x2 = clipping.x2;
+		}
 		if(x >= x2)
 			return;
-		if(flags&ImageMirrorH)
-			raw32m(ptr(x2 - 1, y), wd, s, f.sx * 3,
+		if(flags & ImageMirrorH)
+			raw32m(ptr(x2 - 1, sy), wd, s, f.sx * 3,
 				x2 - x,
 				y2 - y);
 		else
-			raw32(ptr(x, y), wd, s, f.sx * 3,
+			raw32(ptr(x, sy), wd, s, f.sx * 3,
 				x2 - x,
 				y2 - y);
 		break;
