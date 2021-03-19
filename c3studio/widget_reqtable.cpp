@@ -14,17 +14,15 @@ static package* add_package() {
 	return bsdata<package>::add();
 }
 
-static const char* getpackagename(const void* object, stringbuilder& sb) {
-	auto p = (package*)object;
-	return p->getsymurl(0);
-}
-
-class view_packages : public controls::table {
+class packages_table : public controls::table {
 	void* addrow() override {
 		return add_package();
 	}
 	int getmaximum() const override {
 		return bsdata<package>::source.getcount();
+	}
+	int getimage(int row) const override {
+		return 2;
 	}
 	void* get(int index) const override {
 		return bsdata<package>::source.ptr(index);
@@ -37,20 +35,91 @@ class view_packages : public controls::table {
 	void swap(int i1, int i2) override {
 		bsdata<package>::source.swap(i1, i2);
 	}
-	const char* geturl(stringbuilder& sb) const override {
-		return sb;
+	static const char* getname(const void* object, stringbuilder& sb) {
+		auto p = (package*)object;
+		return p->getsymurl(0);
 	}
 public:
-	view_packages() {
-		auto& c0 = addcol("Изображение", "image");
+	packages_table() {
+		auto& c0 = addcol("Изображение", "standart_image");
 		auto& c1 = addcol("Имя", "text");
-		c1.plist.getname = getpackagename;
+		c1.plist.getname = getname;
 		c1.flags.add(ColumnReadOnly);
 		select_mode = SelectRow;
 	}
 };
 
-class widget_packages : view_packages, draw::controls::control::plugin {
+class packages_tree : public controls::tree {
+	enum type_s {
+		Package, Symbol,
+	};
+	package* getpackage(int index) const {
+		while(index!=-1) {
+			auto p = (element*)get(index);
+			if(p->type == Package)
+				return (package*)p->object;
+			index = getparent(index);
+		}
+		return 0;
+	}
+	void expanding(growable& source) {
+		for(auto& e : bsdata<package>()) {
+			if(!e)
+				continue;
+			source.add(Package, 5, &e);
+		}
+	}
+	void expanding(int index, growable& source) {
+		package* pk = getpackage(index);
+		auto p = (element*)get(index);
+		pckh ph;
+		switch(p->type) {
+		case Symbol:
+			if(!pk)
+				break;
+			ph = (symbol*)p->object - pk->symbols.begin();
+			for(auto& e : pk->symbols) {
+				if(e.parent != ph)
+					continue;
+				source.add(Symbol, 0, &e);
+			}
+			break;
+		case Package:
+			for(auto& e : pk->symbols) {
+				if(e.parent != This)
+					continue;
+				source.add(Symbol, 5, &e);
+			}
+			break;
+		}
+	}
+	static const char* getname(const void* object, stringbuilder& sb) {
+		auto p = (element*)object;
+		package* pk;
+		symbol* ps;
+		switch(p->type) {
+		case Symbol:
+			ps = (symbol*)p->object;
+			return "Symbol";
+		case Package:
+			pk = (package*)p->object;
+			return pk->getstr(0);
+		default:
+			return "None";
+		}
+	}
+public:
+	packages_tree() {
+		auto& c0 = addcol("Изображение", "standart_image");
+		auto& c1 = addcol("Имя", "text");
+		c1.plist.getname = getname;
+		c1.set(ColumnReadOnly);
+		c1.set(SizeAuto);
+		select_mode = SelectText;
+	}
+};
+
+class widget_packages : public packages_tree, draw::controls::control::plugin {
 	control* getcontrol() override {
 		return this;
 	}
@@ -61,6 +130,10 @@ public:
 	}
 };
 static widget_packages instance;
+
+void packages_initialize() {
+	instance.expand(0);
+}
 
 void add_package(const char* id) {
 	char temp[260]; stringbuilder sb(temp);

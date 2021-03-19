@@ -204,7 +204,8 @@ public:
 	void							clear();
 	char*							end() const { return (char*)data + size * count; }
 	int								find(const char* value, unsigned offset) const;
-	int								find(void* value, unsigned offset, unsigned size) const;
+	int								find(int i1, int i2, void* value, unsigned offset, unsigned size) const;
+	int								find(void* value, unsigned offset, unsigned size) const { return find(0, -1, value, offset, size); }
 	unsigned						getmaximum() const { return count_maximum & 0x7FFFFFFF; }
 	unsigned						getcount() const { return count; }
 	unsigned						getsize() const { return size; }

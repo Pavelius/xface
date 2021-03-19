@@ -50,14 +50,15 @@ rect scroll::getslide() const {
 		auto dr = maximum - page;
 		auto p = ((*origin)*ds) / dr + work.x1;
 		return {p, work.y1, p + ss, work.y2};
-	} else {
+	} else if(maximum) {
 		auto pix_page = work.height();
 		auto ss = (pix_page * page) / maximum; // scroll size (in pixels)
 		auto ds = pix_page - ss;
 		auto dr = maximum - page;
 		auto p = ((*origin)*ds) / dr + work.y1;
 		return {work.x1, p, work.x2, p + ss};
-	}
+	} else
+		return {work.x1, work.y1, work.x2, work.y1};
 }
 
 void scroll::view(bool focused) {

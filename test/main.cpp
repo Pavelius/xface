@@ -1,4 +1,3 @@
-#include "package.h"
 #include "main.h"
 #include "draw_control.h"
 #include "valuelist.h"
@@ -11,7 +10,6 @@ MNLNK(gender_s, genderi)
 MNLNK(alignment_s, alignmenti)
 
 using namespace draw;
-using namespace code;
 
 void logmsg(const char* format, ...);
 void setproperties(void* object, const markup* type);
@@ -552,25 +550,6 @@ static bool test_vector() {
 	return true;
 }
 
-static bool test_code_strings() {
-	code::package test;
-	test.clear();
-	auto i1 = test.add("io.file");
-	auto i2 = test.add("io");
-	auto i3 = test.add("file");
-	auto i4 = test.add("io.file");
-	return i4==4 && i2==12;
-}
-
-static bool test_code_ast() {
-	code::package test;
-	test.clear();
-	auto i1 = test.add(opr::Constant, 10);
-	auto i2 = test.add(opr::Add, test.add(opr::Constant, 6), test.add(opr::Symbol, 0));
-	auto i4 = test.add(opr::Constant, 10);
-	return i1 == i4;
-}
-
 int main() {
 	static auto tests = {test_write_bin,
 		test_anyval,
@@ -579,8 +558,6 @@ int main() {
 		test_vector,
 		test_datetime,
 		test_data_access,
-		test_code_strings,
-		test_code_ast,
 	};
 	for(auto p : tests) {
 		if(!p())

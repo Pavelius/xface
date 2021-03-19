@@ -94,7 +94,7 @@ class package {
 public:
 	vector<symbol>		symbols;
 	vector<ast>			asts;
-	explicit operator bool() const { return strings.getcount()==0; }
+	explicit operator bool() const { return strings.getcount()!=0; }
 	pckh				addstr(const char* v);
 	unsigned			add(operation type, unsigned left, unsigned right);
 	unsigned			add(operation type, unsigned left) { return add(type, left, 0); }

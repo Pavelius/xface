@@ -158,7 +158,8 @@ struct list : control {
 	constexpr list() : origin(0), current(0), origin_width(0),
 		lines_per_page(0), pixels_per_line(0), pixels_per_width(0),
 		show_grid_lines(false), show_selection(true), show_header(true), hilite_odd_lines(true), drop_shadow(false),
-		current_rect(), view_rect() {}
+		current_rect(), view_rect() {
+	}
 	virtual void			collapse(int index) {}
 	void					correction();
 	void					correction_width();
@@ -246,7 +247,8 @@ struct table : list {
 	select_mode_s			select_mode;
 	constexpr table() : current_column(0), current_column_maximum(0), maximum_width(0),
 		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
-		select_mode(SelectCell) {}
+		select_mode(SelectCell) {
+	}
 	column&					addcol(const char* name, const anyreq& req, const char* visual_id, array* source = 0);
 	column&					addcol(const char* name, const char* visual_id);
 	column&					addstdimage();
@@ -352,11 +354,23 @@ struct tableview : table {
 };
 struct tree : table, protected array {
 	struct element {
+		enum flag_s { Group, Marked };
 		unsigned char		level;
 		unsigned char		flags;
 		unsigned char		type;
 		unsigned char		image;
+		void*				object;
+		constexpr bool		is(flag_s v) const { return (flags & (1 << Group)) != 0; }
+		void				remove(flag_s v) { flags &= ~(1<<v); }
+		void				set(flag_s v) { flags |= 1 << v; }
 		void				setgroup(bool v) { flags = v ? 1 : 0; }
+	};
+	struct growable {
+		tree*				source;
+		int					index, i1, i2, level;
+		growable(tree* source, int index);
+		~growable();
+		void				add(unsigned char type, unsigned char image, void* object);
 	};
 	bool					sort_rows_by_name;
 	constexpr tree(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
@@ -365,6 +379,9 @@ struct tree : table, protected array {
 	void					clear() { array::clear(); }
 	void					expand(int index) override;
 	virtual void			expanding(int index, int level) {}
+	virtual void			expanding(growable& source) {}
+	virtual void			expanding(int index, growable& source) {}
+	int						find(int i1, int i2, void* object);
 	void*					get(int index) const override { return array::ptr(index); }
 	int						getimage(int index) const override;
 	int						getlevel(int index) const override;

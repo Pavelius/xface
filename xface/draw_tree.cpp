@@ -3,7 +3,51 @@
 using namespace draw;
 using namespace draw::controls;
 
-#define TIGroup 1
+tree::growable::growable(tree* source, int index) : source(source), index(index), i1(index + 1), i2(index) {
+	level = (index == -1) ? 0 : source->getlevel(index);
+	auto m = source->getmaximum();
+	for(auto i = i1; i < m; i++) {
+		auto p = (tree::element*)source->array::ptr(i);
+		if(p->level > level + 1)
+			continue;
+		if(p->level <= level)
+			break;
+		i2 = i;
+		p->set(tree::element::Marked);
+	}
+}
+
+tree::growable::~growable() {
+	auto m = source->getmaximum();
+	for(auto i = i1; i < m; i++) {
+		auto p = (tree::element*)source->array::ptr(i);
+		if(p->level > level + 1)
+			continue;
+		if(p->level <= level)
+			break;
+		if(p->is(element::Marked)) {
+			source->collapse(i);
+			source->remove(i);
+			m = source->getmaximum();
+		}
+	}
+}
+
+void tree::growable::add(unsigned char type, unsigned char image, void* object) {
+	element* p;
+	auto i = source->find(i1, i2, object);
+	if(i == -1) {
+		p = (element*)source->array::insert(i1, 0);
+		p->level = level + 1;
+		p->flags = 0;
+		p->set(element::Group);
+	} else
+		p = (element*)source->array::ptr(i);
+	p->type = type;
+	p->image = image;
+	p->object = object;
+	p->remove(tree::element::Marked);
+}
 
 int tree::getlevel(int index) const {
 	return ((element*)array::ptr(index))->level;
@@ -18,13 +62,17 @@ int	tree::gettype(int index) const {
 }
 
 bool tree::isgroup(int index) const {
-	return (((element*)array::ptr(index))->flags&TIGroup) != 0;
+	return ((element*)array::ptr(index))->is(element::Group);
 }
 
 tree::element* tree::insert(int& index, int level) {
 	auto p = (element*)array::insert(index++, 0);
 	p->level = level;
 	return p;
+}
+
+int	tree::find(int i1, int i2, void* object) {
+	return array::find(i1, i2, object, FO(element, object), sizeof(element::object));
 }
 
 void tree::collapse(int i) {
@@ -50,10 +98,13 @@ void tree::collapse(int i) {
 
 void tree::expand(int index) {
 	auto before_count = getmaximum();
-	if(before_count == 0)
-		expanding(0, 1);
-	else
-		expanding(index + 1, getlevel(index) + 1);
+	if(before_count == 0) {
+		growable source(this, -1);
+		expanding(source);
+	} else {
+		growable source(this, index);
+		expanding(index, source);
+	}
 	auto after_count = getmaximum();
 	if(before_count && before_count != after_count) {
 		// Some rows where added
