@@ -1,0 +1,5 @@
+bool		closing();
+bool		gtips(int token, char* string, unsigned size);
+bool		gtitle(int token, char* string);
+bool		ismodified();
+bool		isvisible(int token);

@@ -247,7 +247,8 @@ struct table : list {
 	constexpr table() : current_column(0), current_column_maximum(0), maximum_width(0),
 		no_change_order(false), no_change_count(false), read_only(false), show_totals(false),
 		select_mode(SelectCell) {}
-	virtual column&			addcol(const char* name, const anyreq& req, const char* visual_id, array* source = 0);
+	column&					addcol(const char* name, const anyreq& req, const char* visual_id, array* source = 0);
+	column&					addcol(const char* name, const char* visual_id);
 	column&					addstdimage();
 	virtual void*			addrow() = 0;
 	virtual bool			addrow(bool run);
@@ -317,6 +318,7 @@ struct table : list {
 	void					write(serializer& sr) const override;
 	bool					write(const char* url, bool include_header) const;
 private:
+	column&					addcolimp(const char* name, const anyreq* req, const char* visual_id, array* source, const fnlist* plist);
 	void					update_columns(const rect& rc);
 };
 struct calendar : control {

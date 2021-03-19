@@ -241,7 +241,7 @@ bool control::paste(bool run) {
 	return false;
 }
 
-control::command control::commands_edit[] = {{"cut", "Вырезать", 0, &control::cut, 3, Ctrl + Alpha + 'X'},
-{"copy", "Копировать", 0, &control::copy, 4, Ctrl + Alpha + 'C'},
-{"paste", "Вставить", 0, &control::paste, 5, Ctrl + Alpha + 'V'},
+control::command control::commands_edit[] = {{"cut", "Вырезать", 0, &control::cut, 3, Ctrl + 'X'},
+{"copy", "Копировать", 0, &control::copy, 4, Ctrl + 'C'},
+{"paste", "Вставить", 0, &control::paste, 5, Ctrl + 'V'},
 {}};

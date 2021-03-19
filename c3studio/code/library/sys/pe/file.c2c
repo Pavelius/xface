@@ -1,0 +1,9 @@
+﻿import sys.pe.header;
+import sys.pe.optional;
+import sys.pe.section;
+
+char			Signature[4];
+header			Header;
+optional		Optional;
+section			Section[4];
+unsigned char	reserverd[360];

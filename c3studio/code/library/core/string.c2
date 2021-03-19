@@ -1,0 +1,75 @@
+﻿// Return end of text string
+public char* end(char* s) {
+	while(*s)
+		s++;
+	return s;
+}
+
+// Return byte count of text string
+public int lenght(char* d) {
+	return end(d) - d;
+}
+
+// Copy string to 
+public void copy(char* d, char* s) {
+	while(*s)
+		*d++ = *s++;
+	*d = 0;
+}
+
+// Add one string to another
+public void add(char* d, char* s) {
+	copy(end(d), s);
+}
+
+// Convert number to string. Precision allow set minimum width of number.
+public char* number(char* p1, int num, int precision, char* empthy, int radix) {
+//	if(num==0)
+//	{
+//		if(empthy)
+//			cpy(p1, empthy);
+//		else
+//		{
+//			cpy(p1, "0");
+//			while(--precision>0)
+//				cat(p1, "0");
+//		}
+//	}
+//	else
+//	{
+//		char temp[33];
+//		int p = 0;
+//		if(num < 0)
+//		{
+//			*p1++ = '-';
+//			num = -num;
+//		}
+//		switch(radix)
+//		{
+//		case 16:
+//			while(num)
+//			{
+//				int a = (num%radix);
+//				if(a>9)
+//					temp[p++] = 'A' - 10 + a;
+//				else
+//					temp[p++] = '0' + a;
+//				num /= radix;
+//			}
+//			break;
+//		default:
+//			while(num)
+//			{
+//				temp[p++] = '0' + (num%radix);
+//				num /= radix;
+//			}
+//			break;
+//		}
+//		while(precision-- > p)
+//			*p1++ = '0';
+//		while(p)
+//			*p1++ = temp[--p];
+//		p1[0] = 0;
+//	}
+//	return p1;
+}

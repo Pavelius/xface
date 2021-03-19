@@ -222,6 +222,12 @@
     <ClCompile Include="bsreq_bin.cpp">
       <Filter>collections</Filter>
     </ClCompile>
+    <ClCompile Include="package.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="package_compile.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">
@@ -306,6 +312,9 @@
       <Filter>draw</Filter>
     </ClInclude>
     <ClInclude Include="reestr.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="package.h">
       <Filter>support</Filter>
     </ClInclude>
   </ItemGroup>

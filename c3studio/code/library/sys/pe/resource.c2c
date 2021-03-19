@@ -1,0 +1,6 @@
+unsigned		Characteristics;
+unsigned		TimeDateStamp;
+short unsigned	MajorVersion;
+short unsigned	MinorVersion;
+short unsigned	NumberOfNamedEntries;
+short unsigned	NumberOfIdEntries;

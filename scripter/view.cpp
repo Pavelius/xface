@@ -237,12 +237,12 @@ public:
 	}
 } plugin_control;
 
-static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + Alpha + 'T'},
-{choose_requisit, "Активировать реквизиты", Ctrl + Alpha + 'R'},
-{choose_properties, "Активировать свойства", Ctrl + Alpha + 'P'},
-{new_requisit, "Добавить реквизит", Ctrl + Alpha + 'N'},
-{new_method, "Добавить метод", Ctrl + Alpha + 'M'},
-{new_type, "Добавить тип", Ctrl + Alt + Alpha + 'N'},
+static shortcut shortcuts[] = {{choose_metadata, "Активировать типы", Ctrl + 'T'},
+{choose_requisit, "Активировать реквизиты", Ctrl + 'R'},
+{choose_properties, "Активировать свойства", Ctrl + 'P'},
+{new_requisit, "Добавить реквизит", Ctrl + 'N'},
+{new_method, "Добавить метод", Ctrl + 'M'},
+{new_type, "Добавить тип", Ctrl + Alt + 'N'},
 {}};
 controls::control::command requisit_control::commands_add[] = {{"add", "Добавить реквизит", 0, new_requisit, 9},
 {"add_method", "Добавить метод", 0, new_method, 9},

@@ -1,0 +1,7 @@
+unsigned short	Machine;
+unsigned short	NumberOfSection;
+unsigned		TimeStamp;
+unsigned		PointerToSymbolTable;
+unsigned		NumberOfSymbols;
+unsigned short	SizeOfOptionalHeader;
+unsigned short	Characteristics;

@@ -1,0 +1,87 @@
+﻿{
+  "Settings":{
+    "Editor":{
+      "General":{
+        "Tabs":{
+          "Close symbol on each tab":257,
+          "Show file extension":1
+        },
+        "View":{
+          "Show line number":257,
+          "Calculate digits of line number automatically":1,
+          "Line number digits":5,
+          "Use auto line aligment":16843009,
+          "Auto line aligment":16843009,
+          "Use context help":16843009
+        }
+      },
+      "Context help":{
+        "Appear after symbols":1,
+        "Add all keywords":16843009,
+        "Add all types parsed as import":16843009,
+        "Add all unique identifiers":16843009
+      }
+    },
+    "Appearance":{
+      "Editor":{
+        "Numbers color":12113784,
+        "Block color":6579300,
+        "Strings color":10511360,
+        "Keywords color":5676246,
+        "Operators color":8355711,
+        "Type color":39835,
+        "Comments color":5744202,
+        "Preprocessor color":51200,
+        "Identifiers color":13158600
+      },
+      "General":{
+        "View":{
+          "Show status bar panel":65793,
+          "Show left controls panel":65536,
+          "Show right controls panel":16777217,
+          "Show bottom controls panel":256,
+          "Paddings on main view":257
+        },
+        "Metrics":{
+          "Padding spacing":4,
+          "Scroll width":20
+        }
+      },
+      "Forms":{
+        "Window color":1973790,
+        "Form color":3355447,
+        "Border color":4802896,
+        "Active color":11304960,
+        "Button color":31436,
+        "Edit color":2510712,
+        "Workspace color":3355457,
+        "Text color":16777215
+      }
+    },
+    "Workspace":{
+      "Urls":{
+        "Workspace folder":"d:\\projects\\c2code"
+      }
+    }
+  },
+  "Forms":{
+    "PerespectiveMainWindow":{
+      "x":142,
+      "y":81,
+      "Width":683,
+      "Height":625
+    },
+    "ApplicationWindow":{
+      "x":80,
+      "y":47,
+      "Width":975,
+      "Height":606
+    },
+    "SettingWindow":{
+      "x":213,
+      "y":130,
+      "Width":636,
+      "Height":479
+    }
+  }
+}

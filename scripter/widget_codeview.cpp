@@ -294,16 +294,8 @@ static struct code_control : controls::control, controls::control::plugin {
 		case KeyEnd:
 			select(navigate_key(current, id));
 			break;
-		case Alpha + '0':
-		case Alpha + '1':
-		case Alpha + '2':
-		case Alpha + '3':
-		case Alpha + '4':
-		case Alpha + '5':
-		case Alpha + '6':
-		case Alpha + '7':
-		case Alpha + '8':
-		case Alpha + '9':
+		case '0': case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
 			break;
 		case KeyDelete:
 			if(current)

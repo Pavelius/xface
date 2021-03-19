@@ -1,0 +1,11 @@
+unsigned		Flags;
+unsigned		Timestamp;
+unsigned short	MajorVersion;
+unsigned short	MinorVersion;
+unsigned		Name;
+unsigned		OrdinalBase;
+unsigned		AdressTableEntries;
+unsigned		NumberOfNamePointers;
+unsigned		ExportAdress;
+unsigned		NamePointer;
+unsigned		OrdinalTable;

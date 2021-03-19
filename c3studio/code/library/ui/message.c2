@@ -1,0 +1,15 @@
+import platform.user32;
+
+enum mode_s {
+	MB_OK,
+	MB_OKCANCEL,
+	MB_ABORTRETRYIGNORE,
+	MB_YESNOCANCEL,
+	MB_YESNO,
+	MB_HELP=0x00004000
+};
+
+void text(char* string, char* title)
+{
+	user32.MessageBox(0,string,title,MB_OK);
+}

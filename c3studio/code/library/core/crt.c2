@@ -1,0 +1,6 @@
+import platform.kernel32;
+
+// Leave current program with specific exit code
+void exit(int code) {
+	kernel32.ExitProcess(code);
+}

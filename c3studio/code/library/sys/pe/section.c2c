@@ -1,0 +1,10 @@
+char			Name[8];
+unsigned		VirtualSize;
+unsigned		VirtualAdress;
+unsigned		SizeOfRawData;
+unsigned		PointerToRawData;
+unsigned		PointerToRelocations;
+unsigned		PointerToLinenumbers;
+short unsigned	NumerOfRelocations;
+short unsigned	NumerOfLinenumbers;
+unsigned		Characteristics;

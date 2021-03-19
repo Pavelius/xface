@@ -1,0 +1,2 @@
+﻿void*		CreateFileA(char* lpFileName, unsigned dwDesiredAccess, unsigned dwShareMode, void* lpSecurityAttributes, unsigned dwCreationDisposition, unsigned dwFlagsAndAttributes, void* hTemplateFile);
+void		ExitProcess(int code);

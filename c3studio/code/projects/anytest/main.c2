@@ -1,0 +1,20 @@
+import geo.rect;
+import core.lib as this;
+
+static char t1[8] = {12, 8, 10};
+static char t2[] = {2, 4, 0};
+static char* string = "Count is good";
+
+int main()
+{
+	int a = 10;
+	if(!a)
+		return 0;
+	int b = 5;
+	while(a>0)
+	{
+		b = b + a - 2;
+		a--;
+	}
+	exit(0);
+}

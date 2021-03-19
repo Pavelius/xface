@@ -1,0 +1,6 @@
+import platform.kernel32;
+
+void exit(int code)
+{
+	kernel32.ExitProcess(code);
+}

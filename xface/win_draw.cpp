@@ -50,12 +50,12 @@ static struct sys_key_mapping {
 {VK_F10, F10},
 {VK_F11, F11},
 {VK_F12, F12},
-{VK_MULTIPLY, Alpha + (unsigned)'*'},
-{VK_DIVIDE, Alpha + (unsigned)'/'},
-{VK_ADD, Alpha + (unsigned)'+'},
-{VK_SUBTRACT, Alpha + (unsigned)'-'},
-{VK_OEM_COMMA, Alpha + (unsigned)','},
-{VK_OEM_PERIOD, Alpha + (unsigned)'.'},
+{VK_MULTIPLY, (unsigned)'*'},
+{VK_DIVIDE, (unsigned)'/'},
+{VK_ADD, (unsigned)'+'},
+{VK_SUBTRACT, (unsigned)'-'},
+{VK_OEM_COMMA, (unsigned)','},
+{VK_OEM_PERIOD, (unsigned)'.'},
 };
 
 static int tokey(unsigned key) {
@@ -63,7 +63,7 @@ static int tokey(unsigned key) {
 		if(e.key == key)
 			return e.id;
 	}
-	return Alpha + key;
+	return key;
 }
 
 static void set_cursor(cursor_s e) {
