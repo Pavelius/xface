@@ -65,10 +65,6 @@ BSMETA(rowelement) = {
 	BSREQ(flags),
 	BSREQ(date),
 	{}};
-struct treerow : controls::tree::element {
-	const char*		name;
-	int				value;
-};
 struct metatest {
 	adat<char, 8>	source;
 	std::initializer_list<char> buffer;
@@ -200,28 +196,16 @@ static void test_tableref() {
 
 static void test_tree() {
 	struct test_tree_control : controls::tree {
-		void expanding(int index, int level) override {
-			treerow* p;
-			p = (treerow*)insert(index, level);
-			p->name = "Pavel";
-			p->image = 1;
-			p->value = 10;
-			p->setgroup(true);
-			p = (treerow*)insert(index, level);
-			p->name = "Julia";
-			p->image = 2;
-			p = (treerow*)insert(index, level);
-			p->name = "Peter";
-			p->image = 4;
-			p->value = 1000;
-			p->setgroup(true);
+		void expanding(int index) override {
+			addnode(index, 10, 1, (void*)"Pavel", false);
+			addnode(index, 120, 2, (void*)"Julia");
+			addnode(index, 90, 4, (void*)"Peter", true);
 		}
-		constexpr test_tree_control() : tree(sizeof(treerow)) {}
 	} test;
 	test.select_mode = SelectText;
-	test.addcol(0, ANREQ(treerow, image), "image");
-	test.addcol("Наименование", ANREQ(treerow, name), "text").set(SizeAuto);
-	test.addcol("Значение", ANREQ(treerow, value), "number");
+	test.addcol(0, ANREQ(controls::tree::element, image), "image");
+	test.addcol("Наименование", ANREQ(controls::tree::element, object), "text").set(SizeAuto);
+	test.addcol("Значение", ANREQ(controls::tree::element, type), "number");
 	test.expand(-1);
 	show_table(test);
 }

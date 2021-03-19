@@ -10,27 +10,23 @@ using namespace	draw::controls;
 
 namespace {
 struct header : tree::element {
-	const char*		name;
-	const char*		getname() const { return name; }
+	const char*		getname() const { return (const char*)object; }
 };
 }
 
 static const char*		base_url = "D:/projects";
 
 static struct widget_directory : tree, control::plugin, initplugin {
-
 	void after_initialize() override {
 		addstdimage();
-		addcol("Наименование", ANREQ(header, name), "text").set(SizeAuto);
-		expand(0);
+		addcol("Наименование", ANREQ(header, object), "text").set(SizeAuto);
 	}
-
-	control* getcontrol() override { return this; }
-
+	control* getcontrol() override {
+		return this;
+	}
 	const char* getlabel(stringbuilder& sb) const override {
 		return "Файлы";
 	}
-
 	void addurl(stringbuilder& sb, int index) {
 		if(index < 0)
 			return;
@@ -38,23 +34,21 @@ static struct widget_directory : tree, control::plugin, initplugin {
 		auto pb = (header*)get(index);
 		if(sb)
 			sb.add("/");
-		sb.add(pb->name);
+		sb.add(pb->getname());
 	}
-
-	void expanding(int index, int level) override {
+	void expanding(int index) override {
 		char url[260]; stringbuilder sb(url);
 		sb.add(base_url);
-		if(level > 1)
-			addurl(sb, index-1);
+		if(index != -1)
+			addurl(sb, index);
 		for(io::file::find finder(url); finder; finder.next()) {
 			auto pn = finder.name();
 			if(pn[0] == '.')
 				continue;
-			auto ph = (header*)insert(index, level);
-			ph->name = szdup(finder.name());
-			if(zchr(ph->name, '.') == 0) {
+			auto ph = (header*)addnode(index, 1, 0, (void*)szdup(finder.name()));
+			if(zchr(ph->getname(), '.') == 0) {
 				ph->image = 1;
-				ph->setgroup(true);
+				ph->set(header::Group);
 			}
 		}
 	}

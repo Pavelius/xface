@@ -4,7 +4,7 @@
 using namespace code;
 using namespace draw;
 
-BSDATAC(package, 2048)
+BSDATAC(package, 1024)
 
 static package* add_package() {
 	for(auto& e : bsdata<package>()) {
@@ -62,35 +62,40 @@ class packages_tree : public controls::tree {
 		}
 		return 0;
 	}
-	void expanding(growable& source) {
-		for(auto& e : bsdata<package>()) {
-			if(!e)
-				continue;
-			source.add(Package, 5, &e);
-		}
-	}
-	void expanding(int index, growable& source) {
-		package* pk = getpackage(index);
-		auto p = (element*)get(index);
+	void expanding(int index) override {
+		package* pk;
 		pckh ph;
-		switch(p->type) {
-		case Symbol:
-			if(!pk)
+		if(index == -1) {
+			for(auto& e : bsdata<package>()) {
+				if(!e)
+					continue;
+				addnode(index, Package, 5, &e);
+			}
+		} else {
+			auto p = (element*)get(index);
+			switch(p->type) {
+			case Symbol:
+				pk = getpackage(index);
+				if(!pk)
+					break;
+				ph = (symbol*)p->object - pk->symbols.begin();
+				for(auto& e : pk->symbols) {
+					if(e.parent != ph)
+						continue;
+					addnode(index, Symbol, 0, &e, false);
+				}
 				break;
-			ph = (symbol*)p->object - pk->symbols.begin();
-			for(auto& e : pk->symbols) {
-				if(e.parent != ph)
-					continue;
-				source.add(Symbol, 0, &e);
+			case Package:
+				pk = getpackage(index);
+				if(!pk)
+					break;
+				for(auto& e : pk->symbols) {
+					if(e.parent != This)
+						continue;
+					addnode(index, Symbol, 5, &e);
+				}
+				break;
 			}
-			break;
-		case Package:
-			for(auto& e : pk->symbols) {
-				if(e.parent != This)
-					continue;
-				source.add(Symbol, 5, &e);
-			}
-			break;
 		}
 	}
 	static const char* getname(const void* object, stringbuilder& sb) {
@@ -130,10 +135,6 @@ public:
 	}
 };
 static widget_packages instance;
-
-void packages_initialize() {
-	instance.expand(0);
-}
 
 void add_package(const char* id) {
 	char temp[260]; stringbuilder sb(temp);

@@ -360,27 +360,18 @@ struct tree : table, protected array {
 		unsigned char		type;
 		unsigned char		image;
 		void*				object;
-		constexpr bool		is(flag_s v) const { return (flags & (1 << Group)) != 0; }
-		void				remove(flag_s v) { flags &= ~(1<<v); }
+		constexpr bool		is(flag_s v) const { return (flags & (1 << v)) != 0; }
+		void				remove(flag_s v) { flags &= ~(1 << v); }
 		void				set(flag_s v) { flags |= 1 << v; }
-		void				setgroup(bool v) { flags = v ? 1 : 0; }
 	};
-	struct growable {
-		tree*				source;
-		int					index, i1, i2, level;
-		growable(tree* source, int index);
-		~growable();
-		void				add(unsigned char type, unsigned char image, void* object);
-	};
-	bool					sort_rows_by_name;
-	constexpr tree(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false) {}
+	bool					sort_rows_by_name, auto_expand;
+	constexpr tree(unsigned size = sizeof(element)) : array(size), sort_rows_by_name(false), auto_expand(true) {}
+	element*				addnode(int parent, unsigned char type, unsigned char image, void* object, bool isgroup = true);
 	void*					addrow() override { return array::add(); }
 	void					collapse(int index) override;
 	void					clear() { array::clear(); }
 	void					expand(int index) override;
-	virtual void			expanding(int index, int level) {}
-	virtual void			expanding(growable& source) {}
-	virtual void			expanding(int index, growable& source) {}
+	virtual void			expanding(int index) {}
 	int						find(int i1, int i2, void* object);
 	void*					get(int index) const override { return array::ptr(index); }
 	int						getimage(int index) const override;
@@ -388,11 +379,11 @@ struct tree : table, protected array {
 	virtual int				getmaximum() const override { return array::getcount(); }
 	int						gettype(int index) const;
 	int						gettreecolumn() const;
-	element*				insert(int& index, int level);
 	bool					isgroup(int index) const override;
 	bool					keyinput(unsigned id) override;
 	void					remove(int index) override {}
 	void					swap(int i1, int i2) override;
+	void					view(const rect& rc) override;
 };
 // Cell visual drawing
 struct visual {
