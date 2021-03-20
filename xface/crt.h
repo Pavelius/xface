@@ -226,6 +226,7 @@ public:
 template<class T>
 class vector : public array {
 public:
+	typedef T data_type;
 	constexpr vector() : array(sizeof(T)) {}
 	~vector() { for(auto& e : *this) e.~T(); }
 	constexpr T& operator[](int index) { return ((T*)data)[index]; }

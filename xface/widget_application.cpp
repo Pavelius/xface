@@ -508,6 +508,7 @@ static struct widget_application : draw::controls::control {
 			fore = push_fore;
 		} else if(ct.getcount() == 1) {
 			current_active_control = p1[0];
+			current_active_control->show_border = metrics::show::padding;
 			current_active_control->view(rc);
 		} else if(ct) {
 			auto current_select = ct.indexof(current_active_control);
@@ -535,8 +536,10 @@ static struct widget_application : draw::controls::control {
 				}
 			}
 			rc.y1 += dy;
-			if(current_active_control)
+			if(current_active_control) {
+				current_active_control->show_border = metrics::show::padding;
 				current_active_control->view(rc);
+			}
 		}
 	}
 	void view(const rect& rc) override {

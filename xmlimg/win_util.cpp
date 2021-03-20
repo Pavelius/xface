@@ -1,5 +1,5 @@
-#include "xface/crt.h"
-#include "xface/win.h"
+#include "crt.h"
+#include "win.h"
 #include "util.h"
 
 using namespace util;

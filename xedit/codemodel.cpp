@@ -10,7 +10,7 @@ static int compare_keywords(const void* v1, const void* v2) {
 }
 
 void lexer::sort() {
-	qsort(words.data, words.count, sizeof(words.data[0]), compare_keywords);
+	qsort(words.begin(), words.getcount(), sizeof(words.begin()[0]), compare_keywords);
 }
 
 void lexer::add(const char* keyword_name, group_s type) {
@@ -178,23 +178,23 @@ int codemodel::getlenght() const {
 }
 
 int	codemodel::lineb(int index) const {
-	auto p = data + index;
+	auto p = ptr(index);
 	while(p > data) {
 		if(p[-1] == 10 || p[-1] == 13)
 			break;
 		p--;
 	}
-	return p - data;
+	return p - begin();
 }
 
 int	codemodel::linee(int index) const {
-	auto p = data + index;
+	auto p = ptr(index);
 	while(p > data) {
 		if(p[0] == 10 || p[0] == 13)
 			break;
 		p++;
 	}
-	return p - data;
+	return p - begin();
 }
 
 int	codemodel::getindex(point pt) const {
@@ -205,15 +205,15 @@ int	codemodel::getindex(point pt) const {
 }
 
 void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size, const point origin, int& origin_index) const {
-	const char* pb = data;
-	const char* pe = data + count;
+	const char* pb = begin();
+	const char* pe = end();
 	point pos = {0, 0};
 	pos1 = {-1, -1};
 	pos2 = {-1, -1};
 	size = {0, 0};
 	origin_index = -1;
 	while(true) {
-		auto i = pb - data;
+		auto i = pb - begin();
 		if(i == p1)
 			pos1 = pos;
 		if(i == p2)
@@ -240,19 +240,19 @@ void codemodel::getstate(int p1, point& pos1, int p2, point& pos2, point& size, 
 }
 
 int	codemodel::skipsp(int index) const {
-	auto p = data + index;
-	auto pe = data + count;
+	auto p = ptr(index);
+	auto pe = end();
 	while(p < pe && iswhitespace(*p))
 		p++;
-	return p - data;
+	return p - begin();
 }
 
 int	codemodel::skipnsp(int index) const {
-	auto p = data + index;
-	auto pe = data + count;
+	auto p = ptr(index);
+	auto pe = end();
 	while(p < pe && !iswhitespace(*p))
 		p++;
-	return p - data;
+	return p - begin();
 }
 
 void parseri::addtype(const char* id) {

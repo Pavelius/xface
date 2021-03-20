@@ -66,7 +66,7 @@ int main() {
 	setglob("codeview", "parser", (int)&r);
 	setglob("codeview", "select", 100);
 	setglob("codeview", "select_range", 200);
-	application("X-Code editor", true, 0, 0, 0);
+	application("X-Code editor", 0, 0, 0);
 	return 0;
 }
 

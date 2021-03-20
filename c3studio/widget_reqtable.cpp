@@ -50,17 +50,50 @@ public:
 };
 
 class packages_tree : public controls::tree {
+	struct element : tree::element {
+		package*		source;
+	};
 	enum type_s {
 		Package, Symbol,
 	};
 	package* getpackage(int index) const {
-		while(index!=-1) {
+		while(index != -1) {
 			auto p = (element*)get(index);
 			if(p->type == Package)
 				return (package*)p->object;
 			index = getparent(index);
 		}
 		return 0;
+	}
+	static void getname(stringbuilder& sb, package* pk, symbol* ps) {
+		if(ps->parent == Pointer) {
+			getname(sb, pk, pk->getsymbol(ps->result));
+			sb.add("*");
+		} else {
+			sb.add(pk->getstr(ps->id));
+			if(ps->is(Method)) {
+				sb.add("(");
+				auto id = ps - pk->symbols.begin();
+				auto p = sb.get();
+				for(auto& e : pk->symbols) {
+					if(e.parent != id)
+						continue;
+					if(!e.is(Parameter))
+						continue;
+					if(p != sb.get())
+						sb.add(", ");
+					sb.add(pk->getstr(e.id));
+				}
+				sb.add(")");
+				if(ps->result != Void && ps->result!=Class) {
+					sb.add(":");
+					getname(sb, pk, pk->getsymbol(ps->result));
+				}
+			} else if(ps->result != Class) {
+				sb.add(":");
+				getname(sb, pk, pk->getsymbol(ps->result));
+			}
+		}
 	}
 	void expanding(int index) override {
 		package* pk;
@@ -69,22 +102,12 @@ class packages_tree : public controls::tree {
 			for(auto& e : bsdata<package>()) {
 				if(!e)
 					continue;
-				addnode(index, Package, 5, &e);
+				auto p = (element*)addnode(index, Package, 5, &e);
+				p->source = &e;
 			}
 		} else {
 			auto p = (element*)get(index);
 			switch(p->type) {
-			case Symbol:
-				pk = getpackage(index);
-				if(!pk)
-					break;
-				ph = (symbol*)p->object - pk->symbols.begin();
-				for(auto& e : pk->symbols) {
-					if(e.parent != ph)
-						continue;
-					addnode(index, Symbol, 0, &e, false);
-				}
-				break;
 			case Package:
 				pk = getpackage(index);
 				if(!pk)
@@ -92,7 +115,11 @@ class packages_tree : public controls::tree {
 				for(auto& e : pk->symbols) {
 					if(e.parent != This)
 						continue;
-					addnode(index, Symbol, 5, &e);
+					auto image = 0;
+					if(e.is(Method))
+						image = 4;
+					auto p = (element*)addnode(index, Symbol, image, &e, false);
+					p->source = pk;
 				}
 				break;
 			}
@@ -105,7 +132,10 @@ class packages_tree : public controls::tree {
 		switch(p->type) {
 		case Symbol:
 			ps = (symbol*)p->object;
-			return "Symbol";
+			pk = p->source;
+			getname(sb, pk, ps);
+			//pk->getsym(sb, ps - pk->symbols.begin());
+			return sb;
 		case Package:
 			pk = (package*)p->object;
 			return pk->getstr(0);
@@ -114,7 +144,7 @@ class packages_tree : public controls::tree {
 		}
 	}
 public:
-	packages_tree() {
+	packages_tree() : tree(sizeof(element)) {
 		auto& c0 = addcol("Изображение", "standart_image");
 		auto& c1 = addcol("Имя", "text");
 		c1.plist.getname = getname;

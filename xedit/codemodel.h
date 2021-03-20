@@ -26,7 +26,7 @@ struct lexer {
 	};
 	const char*				name;
 	const char*				extensions;
-	arem<word>				words;
+	vector<word>			words;
 	constexpr lexer() : name(0), extensions(0), words() {}
 	void					add(const char* keyword_name, group_s type);
 	const word*				find(const char* sym) const;
@@ -42,12 +42,12 @@ struct typei {
 	unsigned				size;
 };
 class parseri {
-	arem<typei>				types;
+	vector<typei>			types;
 public:
 	void					addtype(const char* id);
 	const typei*			find(const char* sym) const;
 };
-class codemodel : public arem<char> {
+class codemodel : public vector<char> {
 	const lexer*			lex;
 	const parseri*			parser;
 public:
@@ -59,7 +59,7 @@ public:
 	bool					istype(const char* source, const typei** pv) const;
 	bool					iswhitespace(char sym) const;
 	bool					iswhitespace(const char* sym, const char** v) const;
-	const char*				get(int index) const { return data + index; }
+	const char*				get(int index) const { return ptr(index); }
 	int						getindex(point pt) const;
 	int						getlenght() const;
 	int						getnext(const char* ps, point& from, group_s& group) const;

@@ -89,7 +89,6 @@ struct symbol {
 class package {
 	stringv				strings;
 	unsigned			find(operation type, unsigned left, unsigned right) const;
-	symbol*				getsymbol(pckh v) const;
 	bool				serial(const char* url, bool write_mode);
 public:
 	vector<symbol>		symbols;
@@ -118,6 +117,7 @@ public:
 	const char*			getstr(pckh v) const;
 	void				getsym(stringbuilder& sb, pckh v) const;
 	pckh				getsymast(pckh sym) const;
+	symbol*				getsymbol(pckh v) const;
 	const char*			getsymstr(pckh sym) const;
 	const char*			getsymurl(pckh sym) const;
 	bool				ismethod(pckh sym) const;

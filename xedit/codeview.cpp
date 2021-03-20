@@ -126,7 +126,7 @@ void codeview::redraw(const rect& rco) {
 	}
 	point pos = {};
 	group_s type;
-	auto ps = data;
+	auto ps = begin();
 	while(true) {
 		auto x1 = x + pos.x*fontsize.x;
 		auto y1 = y + pos.y*fontsize.y;
@@ -172,7 +172,7 @@ void codeview::pastecr() {
 		*p++ = '\n';
 	if(p < pe)
 		*p++ = '\r';
-	auto p1 = data + n;
+	auto p1 = ptr(n);
 	while(*p1 && iswhitespace(*p1)) {
 		if(p < pe)
 			*p++ = *p1;
@@ -369,8 +369,8 @@ point codeview::getendpos() const {
 
 void codeview::clear() {
 	if(p2 != -1 && p1 != p2 && data) {
-		auto s1 = data + getbegin();
-		auto s2 = data + getend();
+		auto s1 = ptr(getbegin());
+		auto s2 = ptr(getend());
 		while(*s2)
 			*s1++ = *s2++;
 		*s1 = 0;
@@ -385,8 +385,8 @@ void codeview::paste(const char* input) {
 	clear();
 	auto i2 = zlen(input);
 	reserve(p1 + i2 + 1);
-	memmove(data + p1 + i2, data + p1, (count - p1 + 1) * sizeof(char));
-	memcpy(data + p1, input, i2); count += i2;
+	memmove(ptr(p1 + i2), ptr(p1), (count - p1 + 1) * sizeof(char));
+	memcpy(ptr(p1), input, i2); count += i2;
 	invalidate();
 	set(p1 + i2, false);
 }
@@ -430,7 +430,7 @@ void codeview::correction() {
 }
 
 void codeview::left(bool shift, bool ctrl) {
-	const char* p = data + p1;
+	const char* p = ptr(p1);
 	if(!ctrl)
 		p = nextstep(p, -1);
 	else {
@@ -442,15 +442,15 @@ void codeview::left(bool shift, bool ctrl) {
 				p = nextstep(p, -1);
 		}
 	}
-	set(p - data, shift);
+	set(p - begin(), shift);
 }
 
 void codeview::right(bool shift, bool ctrl) {
-	const char* p = data + p1;
+	const char* p = ptr(p1);
 	if(!ctrl)
 		p = nextstep(p, 1);
 	else {
-		auto pe = data + count;
+		auto pe = end();
 		while(p < pe && iswhitespace(*p))
 			p = nextstep(p, 1);
 		if(p < pe) {
@@ -459,7 +459,7 @@ void codeview::right(bool shift, bool ctrl) {
 				p = nextstep(p, 1);
 		}
 	}
-	set(p - data, shift);
+	set(p - begin(), shift);
 }
 
 codeview::codeview() : cash_origin(-1) {
@@ -499,16 +499,16 @@ const char* codeview::nextstep(const char* ps, int dir) {
 	} else
 		ps += dir;
 	if(ps < data)
-		return data;
-	else if(ps >= (data + count - 1))
-		return (data + count - 1);
+		return begin();
+	else if(ps >= (end() - 1))
+		return (end() - 1);
 	return ps;
 }
 
 control::command* codeview::getcommands() const {
-	static command commands[] = {{"cut", "Вырезать", 0, &codeview::cut, -1, Ctrl + Alpha + 'X'},
-	{"copy", "Копировать", 0, &codeview::copy, -1, Ctrl + Alpha + 'C'},
-	{"paste", "Вставить", 0, &codeview::paste, -1, Ctrl + Alpha + 'V'},
+	static command commands[] = {{"cut", "Вырезать", 0, &codeview::cut, -1, Ctrl + 'X'},
+	{"copy", "Копировать", 0, &codeview::copy, -1, Ctrl + 'C'},
+	{"paste", "Вставить", 0, &codeview::paste, -1, Ctrl + 'V'},
 	{}};
 	return commands;
 }

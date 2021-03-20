@@ -4,8 +4,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="package.cpp" />
     <ClCompile Include="widget_reqtable.cpp" />
+    <ClCompile Include="widget_editor.cpp" />
+    <ClCompile Include="..\xface\widget_textview.cpp" />
+    <ClCompile Include="c3_lexer.cpp" />
+    <ClCompile Include="lexer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="package.h" />
+    <ClInclude Include="lexer.h" />
   </ItemGroup>
 </Project>

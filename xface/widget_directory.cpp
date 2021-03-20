@@ -16,11 +16,7 @@ struct header : tree::element {
 
 static const char*		base_url = "D:/projects";
 
-static struct widget_directory : tree, control::plugin, initplugin {
-	void after_initialize() override {
-		addstdimage();
-		addcol("Наименование", ANREQ(header, object), "text").set(SizeAuto);
-	}
+static struct widget_directory : tree, control::plugin {
 	control* getcontrol() override {
 		return this;
 	}
@@ -52,8 +48,9 @@ static struct widget_directory : tree, control::plugin, initplugin {
 			}
 		}
 	}
-
 	widget_directory() : tree(sizeof(header)), control::plugin("directory", DockLeft) {
+		addstdimage();
+		addcol("Наименование", ANREQ(header, object), "text").set(SizeAuto);
 		no_change_count = true;
 		read_only = true;
 		select_mode = SelectRow;

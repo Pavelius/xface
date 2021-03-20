@@ -46,7 +46,7 @@ xml::reader::~reader() {
 
 const char* xml::reader::next_name() {
 	static char temp[256];
-	text = zskipspcr(text);
+	text = skipspcr(text);
 	if((text[0] >= 'A' && text[0] <= 'Z')
 		|| (text[0] >= 'a' && text[0] <= 'z')) {
 		unsigned i = 0;
@@ -61,7 +61,7 @@ const char* xml::reader::next_name() {
 				break;
 			text++;
 		}
-		text = zskipspcr(text);
+		text = skipspcr(text);
 		temp[i] = 0;
 		return temp;
 	}
@@ -141,7 +141,7 @@ void xml::reader::next_value(var& v, bool param) {
 		}
 	}
 	*ps = 0;
-	text = zskipspcr(text);
+	text = skipspcr(text);
 	v.value = temp;
 }
 
@@ -159,14 +159,14 @@ void xml::reader::skip_comment() {
 			text += 4;
 			while(text[0] && !(text[0] == '-' && text[1] == '-' && text[2] == '>'))
 				text++;
-			text = zskipspcr(text + 3);
+			text = skipspcr(text + 3);
 			continue;
 		}
 		if(text[0] == '<' && text[1] == '?') {
 			text += 2;
 			while(text[0] && !(text[0] == '?' && text[1] == '>'))
 				text++;
-			text = zskipspcr(text + 2);
+			text = skipspcr(text + 2);
 			continue;
 		}
 		break;
@@ -218,7 +218,7 @@ void xml::reader::next() {
 		return;
 	}
 	skip_comment();
-	text = zskipspcr(text);
+	text = skipspcr(text);
 	if(!text || !text[0]) {
 		type = FileEnd;
 		return;
@@ -246,14 +246,14 @@ void xml::reader::next() {
 		break;
 	case Attribute:
 		if(text[0] == '/' && text[1] == '>') {
-			text = zskipspcr(text + 2);
+			text = skipspcr(text + 2);
 			type = NameEnd;
 			break;
 		}
 		// продолжаем парсить
 	case NameBegin:
 		if(text[0] == '>') {
-			text = zskipspcr(text + 1);
+			text = skipspcr(text + 1);
 			type = NameEnd;
 			next_value(element, false);
 			next(); // рекурсивный вызов
@@ -261,7 +261,7 @@ void xml::reader::next() {
 			type = Attribute;
 			attribute.name = next_name();
 			skip('=');
-			text = zskipspcr(text + 1);
+			text = skipspcr(text + 1);
 			skip('\"');
 			next_value(attribute, true);
 		}

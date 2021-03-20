@@ -1,9 +1,12 @@
 #include "draw_control.h"
+#include "lexer.h"
 #include "package.h"
 
 void add_package(const char* id);
+void initialize_lexer();
 
 int main() {
+	initialize_lexer();
 	code::urls::project = "code/projects/test/";
 	code::urls::library = "code/library/";
 	metrics::show::left = true;

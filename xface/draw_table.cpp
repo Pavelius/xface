@@ -460,45 +460,8 @@ column&	table::addcol(const char* name, const char* visual_id) {
 	return addcolimp(name, 0, visual_id, 0, 0);
 }
 
-//column& table::addcol(const bsreq* metadata, const char* id, const char* name, const char* visual_id) {
-//	const visual* pf = 0;
-//	auto p = columns.add();
-//	memset(p, 0, sizeof(column));
-//	p->type = metadata->find(id);
-//	if(!visual_id)
-//		visual_id = get_visual_default(p->type);
-//	if(visual_id) {
-//		for(auto pp = getvisuals(); pp && *pp; pp++) {
-//			pf = (*pp)->find(visual_id);
-//			if(pf)
-//				break;
-//		}
-//	}
-//	if(pf) {
-//		p->method = pf;
-//		p->flags.add(ColumnVisible);
-//	} else
-//		p->method = visuals;
-//	auto text_width = draw::textw('0');
-//	if(!text_width)
-//		text_width = 7;
-//	p->title = szdup(name);
-//	p->size = p->method->size;
-//	p->width = p->method->default_width;
-//	if(p->width < 0)
-//		p->width = -p->width * text_width + 4;
-//	p->total = p->method->total;
-//	p->align = p->method->align;
-//	if(p->type)
-//		p->source = p->type->source;
-//	if(!p->width)
-//		p->width = 100;
-//	current_column = getvalid(current_column, 1);
-//	return *p;
-//}
-
 column& table::addstdimage() {
-	return addcol(0, anyreq(), "standart_image");
+	return addcol(0, "standart_image");
 }
 
 bool table::changefield(const rect& rc, unsigned flags, stringbuilder& sb) {

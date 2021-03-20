@@ -2,7 +2,7 @@
   "dockbar":{
     "Dock0":{
       "current":0,
-      "size":192
+      "size":250
     },
     "Dock1":{
       "current":0,
@@ -10,7 +10,7 @@
     },
     "Dock2":{
       "current":0,
-      "size":380
+      "size":235
     },
     "Dock3":{
       "current":0,
@@ -28,7 +28,7 @@
   "settings":{
     "Рабочий стол":{
       "Пути":{
-        "Директории":"C:\/Users\/Pavel\/Documents"
+        "Директории":"D:\/projects"
       },
       "Общие":{
         "Метрика":{
@@ -78,10 +78,10 @@
     }
   },
   "window":{
-    "x":171,
-    "y":88,
-    "width":784,
-    "height":561,
+    "x":108,
+    "y":73,
+    "width":1027,
+    "height":648,
     "header_width":104,
     "flags":48
   },

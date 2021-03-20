@@ -11,8 +11,6 @@ struct codeview : control, codemodel {
 	int						p1, p2;
 	point					pos1, pos2, size;
 	pointl					origin, maximum;
-	const char*				nextstep(const char* ps, int dir);
-public:
 	rect					rctext;
 	bool					readonly;
 	static const sprite*	font;
@@ -38,6 +36,7 @@ public:
 	bool					keyinput(unsigned id) override;
 	void					left(bool shift, bool ctrl);
 	int						linen(int index) const;
+	const char*				nextstep(const char* ps, int dir);
 	void					open(const char* url);
 	bool					paste(bool run);
 	void					paste(const char* input);
