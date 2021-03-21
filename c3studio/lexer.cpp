@@ -59,14 +59,14 @@ const char* lexer::next(const char* p, pointl& pos, group_s& type) const {
 	} else if(*p == '\"') {
 		type = String;
 		p = next(p, pos);
-		while(*p && *p != '\"') {
+		while(*p && *p != '\"' && *p != 10 && *p != 13) {
 			if(*p == '\\')
 				p = next(p, pos);
 			p = next(p, pos);
 		}
 		if(*p)
 			p = next(p, pos);
-	} 	else if(p[0] == '/' && p[1] == '/') {
+	} else if(p[0] == '/' && p[1] == '/') {
 		type = Comment;
 		p = next(p, pos);
 		p = next(p, pos);

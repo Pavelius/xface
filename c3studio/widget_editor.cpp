@@ -31,6 +31,11 @@ static lexer*			lex;
 static const char*		line_feed = "\r\n";
 
 class widget_editor : public control, vector<char> {
+	struct snipet {
+		const char*		match;
+		const char*		before;
+		const char*		after;
+	};
 	const char*			url = 0;
 	const code::package* package = 0;
 	int					cash_origin = -1;
@@ -268,16 +273,19 @@ class widget_editor : public control, vector<char> {
 	int	getpixelperline() const {
 		return fontsize.y;
 	}
+	void updateposition() {
+		if(cash_origin == -1) {
+			lexer::get(getstart(), p1, pos1, p2, pos2, size, {0, (short)origin.y}, cash_origin);
+			maximum.x = size.x * fontsize.x;
+			maximum.y = size.y;
+		}
+	}
 	void view(const rect& rc) {
 		auto pixels_per_line = getpixelperline();
 		if(!pixels_per_line)
 			return;
+		updateposition();
 		lines_per_page = rc.height() / pixels_per_line;
-		if(cash_origin == -1) {
-			lexer::get(begin(), p1, pos1, p2, pos2, size, {0, (short)origin.y}, cash_origin);
-			maximum.x = size.x * fontsize.x;
-			maximum.y = size.y;
-		}
 		draw::scroll scrollv(origin.y, lines_per_page, maximum.y, rc); scrollv.input();
 		draw::scroll scrollh(origin.x, rc.width(), maximum.x, rc, true); scrollh.input();
 		control::view(rc);
@@ -309,21 +317,7 @@ class widget_editor : public control, vector<char> {
 		} else
 			horiz_position = -1;
 		invalidate();
-	}
-	void correction() {
-		auto lenght = getlenght();
-		if(p2 != -1 && p2 > lenght) {
-			p2 = lenght;
-			invalidate();
-		}
-		if(p1 > lenght) {
-			p1 = lenght;
-			invalidate();
-		}
-		if(p1 < 0) {
-			p1 = 0;
-			invalidate();
-		}
+		updateposition();
 	}
 	void clear() {
 		if(p2 != -1 && p1 != p2 && data) {
@@ -374,6 +368,42 @@ class widget_editor : public control, vector<char> {
 			sb.add(9);
 		paste(temp);
 	}
+	void pastesp(const char* value, const char* start_line) {
+		if(!value || value[0] == 0)
+			return;
+		char temp[2048]; stringbuilder sb(temp);
+		for(auto p = value; *p; p++) {
+			if(*p == '\n') {
+				auto pb = getstart();
+				auto pc = getcurrent();
+				sb.add(line_feed);
+				auto pn = start_line;
+				while(*pn == 32 || *pn == 9)
+					sb.add(*pn++);
+				paste(temp);
+				sb.clear();
+			} else
+				sb.add(*p);
+		}
+		if(sb)
+			paste(temp);
+	}
+	bool pastetemplate(const char* match, const char* before, const char* after) {
+		auto pb = getstart();
+		auto pc = getcurrent();
+		auto sz = zlen(match);
+		auto ps = pc - sz;
+		if(ps <= pb)
+			return false;
+		if(memcmp(ps, match, sz)!=0)
+			return false;
+		auto pn = lineb(pb, pc);
+		pastesp(before, pn);
+		auto index = p1;
+		pastesp(after, pn);
+		set(index, false);
+		return true;
+	}
 	void left(bool shift, bool ctrl) {
 		auto pb = getstart();
 		auto p = getcurrent();
@@ -407,6 +437,19 @@ class widget_editor : public control, vector<char> {
 			}
 		}
 		set(p - begin(), shift);
+	}
+	void pastesnipets() {
+		static snipet snipets[] = {
+			{"if(", "", ") {\n\t\n}"},
+			{"for(", "", "; ; ) {\n\t\n}"},
+			{"[", "", "]"},
+			{"(", "", ")"},
+			{"{", "\n\t", "\n}"},
+		};
+		for(auto& e : snipets) {
+			if(pastetemplate(e.match, e.before, e.after))
+				break;
+		}
 	}
 	bool keyinput(unsigned id) override {
 		switch(id) {
@@ -492,6 +535,7 @@ class widget_editor : public control, vector<char> {
 			if(hot.param >= 0x20 && !readonly) {
 				char temp[8];
 				paste(szput(temp, hot.param));
+				pastesnipets();
 			}
 			break;
 		case KeyHome:
