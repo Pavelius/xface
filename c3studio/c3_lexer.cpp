@@ -19,34 +19,15 @@ static lexer::word words_c3[] = {
 	{"continue", Keyword},
 	{"import", Keyword}, // Directive
 	{"enum", Keyword},
-	{"++", Operator}, // Operators
-	{"+", Operator},
-	{"--", Operator},
-	{"-", Operator},
-	{"%", Operator},
-	{"/", Operator},
-	{"==", Operator},
-	{"=", Operator},
-	{"||", Operator},
-	{"|", Operator},
-	{"&&", Operator},
-	{"&", Operator},
-	{"~", Operator},
-	{".", Operator},
-	{">>", Operator},
-	{"<=", Operator},
-	{"<", Operator},
-	{">", Operator},
-	{">=", Operator},
-	{"(", Operator}, {")", Operator},
-	{"[", Operator}, {"]", Operator},
-	{"{", Operator}, {"}", Operator},
 };
-static lexer source = {"c2", "*.c2"};
+static lexer source = {"c2", "*.c2", "><|&~=!+-/*,.;", ">=<=!===>><<", words_c3, sizeof(words_c3) / sizeof(words_c3[0]),
+	{'{', '}'},
+	{'(', ')'},
+	{'[', ']'},
+};
 
 void setlexer(lexer* v);
 
 void initialize_lexer() {
-	source.set(words_c3, sizeof(words_c3) / sizeof(words_c3[0]));
 	setlexer(&source);
 }

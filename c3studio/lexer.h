@@ -12,16 +12,25 @@ struct lexer {
 		const char*			name;
 		group_s				type;
 		unsigned			size;
+		constexpr word() : name(0), type(group_s::IllegalSymbol), size(0) {}
+		constexpr word(const char* name, group_s type) : name(name), type(type), size(len(name)) {}
+		static constexpr const char* end(const char* p) { while(*p) p++; return p; }
+		static constexpr unsigned len(const char* p) { return end(p) - p; }
+	};
+	struct block {
+		char				open;
+		char				close;
+		constexpr bool operator==(const char sym) const { return open == sym || close == sym; }
 	};
 	const char*				name;
 	const char*				extensions;
-	const word*				source_begin;
-	const word*				source_end;
-	constexpr const word*	begin() const { return source_begin; }
-	constexpr const word*	end() const { return source_end; }
-	const word*				find(const char* sym) const;
+	const char*				operators;
+	const char*				operators2;
+	const word*				keywords;
+	unsigned				keywords_count;
+	block					statement, expression, scope;
+	const word*				find(const char* sym, unsigned size) const;
 	static void				get(const char* pb, int p1, pointl& pos1, int p2, pointl& pos2, pointl& size, const pointl origin, int& origin_index);
-	int						getnext(const char* ps, pointl& pos, group_s& type) const;
-	bool					iskeyword(const char* source, const lexer::word** pv) const;
-	void					set(lexer::word* v, unsigned count);
+	static const char*		next(const char* p, pointl& pos);
+	const char*				next(const char* p, pointl& pos, group_s& type) const;
 };

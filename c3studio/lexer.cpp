@@ -1,140 +1,110 @@
 #include "crt.h"
 #include "lexer.h"
 
-static int compare(const void* v1, const void* v2) {
-	auto p1 = (lexer::word*)v1;
-	auto p2 = (lexer::word*)v2;
-	if(p1->size != p2->size)
-		return p1->size - p2->size;
-	return strcmp(p1->name, p2->name);
-}
+static int tabulator_spaces = 4;
 
-void lexer::set(lexer::word* p, unsigned count) {
-	source_begin = p;
-	source_end = p + count;
-	auto pe = p + count;
-	for(auto pb = p; pb < pe; pb++)
-		pb->size = zlen(pb->name);
-}
-
-const lexer::word* lexer::find(const char* sym) const {
-	for(auto& e : *this) {
-		auto n = e.size;
-		if(memcmp(sym, e.name, e.size) == 0)
-			return &e;
+const lexer::word* lexer::find(const char* sym, unsigned size) const {
+	auto pe = keywords + keywords_count;
+	for(auto pb = keywords; pb < pe; pb++) {
+		if(pb->size != size)
+			continue;
+		if(memcmp(pb->name, sym, size) == 0)
+			return pb;
 	}
 	return 0;
 }
 
-static bool isnextline(const char* ps, const char** pv) {
-	if(*ps == 10) {
-		ps++;
-		if(*ps == 13)
-			*ps++;
-		*pv = ps;
-		return true;
-	} else if(*ps == 13) {
-		ps++;
-		if(*ps == 10)
-			*ps++;
-		*pv = ps;
-		return true;
+const char* lexer::next(const char* p, pointl& pos) {
+	switch(*p) {
+	case 0:
+		break;
+	case 0x09:
+		p++;
+		pos.x = ((pos.x / tabulator_spaces) + 1) * tabulator_spaces;
+		break;
+	case 10:
+		pos.x = 0; pos.y++;
+		p++;
+		if(*p == 13)
+			p++;
+		break;
+	case 13:
+		pos.x = 0; pos.y++;
+		p++;
+		if(*p == 10)
+			p++;
+		break;
+	default:
+		p++;
+		pos.x++;
+		break;
 	}
-	return false;
+	return p;
 }
 
-static bool isliteral(const char* ps, const char** pv) {
-	if(*ps != '\"')
-		return false;
-	ps++;
-	while(*ps && *ps != '\"') {
-		if(*ps == '\\')
-			ps++;
-		ps++;
-	}
-	if(*ps)
-		ps++;
-	if(pv)
-		*pv = ps;
-	return true;
-}
-
-static bool isidentifier(char sym) {
-	return ischa(sym) || sym == '_' || (sym >= '0' && sym <= '9');
-}
-
-static bool isidentifier(const char* ps, const char** v) {
-	if(ischa(*ps) || *ps == '_') {
-		while(ischa(*ps) || isnum(*ps) || *ps == '_')
-			ps++;
-		if(v)
-			*v = ps;
-		return true;
-	}
-	return false;
-}
-
-bool lexer::iskeyword(const char* source, const lexer::word** pv) const {
-	auto kw = find(source);
-	if(!kw)
-		return false;
-	if(pv)
-		*pv = kw;
-	return true;
-}
-
-static int tabulator_spaces = 4;
-
-int lexer::getnext(const char* ps, pointl& pos, group_s& type) const {
-	const lexer::word* kw;
+const char* lexer::next(const char* p, pointl& pos, group_s& type) const {
 	type = IllegalSymbol;
-	const char* p1 = ps;
-	if(*ps == 0)
+	if(*p == 0)
 		type = WhiteSpace;
-	else if(*ps == '\t') {
+	else if(*p == 0x20 || *p == 9 || *p == 10 || *p == 13) {
 		type = WhiteSpace;
-		while(*ps == '\t') {
-			pos.x = ((pos.x / tabulator_spaces) + 1) * tabulator_spaces;
-			ps++;
-		}
-		return ps - p1;
-	} else if(*ps == 0x20) {
-		type = WhiteSpace;
-		while(*ps == 0x20)
-			ps++;
-	} else if(isnextline(ps, &ps)) {
-		type = WhiteSpace;
-		pos.y++;
-		pos.x = 0;
-		return ps - p1;
-	} else if((ps[0] == '-' && (ps[1] >= '0' && ps[1] <= '9')) || (ps[0] >= '0' && ps[0] <= '9')) {
+		while(*p == 0x20 || *p == 9 || *p == 10 || *p == 13)
+			p = next(p, pos);
+	} else if((*p == '-' && isnum(*p)) || isnum(*p)) {
 		type = Number;
-		if(ps[0] == '-')
-			ps++;
-		while(*ps && *ps >= '0' && *ps <= '9')
-			ps++;
-	} else if(isliteral(ps, &ps))
+		if(*p == '-')
+			p = next(p, pos);
+		while(isnum(*p))
+			p = next(p, pos);
+	} else if(*p == '\"') {
 		type = String;
-	else if(ps[0] == '/' && ps[1] == '/') {
-		type = Comment;
-		ps += 2;
-		while(*ps) {
-			if(isnextline(ps, &ps)) {
-				pos.y++;
-				pos.x = 0;
-				return ps - p1;
-			} else
-				ps++;
+		p = next(p, pos);
+		while(*p && *p != '\"') {
+			if(*p == '\\')
+				p = next(p, pos);
+			p = next(p, pos);
 		}
-	} else if(iskeyword(ps, &kw)) {
-		ps += kw->size;
-		type = kw->type;
-	} else if(isidentifier(ps, &ps)) {
+		if(*p)
+			p = next(p, pos);
+	} 	else if(p[0] == '/' && p[1] == '/') {
+		type = Comment;
+		p = next(p, pos);
+		p = next(p, pos);
+		while(*p) {
+			if(*p == 10 || *p == 13) {
+				p = next(p, pos);
+				break;
+			} else
+				p = next(p, pos);
+		}
+	} else if(ischa(*p) || *p == '_') {
 		type = Identifier;
-	} else
-		ps++;
-	pos.x += ps - p1;
-	return ps - p1;
+		auto pb = p;
+		while(ischa(*p) || *p == '_' || isnum(*p))
+			p = next(p, pos);
+		auto pk = find(pb, p - pb);
+		if(pk)
+			type = pk->type;
+	} else if(statement == *p || expression == *p || scope == *p) {
+		type = Operator;
+		pos.x++;
+		return p + 1;
+	} else {
+		for(auto i = 0; operators2[i]; i += 2) {
+			if(p[0] == operators2[i] && p[1] == operators2[i + 1]) {
+				type = Operator;
+				pos.x += 2;
+				return p + 2;
+			}
+		}
+		if(zchr(operators, *p)) {
+			type = Operator;
+			pos.x++;
+			return p + 1;
+		}
+		return next(p, pos);
+	}
+	return p;
 }
 
 void lexer::get(const char* pb, int p1, pointl& pos1, int p2, pointl& pos2, pointl& size, const pointl origin, int& origin_index) {
@@ -152,19 +122,15 @@ void lexer::get(const char* pb, int p1, pointl& pos1, int p2, pointl& pos2, poin
 			pos2 = pos;
 		if(origin == pos)
 			origin_index = i;
-		if(*p == 0 || isnextline(p, &p)) {
+		if(*p == 10 || *p == 13 || *p == 0) {
 			if(size.x < pos.x)
 				size.x = pos.x;
 			if(origin.y == pos.y && origin_index == -1)
 				origin_index = i;
-			pos.x = 0;
-			pos.y++;
 			if(*p == 0)
 				break;
-		} else {
-			pos.x++;
-			p++;
 		}
+		p = next(p, pos);
 	}
 	if(p1 == p2 || p2 == -1)
 		pos2 = pos1;

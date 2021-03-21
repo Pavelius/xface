@@ -38,8 +38,6 @@ BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_bottom", "Присоединить снизу"},
 {"dock_workspace", "На рабочем столе"},
 };
-//assert_enum(dock, DockWorkspace)
-//BSMETA(docki) = {BSREQ(id), BSREQ(name), 0}
 
 struct streca {
 	const element*	e;
