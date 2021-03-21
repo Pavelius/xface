@@ -329,6 +329,11 @@ unsigned char stringbuilder::lower(unsigned char u) {
 	return u;
 }
 
+void stringbuilder::lower() {
+	for(auto p = pb; *p; p++)
+		*p = lower(*p);
+}
+
 void stringbuilder::addidentifier(const char* identifier) {
 	addv("[-", 0);
 	addv(identifier, 0);

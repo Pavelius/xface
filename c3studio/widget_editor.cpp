@@ -1,4 +1,5 @@
 #include "draw_control.h"
+#include "io.h"
 #include "lexer.h"
 #include "package.h"
 
@@ -18,9 +19,11 @@ BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 	{"Number", {color::create(128, 128, 0)}},
 	{"String", {color::create(128, 0, 255)}},
 	{"Identifier", {color::create(0, 0, 0)}},
-	{"Type", {color::create(0, 0, 100)}},
+	{"Type", {color::create(1, 90, 148)}},
+	{"Member", {color::create(221, 161, 80)}},
+	{"Constant", {color::create(200, 81, 107)}},
 };
-assert_enum(groupi, Type)
+assert_enum(groupi, Constant)
 
 static const sprite*	fontedit = (sprite*)loadb("art/fonts/code.pma");
 static point			fontsize;
@@ -29,6 +32,7 @@ static const char*		line_feed = "\r\n";
 
 class widget_editor : public control, vector<char> {
 	const char*			url = 0;
+	const code::package* package = 0;
 	int					cash_origin = -1;
 	int					lines_per_page = 0;
 	int					p1 = 0, p2 = 0;
@@ -109,15 +113,15 @@ class widget_editor : public control, vector<char> {
 	const char* getstart() const {
 		return (char*)data;
 	}
-	int	getbegin() const {
+	char* getbegin() const {
 		if(p2 == -1)
-			return p1;
-		return imin(p1, p2);
+			return (char*)data + p1;
+		return (char*)data + imin(p1, p2);
 	}
-	int	getend() const {
+	char* getend() const {
 		if(p2 == -1)
-			return p1;
-		return imax(p1, p2);
+			return (char*)data + p1;
+		return (char*)data + imax(p1, p2);
 	}
 	pointl getbeginpos() const {
 		if(p2 == -1)
@@ -159,6 +163,25 @@ class widget_editor : public control, vector<char> {
 			set(value, false);
 		else if(equal(id, "select_range"))
 			set(value, true);
+	}
+	void updatetype(group_s& type, const char* sym, unsigned size) const {
+		if(!package)
+			return;
+		for(auto& e : package->symbols) {
+			if(e.parent != code::Class && e.parent!=code::This)
+				continue;
+			auto pn = package->getsymstr(&e - package->symbols.begin());
+			auto sz = zlen(pn);
+			if(sz == size && memcmp(pn, sym, sz) == 0) {
+				if(e.parent == code::Class)
+					type = Type;
+				else if(e.is(code::Const))
+					type = Constant;
+				else
+					type = Member;
+				return;
+			}
+		}
 	}
 	void redraw(const rect& rco) {
 		if(!fontsize.x || !fontsize.y)
@@ -212,6 +235,8 @@ class widget_editor : public control, vector<char> {
 			ps = lex->next(ps, pos, type);
 			if(pb == ps)
 				break;
+			if(type == Identifier)
+				updatetype(type, pb, ps - pb);
 			auto& ei = bsdata<groupi>::elements[type];
 			if(type != WhiteSpace) {
 				fore = ei.present;
@@ -224,7 +249,7 @@ class widget_editor : public control, vector<char> {
 			auto y1 = y + pos1.y * fontsize.y;
 			line(x1, y1, x1, y1 + fontsize.y, colors::text.mix(colors::edit));
 		}
-		auto draw_selecton = getbegin() != -1;
+		auto draw_selecton = (p1 != -1);
 		if(draw_selecton) {
 			auto p1 = getbeginpos();
 			auto p2 = getendpos();
@@ -302,11 +327,12 @@ class widget_editor : public control, vector<char> {
 	}
 	void clear() {
 		if(p2 != -1 && p1 != p2 && data) {
-			auto s1 = ptr(getbegin());
-			auto s2 = ptr(getend());
+			auto s1 = getbegin();
+			auto s2 = getend();
 			while(*s2)
 				*s1++ = *s2++;
 			*s1 = 0;
+			setcount(s1 - getstart());
 			invalidate();
 			if(p1 > p2)
 				p1 = p2;
@@ -324,12 +350,28 @@ class widget_editor : public control, vector<char> {
 		set(p1 + i2, false);
 		modified = true;
 	}
+	bool isnextlevel(const char* p) const {
+		if(!lex)
+			return false;
+		auto pb = getstart();
+		if(p <= pb)
+			return false;
+		if(lex->increase && zchr(lex->increase, p[-1]))
+			return true;
+		if(p[-1] == lex->statement.open)
+			return true;
+		return false;
+	}
 	void pastecr() {
+		auto pb = getstart();
+		auto pc = getcurrent();
+		auto p = lineb(pb, pc);
 		char temp[260]; stringbuilder sb(temp);
 		sb.add(line_feed);
-		auto p = lineb(begin(), begin() + p1);
 		while(*p==32 || *p==9)
 			sb.add(*p++);
+		if(isnextlevel(pc))
+			sb.add(9);
 		paste(temp);
 	}
 	void left(bool shift, bool ctrl) {
@@ -491,7 +533,60 @@ class widget_editor : public control, vector<char> {
 		return true;
 	}
 	const char*	geturl(stringbuilder& sb) const override {
-		return url;
+		sb.add(url);
+		return sb;
+	}
+	bool copy(bool run) {
+		if(!isselected())
+			return false;
+		if(run) {
+			auto s1 = getbegin();
+			auto s2 = getend();
+			clipboard::copy(s1, s2 - s1);
+		}
+		return true;
+	}
+	bool paste(bool run) {
+		if(readonly)
+			return false;
+		if(run) {
+			clear();
+			auto p = clipboard::paste();
+			if(p)
+				paste(p);
+			delete p;
+		}
+		return true;
+	}
+	bool cut(bool run) {
+		if(readonly)
+			return false;
+		if(!isselected())
+			return false;
+		if(run) {
+			auto s1 = getbegin();
+			auto s2 = getend();
+			clipboard::copy(s1, s2 - s1);
+			clear();
+		}
+		return true;
+	}
+	control::command* getcommands() const override {
+		static command commands[] = {{"cut", "Вырезать", 0, &widget_editor::cut, -1, Ctrl + 'X'},
+			{"copy", "Копировать", 0, &widget_editor::copy, -1, Ctrl + 'C'},
+			{"paste", "Вставить", 0, &widget_editor::paste, -1, Ctrl + 'V'},
+			{}};
+		return commands;
+	}
+	const code::package* findpackage(const char* url) {
+		for(auto& e : bsdata<code::package>()) {
+			if(!e)
+				continue;
+			auto pn = e.getsymurl(0);
+			if(strcmp(pn, url) == 0)
+				return &e;
+		}
+		return 0;
 	}
 public:
 	bool open(const char* url) {
@@ -500,6 +595,7 @@ public:
 		if(!p)
 			return false;
 		this->url = szdup(url);
+		this->package = findpackage("main");
 		reserve(s);
 		setcount(s);
 		memcpy(begin(), p, s);

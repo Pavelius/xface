@@ -5,14 +5,14 @@
 enum group_s : unsigned char {
 	IllegalSymbol, WhiteSpace, Comment,
 	Operator, Keyword,
-	Number, String, Identifier, Type,
+	Number, String, Identifier, Type, Member, Constant
 };
 struct lexer {
 	struct word {
 		const char*			name;
 		group_s				type;
 		unsigned			size;
-		constexpr word() : name(0), type(group_s::IllegalSymbol), size(0) {}
+		constexpr word() : name(0), type(IllegalSymbol), size(0) {}
 		constexpr word(const char* name, group_s type) : name(name), type(type), size(len(name)) {}
 		static constexpr const char* end(const char* p) { while(*p) p++; return p; }
 		static constexpr unsigned len(const char* p) { return end(p) - p; }
@@ -29,6 +29,7 @@ struct lexer {
 	const word*				keywords;
 	unsigned				keywords_count;
 	block					statement, expression, scope;
+	const char*				increase;
 	const word*				find(const char* sym, unsigned size) const;
 	static void				get(const char* pb, int p1, pointl& pos1, int p2, pointl& pos2, pointl& size, const pointl origin, int& origin_index);
 	static const char*		next(const char* p, pointl& pos);

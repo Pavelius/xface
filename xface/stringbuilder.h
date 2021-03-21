@@ -41,6 +41,7 @@ public:
 	static bool			isnum(unsigned char sym) { return sym >= '0' && sym <= '9'; }
 	bool				ispos(const char* v) const { return p == v; }
 	static unsigned char lower(unsigned char sym);
+	void				lower();
 	static const char*	readidn(const char* p, char* result, const char* result_end);
 	static const char*	readnum(const char* p1, int& result);
 	void				set(char* v) { p = v; p[0] = 0; }

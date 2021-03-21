@@ -97,7 +97,6 @@ class packages_tree : public controls::tree {
 	}
 	void expanding(int index) override {
 		package* pk;
-		pckh ph;
 		if(index == -1) {
 			for(auto& e : bsdata<package>()) {
 				if(!e)

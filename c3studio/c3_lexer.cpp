@@ -11,12 +11,14 @@ static lexer::word words_c3[] = {
 	{"bool", Type},
 	{"while", Keyword}, // Statements
 	{"if", Keyword},
+	{"else", Keyword},
 	{"for", Keyword},
 	{"do", Keyword},
 	{"switch", Keyword},
 	{"case", Keyword},
 	{"break", Keyword},
 	{"continue", Keyword},
+	{"default", Keyword},
 	{"import", Keyword}, // Directive
 	{"enum", Keyword},
 };
