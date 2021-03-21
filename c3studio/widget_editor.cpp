@@ -440,8 +440,8 @@ class widget_editor : public control, vector<char> {
 	}
 	void pastesnipets() {
 		static snipet snipets[] = {
-			{"if(", "", ") {\n\t\n}"},
-			{"for(", "", "; ; ) {\n\t\n}"},
+			//{"if(", "", ") {\n\t\n}"},
+			//{"for(", "", "; ; ) {\n\t\n}"},
 			{"[", "", "]"},
 			{"(", "", ")"},
 			{"{", "\n\t", "\n}"},

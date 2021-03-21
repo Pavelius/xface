@@ -54,8 +54,15 @@ const char* lexer::next(const char* p, pointl& pos, group_s& type) const {
 		type = Number;
 		if(*p == '-')
 			p = next(p, pos);
-		while(isnum(*p))
+		if(p[0] == '0' && p[1] == 'x') {
 			p = next(p, pos);
+			p = next(p, pos);
+			while(isnum(*p) || (*p>='A' && *p<='F') || (*p >= 'a' && *p <= 'f'))
+				p = next(p, pos);
+		} else {
+			while(isnum(*p))
+				p = next(p, pos);
+		}
 	} else if(*p == '\"') {
 		type = String;
 		p = next(p, pos);
