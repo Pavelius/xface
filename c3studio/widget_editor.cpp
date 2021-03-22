@@ -2,6 +2,7 @@
 #include "io.h"
 #include "lexer.h"
 #include "package.h"
+#include "setting.h"
 
 using namespace draw;
 using namespace draw::controls;
@@ -683,3 +684,18 @@ void setlexer(lexer* v) {
 	fontsize.y = texth();
 	draw::font = old_font;
 }
+
+static setting::element form_colors_editor[] = {
+	{"Цвет комментариев", bsdata<groupi>::elements[Comment].present},
+	{"Цвет операторов", bsdata<groupi>::elements[Operator].present},
+	{"Цвет ключевых слов", bsdata<groupi>::elements[Keyword].present},
+	{"Цвет идентификаторов", bsdata<groupi>::elements[Identifier].present},
+	{"Цвет типов", bsdata<groupi>::elements[Type].present},
+	{"Цвет членов типа", bsdata<groupi>::elements[Member].present},
+	{"Цвет констант", bsdata<groupi>::elements[Constant].present},
+	{"Цвет чисел", bsdata<groupi>::elements[Number].present},
+	{"Цвет строк", bsdata<groupi>::elements[String].present},
+	{"Цвет ошибок", bsdata<groupi>::elements[IllegalSymbol].present},
+};
+static setting::header headers[] = {{"Цвета", "Редактор", 0, form_colors_editor},
+};
