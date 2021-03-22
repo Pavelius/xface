@@ -25,6 +25,66 @@ int main() {
 	crt.exit(0);
 }
 
+int main() {
+	// Новый комментарий
+	rect rc;
+	rc.x1 = 0;
+	rc.x2 = rc.x1;
+	char* test = "Здесь русская строка текста";
+	int t1 = rc.x1 + 10;
+	int t2 = 10 + rc.x1; // Same ast test
+	int t3 = 2*(5 + rc.x1/2);
+	crt.exit(0);
+}
+
+int main() {
+	// Новый комментарий
+	rect rc;
+	rc.x1 = 0;
+	rc.x2 = rc.x1;
+	char* test = "Здесь русская строка текста";
+	int t1 = rc.x1 + 10;
+	int t2 = 10 + rc.x1; // Same ast test
+	int t3 = 2*(5 + rc.x1/2);
+	crt.exit(0);
+}
+
+int main() {
+	// Новый комментарий
+	rect rc;
+	rc.x1 = 0;
+	rc.x2 = rc.x1;
+	char* test = "Здесь русская строка текста";
+	int t1 = rc.x1 + 10;
+	int t2 = 10 + rc.x1; // Same ast test
+	int t3 = 2*(5 + rc.x1/2);
+	crt.exit(0);
+}
+
+int main() {
+	// Новый комментарий
+	rect rc;
+	rc.x1 = 0;
+	rc.x2 = rc.x1;
+	char* test = "Здесь русская строка текста";
+	int t1 = rc.x1 + 10;
+	int t2 = 10 + rc.x1; // Same ast test
+	int t3 = 2*(5 + rc.x1/2);
+	crt.exit(0);
+}
+
+int main() {
+	// Новый комментарий
+	rect rc;
+	rc.x1 = 0;
+	rc.x2 = rc.x1;
+	char* test = "Здесь русская строка текста";
+	int t1 = rc.x1 + 10;
+	int t2 = 10 + rc.x1; // Same ast test
+	int t3 = 2*(5 + rc.x1/2);
+	crt.exit(0);
+}
+
 // Print function ++
 void print(char* text, int v) {
 }

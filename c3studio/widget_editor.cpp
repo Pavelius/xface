@@ -321,7 +321,7 @@ class widget_editor : public control, vector<char> {
 			auto i1 = imin(p1, p2);
 			auto i2 = imax(p1, p2);
 			memcpy(ptr(i1), ptr(i2), (getcount() - i2 + 1) * sizeof(char));
-			count -= i2 - i1;
+			count -= (i2 - i1);
 			invalidate();
 			if(p1 > p2)
 				p1 = p2;
@@ -332,9 +332,11 @@ class widget_editor : public control, vector<char> {
 	void paste(const char* input) {
 		clear();
 		auto lenght = zlen(input);
-		reserve(p1 + lenght + 1);
-		memmove(ptr(p1 + lenght), ptr(p1), (count - lenght + 1) * sizeof(char));
-		memcpy(ptr(p1), input, lenght); count += lenght;
+		reserve(count + lenght + 1);
+		memmove((char*)data + p1 + lenght, (char*)data + p1, count - p1 + 1);
+		memcpy((char*)data + p1, input, lenght);
+		count += lenght;
+		((char*)data)[count] = 0;
 		set(p1 + lenght, false);
 		modified = true;
 	}
