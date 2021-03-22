@@ -5,6 +5,15 @@
 void add_package(const char* id);
 void initialize_lexer();
 
+void logmsg(const char* format, ...);
+
+void draw::post(const char* id, const char* p1, unsigned p2) {
+	if(equal(id, "editor.code.save")) {
+
+	} else
+		logmsg("Не обработано \"%1\" с параметрами %2, %3i", id, p1, p2);
+}
+
 int main() {
 	initialize_lexer();
 	code::urls::project = "code/projects/test/";

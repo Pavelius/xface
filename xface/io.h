@@ -54,6 +54,7 @@ struct file : stream {
 	void				close();
 	bool				create(const char* url, unsigned flags);
 	static bool			exist(const char* url);
+	unsigned			getchangedate() const;
 	static char*		getdir(char* url, int size);
 	static char*		getmodule(char* url, int size);
 	static bool			makedir(const char* url);

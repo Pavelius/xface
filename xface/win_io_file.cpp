@@ -137,3 +137,11 @@ bool io::file::exist(const char* url) {
 bool io::file::makedir(const char* url) {
 	return CreateDirectoryA(url, 0) != 0;
 }
+
+unsigned io::file::getchangedate() const {
+	FILETIME ft = {};
+	SYSTEMTIME st = {};
+	GetFileTime(handle, 0, 0, &ft);
+	FileTimeToSystemTime(&ft, &st);
+	return 0;
+}

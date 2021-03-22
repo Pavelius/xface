@@ -141,6 +141,7 @@ struct control {
 	void					postkeyinput(int value) const;
 	void					postsetvalue(const char* id, int value) const;
 	virtual void			redraw() {}
+	virtual bool			save(const char* url) { return false; }
 	virtual void			setfocus(bool instant);
 	virtual void			setvalue(const char* id, int value) {}
 	int						toolbar(int x, int y, int width, int* next_x = 0) const;

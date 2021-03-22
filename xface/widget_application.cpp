@@ -587,9 +587,11 @@ static struct widget_application : draw::controls::control {
 		if(!p->ismodified())
 			return false;
 		if(run) {
-
+			char temp[512]; stringbuilder sb(temp);
+			p->geturl(sb);
+			p->save(temp);
 		}
-		return false;
+		return true;
 	}
 	bool cut(bool run) {
 		auto p = getfocus();

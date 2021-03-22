@@ -11,8 +11,8 @@ struct groupi {
 	color				present;
 	unsigned			flags;
 };
-BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
-	{"White space", {color::create(255, 255, 255)}},
+BSDATA(groupi) = {
+	{"Illegal symbol", {color::create(255, 0, 0)}},
 	{"Comment", {color::create(0, 128, 0)}},
 	{"Operator", {color::create(255, 128, 0)}},
 	{"Keyword", {color::create(0, 0, 128)}, TextBold},
@@ -23,7 +23,7 @@ BSDATA(groupi) = {{"Illegal symbol", {color::create(255, 0, 0)}},
 	{"Member", {color::create(221, 161, 80)}},
 	{"Constant", {color::create(200, 81, 107)}},
 };
-assert_enum(groupi, Constant)
+assert_enum(groupi, WhiteSpace - 1)
 
 static const sprite*	fontedit = (sprite*)loadb("art/fonts/code.pma");
 static point			fontsize;
@@ -45,8 +45,7 @@ class widget_editor : public control, vector<char> {
 	pointl				pos1 = {}, pos2 = {}, size = {};
 	pointl				origin = {}, maximum = {};
 	rect				rctext = {4, 4, 4, 4};
-	bool				readonly = false;
-	bool				modified = false;
+	bool				readonly = false, modified = false;
 	bool ismodified() const {
 		return modified;
 	}
@@ -173,7 +172,7 @@ class widget_editor : public control, vector<char> {
 		if(!package)
 			return;
 		for(auto& e : package->symbols) {
-			if(e.parent != code::Class && e.parent!=code::This)
+			if(e.parent != code::Class && e.parent != code::This)
 				continue;
 			auto pn = package->getsymstr(&e - package->symbols.begin());
 			auto sz = zlen(pn);
@@ -297,13 +296,10 @@ class widget_editor : public control, vector<char> {
 		scrollv.view(isfocused());
 		scrollh.view(isfocused());
 	}
-	int getlenght() const {
-		return getcount();
-	}
 	void set(int index, bool shift, bool keephoriz = false) {
 		if(index < 0)
 			index = 0;
-		else if(index > getlenght())
+		else if(index > (int)getcount())
 			index = getcount();
 		if(shift) {
 			if(p2 == -1)
@@ -321,12 +317,10 @@ class widget_editor : public control, vector<char> {
 	}
 	void clear() {
 		if(p2 != -1 && p1 != p2 && data) {
-			auto s1 = getbegin();
-			auto s2 = getend();
-			while(*s2)
-				*s1++ = *s2++;
-			*s1 = 0;
-			setcount(s1 - getstart());
+			auto i1 = imin(p1, p2);
+			auto i2 = imax(p1, p2);
+			memcpy(ptr(i1), ptr(i2), (getcount() - i2 + 1) * sizeof(char));
+			count -= i2 - i1;
 			invalidate();
 			if(p1 > p2)
 				p1 = p2;
@@ -336,12 +330,11 @@ class widget_editor : public control, vector<char> {
 	}
 	void paste(const char* input) {
 		clear();
-		auto i2 = zlen(input);
-		reserve(p1 + i2 + 1);
-		memmove(ptr(p1 + i2), ptr(p1), (count - p1 + 1) * sizeof(char));
-		memcpy(ptr(p1), input, i2); count += i2;
-		invalidate();
-		set(p1 + i2, false);
+		auto lenght = zlen(input);
+		reserve(p1 + lenght + 1);
+		memmove(ptr(p1 + lenght), ptr(p1), (count - lenght + 1) * sizeof(char));
+		memcpy(ptr(p1), input, lenght); count += lenght;
+		set(p1 + lenght, false);
 		modified = true;
 	}
 	bool isnextlevel(const char* p) const {
@@ -362,7 +355,7 @@ class widget_editor : public control, vector<char> {
 		auto p = lineb(pb, pc);
 		char temp[260]; stringbuilder sb(temp);
 		sb.add(line_feed);
-		while(*p==32 || *p==9)
+		while(*p == 32 || *p == 9)
 			sb.add(*p++);
 		if(isnextlevel(pc))
 			sb.add(9);
@@ -395,7 +388,7 @@ class widget_editor : public control, vector<char> {
 		auto ps = pc - sz;
 		if(ps <= pb)
 			return false;
-		if(memcmp(ps, match, sz)!=0)
+		if(memcmp(ps, match, sz) != 0)
 			return false;
 		auto pn = lineb(pb, pc);
 		pastesp(before, pn);
@@ -634,17 +627,27 @@ class widget_editor : public control, vector<char> {
 	}
 public:
 	bool open(const char* url) {
-		auto s = 0;
-		auto p = loadt(url, &s);
+		auto p = loadt(url);
 		if(!p)
 			return false;
 		this->url = szdup(url);
 		this->package = findpackage("main");
-		reserve(s);
+		auto s = zlen(p);
+		reserve(s + 1);
 		setcount(s);
-		memcpy(begin(), p, s);
+		memcpy(begin(), p, s + 1);
 		delete p;
 		invalidate();
+		return true;
+	}
+	bool save(const char* url) override {
+		io::file file(url, StreamText | StreamWrite);
+		if(!file)
+			return false;
+		file << (char*)data;
+		modified = false;
+		post("editor.code.save", url, 0);
+		auto i = file.getchangedate();
 		return true;
 	}
 };

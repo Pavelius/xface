@@ -3,9 +3,10 @@
 #pragma once
 
 enum group_s : unsigned char {
-	IllegalSymbol, WhiteSpace, Comment,
+	IllegalSymbol, Comment,
 	Operator, Keyword,
-	Number, String, Identifier, Type, Member, Constant
+	Number, String, Identifier, Type, Member, Constant,
+	WhiteSpace,
 };
 struct lexer {
 	struct word {
