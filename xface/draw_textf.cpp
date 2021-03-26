@@ -44,17 +44,17 @@ static int render_control(const char** result, int x, int y, int width) {
 	auto p = *result;
 	auto pb = buffer;
 	auto pe = buffer + sizeof(buffer) - 1;
-	p = stringbuilder::readidn(p, type, type + sizeof(type) - 1);
+	p = stringbuilder::read(p, type, type + sizeof(type) - 1);
 	p = skipsp(p);
 	while(*p && *p != ')') {
-		p = stringbuilder::readidn(p, name, name + sizeof(name) - 1);
+		p = stringbuilder::read(p, name, name + sizeof(name) - 1);
 		p = skipsp(p);
 		int value_number = 1;
 		const char* value_text = 0;
 		if(*p == '=') {
 			p = skipsp(p + 1);
 			if(isnum(*p) || *p == '-')
-				value_number = sz2num(p, &p);
+				p = stringbuilder::read(p, value_number);
 			else if(*p == '\"' || *p == '\'') {
 				value_text = pb;
 				p = psstr(p + 1, pb, p[0]);
@@ -209,7 +209,7 @@ static int textfln(int x0, int y0, int width, const char** string, color c1, int
 		if(p[0] == ':' && p[1] >= 'a' && p[1] <= 'z') {
 			p++;
 			char temp[128];
-			p = stringbuilder::readidn(p, temp, temp + sizeof(temp) - 1);
+			p = stringbuilder::read(p, temp, temp + sizeof(temp) - 1);
 			if(*p == ':')
 				p++;
 			w = 0;

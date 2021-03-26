@@ -150,7 +150,9 @@ static struct dockbar_settings_strategy : io::strategy {
 			if(*name++ != *text++)
 				return -1;
 		}
-		return sz2num(text);
+		auto index = 0;
+		text = stringbuilder::read(text, index);
+		return index;
 	}
 	void write(serializer& file, void* param) override {
 		for(auto i = DockLeft; i <= DockWorkspace; i = (dock_s)(i + 1)) {
@@ -167,9 +169,9 @@ static struct dockbar_settings_strategy : io::strategy {
 		if(i == 0xFFFFFFFF || i >= sizeof(dock_data) / sizeof(dock_data[0]))
 			return;
 		if(n == "current")
-			dock_data[i].current = sz2num(value);
+			stringbuilder::read(value, dock_data[i].current);
 		else if(n=="size")
-			dock_data[i].size = sz2num(value);
+			stringbuilder::read(value, dock_data[i].size);
 	}
 	dockbar_settings_strategy() : strategy("dockbar", "settings") {}
 } dockbar_settings_strategy_instance;

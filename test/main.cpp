@@ -534,6 +534,13 @@ static bool test_vector() {
 	return true;
 }
 
+static bool test_strings() {
+	char temp[2048]; stringbuilder sb(temp);
+	sb.add("This string used to change one words to another");
+	sb.change("string", "function");
+	return true;
+}
+
 int main() {
 	static auto tests = {test_write_bin,
 		test_anyval,
@@ -542,6 +549,7 @@ int main() {
 		test_vector,
 		test_datetime,
 		test_data_access,
+		test_strings
 	};
 	for(auto p : tests) {
 		if(!p())

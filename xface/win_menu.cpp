@@ -55,7 +55,7 @@ struct menu_builder : control::command::builder {
 			sb.add("\t");
 			draw::key2str(zend(temp), cmd.key);
 		}
-		szupper(temp, 1);
+		temp[0] = szupper(temp[0]);
 		if(cmd.isallow(source))
 			mi.fState = MFS_ENABLED;
 		else

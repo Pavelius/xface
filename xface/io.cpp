@@ -1,9 +1,10 @@
 #include "crt.h"
 #include "io.h"
+#include "stringbuilder.h"
 
 io::stream& io::stream::operator<<(const int n) {
-	char temp[32];
-	sznum(temp, n);
+	char temp[32]; stringbuilder sb(temp);
+	sb.add("%1i", n);
 	return *this << temp;
 }
 
@@ -78,14 +79,9 @@ char* loadt(const char* url, int* size) {
 	return (char*)p;
 }
 
-char* szurlc(char* result) {
-	char* p = result;
-	while(*p) {
-		if(*p == '\\')
-			*p = '/';
-		p++;
-	}
-	return result;
+char* szurlc(char* p) {
+	szchange(p, '\\', '/');
+	return p;
 }
 
 char* szurl(char* p, const char* path, const char* name, const char* ext, const char* suffix) {

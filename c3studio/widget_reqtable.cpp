@@ -142,6 +142,27 @@ class packages_tree : public controls::tree {
 			return "None";
 		}
 	}
+	bool geturl(stringbuilder& sb, const char* start, const char* ext) {
+		sb.clear();
+		sb.add(start);
+	}
+	bool change(int row, draw::controls::column& col, bool run) override {
+		if(equal(col.title, "Имя")) {
+			auto p = (element*)get(row);
+			if(run) {
+				char temp[260]; stringbuilder sb(temp);
+				if(p->type == Package) {
+					auto pk = (package*)p->object;
+					auto url = pk->getsymurl(0);
+					if(!pk->findurl(sb, url, "c2"))
+						return false;
+					controls::openurl(temp);
+				}
+			}
+		} else
+			return table::change(row, col, run);
+		return true;
+	}
 public:
 	packages_tree() : tree(sizeof(element)) {
 		auto& c0 = addcol("Изображение", "standart_image");

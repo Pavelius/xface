@@ -74,14 +74,12 @@ char*								loadt(const char* url, int* size = 0); // Load text file and decode
 bool								matchuc(const char* name, const char* filter);
 const char*							psstr(const char* p, char* value, char end_symbol = '\"'); // Parse string from string (like c format "Some\nstring")
 unsigned							rmoptimal(unsigned need_count);
-void								rmremove(void* data, unsigned size, unsigned index, unsigned& count, int elements_count);
-void*								rmreserve(void* data, unsigned new_size);
-void								rmreserve(void** data, unsigned count, unsigned& count_maximum, unsigned size);
 float								sqrt(const float x); // Return aquare root of 'x'
 inline const char*					skipsp(const char* p) { if(p) while(*p == ' ' || *p == '\t') p++; return p; }
 inline const char*					skipspcr(const char* p) { if(p) while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++; return p; }
 const char*							skipcr(const char* p);
-int									sz2num(const char* p1, const char** pp1 = 0);
+//int								sz2num(const char* p1, const char** pp1 = 0);
+void								szchange(char* p, char s1, char s2);
 void								szencode(char* output, int output_count, codepages output_code, const char* input, int input_count, codepages input_code);
 unsigned							szget(const char** input, codepages page = metrics::code);
 int									szcmpi(const char* p1, const char* p2);
@@ -91,16 +89,14 @@ const char*							szext(const char* path);
 const char*							szfname(const char* text); // Get file name from string (no fail, always return valid value)
 char*								szfnamewe(char* result, const char* name); // get file name without extension (no fail)
 unsigned							szlower(unsigned u); // to lower reg
-void								szlower(char* p, int count = 1); // to lower reg
+void								szlower(char* p); // to lower reg
 bool								szmatch(const char* text, const char* name); //
-char*								sznum(char* result, int num, int precision = 0, const char* empthy = 0, int radix = 10);
-char*								sznum(char* result, float f, int precision = 0, const char* empthy = "0.00");
 bool								szpmatch(const char* text, const char* pattern);
 void								szput(char** output, unsigned u, codepages page = metrics::code);
 char*								szput(char* output, unsigned u, codepages page = metrics::code); // Fast symbol put function. Return 'output'.
 bool								szstart(const char* text, const char* name);
 unsigned							szupper(unsigned u);
-char*								szupper(char* p, int count = 1); // to upper reg
+void								szupper(char* p); // to upper reg
 char*								szurl(char* p, const char* path, const char* name, const char* ext = 0, const char* suffix = 0);
 char*								szurlc(char* p1);
 inline int							xrand(int n1, int n2) { return n1 + rand() % (n2 - n1 + 1); }
@@ -118,10 +114,10 @@ template<class T> inline void		seqlink(T* p) { p->next = 0; if(!T::first) T::fir
 template<class T> inline const T*	zchr(const T* p, T e) { while(*p) { if(*p == e) return p; p++; } return 0; }
 template<class T> inline void		zcpy(T* p1, const T* p2) { while(*p2) *p1++ = *p2++; *p1 = 0; }
 template<class T> inline void		zcpy(T* p1, const T* p2, int max_count) { while(*p2 && max_count-- > 0) *p1++ = *p2++; *p1 = 0; }
-template<class T> inline T*			zend(T* p) { while(*p) p++; return p; }
+template<class T> constexpr T*		zend(T* p) { while(*p) p++; return p; }
 template<class T> inline void		zcat(T* p1, const T e) { p1 = zend(p1); p1[0] = e; p1[1] = 0; }
 template<class T> inline void		zcat(T* p1, const T* p2) { zcpy(zend(p1), p2); }
-template<class T> inline int		zlen(T* p) { return zend(p) - p; }
+template<class T> constexpr int		zlen(T* p) { return zend(p) - p; }
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
 // Light-weaight proxy container
 template<class T>

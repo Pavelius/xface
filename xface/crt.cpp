@@ -119,12 +119,32 @@ unsigned szupper(unsigned u) {
 	return u;
 }
 
-char* szupper(char* p, int count) {
+void szupper(char* p) {
 	char* s1 = p;
 	const char* p1 = p;
-	while(count-- > 0)
-		szput(&s1, szupper(szget(&p1)));
-	return p;
+	unsigned sym;
+	do {
+		sym = szget(&p1);
+		szput(&s1, szupper(sym));
+	} while(sym);
+}
+
+void szlower(char* p) {
+	char* s1 = p;
+	const char* p1 = p;
+	unsigned sym;
+	do {
+		sym = szget(&p1);
+		szput(&s1, szlower(sym));
+	} while(sym);
+}
+
+void szchange(char* p, char s1, char s2) {
+	while(*p) {
+		if(*p == s1)
+			*p = s2;
+		p++;
+	}
 }
 
 unsigned szlower(unsigned u) {
@@ -153,23 +173,6 @@ int getdigitscount(unsigned number) {
 	if(number < 100000000)
 		return 8;
 	return 9;
-}
-
-void szlower(char* p, int count) {
-	char* s1 = p;
-	const char* p1 = p;
-	if(count == -1) {
-		while(true) {
-			unsigned sym = szget(&p1);
-			if(!sym)
-				break;
-			szput(&s1, szlower(sym));
-		}
-		szput(&s1, 0);
-	} else {
-		while(count-- > 0)
-			szput(&s1, szlower(szget(&p1)));
-	}
 }
 
 unsigned szget(const char** input, codepages code) {

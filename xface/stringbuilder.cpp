@@ -42,7 +42,7 @@ static const char* psnum10(const char* p, int& value) {
 }
 
 // Parse string to number
-const char* stringbuilder::readnum(const char* p, int& value) {
+const char* stringbuilder::read(const char* p, int& value) {
 	value = 0;
 	if(!p)
 		return 0;
@@ -171,76 +171,6 @@ const char* psstr(const char* p, char* r, char end_symbol) {
 	return p;
 }
 
-char* sznum(char* result, int num, int precision, const char* empthy, int radix) {
-	char* p1 = result;
-	if(num == 0) {
-		if(empthy)
-			zcpy(p1, empthy);
-		else {
-			zcpy(p1, "0");
-			while(--precision > 0)
-				zcat(p1, "0");
-		}
-		p1 = zend(p1);
-	} else {
-		char temp[32];
-		int p = 0;
-		if(num < 0) {
-			*p1++ = '-';
-			num = -num;
-		}
-		switch(radix) {
-		case 16:
-			while(num) {
-				int a = (num%radix);
-				if(a > 9)
-					temp[p++] = 'A' - 10 + a;
-				else
-					temp[p++] = '0' + a;
-				num /= radix;
-			}
-			break;
-		default:
-			while(num) {
-				temp[p++] = '0' + (num%radix);
-				num /= radix;
-			}
-			break;
-		}
-		while(precision-- > p)
-			*p1++ = '0';
-		while(p)
-			*p1++ = temp[--p];
-		p1[0] = 0;
-	}
-	return result;
-}
-
-int sz2num(const char* p1, const char** pp1) {
-	int result = 0;
-	bool sign = false;
-	const int radix = 10;
-	while(*p1 && *p1 != '-' && (*p1 < '0' || *p1 > '9'))
-		p1++;
-	if(*p1 == '-') {
-		sign = true;
-		p1++;
-	}
-	while(*p1) {
-		char a = *p1;
-		if(a < '0' || a > '9')
-			break;
-		result = result * radix;
-		result += a - '0';
-		p1++;
-	}
-	if(sign)
-		result = -result;
-	if(pp1)
-		*pp1 = p1;
-	return result;
-}
-
 bool szstart(const char* text, const char* name) {
 	while(*name) {
 		if(*name++ != *text++)
@@ -307,7 +237,7 @@ struct stringbuilder::grammar {
 	unsigned		name_size;
 	unsigned		change_size;
 	constexpr grammar() : name(0), change(0), name_size(0), change_size(0) {}
-	grammar(const char* name, const char* change) :
+	constexpr grammar(const char* name, const char* change) :
 		name(name), change(change), name_size(zlen(name)), change_size(zlen(change)) {
 	}
 	operator bool() const { return name != 0; }
@@ -334,13 +264,18 @@ void stringbuilder::lower() {
 		*p = lower(*p);
 }
 
+void stringbuilder::upper() {
+	for(auto p = pb; *p; p++)
+		*p = upper(*p);
+}
+
 void stringbuilder::addidentifier(const char* identifier) {
 	addv("[-", 0);
 	addv(identifier, 0);
 	addv("]", 0);
 }
 
-const char* stringbuilder::readidn(const char* p, char* ps, const char* pe) {
+const char* stringbuilder::read(const char* p, char* ps, const char* pe) {
 	if(*p == '(') {
 		p++;
 		while(*p && *p != ')') {
@@ -363,7 +298,7 @@ const char* stringbuilder::readidn(const char* p, char* ps, const char* pe) {
 
 const char* stringbuilder::readvariable(const char* p) {
 	char temp[260];
-	p = readidn(p, temp, temp + sizeof(temp) - 1);
+	p = read(p, temp, temp + sizeof(temp) - 1);
 	addidentifier(temp);
 	return p;
 }
@@ -521,6 +456,31 @@ void stringbuilder::change(char s1, char s2) {
 			break;
 		if(*p == s1)
 			*p++ = s2;
+	}
+}
+
+void stringbuilder::change(const char* s1, const char* s2) {
+	if(!s1 || s1[0] == 0)
+		return;
+	auto n1 = zlen(s1);
+	auto n2 = zlen(s2);
+	for(auto p = pb; p < pe; p++) {
+		if(*p == 0)
+			break;
+		if(*p == s1[0]) {
+			auto n = this->pe - p;
+			if(n1 > n)
+				return;
+			if(memcmp(p, s1, n1) != 0)
+				continue;
+			auto c = n2;
+			if(c > (pe - this->p - 1))
+				c = pe - this->p - 1;
+			if(c > n1)
+				memmove(p + c, p + n1, pe - p - c);
+			memcpy(p, s2, n2);
+			p += n2 - 1;
+		}
 	}
 }
 

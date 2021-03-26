@@ -21,6 +21,7 @@ static lexer::word words_c3[] = {
 	{"default", Keyword},
 	{"import", Keyword}, // Directive
 	{"enum", Keyword},
+	{"return", Keyword},
 };
 static lexer source = {"c2", "*.c2", "><|&~=!+-/*,.;", ">=<=!===>><<", words_c3, sizeof(words_c3) / sizeof(words_c3[0]),
 	{'{', '}'},

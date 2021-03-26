@@ -192,7 +192,9 @@
     <ClCompile Include="point.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="surface_serial.cpp" />
-    <ClCompile Include="sz2numf.cpp" />
+    <ClCompile Include="sz2numf.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="szdup.cpp" />
     <ClCompile Include="valuelist.cpp" />
     <ClCompile Include="widget_application.cpp">

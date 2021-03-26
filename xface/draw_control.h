@@ -266,6 +266,7 @@ struct table : list {
 	void					cellnumber(const rect& rc, int line, int column);
 	void					cellpercent(const rect& rc, int line, int column);
 	void					celltext(const rect& rc, int line, int column);
+	virtual bool			change(int row, column& col, bool run);
 	virtual bool			change(bool run);
 	void					changecheck(const rect& rc, int line, int column);
 	bool					changefield(const rect& rc, unsigned flags, stringbuilder& sb);

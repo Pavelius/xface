@@ -477,8 +477,11 @@ bool table::changefield(const rect& rc, unsigned flags, stringbuilder& sb) {
 void table::changenumber(const rect& rc, int line, int column) {
 	char temp[32]; stringbuilder sb(temp);
 	sb.add("%1i", columns[column].get(get(line)));
-	if(changefield(rc, columns[column].align, sb))
-		columns[column].set(get(line), sz2num(temp));
+	if(changefield(rc, columns[column].align, sb)) {
+		int value = 0;
+		stringbuilder::read(temp, value);
+		columns[column].set(get(line), value);
+	}
 }
 
 void table::changetext(const rect& rc, int line, int column) {
@@ -522,6 +525,21 @@ void table::changecheck(const rect& rc, int line, int column) {
 		columns[column].set(p, v | b);
 }
 
+bool table::change(int row, column& col, bool run) {
+	if(col.is(ColumnReadOnly))
+		return false;
+	auto pv = col.method;
+	if(!pv)
+		return false;
+	if(!pv->change)
+		return false;
+	if(run) {
+		if(current_rect)
+			(this->*pv->change)(current_rect, current, current_column);
+	}
+	return true;
+}
+
 bool table::change(bool run) {
 	if(read_only)
 		return false;
@@ -529,19 +547,7 @@ bool table::change(bool run) {
 		return false;
 	if(current >= getmaximum())
 		return false;
-	if(columns[current_column].is(ColumnReadOnly))
-		return false;
-	auto pv = columns[current_column].method;
-	if(!pv)
-		return false;
-	if(!pv->change)
-		return false;
-	if(run) {
-		if(!current_rect)
-			return true;
-		(this->*pv->change)(current_rect, current, current_column);
-	}
-	return true;
+	return change(current, columns[current_column], run);
 }
 
 void table::cell(const rect& rc, int line, int column, const char* ps) {

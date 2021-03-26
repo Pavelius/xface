@@ -46,7 +46,7 @@ static void setvalueg(const anyval& v, bool istext, const char* result) {
 			p[len] = 0;
 		}
 	} else
-		value = sz2num(result);
+		stringbuilder::read(result, value);
 	v.set(value);
 }
 

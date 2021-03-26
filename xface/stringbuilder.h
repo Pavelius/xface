@@ -33,19 +33,22 @@ public:
 	char*				begin() { return pb; }
 	const char*			begin() const { return pb; }
 	void				change(char s1, char s2);
+	void				change(const char* s1, const char* s2);
 	void				clear() { pb[0] = 0; p = pb; }
 	const char*			end() const { return pe; }
 	char*				get() const { return p; }
+	unsigned			getlenght() const { return pb - p; }
 	unsigned			getmaximum() const { return pe - pb - 1; }
 	static bool			ischa(unsigned char sym) { return (sym >= 'A' && sym <= 'Z') || (sym >= 'a' && sym <= 'z') || sym >= 0xC0; }
 	static bool			isnum(unsigned char sym) { return sym >= '0' && sym <= '9'; }
 	bool				ispos(const char* v) const { return p == v; }
 	static unsigned char lower(unsigned char sym);
 	void				lower();
-	static const char*	readidn(const char* p, char* result, const char* result_end);
-	static const char*	readnum(const char* p1, int& result);
+	static const char*	read(const char* p, char* result, const char* result_end);
+	static const char*	read(const char* p, int& result);
 	void				set(char* v) { p = v; p[0] = 0; }
 	static unsigned char upper(unsigned char sym);
+	void				upper();
 };
 // Callback function for title, header or getting name
 typedef const char* (*fntext)(const void* object, stringbuilder& sb);

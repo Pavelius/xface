@@ -227,7 +227,7 @@ static void callback_choose_color() {
 
 static const char* getname(char* temp, const setting::element& e) {
 	zcpy(temp, e.name);
-	szupper(temp);
+	temp[0] = szupper(temp[0]);
 	return temp;
 }
 
@@ -387,7 +387,7 @@ const char* draw::controls::getlabel(const void* object, stringbuilder& sb) {
 	if(pc->ismodified())
 		sb.add("*");
 	if(use_uppercase_label)
-		szupper(sb, 1);
+		sb.begin()[0] = szupper(sb.begin()[0]);
 	return sb;
 }
 
@@ -858,7 +858,9 @@ static int getnum(const char* value) {
 		return 0;
 	if(strcmp(value, "null") == 0)
 		return 0;
-	return sz2num(value);
+	int int_value = 0;
+	stringbuilder::read(value, int_value);
+	return int_value;
 }
 
 static struct settings_settings_strategy : io::strategy {
@@ -1019,9 +1021,11 @@ static struct controls_settings_strategy : io::strategy {
 		auto e = const_cast<controls::control::plugin*>(controls::control::plugin::find(n.parent->name));
 		if(!e)
 			return;
-		else if(n == "Docking")
-			e->dock = (dock_s)sz2num(value);
-		else if(n == "Visible")
+		else if(n == "Docking") {
+			int int_value = 0;
+			stringbuilder::read(value, int_value);
+			e->dock = (dock_s)int_value;
+		} else if(n == "Visible")
 			e->visible = getnum(value);
 	}
 	controls_settings_strategy() : strategy("controls", "settings") {}

@@ -1,5 +1,50 @@
 #include "crt.h"
 
+char* sznum(char* result, int num, int precision, const char* empthy, int radix) {
+	char* p1 = result;
+	if(num == 0) {
+		if(empthy)
+			zcpy(p1, empthy);
+		else {
+			zcpy(p1, "0");
+			while(--precision > 0)
+				zcat(p1, "0");
+		}
+		p1 = zend(p1);
+	} else {
+		char temp[32];
+		int p = 0;
+		if(num < 0) {
+			*p1++ = '-';
+			num = -num;
+		}
+		switch(radix) {
+		case 16:
+			while(num) {
+				int a = (num % radix);
+				if(a > 9)
+					temp[p++] = 'A' - 10 + a;
+				else
+					temp[p++] = '0' + a;
+				num /= radix;
+			}
+			break;
+		default:
+			while(num) {
+				temp[p++] = '0' + (num % radix);
+				num /= radix;
+			}
+			break;
+		}
+		while(precision-- > p)
+			*p1++ = '0';
+		while(p)
+			*p1++ = temp[--p];
+		p1[0] = 0;
+	}
+	return result;
+}
+
 char* sznum(char* outbuf, float f, int precision, const char* empthy) {
 	typedef union {
 		long	L;
