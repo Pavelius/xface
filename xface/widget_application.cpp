@@ -376,7 +376,7 @@ const char* draw::controls::getlabel(const void* object, stringbuilder& sb) {
 		else
 			sb.add(p);
 		if(use_no_extension_label) {
-			char* p1 = (char*)szext(p);
+			char* p1 = (char*)szext(sb);
 			if(p1) {
 				while(p1 > sb.begin() && p1[-1] == '.')
 					p1--;

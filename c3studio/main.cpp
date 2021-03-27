@@ -18,6 +18,9 @@ static void update_file(const char* url) {
 	sb.add("ast");
 }
 
+static void get_url_ast(stringbuilder& sb, const char*) {
+}
+
 static void get_current_dir() {
 	char temp[260];
 	io::file::getdir(temp, sizeof(temp));

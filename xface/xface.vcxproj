@@ -154,6 +154,7 @@
     <ClCompile Include="draw_tree.cpp" />
     <ClCompile Include="io_plugin.cpp" />
     <ClCompile Include="markup.cpp" />
+    <ClCompile Include="parameters.cpp" />
     <ClCompile Include="reestr.cpp" />
     <ClCompile Include="requisit.cpp" />
     <ClCompile Include="bsreq.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="draw_animation.h" />
     <ClInclude Include="io_plugin.h" />
     <ClInclude Include="markup.h" />
+    <ClInclude Include="parameters.h" />
     <ClInclude Include="reestr.h" />
     <ClInclude Include="setting.h" />
     <ClInclude Include="stringbuilder.h" />
