@@ -8,9 +8,12 @@
     <ClCompile Include="..\xface\widget_textview.cpp" />
     <ClCompile Include="c3_lexer.cpp" />
     <ClCompile Include="lexer.cpp" />
+    <ClCompile Include="package_compile.cpp" />
+    <ClCompile Include="section.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="package.h" />
     <ClInclude Include="lexer.h" />
+    <ClInclude Include="section.h" />
   </ItemGroup>
 </Project>

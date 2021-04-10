@@ -107,12 +107,13 @@ public:
 	static symbol		def_symbols[];
 	pckh				findstr(const char* v);
 	pckh				findsym(pckh id, pckh parent, unsigned level) const;
-	static bool			findurl(stringbuilder sb, const char* id, const char* ext);
+	static bool			findurl(stringbuilder sb, const char* id, const char* ext, const char** res = 0);
 	void				getast(stringbuilder& sb, unsigned v) const;
 	const ast*			getast(pckh v) const;
 	unsigned			getresult(pckh sym) const;
 	unsigned			getindex(pckh v) const;
 	pckh				getleft(pckh v) const;
+	static bool			getpath(const char* path, stringbuilder& url, stringbuilder& id);
 	pckh				getparent(pckh v) const;
 	const char*			getstr(pckh v) const;
 	void				getsym(stringbuilder& sb, pckh v) const;

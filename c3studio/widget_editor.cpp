@@ -644,13 +644,14 @@ public:
 		return true;
 	}
 	bool save(const char* url) override {
-		io::file file(url, StreamText | StreamWrite);
-		if(!file)
-			return false;
-		file << (char*)data;
+		if(true) {
+			io::file file(url, StreamText | StreamWrite);
+			if(!file)
+				return false;
+			file << (char*)data;
+		}
 		modified = false;
 		post("editor.code.save", url, 0);
-		auto i = file.getchangedate();
 		return true;
 	}
 };

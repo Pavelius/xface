@@ -890,6 +890,7 @@ DLL unsigned WINAPI			GetCurrentDirectoryA(unsigned nBufferLength, char* lpBuffe
 DLL void* WINAPI			GetDC(void*);
 DLL int WINAPI				GetExitCodeThread(void* hThread, unsigned* lpExitCode);
 DLL int WINAPI				GetFileTime(int hFile, FILETIME * lpCreationTime, FILETIME * lpLastAccessTime, FILETIME * lpLastWriteTime);
+DLL unsigned WINAPI			GetFinalPathNameByHandleA(int hFile, char* lpszFilePath, unsigned cchFilePath, unsigned dwFlags);
 WINGDIAPI DWORD WINAPI		GetGlyphOutlineW(void*, UINT, UINT, GLYPHMETRICS*, DWORD, void*, const MAT2*);
 DLL void WINAPI				GetLocalTime(SYSTEMTIME* lpSystemTime);
 DLL unsigned WINAPI			GetModuleFileNameA(void* hModule, char* lpFilename, unsigned nSize);

@@ -9,13 +9,11 @@ void initialize_lexer();
 void logmsg(const char* format, ...);
 
 static void update_file(const char* url) {
-	char temp[260]; stringbuilder sb(temp);
-	sb.add(url);
-	auto p = (char*)szext(temp);
-	if(!p)
+	char t1[260]; stringbuilder s1(t1);
+	char t2[260]; stringbuilder s2(t2);
+	if(!code::package::getpath(url, s1, s2))
 		return;
-	sb.set(p);
-	sb.add("ast");
+	code::package::compile(t1, t2);
 }
 
 static void get_url_ast(stringbuilder& sb, const char*) {

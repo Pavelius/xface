@@ -465,12 +465,45 @@ void package::addurl(stringbuilder& sb, const char* url, const char* id, const c
 	sb.add(ext);
 }
 
-bool package::findurl(stringbuilder sb, const char* id, const char* ext) {
+bool package::findurl(stringbuilder sb, const char* id, const char* ext, const char** res) {
 	sb.clear(); addurl(sb, urls::project, id, ext);
+	if(res)
+		*res = urls::project;
 	if(!io::file::exist(sb)) {
 		sb.clear(); addurl(sb, urls::library, id, ext);
-		if(!io::file::exist(sb))
+		if(res)
+			*res = urls::library;
+		if(!io::file::exist(sb)) {
+			if(res)
+				*res = 0;
 			return false;
+		}
 	}
+	return true;
+}
+
+bool package::getpath(const char* path, stringbuilder& url, stringbuilder& id) {
+	char temp[260]; stringbuilder sb(temp);
+	sb.add(path);
+	sb.change('\\', '/');
+	sb.lower();
+	url.clear();
+	id.clear();
+	auto n = 0;
+	if(szstart(temp, code::urls::project))
+		n = zlen(code::urls::project);
+	else if(szstart(temp, code::urls::library))
+		n = zlen(code::urls::library);
+	else
+		return false;
+	if(n) {
+		temp[n - 1] = 0;
+		url.add(temp);
+		url.add("/");
+	}
+	auto p = (char*)szext(temp + n);
+	if(p)
+		p[-1] = 0;
+	id.add(temp + n);
 	return true;
 }

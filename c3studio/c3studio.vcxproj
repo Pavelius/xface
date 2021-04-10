@@ -151,12 +151,15 @@
     <ClCompile Include="lexer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="package.cpp" />
+    <ClCompile Include="package_compile.cpp" />
+    <ClCompile Include="section.cpp" />
     <ClCompile Include="widget_editor.cpp" />
     <ClCompile Include="widget_reqtable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lexer.h" />
     <ClInclude Include="package.h" />
+    <ClInclude Include="section.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

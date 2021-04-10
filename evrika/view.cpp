@@ -18,17 +18,13 @@ static struct header_control : controls::tree, controls::control::plugin {
 	command* getcommands() const override {
 		return 0;
 	}
-	void expanding(int index, int level) override {
-		if(!level) {
-			for(auto& e : databases[HeaderType].records<header>()) {
-				auto pn = (element*)addrow();
-				pn->level = 1;
-				pn->setgroup(true);
-			}
+	void expanding(int index) override {
+		if(index==-1) {
+			for(auto& e : databases[HeaderType].records<header>())
+				addnode(index, 0, 0, &e, true);
 		} else {
 			auto pc = (element*)get(index);
-			auto pn = (element*)insert(index, level + 1);
-			pn->setgroup(true);
+			auto pn = (element*)addnode(index, 0, 0, 0, true);;
 		}
 	}
 	header_control() : plugin("header", DockLeft) {
@@ -47,8 +43,7 @@ void initialize_metadata();
 
 int main() {
 	initialize_metadata();
-	metadata_instance.expanding(0, 0);
-	draw::application("Evrika", true, pass_verification, 0, 0);
+	draw::application("Evrika", pass_verification, 0, 0);
 }
 
 int __stdcall WinMain(void* ci, void* pi, char* cmd, int sw) {

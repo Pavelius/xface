@@ -145,3 +145,7 @@ unsigned io::file::getchangedate() const {
 	FileTimeToSystemTime(&ft, &st);
 	return 0;
 }
+
+void io::file::getname(char* url, int size) {
+	GetFinalPathNameByHandleA(handle, url, size, 0);
+}

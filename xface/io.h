@@ -56,6 +56,7 @@ struct file : stream {
 	static bool			exist(const char* url);
 	unsigned			getchangedate() const;
 	static char*		getdir(char* url, int size);
+	void				getname(char* ulr, int size);
 	static char*		getmodule(char* url, int size);
 	static bool			makedir(const char* url);
 	int					read(void* result, int count) override;

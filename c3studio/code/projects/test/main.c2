@@ -15,7 +15,8 @@ enum abilities {
 };
 
 int main() {
-	// Новый комментарий
+	// Новый комментарий.
+	// Что делать если комментариев несколько.
 	rect rc;
 	rc.x1 = 0;
 	rc.x2 = rc.x1;
@@ -26,6 +27,6 @@ int main() {
 	crt.exit(0);
 }
 
-// Print function ++
+// Функция печати
 void print(char* text, int v) {
 }
