@@ -190,7 +190,6 @@
     <ClCompile Include="draw_text.cpp" />
     <ClCompile Include="draw_textf.cpp" />
     <ClCompile Include="io.cpp" />
-    <ClCompile Include="point.cpp" />
     <ClCompile Include="strlib.cpp" />
     <ClCompile Include="surface_serial.cpp" />
     <ClCompile Include="sz2numf.cpp">

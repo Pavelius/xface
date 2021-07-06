@@ -30,9 +30,6 @@
     <ClCompile Include="color.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="point.cpp">
-      <Filter>support</Filter>
-    </ClCompile>
     <ClCompile Include="win_clipboard.cpp">
       <Filter>platform\windows</Filter>
     </ClCompile>
