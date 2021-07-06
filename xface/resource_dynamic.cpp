@@ -4,6 +4,15 @@
 
 using namespace draw;
 
+namespace {
+struct resei {
+	const char*		name;
+	const char*		folder;
+	sprite*			data;
+	bool			notfound;
+};
+}
+
 static vector<resei> source;
 
 static resei* find(const char* name, const char* folder) {

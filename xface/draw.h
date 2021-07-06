@@ -148,12 +148,6 @@ struct hoti {
 	explicit operator bool() const { return key != 0; }
 	void				zero() { key = InputUpdate; }
 };
-struct resei {
-	const char*			name;
-	const char*			folder;
-	sprite*				data;
-	bool				notfound;
-};
 extern hoti				hot;
 struct surface {
 	struct plugin {
