@@ -1,6 +1,12 @@
-import platform.kernel32;
+﻿import platform.kernel32; // This is DLL. And any using of this dll cause system call
 
 // Leave current program with specific exit code
 void exit(int code) {
 	kernel32.ExitProcess(code);
+}
+
+void print(int n) {
+	int a = 10;
+	int b = 12;
+	int c = a + b;
 }

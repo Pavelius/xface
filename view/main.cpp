@@ -14,6 +14,7 @@ bool		offset;
 bool		center = true;
 bool		grid;
 bool		mirror;
+bool		vmirror;
 namespace text {
 bool	bottom;
 }
@@ -27,7 +28,7 @@ static void enter_number(int& value) {
 	controls::textedit te(temp, sizeof(temp), true);
 	if(!te.editing(rc))
 		return;
-	value = sz2num(temp);
+	stringbuilder::read(temp, value);
 }
 
 char* szpne(char* result, const char* url, const char* name, const char* ext) {
@@ -51,6 +52,8 @@ unsigned char* load_pallette(const char* url) {
 		result = loadb(szpne(temp, url, szfnamewe(temp2, url), "pal"));
 	return (unsigned char*)result;
 }
+
+static const char* mode_names[] = {"Auto", "RAW", "RLE", "ALC", "RAW8", "RLE8"};
 
 void mainview(const char* url) {
 	unsigned char* pal = 0;
@@ -107,7 +110,9 @@ void mainview(const char* url) {
 		int cy = f.sy;
 		unsigned flags_image = 0;
 		if(setting::show::mirror)
-			flags_image = ImageMirrorH;
+			flags_image |= ImageMirrorH;
+		if(setting::show::vmirror)
+			flags_image |= ImageMirrorV;
 		if(setting::show::center)
 			image(x, y, pi, current_frame, flags_image);
 		else
@@ -122,6 +127,7 @@ void mainview(const char* url) {
 			sb.addn("frames total %1i", pi->count);
 		if(setting::show::center)
 			sb.adds("center");
+		sb.adds(mode_names[f.encode]);
 		auto frame_name = pi->getstring(current);
 		if(frame_name && frame_name[0])
 			sb.addn(frame_name);
@@ -139,22 +145,25 @@ void mainview(const char* url) {
 		case KeyLeft:
 			current--;
 			break;
-		case Alpha + 'B':
+		case 'B':
 			setting::show::offset = !setting::show::offset;
 			break;
-		case Alpha + 'C':
+		case 'C':
 			setting::show::center = !setting::show::center;
 			break;
-		case Alpha + 'M':
+		case 'M':
 			setting::show::mirror = !setting::show::mirror;
 			break;
-		case Alpha + 'G':
+		case 'U':
+			setting::show::vmirror = !setting::show::vmirror;
+			break;
+		case 'G':
 			setting::show::grid = !setting::show::grid;
 			break;
-		case Ctrl + Alpha + 'G':
+		case 'F':
 			enter_number(current);
 			break;
-		case Alpha + 'N':
+		case 'N':
 			setting::show::text::bottom = !setting::show::text::bottom;
 			break;
 		case InputTimer:

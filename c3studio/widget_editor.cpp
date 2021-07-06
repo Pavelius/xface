@@ -38,7 +38,7 @@ class widget_editor : public control, vector<char> {
 		const char*		after;
 	};
 	const char*			url = 0;
-	const code::package* package = 0;
+	code::package*		package = 0;
 	int					cash_origin = -1;
 	int					lines_per_page = 0;
 	int					p1 = 0, p2 = 0;
@@ -618,7 +618,7 @@ class widget_editor : public control, vector<char> {
 			{}};
 		return commands;
 	}
-	const code::package* findpackage(const char* url) {
+	code::package* findpackage(const char* url) {
 		for(auto& e : bsdata<code::package>()) {
 			if(!e)
 				continue;
@@ -628,13 +628,21 @@ class widget_editor : public control, vector<char> {
 		}
 		return 0;
 	}
+	bool findpackage() {
+		char r1[260]; stringbuilder s1(r1);
+		char r2[260]; stringbuilder s2(r2);
+		if(!code::package::getpath(url, s1, s2))
+			return false;
+		package = findpackage(r2);
+		return package != 0;
+	}
 public:
 	bool open(const char* url) {
 		auto p = loadt(url);
 		if(!p)
 			return false;
 		this->url = szdup(url);
-		this->package = findpackage("main");
+		findpackage();
 		auto s = zlen(p);
 		reserve(s + 1);
 		setcount(s);
@@ -642,6 +650,25 @@ public:
 		delete p;
 		invalidate();
 		return true;
+	}
+	void compile_package() {
+		if(!package)
+			return;
+		char r1[260]; stringbuilder s1(r1);
+		char r2[260]; stringbuilder s2(r2);
+		if(!code::package::getpath(url, s1, s2))
+			return;
+		package->clear();
+		package->addsym(package->addstr("this"), code::Class, package->addstr(r2), 0, 0, 0);
+		package->compile(begin());
+	}
+	void save_package(const char* url) {
+		if(!package)
+			return;
+		char temp[260]; stringbuilder sb(temp);
+		sb.add(url);
+		sb.change(".c2", ".ast");
+		package->write(temp);
 	}
 	bool save(const char* url) override {
 		if(true) {
@@ -651,7 +678,9 @@ public:
 			file << (char*)data;
 		}
 		modified = false;
-		post("editor.code.save", url, 0);
+		compile_package();
+		save_package(url);
+		post("editor.code.save", url, (unsigned)package);
 		return true;
 	}
 };

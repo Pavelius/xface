@@ -386,6 +386,7 @@ struct tree : table, protected array {
 	void					remove(int index) override {}
 	void					swap(int i1, int i2) override;
 	void					view(const rect& rc) override;
+	void					update(void* p);
 };
 // Cell visual drawing
 struct visual {

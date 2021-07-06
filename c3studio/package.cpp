@@ -505,5 +505,6 @@ bool package::getpath(const char* path, stringbuilder& url, stringbuilder& id) {
 	if(p)
 		p[-1] = 0;
 	id.add(temp + n);
+	id.change('/', '.');
 	return true;
 }

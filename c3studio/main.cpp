@@ -4,17 +4,10 @@
 #include "package.h"
 
 void add_package(const char* id);
+void update_package(code::package* p);
 void initialize_lexer();
 
 void logmsg(const char* format, ...);
-
-static void update_file(const char* url) {
-	char t1[260]; stringbuilder s1(t1);
-	char t2[260]; stringbuilder s2(t2);
-	if(!code::package::getpath(url, s1, s2))
-		return;
-	code::package::compile(t1, t2);
-}
 
 static void get_url_ast(stringbuilder& sb, const char*) {
 }
@@ -28,7 +21,7 @@ static void get_current_dir() {
 
 void draw::post(const char* id, const char* p1, unsigned p2) {
 	if(equal(id, "editor.code.save")) {
-		update_file(p1);
+		//update_package((code::package*)p2);
 	} else
 		logmsg("Не обработано \"%1\" с параметрами %2, %3i", id, p1, p2);
 }

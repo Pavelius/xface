@@ -308,7 +308,7 @@ extern char				link[4096];
 extern color*			palt;
 void					pixel(int x, int y);
 void					pixel(int x, int y, unsigned char alpha);
-void					post(const char* id, const char* p1, unsigned p2); // Extern message handlers
+void					post(const char* id, const char* url, unsigned p2); // Extern message handlers
 unsigned char*			ptr(int x, int y);
 int						rawinput();
 void					rectb(rect rc); // Draw rectangle border

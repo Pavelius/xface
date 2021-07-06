@@ -44,6 +44,13 @@ void tree::collapse(int i) {
 	}
 }
 
+void tree::update(void* p) {
+	auto i = find(0, -1, p);
+	if(i == -1)
+		return;
+	expand(i);
+}
+
 void tree::expand(int index) {
 	auto before_count = getmaximum();
 	if(before_count == 0)

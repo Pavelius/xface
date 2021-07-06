@@ -196,3 +196,7 @@ void add_package(const char* id) {
 	p->addsym(p->addstr("this"), Class, p->addstr(id), 0, 0, 0);
 	p->read(temp);
 }
+
+void update_package(code::package* p) {
+	instance.update(p);
+}
