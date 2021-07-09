@@ -22,40 +22,40 @@ static struct sys_key_mapping {
 	unsigned    key;
 	unsigned    id;
 } sys_key_mapping_data[] = {{VK_CONTROL, Ctrl},
-{VK_MENU, Alt},
-{VK_SHIFT, Shift},
-{VK_LEFT, KeyLeft},
-{VK_RIGHT, KeyRight},
-{VK_UP, KeyUp},
-{VK_DOWN, KeyDown},
-{VK_PRIOR, KeyPageUp},
-{VK_NEXT, KeyPageDown},
-{VK_HOME, KeyHome},
-{VK_END, KeyEnd},
-{VK_BACK, KeyBackspace},
-{VK_DELETE, KeyDelete},
-{VK_RETURN, KeyEnter},
-{VK_ESCAPE, KeyEscape},
-{VK_SPACE, KeySpace},
-{VK_TAB, KeyTab},
-{VK_F1, F1},
-{VK_F2, F2},
-{VK_F3, F3},
-{VK_F4, F4},
-{VK_F5, F5},
-{VK_F6, F6},
-{VK_F7, F7},
-{VK_F8, F8},
-{VK_F9, F9},
-{VK_F10, F10},
-{VK_F11, F11},
-{VK_F12, F12},
-{VK_MULTIPLY, (unsigned)'*'},
-{VK_DIVIDE, (unsigned)'/'},
-{VK_ADD, (unsigned)'+'},
-{VK_SUBTRACT, (unsigned)'-'},
-{VK_OEM_COMMA, (unsigned)','},
-{VK_OEM_PERIOD, (unsigned)'.'},
+	{VK_MENU, Alt},
+	{VK_SHIFT, Shift},
+	{VK_LEFT, KeyLeft},
+	{VK_RIGHT, KeyRight},
+	{VK_UP, KeyUp},
+	{VK_DOWN, KeyDown},
+	{VK_PRIOR, KeyPageUp},
+	{VK_NEXT, KeyPageDown},
+	{VK_HOME, KeyHome},
+	{VK_END, KeyEnd},
+	{VK_BACK, KeyBackspace},
+	{VK_DELETE, KeyDelete},
+	{VK_RETURN, KeyEnter},
+	{VK_ESCAPE, KeyEscape},
+	{VK_SPACE, KeySpace},
+	{VK_TAB, KeyTab},
+	{VK_F1, F1},
+	{VK_F2, F2},
+	{VK_F3, F3},
+	{VK_F4, F4},
+	{VK_F5, F5},
+	{VK_F6, F6},
+	{VK_F7, F7},
+	{VK_F8, F8},
+	{VK_F9, F9},
+	{VK_F10, F10},
+	{VK_F11, F11},
+	{VK_F12, F12},
+	{VK_MULTIPLY, (unsigned)'*'},
+	{VK_DIVIDE, (unsigned)'/'},
+	{VK_ADD, (unsigned)'+'},
+	{VK_SUBTRACT, (unsigned)'-'},
+	{VK_OEM_COMMA, (unsigned)','},
+	{VK_OEM_PERIOD, (unsigned)'.'},
 };
 
 static int tokey(unsigned key) {
@@ -253,11 +253,11 @@ void draw::getwindowpos(point& pos, point& size, unsigned* flags) {
 		GetWindowPlacement(hwnd, &wp);
 		*flags = 0;
 		auto wf = GetWindowLongA(hwnd, GWL_STYLE);
-		if(wp.showCmd==SW_SHOWMAXIMIZED)
+		if(wp.showCmd == SW_SHOWMAXIMIZED)
 			*flags |= WFMaximized;
-		if(wf&WS_THICKFRAME)
+		if(wf & WS_THICKFRAME)
 			*flags |= WFResize;
-		if(wf&WS_MINIMIZEBOX)
+		if(wf & WS_MINIMIZEBOX)
 			*flags |= WFMinmax;
 	}
 }
@@ -284,13 +284,13 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 		height = (GetSystemMetrics(SM_CYFULLSCREEN) / 3) * 2;
 	// custom
 	unsigned dwStyle = WS_CAPTION | WS_SYSMENU; // Windows Style;
-	if(flags&WFResize)
+	if(flags & WFResize)
 		dwStyle |= WS_THICKFRAME;
 	else
 		dwStyle |= WS_BORDER;
-	if(flags&WFMinmax) {
+	if(flags & WFMinmax) {
 		dwStyle |= WS_MINIMIZEBOX;
-		if(flags&WFResize)
+		if(flags & WFResize)
 			dwStyle |= WS_MAXIMIZEBOX;
 	}
 	RECT MinimumRect = {0, 0, width, height};
@@ -318,7 +318,7 @@ void draw::create(int x, int y, int width, int height, unsigned flags, int bpp) 
 	if(!hwnd)
 		return;
 	int cmdShow = SW_SHOWNORMAL;
-	if(flags&WFMaximized)
+	if(flags & WFMaximized)
 		cmdShow = SW_SHOWMAXIMIZED;
 	ShowWindow(hwnd, cmdShow);
 	// Update mouse coordinates
@@ -352,7 +352,7 @@ int draw::rawinput() {
 		if(m == InputNoUpdate)
 			continue;
 		if(m) {
-			if(m != MouseMove && m >= (unsigned)MouseLeft) {
+			if(m != MouseMove && (m < (unsigned)InputSymbol || m >= (unsigned)MouseLeft)) {
 				if(GetKeyState(VK_SHIFT) < 0)
 					m |= Shift;
 				if(GetKeyState(VK_MENU) < 0)
