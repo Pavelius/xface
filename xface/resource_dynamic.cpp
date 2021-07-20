@@ -44,7 +44,7 @@ const sprite* draw::gres(const char* name, const char* folder) {
 				if(dc.read(temp, 0, 32)) {
 					unsigned size = sizeof(sprite) + dc.width * dc.height * 3;
 					p->data = (sprite*)new char[size]; memset(p->data, 0, size);
-					p->data->frames[0].encode = sprite::RAW;
+					p->data->frames[0].encode = sprite::encodes::RAW;
 					p->data->frames[0].sx = dc.width;
 					p->data->frames[0].sy = dc.height;
 					p->data->frames[0].offset = sizeof(sprite);

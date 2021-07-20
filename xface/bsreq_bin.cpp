@@ -100,27 +100,27 @@ struct context {
 			if(p == records_stop)
 				break;
 			switch(p->subtype) {
-			case KindNumber:
-			case KindCFlags:
-			case KindEnum:
+			case bsreq::kind::Number:
+			case bsreq::kind::CFlags:
+			case bsreq::kind::Enum:
 				serial(p->ptr(object), p->lenght);
 				break;
-			case KindText:
-			case KindReference:
+			case bsreq::kind::Text:
+			case bsreq::kind::Reference:
 				for(unsigned i = 0; i < p->count; i++)
 					serial((void**)p->ptr(object, i), p->type, p->source);
 				break;
-			case KindScalar:
+			case bsreq::kind::Scalar:
 				for(unsigned i = 0; i < p->count; i++)
 					serial(p->ptr(object, i), p->type);
 				break;
-			case KindADat:
+			case bsreq::kind::ADat:
 				serial_adat(((adat<char, 4>*)p->ptr(object)), p->type, p->size);
 				break;
-			case KindARem:
+			case bsreq::kind::ARem:
 				serial_rem(((vector<char>*)p->ptr(object)), p->type, p->size);
 				break;
-			case KindList:
+			case bsreq::kind::List:
 				break;
 			}
 		}

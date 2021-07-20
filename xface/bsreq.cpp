@@ -83,12 +83,12 @@ const bsreq* bsreq::getname() const {
 }
 
 const char* bsreq::gets(const void* p) const {
-	if(is(KindText)) {
+	if(is(kind::Text)) {
 		auto v = (const char*)get(p);
 		if(!v)
 			return "";
 		return v;
-	} else if(is(KindReference)) {
+	} else if(is(kind::Reference)) {
 		auto pf = type->getname();
 		if(!pf)
 			return "";
@@ -96,7 +96,7 @@ const char* bsreq::gets(const void* p) const {
 		if(!v)
 			return "";
 		return pf->gets(pf->ptr(v));
-	} else if(is(KindEnum)) {
+	} else if(is(kind::Enum)) {
 		auto pb = source;
 		if(!pb)
 			return "";
@@ -111,7 +111,7 @@ const char* bsreq::gets(const void* p) const {
 }
 
 const char* bsreq::get(const void* p, char* result, const char* result_max) const {
-	if(is(KindNumber)) {
+	if(is(kind::Number)) {
 		auto v = get(p);
 		stringbuilder sb(result, result_max);
 		sb.add("%1i", v);
@@ -124,10 +124,10 @@ void* bsreq::dereference(const void* data, const bsreq** result) const {
 	auto r = data;
 	auto t = this;
 	while(true) {
-		if(t->is(KindReference)) {
+		if(t->is(kind::Reference)) {
 			r = *((void**)t->type->ptr(r));
 			t = t->type;
-		} else if(t->is(KindEnum)) {
+		} else if(t->is(kind::Enum)) {
 			if(!t->source) {
 				r = 0;
 				t = 0;
