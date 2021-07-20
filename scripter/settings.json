@@ -127,7 +127,7 @@
           },
           "column":{
             "id":"Сообщение",
-            "width":354,
+            "width":200,
             "size":4,
             "total":0
           }
@@ -149,7 +149,7 @@
       },
       "Dock2":{
         "current":0,
-        "size":355
+        "size":200
       },
       "Dock3":{
         "current":0,
@@ -157,11 +157,11 @@
       },
       "Dock4":{
         "current":0,
-        "size":200
+        "size":0
       },
       "Dock5":{
         "current":0,
-        "size":200
+        "size":0
       }
     }
   }

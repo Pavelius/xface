@@ -17,7 +17,7 @@ void copy(const void* string, int lenght) {
 	}
 	// Lock the handle and copy the text to the buffer.
 	auto ps = (char*)GlobalLock(hglbCopy);
-	szencode(ps, size, CPU16LE, (const char*)string, lenght, CP1251);
+	szencode(ps, size, codepages::U16LE, (const char*)string, lenght, codepages::W1251);
 	GlobalUnlock(ps);
 	SetClipboardData(CF_UNICODETEXT, hglbCopy);
 	CloseClipboard();
@@ -44,7 +44,7 @@ char* paste() {
 				GlobalUnlock(hglb);
 			}
 			if(format == CF_UNICODETEXT) {
-				szencode(buffer, result, CP1251, buffer, result, CPU16LE);
+				szencode(buffer, result, codepages::W1251, buffer, result, codepages::U16LE);
 				result = result / 2;
 				buffer[result] = 0;
 			}

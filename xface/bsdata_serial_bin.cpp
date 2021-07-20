@@ -1,5 +1,6 @@
 #include "archive.h"
-#include "bsdata.h"
+#include "bsreq.h"
+#include "crt.h"
 
 struct bsdata_archive : archive {
 	arrayref				pointers[3];

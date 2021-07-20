@@ -29,7 +29,7 @@ static application_window	window = {0, 0, 0, 0, 160, WFMinmax | WFResize};
 static const char*			settings_file_name = "settings.json";
 static vector<controls::control*> active_controls;
 
-aref<controls::control*> getdocked(control** result, unsigned count, dock_s type);
+controla getdocked(control** result, unsigned count, dock_s type);
 
 BSDATA(docki) = {{"dock_left", "Присоединить слева"},
 {"dock_left_bottom", "Присоединить слева и снизу"},
@@ -479,14 +479,14 @@ static struct widget_application : draw::controls::control {
 	bool isfocusable() const override {
 		return false;
 	}
-	static aref<control*> getactivepages(control** result, unsigned count) {
+	static controla getactivepages(control** result, unsigned count) {
 		auto ps = result;
 		auto pe = result + count;
 		for(auto p : active_controls) {
 			if(ps < pe)
 				*ps++ = p;
 		}
-		return aref<control*>(result, ps - result);
+		return controla(result, ps);
 	}
 	static void show_statusbar(const control* pc) {
 		char temp[260]; stringbuilder sb(temp);
@@ -494,32 +494,41 @@ static struct widget_application : draw::controls::control {
 		if(pu)
 			statusbar("Данные из %1", pu);
 	}
+	static int getindexof(const controla& source, control* v) {
+		auto i = 0;
+		for(auto e : source) {
+			if(e == v)
+				return i;
+			i++;
+		}
+		return -1;
+	}
 	static void workspace(rect rc) {
 		control* p1[64];
 		auto c1 = getdocked(p1, sizeof(p1)/sizeof(p1[0]), DockWorkspace);
-		auto c2 = getactivepages(c1.end(), (p1 + sizeof(p1) / sizeof(p1[0])) - c1.end());
-		aref<control*> ct(c1.begin(), c1.getcount() + c2.getcount());
-		if(!ct) {
+		auto c2 = getactivepages(const_cast<control**>(c1.end()), (p1 + sizeof(p1) / sizeof(p1[0])) - c1.end());
+		controla ct(c1.begin(), c1.begin() + c1.size() + c2.size());
+		if(ct.size()==0) {
 			auto push_fore = fore;
 			fore = colors::border;
 			text(rc, "Не найдено ни одного открытого документа", AlignCenterCenter);
 			fore = push_fore;
-		} else if(ct.getcount() == 1) {
+		} else if(ct.size() == 1) {
 			current_active_control = p1[0];
 			current_active_control->show_border = metrics::show::padding;
 			current_active_control->view(rc);
-		} else if(ct) {
-			auto current_select = ct.indexof(current_active_control);
+		} else {
+			auto current_select = getindexof(ct, current_active_control);
 			if(current_select == -1)
 				current_select = 0;
 			const int dy = draw::texth() + 8;
 			rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
 			auto current_hilite = -1;
-			auto result = draw::tabs(rct, false, false, (void**)c1.begin(), 0, c1.getcount(),
+			auto result = draw::tabs(rct, false, false, (void**)c1.begin(), 0, c1.size(),
 				current_select, &current_hilite, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
-			if(c2) {
+			if(c2.size()!=0) {
 				auto current_hilite2 = -1;
-				auto r1 = draw::tabs(rct, true, false, (void**)ct.begin(), c1.getcount(), ct.getcount(),
+				auto r1 = draw::tabs(rct, true, false, (void**)ct.begin(), c1.size(), ct.size(),
 					current_select, &current_hilite2, controls::getlabel, {2, 0, 2, 0}, &rct.x1);
 				if(current_hilite2 != -1)
 					current_hilite = current_hilite2;

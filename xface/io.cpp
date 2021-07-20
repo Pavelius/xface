@@ -16,7 +16,7 @@ io::stream&	io::stream::operator<<(const char* t) {
 		char temp[8];
 		char* s1 = temp;
 		unsigned u = szget(&t);
-		szput(&s1, u, CPUTF8);
+		szput(&s1, u, codepages::UTF8);
 		write(temp, s1 - temp);
 	}
 	return *this;
@@ -72,7 +72,7 @@ char* loadt(const char* url, int* size) {
 		// UTF8
 		// Перекодируем блок через декодировщик. Может быть только меньше,
 		// так как системная кодировка ANSI
-		szencode((char*)p, s1, metrics::code, (char*)p + 3, s1, CPUTF8);
+		szencode((char*)p, s1, metrics::code, (char*)p + 3, s1, codepages::UTF8);
 	}
 	if(size)
 		*size = s1;

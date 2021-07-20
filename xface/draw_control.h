@@ -148,6 +148,7 @@ struct control {
 	virtual void			view(const rect& rc);
 	virtual void			write(serializer& sr) const {}
 };
+typedef std::initializer_list<control*> controla;
 // Analog of listbox element
 struct list : control {
 	int						origin, current, origin_width;

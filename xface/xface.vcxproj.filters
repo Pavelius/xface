@@ -222,6 +222,9 @@
     <ClCompile Include="parameters.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="bsdata_serial_bin.cpp">
+      <Filter>collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="archive.h">

@@ -404,8 +404,6 @@ static bool test_array() {
 	a1.change((int)&((testinfo*)0)->value2, 12);
 	p1 = (testinfo*)a1.ptr(0);
 	p2 = (testinfo*)a1.ptr(1);
-	for(auto& e : a1.records<testinfo>())
-		e.value = 1;
 	return true;
 }
 

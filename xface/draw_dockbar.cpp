@@ -40,7 +40,7 @@ static const char* get_control_name(const void* p, stringbuilder& sb) {
 	return pr;
 }
 
-aref<control*> getdocked(control** result, unsigned count, dock_s type) {
+controla getdocked(control** result, unsigned count, dock_s type) {
 	auto ps = result;
 	auto pe = result + count;
 	for(auto p = control::plugin::first; p; p = p->next) {
@@ -56,21 +56,21 @@ aref<control*> getdocked(control** result, unsigned count, dock_s type) {
 				*ps++ = pc;
 		}
 	}
-	return aref<control*>(result, ps - result);
+	return controla(result, ps);
 }
 
 // view control on form
-static int paint_control(rect rc, aref<control*> elements, int& current, bool show_toolbar) {
+static int paint_control(rect rc, controla elements, int& current, bool show_toolbar) {
 	int y1 = rc.y1;
-	if(current >= (int)elements.getcount())
-		current = elements.getcount() - 1;
+	if(current >= (int)elements.size())
+		current = elements.size() - 1;
 	auto& ec = *(elements.begin() + current);
-	if(elements.getcount() > 1) {
+	if(elements.size() > 1) {
 		int current_hilite = -1;
 		const int dy = texth() + 8;
 		line(rc.x1, rc.y1 + dy - 1, rc.x2, rc.y1 + dy, colors::border);
 		rect rct = {rc.x1, rc.y1, rc.x2, rc.y1 + dy};
-		if(tabs(rct, false, false, (void**)elements.begin(), 0, elements.getcount(),
+		if(tabs(rct, false, false, (void**)elements.begin(), 0, elements.size(),
 			current, &current_hilite, get_control_name)) {
 			if(current_hilite != -1)
 				current = current_hilite;
@@ -85,12 +85,12 @@ static int paint_control(rect rc, aref<control*> elements, int& current, bool sh
 	return rc.y1 - y1;
 }
 
-static bool dock_paint(dock_s id, rect& client, aref<control*> p1, aref<control*> p2) {
+static bool dock_paint(dock_s id, rect& client, controla p1, controla p2) {
 	bool show_toolbar = true;
 	rect rc = client;
 	dock_info& e1 = dock_data[id - DockLeft];
 	dock_info& e2 = dock_data[id - DockLeft + 1];
-	if(!p1 && !p2)
+	if(p1.size() == 0 && p2.size() == 0)
 		return false;
 	if(!e1.size)
 		e1.size = 200;
@@ -116,9 +116,9 @@ static bool dock_paint(dock_s id, rect& client, aref<control*> p1, aref<control*
 	default:
 		return false;
 	}
-	if(!p2)
+	if(p2.size()==0)
 		paint_control(rc, p1, e1.current, show_toolbar);
-	else if(!p1)
+	else if(p1.size() == 0)
 		paint_control(rc, p2, e2.current, show_toolbar);
 	else if(id == DockLeft || id == DockRight) {
 		draw::splith(rc.x1, rc.y1, rc.width(), e2.size, sx, 64, 400, false);

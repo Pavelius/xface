@@ -59,14 +59,14 @@ struct bsinf {
 	constexpr explicit operator bool() const { return id != 0; }
 };
 struct bsparse {
-	enum error_s {
-		NoErrors,
-		ErrorNotFoundIdentifier1p, ErrorExpected1p, ErrorFile1pNotFound,
-		ErrorNotFoundType, ErrorNotFoundBase1p, ErrorNotFoundMember1pInBase2p,
-		ErrorExpectedIdentifier,
+	enum class errors {
+		None,
+		NotFoundIdentifier1p, Expected1p, File1pNotFound,
+		NotFoundType, NotFoundBase1p, NotFoundMember1pInBase2p,
+		ExpectedIdentifier,
 	};
 	const bsinf*			metadata;
-	virtual void			error(error_s id, const char* url, int line, int column, const char* format_param) {}
+	virtual void			error(errors id, const char* url, int line, int column, const char* format_param) {}
 	virtual const char*		getinclude(char* result, const char* result_end, const char* name) { return 0; }
 	virtual const bsreq*	getmeta(const char* name);
 	virtual const bsreq*	getrequisit(const bsreq* type, const char* name) { return type->find(name); }

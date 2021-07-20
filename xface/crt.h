@@ -59,9 +59,9 @@ extern "C" long long				time(long long* seconds);
 #define BSINF(e) {#e, bsmeta<e##i>::meta, bsdata<e##i>::source}
 #define assert_enum(e, last) static_assert(sizeof(bsdata<e>::elements) / sizeof(bsdata<e>::elements[0]) == last + 1, "Invalid count of " #e " elements"); BSDATAF(e)
 
-enum codepages { CPNONE, CP1251, CPUTF8, CPU16BE, CPU16LE };
+enum class codepages { None, W1251, UTF8, U16BE, U16LE };
 namespace metrics {
-const codepages						code = CP1251;
+const codepages						code = codepages::W1251;
 }
 //
 bool								equal(const char* s1, const char* s2);
@@ -119,26 +119,6 @@ template<class T> inline void		zcat(T* p1, const T e) { p1 = zend(p1); p1[0] = e
 template<class T> inline void		zcat(T* p1, const T* p2) { zcpy(zend(p1), p2); }
 template<class T> constexpr int		zlen(T* p) { return zend(p) - p; }
 template<class T> inline void		zshuffle(T* p, int count) { for(int i = 0; i < count; i++) iswap(p[i], p[rand() % count]); }
-// Light-weaight proxy container
-template<class T>
-class aref {
-	T*								data;
-	unsigned						count;
-public:
-	constexpr aref() : data(0), count(0) {}
-	constexpr aref(T* data, unsigned count) : data(data), count(count) {}
-	constexpr const T& operator[](unsigned index) const { return data[index]; }
-	constexpr T& operator[](unsigned index) { return data[index]; }
-	explicit operator bool() const { return count != 0; }
-	constexpr T*					begin() { return data; }
-	constexpr const T*				begin() const { return data; }
-	constexpr T*					end() { return data + count; }
-	constexpr const T*				end() const { return data + count; }
-	constexpr unsigned				getcount() const { return count; }
-	constexpr int					indexof(const T* e) const { if(e >= data && e < data + count) return e - data; return -1; }
-	constexpr int					indexof(const T t) const { for(unsigned i = 0; i < count; i++) if(data[i] == t) return i; return -1; }
-	constexpr bool					is(const T t) const { return indexof(t) != -1; }
-};
 // Storge like vector
 template<class T, int count_max = 128>
 struct adat {
@@ -210,7 +190,6 @@ public:
 	bool							is(const void* e) const { return e >= data && e < (char*)data + count*size; }
 	bool							isgrowable() const { return (count_maximum & 0x80000000) == 0; }
 	void*							ptr(int index) const { return (char*)data + size * index; }
-	template<class T> aref<T> records() const { return aref<T>((T*)data, count); }
 	void							remove(int index, int elements_count = 1);
 	void							shift(int i1, int i2, unsigned c1, unsigned c2);
 	void							setcount(unsigned value) { count = value; }
@@ -228,7 +207,6 @@ public:
 	constexpr T& operator[](int index) { return ((T*)data)[index]; }
 	constexpr const T& operator[](int index) const { return ((T*)data)[index]; }
 	constexpr explicit operator bool() const { return count != 0; }
-	constexpr operator aref<T>() const { return aref<T>((T*)data, count); }
 	T*								add() { return (T*)array::add(); }
 	void							add(const T& v) { *((T*)array::add()) = v; }
 	constexpr const T*				begin() const { return (T*)data; }

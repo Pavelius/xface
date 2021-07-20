@@ -165,12 +165,10 @@ static const char* read_object(const char* p, serializer::node& n, serializer::r
 }
 
 struct json_writer : serializer {
-
 	io::stream& e;
 	int	level;
 	int	types[128];
 	int	count[128];
-
 	void write_name(const char* name) {
 		if(count[level]) {
 			e << ",";
@@ -180,7 +178,6 @@ struct json_writer : serializer {
 			e << "\"" << name << "\":";
 		count[level]++;
 	}
-
 	void write_cr() {
 		if(level == -1)
 			return;
@@ -188,7 +185,6 @@ struct json_writer : serializer {
 		for(int i = 0; i < level; i++)
 			e << "  ";
 	}
-
 	void open(const char* name, serializer::type_s type) override {
 		write_name(name);
 		if(type == serializer::Array)
@@ -199,12 +195,10 @@ struct json_writer : serializer {
 		count[level] = 0;
 		write_cr();
 	}
-
 	void set(const char* name, int value, serializer::type_s type) override {
 		write_name(name);
 		e << value;
 	}
-
 	void set(const char* name, const char* value, serializer::type_s type) override {
 		if(!value)
 			return;
@@ -240,14 +234,13 @@ struct json_writer : serializer {
 					char temp[16];
 					char* s1 = temp;
 					unsigned u = szget(&value);
-					szput(&s1, u, CPUTF8);
+					szput(&s1, u, codepages::UTF8);
 					e.write(temp, s1 - temp);
 				}
 				break;
 			}
 		}
 	}
-
 	void close(const char* name, serializer::type_s type) override {
 		level--;
 		write_cr();
@@ -258,12 +251,10 @@ struct json_writer : serializer {
 		if(!name)
 			return;
 	}
-
 	json_writer(io::stream& e) : e(e), level(0) {
 		memset(types, 0, sizeof(types));
 		memset(count, 0, sizeof(count));
 	}
-
 };
 
 static struct json_reader_parser : public io::plugin {
