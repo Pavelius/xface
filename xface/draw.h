@@ -40,8 +40,8 @@ enum window_flags {
 	WFMaximized = 0x0040,
 	WFAbsolutePos = 0x0080,
 };
-enum cursor_s {
-	CursorArrow, CursorHand, CursorLeftRight, CursorUpDown, CursorAll, CursorNo, CursorEdit, CursorWait,
+enum class cursor {
+	Arrow, Hand, LeftRight, UpDown, All, No, Edit, Wait,
 };
 enum image_flag_s {
 	ImageMirrorV = 0x0001,
@@ -139,7 +139,7 @@ bool					open(const char* title, char* path, const char* filter, int filter_inde
 bool					save(const char* title, char* path, const char* filter, int filter_index = 0);
 }
 struct hoti {
-	cursor_s			cursor; // set this mouse cursor
+	cursor				cursor; // set this mouse cursor
 	unsigned			key; // if pressed key or mouse this field has key
 	point				mouse; // current mouse coordinates
 	bool				pressed; // flag if any of mouse keys is pressed

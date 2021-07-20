@@ -238,7 +238,7 @@ static int textfln(int x0, int y0, int width, const char** string, color c1, int
 			rect rc = {x4, y, x3, y2};
 			if(ishilite(rc)) {
 				if(flags&TextUscope) {
-					hot.cursor = CursorHand;
+					hot.cursor = cursor::Hand;
 					if(temp[0] && hot.key == MouseLeft && !hot.pressed) {
 						zcpy(draw::link, temp, sizeof(draw::link) - 1);
 						//draw::execute(HtmlLink);

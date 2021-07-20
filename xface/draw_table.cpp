@@ -192,7 +192,7 @@ int table::rowheader(const rect& rc) const {
 		if(!columns[i].is(ColumnVisible))
 			continue;
 		if(dragactive(&columns[i])) {
-			hot.cursor = CursorLeftRight;
+			hot.cursor = cursor::LeftRight;
 			auto new_width = base_width + (hot.mouse.x - dragmouse.x);
 			auto pw = columns[i].method;
 			if(new_width < pw->minimal_width)
@@ -224,7 +224,7 @@ int table::rowheader(const rect& rc) const {
 			textc(r1.x1 + metrics::edit.x1, r1.y1 + metrics::edit.y1, r1.width() + metrics::edit.width(), p);
 		a = ishilite({r1.x2 + metrics::edit.x2 - 1, r1.y1, r1.x2 + metrics::edit.x2 + 1, r1.y2});
 		if(a) {
-			hot.cursor = CursorLeftRight;
+			hot.cursor = cursor::LeftRight;
 			if(hot.pressed && hot.key == MouseLeft) {
 				dragbegin(&columns[i]);
 				base_width = columns[i].width;

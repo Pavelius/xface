@@ -66,7 +66,7 @@ static int tokey(unsigned key) {
 	return key;
 }
 
-static void set_cursor(cursor_s e) {
+static void set_cursor(cursor e) {
 	static void* data[] = {
 		LoadCursorA(0, (char*)32512),//IDC_ARROW
 		LoadCursorA(0, (char*)32649),//IDC_HAND
@@ -77,7 +77,7 @@ static void set_cursor(cursor_s e) {
 		LoadCursorA(0, (char*)32513),//IDC_IBEAM
 		LoadCursorA(0, (char*)32514),//IDC_WAIT
 	};
-	SetCursor(data[e]);
+	SetCursor(data[static_cast<int>(e)]);
 }
 
 static int handle(MSG& msg) {

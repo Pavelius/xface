@@ -27,7 +27,7 @@ void draw::splitv(int x, int y, int& value, int height, int size, int minimum, i
 		split_value = value;
 	}
 	if(mode) {
-		hot.cursor = CursorLeftRight;
+		hot.cursor = cursor::LeftRight;
 		if(hot.pressed)
 			rectf(rc, colors::button.darken(), 128);
 		else
@@ -60,7 +60,7 @@ void draw::splith(int x, int y, int width, int& value, int size, int minimum, in
 		split_value = value;
 	}
 	if(mode) {
-		hot.cursor = CursorUpDown;
+		hot.cursor = cursor::UpDown;
 		if(hot.pressed)
 			rectf(rc, colors::button.darken(), 128);
 		else
