@@ -4,29 +4,6 @@
 #pragma once
 
 namespace code {
-enum operation {
-	Number, Literal, Symbol,
-	Statement, Assign, If, While, Do,
-	Add, Sub, Mul, Div, DivPercent, Index,
-	Greater, GreaterEqual, Lesser, LesserEqual, Equal, NotEqual,
-	LogicalAnd, LogicalOr,
-	And, Or, Xor, ShiftLeft, ShiftRight,
-	Not, Ref, Der, Negate,
-	SizeOf, Return, Call, Point, Break, Continue
-};
-enum flag_s : unsigned char {
-	Public, Static, Method, Const, Parameter
-};
-enum symbol_s : unsigned {
-	This,
-	I32 = 0xFFFFFF00, I16, I8, U32, U16, U8, Void, Bool,
-	PI8, PVoid,
-	True, False,
-	Pointer, Platform, Class,
-	SecStr, SecData, SecCode, SecBSS, SecLoc,
-	None = 0xFFFFFFFF,
-	FirstDef = I32, LastDef = SecLoc
-};
 enum class message {
 	UnexpectedSymbols, Expected1p,
 	InvalidEscapeSequence, InvalidOperationWithType, InvalidPointerOperation,
@@ -49,6 +26,29 @@ enum class message {
 	DivisionByZero,
 	Options, Compilator, Linker,
 	StartParse, EndParse, Link1p, Keyword, Declare,
+};
+enum class operation {
+	Number, Literal, Symbol,
+	Statement, Assign, If, While, Do,
+	Add, Sub, Mul, Div, DivPercent, Index,
+	Greater, GreaterEqual, Lesser, LesserEqual, Equal, NotEqual,
+	LogicalAnd, LogicalOr,
+	And, Or, Xor, ShiftLeft, ShiftRight,
+	Not, Ref, Der, Negate,
+	SizeOf, Return, Call, Point, Break, Continue
+};
+enum flag_s : unsigned char {
+	Public, Static, Method, Const, Parameter
+};
+enum symbol_s : unsigned {
+	This,
+	I32 = 0xFFFFFF00, I16, I8, U32, U16, U8, Void, Bool,
+	PI8, PVoid,
+	True, False,
+	Pointer, Platform, Class,
+	SecStr, SecData, SecCode, SecBSS, SecLoc,
+	None = 0xFFFFFFFF,
+	FirstDef = I32, LastDef = SecLoc
 };
 typedef cflags<flag_s>	flagf;
 typedef unsigned		pckh;

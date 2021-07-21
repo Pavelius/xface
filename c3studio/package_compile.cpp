@@ -7,10 +7,12 @@ using namespace code;
 static package*			current;
 struct parsestate {
 	const char*			p;
+	const char*			pind;
 	const char*			pb;
 	pckh				parent;
 	unsigned			level;
 	constexpr unsigned	getindex() const { return p - pb; }
+	constexpr unsigned	getindindex() const { return pind - pb; }
 };
 static pckh				type_sizeof = U32;
 static parsestate		ps;
@@ -99,6 +101,7 @@ static const char* identifier() {
 		return 0;
 	static char temp[256];
 	auto s = temp;
+	ps.pind = ps.p;
 	while(ischa(*ps.p))
 		*s++ = *ps.p++;
 	*s++ = 0;
@@ -197,7 +200,6 @@ static bool declaration(unsigned parent, unsigned flags, bool allow_functions = 
 		return false;
 	while(*ps.p) {
 		unsigned result = parse_pointer(declared);
-		auto ix = ps.getindex();
 		auto id = current->addstr(identifier());
 		if(*ps.p == '(' && !allow_functions) {
 			ps.p = p1;
@@ -208,7 +210,7 @@ static bool declaration(unsigned parent, unsigned flags, bool allow_functions = 
 		}
 		if(*ps.p == '(')
 			flags |= 1 << Method;
-		auto m2 = current->addsym(id, parent, result, ix, flags, level);
+		auto m2 = current->addsym(id, parent, result, ps.getindindex(), flags, level);
 		if(*ps.p == '(') {
 			next();
 			if(*ps.p == ')')
@@ -221,7 +223,7 @@ static bool declaration(unsigned parent, unsigned flags, bool allow_functions = 
 						result = parse_pointer(result);
 						auto ix = ps.getindex();
 						auto id = current->addstr(identifier());
-						result = current->addsym(id, m2, result, ix, pflags, 0);
+						result = current->addsym(id, m2, result, ps.getindindex(), pflags, 0);
 						if(*ps.p == '=')
 							current->setast(result, expression());
 					}
@@ -386,7 +388,7 @@ static unsigned parameters() {
 		if(result == None)
 			result = expression();
 		else
-			result = current->add(Statement, result, expression());
+			result = current->add(operation::Statement, result, expression());
 		if(ps.p[0] == ',') {
 			next();
 			continue;
@@ -505,7 +507,7 @@ static pckh unary() {
 			if(sym == None)
 				sym = current->findsym(ni, Class, 0);
 			if(sym == None) {
-				sym = current->addsym(ni, ps.parent, I32, 0, 0, ps.level);
+				sym = current->addsym(ni, ps.parent, I32, ps.getindindex(), 0, ps.level);
 				status(message::NotFound1p2p, "symbol", n);
 			}
 			result = current->add(operation::Symbol, sym);
@@ -690,7 +692,7 @@ static void join(pckh& result, pckh value) {
 	if(result == None)
 		result = value;
 	else
-		result = current->add(Statement, result, value);
+		result = current->add(operation::Statement, result, value);
 }
 
 static pckh statement() {
@@ -801,8 +803,7 @@ static void block_enums() {
 		while(*ps.p) {
 			unsigned sym = None;
 			if(ischab(*ps.p)) {
-				auto ix = ps.getindex();
-				sym = current->addsym(current->addstr(identifier()), This, I32, ix, (1 << Const) | (1 << Static), 0);
+				sym = current->addsym(current->addstr(identifier()), This, I32, ps.getindindex(), (1 << Const) | (1 << Static), 0);
 				current->setast(sym, current->add(operation::Number, num));
 			} else if(*ps.p == '=') {
 				next();
@@ -827,8 +828,11 @@ static void block_imports() {
 	auto count = 0;
 	while(match("import")) {
 		sb.clear();
+		unsigned sym_index = 0;
 		while(ps.p[0]) {
 			auto pz = identifier();
+			if(!sym_index)
+				sym_index = ps.getindindex();
 			sb.add(pz);
 			if(*ps.p == '.') {
 				sb.add(".");
@@ -842,7 +846,7 @@ static void block_imports() {
 			if(current->findsym(id, Class, 0) != None)
 				status(message::AlreadyDefined, "module", pz);
 			else
-				current->addsym(id, Class, idu, 0, 0, 0);
+				current->addsym(id, Class, idu, sym_index, 0, 0);
 			count++;
 			skip(';');
 			break;

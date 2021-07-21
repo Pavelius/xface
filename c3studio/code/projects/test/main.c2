@@ -10,7 +10,7 @@ enum messages {
 // Test comment -
 // Ability used this type
 enum abilities {
-	Strenght, Dexterity, Constitution, Intellegence, Wisdow, Charisma
+	Strenght, Constitution, Intellegence, Wisdow, Charisma
 };
 
 int main() {

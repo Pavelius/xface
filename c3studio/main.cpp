@@ -21,7 +21,7 @@ static void get_current_dir() {
 
 void draw::post(const char* id, const char* p1, unsigned p2) {
 	if(equal(id, "editor.code.save")) {
-		//update_package((code::package*)p2);
+		update_package((code::package*)p2);
 	} else
 		logmsg("Не обработано \"%1\" с параметрами %2, %3i", id, p1, p2);
 }
@@ -33,7 +33,7 @@ int main() {
 	metrics::show::left = true;
 	metrics::show::statusbar = true;
 	get_current_dir();
-	add_package("main");
+	//add_package("main");
 	add_package("core.crt");
 	add_package("geo.rect");
 	add_package("geo.point");

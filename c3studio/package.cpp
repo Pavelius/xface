@@ -41,14 +41,18 @@ static const char* opr_strings[] = {
 	"!", "&", "*", "-",
 	"sizeof", "return",
 };
-static_assert(sizeof(opr_strings) / sizeof(opr_strings[0]) == Return + 1, "Invalid operator strings count");
+static_assert(sizeof(opr_strings) / sizeof(opr_strings[0]) - 1 == static_cast<unsigned>(operation::Return), "Invalid operator strings count");
 
 const char*	urls::project;
 const char* urls::library;
 
+static const char* tot(operation v) {
+	return opr_strings[static_cast<int>(v)];
+}
+
 bool isnostrictorder(operation id) {
 	switch(id) {
-	case Add: case Mul:
+	case operation::Add: case operation::Mul:
 		return true;
 	default:
 		return false;
@@ -106,61 +110,61 @@ void package::getast(stringbuilder& sb, unsigned v) const {
 	if(!p)
 		return;
 	switch(p->type) {
-	case SizeOf:
-		sb.add(opr_strings[p->type]);
+	case operation::SizeOf:
+		sb.add(tot(p->type));
 		sb.add("(");
 		getast(sb, p->left);
 		sb.add(")");
 		break;
-	case Return:
-		sb.add(opr_strings[p->type]);
+	case operation::Return:
+		sb.add(tot(p->type));
 		sb.add(" ");
 		getast(sb, p->left);
 		break;
-	case Add: case Sub:
-	case Mul: case Div: case DivPercent:
-	case And: case Or: case Xor:
-	case ShiftLeft: case ShiftRight:
+	case operation::Add: case operation::Sub:
+	case operation::Mul: case operation::Div: case operation::DivPercent:
+	case operation::And: case operation::Or: case operation::Xor:
+	case operation::ShiftLeft: case operation::ShiftRight:
 		getast(sb, p->left);
-		sb.add(opr_strings[p->type]);
+		sb.add(tot(p->type));
 		getast(sb, p->right);
 		break;
-	case Greater: case GreaterEqual:
-	case Lesser: case LesserEqual:
-	case Equal:	case NotEqual:
-	case LogicalOr: case LogicalAnd:
+	case operation::Greater: case operation::GreaterEqual:
+	case operation::Lesser: case operation::LesserEqual:
+	case operation::Equal:	case operation::NotEqual:
+	case operation::LogicalOr: case operation::LogicalAnd:
 		getast(sb, p->left);
 		sb.add(" ");
-		sb.add(opr_strings[p->type]);
+		sb.add(tot(p->type));
 		sb.add(" ");
 		getast(sb, p->right);
 		break;
-	case Symbol:
+	case operation::Symbol:
 		sb.add(getsymstr(p->left));
 		break;
-	case Number:
+	case operation::Number:
 		sb.add("%1i", p->left);
 		break;
-	case Literal:
+	case operation::Literal:
 		sb.add("\"");
 		sb.add(getstr(p->left));
 		sb.add("\"");
 		break;
-	case Call:
+	case operation::Call:
 		getast(sb, p->left);
 		sb.add("()");
 		break;
-	case Point:
+	case operation::Point:
 		getast(sb, p->left);
 		sb.add(".");
 		sb.add(getstr(p->right));
 		break;
-	case Assign:
+	case operation::Assign:
 		getast(sb, p->left);
 		sb.add("=");
 		getast(sb, p->right);
 		break;
-	case Statement:
+	case operation::Statement:
 		getast(sb, p->left);
 		sb.add("\n ");
 		getast(sb, p->right);
@@ -439,7 +443,7 @@ bool package::issymbol(pckh ast) const {
 	auto p = getast(ast);
 	if(!p)
 		return false;
-	return p->type == Symbol;
+	return p->type == operation::Symbol;
 }
 
 bool package::ispointer(pckh sym) const {
