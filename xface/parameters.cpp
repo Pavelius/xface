@@ -18,11 +18,11 @@ const parameters::element* parameters::get(const char* id) const {
 	return 0;
 }
 
-void parameters::add(const char* id, int value) {
+void parameters::add(const char* id, long value) {
 	auto p = add(id);
 	if(!p)
 		return;
-	p->type = Number;
+	p->type = kind::Number;
 	p->value = value;
 }
 
@@ -30,7 +30,7 @@ void parameters::add(const char* id, const char* value) {
 	auto p = add(id);
 	if(!p)
 		return;
-	p->type = Text;
+	p->type = kind::Text;
 	p->value = (int)addstr(value);
 }
 
