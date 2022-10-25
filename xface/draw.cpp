@@ -168,6 +168,22 @@ static void set32(unsigned char* d, int d_scan, int width, int height, void(*pro
 	}
 }
 
+static void raw1(int x, int y, unsigned char* s, int width, int y2) {
+	auto x2 = x + width;
+	auto sn = (width + 7) / 8;
+	while(y < y2) {
+		if(y >= clipping.y1 && y < clipping.y2) {
+			for(auto x1 = x; x1 < x2; x1++) {
+				if(x1 < clipping.x1 || x1 >= clipping.x2)
+					continue;
+				if((s[(x1 - x) / 8] & (0x80 >> ((x1 - x) % 8))) != 0)
+					*((color*)draw::canvas->ptr(x1, y)) = fore;
+			}
+		}
+		y++; s += sn;
+	}
+}
+
 static void raw832(unsigned char* d, int d_scan, unsigned char* s, int s_scan, int width, int height, const color* pallette) {
 	const int cbd = 4;
 	while(height-- > 0) {
@@ -1696,6 +1712,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 		return;
 	if(!canvas)
 		return;
+	auto xo = x;
 	if(flags&ImageMirrorH) {
 		x2 = x;
 		if((flags&ImageNoOffset) == 0)
@@ -1722,11 +1739,13 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 	if(y < clipping.y1) {
 		if((flags & ImageMirrorV) == 0) {
 			switch(f.encode) {
-			case sprite::encodes::ALC: s = skip_alc(s, clipping.y1 - y); break;
-			case sprite::encodes::RAW: s += (clipping.y1 - y) * f.sx * 3; break;
-			case sprite::encodes::RAW8: s += (clipping.y1 - y) * f.sx; break;
-			case sprite::encodes::RLE8: s = skip_v3(s, clipping.y1 - y); break;
-			case sprite::encodes::RLE: s = skip_rle32(s, clipping.y1 - y); break;
+			case sprite::ALC: s = skip_alc(s, clipping.y1 - y); break;
+			case sprite::ALC8: s = skip_v3(s, clipping.y1 - y); break;
+			case sprite::RAW: s += (clipping.y1 - y) * f.sx * 3; break;
+			case sprite::RAW1: s += (clipping.y1 - y) * ((f.sx + 7) / 8); break;
+			case sprite::RAW8: s += (clipping.y1 - y) * f.sx; break;
+			case sprite::RLE8: s = skip_v3(s, clipping.y1 - y); break;
+			case sprite::RLE: s = skip_rle32(s, clipping.y1 - y); break;
 			default: break;
 			}
 		}
@@ -1735,11 +1754,13 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 	if(y2 > clipping.y2) {
 		if(flags & ImageMirrorV) {
 			switch(f.encode) {
-			case sprite::encodes::ALC: s = skip_alc(s, y2 - clipping.y2); break;
-			case sprite::encodes::RAW: s += (y2 - clipping.y2) * f.sx * 3; break;
-			case sprite::encodes::RAW8: s += (y2 - clipping.y2) * f.sx; break;
-			case sprite::encodes::RLE8: s = skip_v3(s, y2 - clipping.y2); break;
-			case sprite::encodes::RLE: s = skip_rle32(s, y2 - clipping.y2); break;
+			case sprite::ALC: s = skip_alc(s, y2 - clipping.y2); break;
+			case sprite::ALC8: s = skip_v3(s, y2 - clipping.y2); break;
+			case sprite::RAW: s += (y2 - clipping.y2) * f.sx * 3; break;
+			case sprite::RAW1: s += (y2 - clipping.y2) * ((f.sx + 7) / 8); break;
+			case sprite::RAW8: s += (y2 - clipping.y2) * f.sx; break;
+			case sprite::RLE8: s = skip_v3(s, y2 - clipping.y2); break;
+			case sprite::RLE: s = skip_rle32(s, y2 - clipping.y2); break;
 			default: break;
 			}
 		}
@@ -1750,7 +1771,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 	int wd = (flags & ImageMirrorV) ? -canvas->scanline : canvas->scanline;
 	int sy = (flags & ImageMirrorV) ? y2 - 1 : y;
 	switch(f.encode) {
-	case sprite::encodes::RAW:
+	case sprite::RAW:
 		if(x < clipping.x1) {
 			if((flags & ImageMirrorH) == 0)
 				s += (clipping.x1 - x) * 3;
@@ -1772,7 +1793,10 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 				x2 - x,
 				y2 - y);
 		break;
-	case sprite::encodes::RAW8:
+	case sprite::RAW1:
+		raw1(xo, y, s, f.sx, y2);
+		break;
+	case sprite::RAW8:
 		if(x < clipping.x1) {
 			s += clipping.x1 - x;
 			x = clipping.x1;
@@ -1795,7 +1819,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 		else
 			raw832(ptr(x, y), wd, s, f.sx, x2 - x, y2 - y, pal);
 		break;
-	case sprite::encodes::RLE8:
+	case sprite::RLE8:
 		if(!f.pallette || (flags&ImagePallette))
 			pal = draw::palt;
 		else
@@ -1813,7 +1837,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 				ptr(clipping.x2, sy),
 				alpha, pal);
 		break;
-	case sprite::encodes::RLE:
+	case sprite::RLE:
 		if(flags&ImageMirrorH)
 			rle32m(ptr(x2 - 1, sy), wd, s, y2 - y,
 				ptr(clipping.x1, sy),
@@ -1825,7 +1849,7 @@ void draw::image(int x, int y, const sprite* e, int id, int flags, unsigned char
 				ptr(clipping.x2, sy),
 				alpha);
 		break;
-	case sprite::encodes::ALC:
+	case sprite::ALC:
 		if(flags&TextBold)
 			alc32(ptr(x, sy - 1), wd, s, y2 - y,
 				ptr(clipping.x1, sy - 1),

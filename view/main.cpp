@@ -67,7 +67,7 @@ void mainview(const char* url) {
 	int wx = 640;
 	int wy = 480;
 	const sprite::frame& f1 = pi->get(0);
-	bool background_image = (f1.encode == sprite::RAW || f1.encode == sprite::RAW8) && f1.ox == 0 && f1.oy == 0;
+	bool background_image = (f1.encode == sprite::encodes::RAW || f1.encode == sprite::encodes::RAW8) && f1.ox == 0 && f1.oy == 0;
 	if(background_image) {
 		wx = f1.sx;
 		wy = f1.sy;
@@ -127,7 +127,7 @@ void mainview(const char* url) {
 			sb.addn("frames total %1i", pi->count);
 		if(setting::show::center)
 			sb.adds("center");
-		sb.adds(mode_names[f.encode]);
+		sb.adds(mode_names[(int)f.encode]);
 		auto frame_name = pi->getstring(current);
 		if(frame_name && frame_name[0])
 			sb.addn(frame_name);
@@ -200,7 +200,7 @@ static void correct_font() {
 		pc[-1] = 0;
 	else
 		pc[0] = 0;
-	static const char* font_directories[] = {"", modl};
+	static const char* font_directories[] = {modl, ""};
 	for(auto temp : font_directories) {
 		szurl(furl, temp, "font", "pma");
 		metrics::font = (sprite*)loadb(furl);
